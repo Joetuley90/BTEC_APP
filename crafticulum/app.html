@@ -935,7 +935,7 @@ body.auth-gate{overflow:hidden}
   @keyframes alUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   @keyframes alUpTilt{from{opacity:0;transform:translateY(18px) rotate(0)}to{opacity:1;transform:rotate(-1.2deg)}}
 }
-/* teachers can't build with Claude */
+/* teachers can't build with Crafticulum AI */
 body.no-gen #form,body.no-gen #surprise,body.no-gen [data-regen],body.no-gen #regenLesson,body.no-gen #steer,body.no-gen label[for="steer"],
 body.no-gen [data-sq="write"],body.no-gen [data-sq="build"],body.no-gen [data-sq="buildUnit"],body.no-gen [data-sq="buildAll"],body.no-gen [data-sq="redo"],body.no-gen [data-sq="redoAll"],
 body.no-gen [data-mini="buildUnit"],body.no-gen [data-mini="redoAll"],body.no-gen #sqSteer,body.no-gen label[for="sqSteer"],body.no-gen #coverBtn,body.no-gen [data-lp-open],body.no-gen [data-bmode-go],
@@ -1680,7 +1680,7 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
         <div class="row g-2"><div class="col-6"><label class="form-label small fw-semibold mb-1" for="stpFirst">First name</label><input class="form-control" id="stpFirst" maxlength="40" autocomplete="given-name" required></div><div class="col-6"><label class="form-label small fw-semibold mb-1" for="stpLast">Last name</label><input class="form-control" id="stpLast" maxlength="40" autocomplete="family-name"></div></div>
         <div><label class="form-label small fw-semibold mb-1" for="stpEmail">Your email</label><input class="form-control" id="stpEmail" type="email" autocomplete="username" required></div>
         <div><label class="form-label small fw-semibold mb-1" for="stpPass">Choose a password</label><input class="form-control" id="stpPass" type="password" autocomplete="new-password" minlength="10" required><div class="form-text">At least 10 characters.</div></div>
-        <div><label class="form-label small fw-semibold mb-1" for="stpKey">Claude API key <span class="fw-normal text-body-secondary">(optional, you can add it later)</span></label><input class="form-control" id="stpKey" type="password" autocomplete="off" placeholder="sk-ant-..."></div>
+        <div><label class="form-label small fw-semibold mb-1" for="stpKey">AI key (from Anthropic) <span class="fw-normal text-body-secondary">(optional, you can add it later)</span></label><input class="form-control" id="stpKey" type="password" autocomplete="off" placeholder="sk-ant-..."></div>
         <button type="submit" class="btn btn-primary mt-1" id="stpGo">Set up Crafticulum</button>
       </form>
       <form class="auth-v vstack gap-2" data-v="setpass" id="spForm" hidden novalidate>
@@ -2385,9 +2385,9 @@ $("#lpGo").onclick = async () => {
   if(lpBusy) return;
   const msg = (t, bad) => { $("#lpMsg").className = "idea-msg mt-2" + (bad ? " err" : ""); $("#lpMsg").textContent = t; };
   if(typeof JSZip === "undefined"){ msg("The Word tools didn't load. Reload the page.", true); return; }
-  if(!downloadsApi){ msg("Saving files isn't available in this view. Open the page in Claude to download.", true); return; }
+  if(!downloadsApi){ msg("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true); return; }
   const need = !current.mkc || $("#lpRewrite").checked;
-  if(need && !sampleFn){ msg("Writing the form needs this page open inside Claude.", true); return; }
+  if(need && !sampleFn){ msg("Writing the form needs this page open inside Crafticulum AI.", true); return; }
   const m = current.meta || {}, key = `${m.course}|${m.level}`;
   const code = $("#lpCode").value.trim(), no = $("#lpNo").value.trim(), dt = $("#lpDate").value;
   const codes = lpCodes(); if(code){ codes[key] = code; try{ localStorage.setItem("lb_courseCodes", JSON.stringify(codes)); }catch{} if(db && myId) db.doc("data/users/"+myId+"/settings/lessonplan").set({codes, updatedAt: Date.now()}).catch(()=>{}); }
@@ -2685,7 +2685,7 @@ function briefPane(d){
 async function makeBriefSupport(){
   const b = currentBrief(current); if(!b || briefBusy) return;
   const msg = (t, bad) => { const el = $("#briefMsg"); if(el){ el.className = "idea-msg mb-2" + (bad ? " err" : ""); el.textContent = t; } };
-  if(!sampleFn){ msg("Making a support version needs this page open inside Claude.", true); return; }
+  if(!sampleFn){ msg("Making a support version needs this page open inside Crafticulum AI.", true); return; }
   briefBusy = true;
   document.querySelectorAll('[data-bact="make"]').forEach(x => { x.disabled = true; x.textContent = "Writing the support version..."; });
   msg("Breaking the brief down step by step. This can take a minute or two.");
@@ -2713,7 +2713,7 @@ $("#out").addEventListener("click", async e => {
   }
   if(a.dataset.bact === "word"){
     if(typeof JSZip === "undefined"){ msg("The Word tools didn't load. Reload the page.", true); return; }
-    if(!downloadsApi){ msg("Saving files isn't available in this view. Open the page in Claude to download.", true); return; }
+    if(!downloadsApi){ msg("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true); return; }
     try{ msg("Building the Word document...");
       const blob = await buildBriefDocx(JSZip, b, s);
       await downloadsApi.save({filename: `${(s.title || b.t).replace(/[^A-Za-z0-9]+/g, " ").trim()} - support version.docx`, data: blob});
@@ -3039,7 +3039,7 @@ const lessonKey = () => current.id || "example";
 const liveForCurrent = () => !!(liveQuiz && liveQuiz.lessonId === lessonKey());
 async function startLiveQuiz(){
   const qz = (current.quiz||[]); if(!qz.length) return false;
-  if(!assetsApi){ quizMsg = "Phone quizzes need this page open in Claude as the owner."; showSlide("quiz"); return false; }
+  if(!assetsApi){ quizMsg = "Phone quizzes need this page open in Crafticulum AI as the owner."; showSlide("quiz"); return false; }
   if(liveForCurrent()) return true;
   quizMsg = "Starting..."; showSlide("quiz");
   if(liveQuiz){ try{ await assetsApi.delete(liveQuiz.id); }catch{} liveQuiz = null; }
@@ -3559,7 +3559,7 @@ document.addEventListener("click", async e => {
   const b = e.target.closest("[data-regen]"); if(!b || regenBusy) return;
   if(b.dataset.regen === "quiz" && liveForCurrent()) return;
   const kind = b.dataset.regen, msg = () => $("#ideaMsg");
-  if(!sampleFn){ msg().className="idea-msg err"; msg().textContent="Fresh ideas need this page open inside Claude."; return; }
+  if(!sampleFn){ msg().className="idea-msg err"; msg().textContent="Fresh ideas need this page open inside Crafticulum AI."; return; }
   if(!current.starter) return;
   regenBusy = true;
   document.querySelectorAll("[data-regen]").forEach(x=>{ x.disabled = true; });
@@ -3619,15 +3619,15 @@ document.addEventListener("click", async e => {
 });
 
 const ERR = {
-  not_granted:"Claude access wasn't allowed for this page. Reload and choose Allow to build lessons.",
+  not_granted:"Crafticulum AI access wasn't allowed for this page. Reload and choose Allow to build lessons.",
   rate_limited:"Too many requests just now. Give it a minute and try again.",
-  session_expired:"You've been signed out. Sign in to Claude again and retry.",
+  session_expired:"You've been signed out. Sign in to Crafticulum AI again and retry.",
   invalid_json:"The answer came back in the wrong shape. Press Build lesson again.",
   no_prev:"There's no earlier lesson for this unit in your library yet. Build or open last lesson's plan first.",
-  sampling_disabled:"Claude isn't available on this account.",
-  refused:"Claude declined that request. Try rewording the criteria or notes.",
+  sampling_disabled:"Crafticulum AI isn't available on this account.",
+  refused:"Crafticulum AI declined that request. Try rewording the criteria or notes.",
   network:"Couldn't reach your server. Check the connection and try again.",
-  server:"The server couldn't get an answer from Claude. Try again in a minute."
+  server:"The server couldn't get an answer from Crafticulum AI. Try again in a minute."
 };
 
 $("#form").addEventListener("submit", async e=>{
@@ -3643,7 +3643,7 @@ $("#form").addEventListener("submit", async e=>{
   const st = $("#status"); st.className="status";
   if(!sel.length){ st.className="status err"; st.textContent="Tick at least one criterion first."; return; }
   if(twist) st.textContent = "Surprise twist: " + twist;
-  if(!sampleFn){ st.className="status err"; st.textContent="Lesson building needs this page open inside Claude."; return; }
+  if(!sampleFn){ st.className="status err"; st.textContent="Lesson building needs this page open inside Crafticulum AI."; return; }
   flushEdit(); view = "lesson"; editMode = false; syncShell();
   ctl?.abort(); ctl = new AbortController();
   const go = $("#go"); go.disabled = true; go.querySelector("span").textContent = "Building...";
@@ -3958,7 +3958,7 @@ async function exportDeck(){
   const msg = t => { const el = $("#deckMsg"); if(el){ el.className = "idea-msg"; el.textContent = t; } };
   const err = t => { const el = $("#deckMsg"); if(el){ el.className = "idea-msg err"; el.textContent = t; } };
   if(typeof JSZip === "undefined"){ err("The PowerPoint tools didn't load. Reload the page and try again."); return; }
-  if(!downloadsApi){ err("Saving files isn't available in this view. Open the page in Claude to download the PowerPoint."); return; }
+  if(!downloadsApi){ err("Saving files isn't available in this view. Open the page in Crafticulum AI to download the PowerPoint."); return; }
   deckBusy = true; const btn = $("#deckBtn"); if(btn){ btn.disabled = true; btn.firstChild.nodeValue = "Building..."; }
   try{
     let qr = null, note = "";
@@ -3971,7 +3971,7 @@ async function exportDeck(){
         const ok = await startLiveQuiz();
         if(ok && liveQuiz){ qr = qrPngBytes(quizLink(liveQuiz.id)); note = " The phone quiz is open for 24 hours or until you press End quiz."; }
         else note = " The QR slide was left out because the phone quiz couldn't open.";
-      } else note = " The QR slide was left out because phone quizzes need this page open in Claude.";
+      } else note = " The QR slide was left out because phone quizzes need this page open in Crafticulum AI.";
     }
     msg("Building your slides...");
     const blob = await buildLessonDeck(JSZip, (await tplGet("TPL_B64")), current, {qrPng: qr, initials: !!quizServer, group: unitGroup(), type: "blob"});
@@ -4195,7 +4195,7 @@ $("#shBody").addEventListener("click", async e => {
 });
 $("#shMake").onclick = async () => {
   if(sheetBusy) return;
-  if(!sampleFn){ shMsg("Support versions need this page open inside Claude.", true); return; }
+  if(!sampleFn){ shMsg("Support versions need this page open inside Crafticulum AI.", true); return; }
   const ts = tasksOf(current); if(!ts.length) return;
   sheetBusy = true; $("#shMake").disabled = true; shMsg("Writing support versions. This can take up to a minute...");
   const prompt = `${lessonContext(current)}
@@ -4224,7 +4224,7 @@ Reply with only this JSON:
 };
 $("#shWord").onclick = async () => {
   if(typeof JSZip === "undefined"){ shMsg("The Word tools didn't load. Reload the page.", true); return; }
-  if(!downloadsApi){ shMsg("Saving files isn't available in this view. Open the page in Claude to download.", true); return; }
+  if(!downloadsApi){ shMsg("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true); return; }
   if(sheetVer === "support" && !hasSupport(current)){ shMsg("Make the support versions first.", true); return; }
   try{
     shMsg("Building the Word document...");
@@ -4676,7 +4676,7 @@ async function deckBlob(L){
 const hasSheet = L => tasksOf(L).length > 0 || !!L.study;
 async function dlLesson(id, kind, say){
   if(typeof JSZip === "undefined") return say("The download tools didn't load. Reload the page.", true);
-  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Claude to download.", true);
+  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true);
   const L = await fetchLesson(id); if(!L) return say("That lesson isn't in your library any more.", true);
   if(kind === "sheet" && !hasSheet(L)) return say("That lesson has no tasks, so there's no worksheet.", true);
   say(kind === "pptx" ? "Building the PowerPoint..." : "Building the worksheet...");
@@ -4689,7 +4689,7 @@ let packBusy = false;
 async function dlPack(s, say){
   if(packBusy) return;
   if(typeof JSZip === "undefined") return say("The download tools didn't load. Reload the page.", true);
-  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Claude to download.", true);
+  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true);
   const built = s.rows.map((r, i) => [r, i]).filter(x => x[0].lessonId); if(!built.length) return say("Build some lessons first.", true);
   packBusy = true; const zip = new JSZip(), pw = s.perWeek || 1; let n = 0;
   try{
@@ -4763,7 +4763,7 @@ function renderSeq(){
       <div class="small text-body-secondary mb-1">Planning · ${esc(course)} · ${esc(L.l)}</div>
       <h1 class="h3 fw-semibold mb-1" style="text-wrap:balance">${esc(u.t)}</h1>
       ${s.author && s.author.name ? `<div class="small text-body-secondary mb-1">Sequence written by ${esc(s.author.name)}</div>` : ""}
-      <div class="text-body-secondary">${s.rows.length} lessons over ${weeks} week${weeks === 1 ? "" : "s"} · ${built} built · ${s.auto ? "starter sequence made from the unit's criteria and briefs" : "written with Claude"}${s.edited ? ", edited by you" : ""}</div>
+      <div class="text-body-secondary">${s.rows.length} lessons over ${weeks} week${weeks === 1 ? "" : "s"} · ${built} built · ${s.auto ? "starter sequence made from the unit's criteria and briefs" : "written with Crafticulum AI"}${s.edited ? ", edited by you" : ""}</div>
       ${missing.length ? `<div class="alert alert-warning py-2 small mt-3 mb-0">Not in the sequence yet: ${missing.map(critBadge).join(" ")}</div>` : ""}
       ${(() => { const iss = workshopIssues(s); return iss.length ? `<div class="alert alert-warning py-2 small mt-3 mb-0 d-flex flex-wrap gap-2 align-items-center"><span class="flex-grow-1">${iss.length} assignment workshop${iss.length === 1 ? " is" : "s are"} outside the assignment's dates: ${iss.filter(x => x.why === "early").length} before the hand-out, ${iss.filter(x => x.why === "late").length} after the hand-in.</span><button type="button" class="btn btn-sm btn-warning" data-sq="fixDates" ${batch.running ? "disabled" : ""}>Fix the dates</button></div>` : ""; })()}
       ${dues.length ? `<div class="small mt-2"><span class="fw-semibold">Assignments from the briefs:</span> ${dues.map(x => `${esc(x.b.a)} ${asgDates(x)}`).join(" · ")}</div>` : ""}
@@ -4774,12 +4774,12 @@ function renderSeq(){
         <div class="col-6 col-md-4"><label class="form-label small fw-semibold" for="sqStart">Starts${curGroup ? " for " + esc(curGroup) : ""}</label><select class="form-select form-select-sm" id="sqStart">${yearWeeks.map((d, k) => `<option value="${k + 1}" ${k + 1 === sw ? "selected" : ""}>Week ${k + 1} · ${fmtDay(d)}</option>`).join("")}</select></div>
         <div class="col-6 col-md-3"><label class="form-label small fw-semibold" for="sqWeeks">Weeks</label><select class="form-select form-select-sm" id="sqWeeks">${Array.from({length: 39}, (_, k) => k + 2).map(n => `<option ${n === selW ? "selected" : ""}>${n}</option>`).join("")}</select></div>
         ${groupAdding ? `<div class="col-12"><div class="input-group input-group-sm" style="max-width:26rem"><input class="form-control" id="grpName" maxlength="40" placeholder="Group name, e.g. L3 Year 1 Medway" aria-label="Group name"><button type="button" class="btn btn-primary" data-sq="grpAdd">Add group</button><button type="button" class="btn btn-outline-secondary" data-sq="grpCancel">Cancel</button></div></div>` : ""}
-        <div class="col-12"><label class="form-label small fw-semibold" for="sqSteer">Steer for Claude <span class="fw-normal text-body-secondary">(optional)</span></label><input class="form-control form-control-sm" id="sqSteer" placeholder="e.g. more practical lessons, trip in week 4" value="${esc(steer)}"></div>
+        <div class="col-12"><label class="form-label small fw-semibold" for="sqSteer">Steer for Crafticulum AI <span class="fw-normal text-body-secondary">(optional)</span></label><input class="form-control form-control-sm" id="sqSteer" placeholder="e.g. more practical lessons, trip in week 4" value="${esc(steer)}"></div>
       </div>
-      <div class="form-text">Group, Lessons a week and Starts change straight away. Weeks and the steer are used when Claude writes the sequence.${curGroup ? ` <button type="button" class="btn btn-link btn-sm p-0 align-baseline text-danger" data-sq="grpDel">${seqArm === "grpDel" ? "Remove this group?" : "Remove group"}</button>` : ""}</div>
+      <div class="form-text">Group, Lessons a week and Starts change straight away. Weeks and the steer are used when Crafticulum AI writes the sequence.${curGroup ? ` <button type="button" class="btn btn-link btn-sm p-0 align-baseline text-danger" data-sq="grpDel">${seqArm === "grpDel" ? "Remove this group?" : "Remove group"}</button>` : ""}</div>
       ${over ? `<div class="alert alert-warning py-2 small mt-2 mb-0">${over} week${over === 1 ? "" : "s"} of this sequence run${over === 1 ? "s" : ""} past the end of the college year (the last week is w/c ${fmtDay(yearEnd)}). Start it earlier, teach more lessons a week, or use fewer weeks.</div>` : ""}
       <div class="d-flex flex-wrap gap-2 mt-3 align-items-center">
-        <button type="button" class="btn btn-primary" data-sq="write" ${seqBusy ? "disabled" : ""}>${seqArm === "write" ? "Replace this sequence?" : s.auto ? "Write it with Claude" : "Rewrite with Claude"}</button>
+        <button type="button" class="btn btn-primary" data-sq="write" ${seqBusy ? "disabled" : ""}>${seqArm === "write" ? "Replace this sequence?" : s.auto ? "Write it with Crafticulum AI" : "Rewrite with Crafticulum AI"}</button>
         ${left || !s.rows.length ? `<button type="button" class="btn btn-outline-primary" data-sq="buildUnit" ${left ? "" : "disabled"}>${left ? `Build ${left === s.rows.length ? "all " + left : "the other " + left} lesson${left === 1 ? "" : "s"}` : "All lessons built"}</button>` : `<button type="button" class="btn btn-outline-primary" data-sq="redoAll" ${batch.running ? "disabled" : ""}>${seqArm === "redoAll" ? `Replace all ${s.rows.length} lessons?` : "Regenerate all lessons"}</button>`}
         <div class="dropdown"><button type="button" class="btn btn-outline-secondary dropdown-toggle" data-dd aria-expanded="false">Download</button>
           <ul class="dropdown-menu" data-bs-popper="static">
@@ -4901,7 +4901,7 @@ document.addEventListener("keydown", e => { const el = e.target.closest && e.tar
 async function writeSeq(){
   if(seqBusy) return;
   const course = getCourse(), L = curLevel(), u = curUnit(), key = seqKeyOf(course, L, u), s0 = getSeq(course, L, u);
-  if(!sampleFn){ seqMsgText = "Writing a sequence needs this page open inside Claude."; renderSeq(); return; }
+  if(!sampleFn){ seqMsgText = "Writing a sequence needs this page open inside Crafticulum AI."; renderSeq(); return; }
   const pw = s0.perWeek || 1, weeks = seqWeeks[key] || Math.ceil(s0.rows.length / pw) || 6, steer = String(seqSteer[key] ?? s0.steer ?? "").trim(), length = $("#length").value;
   seqBusy = true; seqMsgText = `Writing ${weeks * pw} lessons across ${weeks} weeks. This can take a minute or two.`; renderSeq();
   try{
@@ -4933,7 +4933,7 @@ function queueJobs(list){
   if(!batch.running) runBatch(); else redrawSeq();
 }
 async function runBatch(){
-  if(!sampleFn){ batch.jobs = []; batch.total = 0; batch.note = "Building lessons needs this page open inside Claude."; redrawSeq(); return; }
+  if(!sampleFn){ batch.jobs = []; batch.total = 0; batch.note = "Building lessons needs this page open inside Crafticulum AI."; redrawSeq(); return; }
   batch.running = true; batch.stop = false; batch.note = ""; batch.done = 0; batch.failed = 0; batch.total = batch.jobs.length;
   let waits = 0, halted = "", last = null; const touched = new Set(); const redoRun = batch.jobs.length > 0 && batch.jobs.every(j => j.redo);
   while(batch.jobs.length && !batch.stop){
@@ -4952,7 +4952,7 @@ async function runBatch(){
     }catch(err){
       const code = err && err.code;
       if(code === "cancelled" || batch.stop) break;
-      if(code === "rate_limited" && waits < 8){ waits++; batch.note = "Claude asked us to slow down. Waiting a minute, then carrying on."; drawBatch(); await nap(60000); batch.note = ""; continue; }
+      if(code === "rate_limited" && waits < 8){ waits++; batch.note = "Crafticulum AI asked us to slow down. Waiting a minute, then carrying on."; drawBatch(); await nap(60000); batch.note = ""; continue; }
       if(["not_granted", "session_expired", "sampling_disabled", "rate_limited", "network", "server"].includes(code)){ halted = ERR[code] || "Something stopped the build."; break; }
       batch.jobs.shift(); batch.failed++;
     }
@@ -5083,7 +5083,7 @@ async function homeBuild(){
   const say = (t, bad) => { homeMsg = t; homeBad = !!bad; const el = $("#hMsg"); if(el){ el.className = "idea-msg mt-2" + (bad ? " err" : ""); el.textContent = t; } };
   const text = homeText.trim();
   if(!text){ say("Describe the lesson first, then press the arrow.", true); const t = $("#hText"); if(t) t.focus(); return; }
-  if(!sampleFn){ say("Building lessons needs this page open inside Claude.", true); return; }
+  if(!sampleFn){ say("Building lessons needs this page open inside Crafticulum AI.", true); return; }
   ctl?.abort(); ctl = new AbortController();
   homeBusy = true; homeMsg = homeAuto ? "Finding the best unit for that..." : ""; homeBad = false; renderHome(); buildTicker();
   try{
@@ -5204,7 +5204,7 @@ let solBusy = false;
 async function dlSol(list, say, year, own){
   if(solBusy) return;
   if(typeof JSZip === "undefined") return say("The Word tools didn't load. Reload the page.", true);
-  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Claude to download.", true);
+  if(!downloadsApi) return say("Saving files isn't available in this view. Open the page in Crafticulum AI to download.", true);
   solBusy = true;
   try{
     let units = "";
@@ -5287,7 +5287,7 @@ async function coverPack(){
   if(coverBusy) return;
   const el = $("#deckMsg"), say = (t, bad) => { if(el){ el.className = "idea-msg mt-2" + (bad ? " err" : ""); el.textContent = t; } };
   if(typeof JSZip === "undefined") return say("The Word tools didn't load. Reload the page.", true);
-  if(!sampleFn) return say("The cover pack needs this page open inside Claude.", true);
+  if(!sampleFn) return say("The cover pack needs this page open inside Crafticulum AI.", true);
   if(!downloadsApi) return say("Saving files isn't available in this view.", true);
   coverBusy = true; say("Writing the cover lesson pack. This can take up to a minute..."); const d = current;
   try{
@@ -5334,7 +5334,7 @@ $("#out").addEventListener("click", e => {
 });
 
 /* ---------- quick start guide: a live tour of the real app, in chapters. The part being explained stays sharp, the rest is blurred.
-   Steps that don't apply to the person signed in (building with Claude, editing, team) are left out. ---------- */
+   Steps that don't apply to the person signed in (building with Crafticulum AI, editing, team) are left out. ---------- */
 const tourMenu = sq => { const b = document.querySelector(`#out [data-sq="${sq}"].dropdown-item, #out #${sq}`); const m = b && b.closest(".dropdown-menu"); if(!m) return; m.style.transform = ""; m.classList.add("show", "tour-open"); const r = m.getBoundingClientRect(), dx = r.left < 10 ? 10 - r.left : r.right > innerWidth - 10 ? innerWidth - 10 - r.right : 0; if(dx) m.style.transform = `translateX(${Math.round(dx)}px)`; };
 const tourTab = t => { if(activeTab !== t){ activeTab = t; render(current); } };
 const TOUR_CH = [["Build a lesson", "Type a sentence, get a full lesson"], ["Your lesson", "The tabs, the teaching content and the downloads"], ["Teach it", "The board, timers and student pages"], ["Plan a unit", "Every lesson, week by week"], ["Week by week", "This week, your lessons and the results"], ["Settings", "Dates, groups and your account"]];
@@ -5350,7 +5350,7 @@ const TOUR = [
   {c: 1, gen: 1, view: "lesson", sel: "#out .btn-outline-primary.dropdown-toggle[data-dd]", h: "Don't like a part? Swap it", t: "New ideas rewrites just that part, like a fresh starter, new teaching content or a different quiz. Undo puts the old one back.", pre: () => tourTab("teach")},
   {c: 1, edit: 1, view: "lesson", sel: "#editToggle", h: "Change anything by hand", t: "Press Edit, then click any outlined text and type. Enter adds a line, clearing a line removes it, and it saves on its own."},
   {c: 1, view: "lesson", sel: "#moreMenu, #out .hero .card-body", h: "The More menu", t: "Star a lesson to find it again, make your own copy to change without touching the original, see earlier versions, or delete it. Deleted lessons wait in the bin for 30 days.", pre: () => tourTab("overview")},
-  {c: 1, gen: 1, view: "lesson", sel: '[data-fact="run"]', h: "Check the facts", t: "The teaching content is written by Claude, so this gives it a second look and lists anything that seems wrong or needs confirming, with a suggested fix.", pre: () => tourTab("teach")},
+  {c: 1, gen: 1, view: "lesson", sel: '[data-fact="run"]', h: "Check the facts", t: "The teaching content is written by Crafticulum AI, so this gives it a second look and lists anything that seems wrong or needs confirming, with a suggested fix.", pre: () => tourTab("teach")},
   {c: 1, acc: 1, view: "lesson", sel: '[data-tab="notes"], .lesson-tabs', h: "Comments for the team", t: "Leave a note for the author after you've taught it, like what ran long or what needs a worked example. Students never see these.", pre: () => tourTab("overview")},
   {c: 1, view: "lesson", sel: ".dropdown-menu.tour-open", h: "Download what you need", t: "Export has the PowerPoint on the college template, the MKC lesson plan, task sheets, a cover lesson pack for when you're off, and a support version of the brief.", pre: () => { tourTab("overview"); tourMenu("deckBtn"); }},
   {c: 2, view: "lesson", sel: "#openBoard", h: "Put it on the board", t: "Show on board opens a full-screen chalkboard for the class. Press B from any lesson to open it."},
@@ -5359,7 +5359,7 @@ const TOUR = [
   {c: 2, board: "tasks", view: "lesson", sel: '#bTabs [data-s="students"]', h: "Students follow on their own device", t: "The Students tab shows a QR code that opens the lesson page on a phone or PC. Go live makes their pages follow your board, and shows you who has finished each task and who has asked for help."},
   {c: 3, view: "seq", sel: ".unit-pick", h: "Pick a unit", t: "Planning shows every unit week by week. Choose the course, level and unit here."},
   {c: 3, view: "seq", sel: "#out > .hero .row", h: "Set up the unit", t: "Pick a group if you teach more than one, how many lessons a week you teach, and the week the unit starts. The start week is worked back from the hand-in dates in the briefs."},
-  {c: 3, gen: 1, view: "seq", sel: '[data-sq="buildUnit"]', h: "Build the whole unit", t: "This builds every lesson in the unit, one after another, each following on from the last. Write it with Claude, next to it, rewrites the sequence first if you want different lessons."},
+  {c: 3, gen: 1, view: "seq", sel: '[data-sq="buildUnit"]', h: "Build the whole unit", t: "This builds every lesson in the unit, one after another, each following on from the last. Write it with Crafticulum AI, next to it, rewrites the sequence first if you want different lessons."},
   {c: 3, view: "seq", sel: ".seq-week", h: "Work through the weeks", t: "Click a week to open it. Open a lesson, get its PowerPoint or worksheet, tick Mark taught when you've delivered it and leave a note for next time. Hand-out dates show in blue and hand-ins in red.", pre: () => { const k = seqKeyOf(getCourse(), curLevel(), curUnit()); if(!seqOpen[k] || !seqOpen[k].has(0)){ seqOpen[k] = new Set([0]); renderSeq(); } }},
   {c: 3, view: "seq", sel: ".dropdown-menu.tour-open", h: "Documents for the unit", t: "The Sequence of learning document fills in the college template once every lesson is built. You can also download a lesson pack or the assessment plan for the level.", pre: () => tourMenu("sol")},
   {c: 3, view: "seq", sel: ".yp-wrap, .yp-list", h: "The year at a glance", t: "The year planner shows every unit across the teaching weeks. Blue dots are hand-out dates, red diamonds are hand-ins, and the shaded column is this week."},
@@ -5372,7 +5372,7 @@ const TOUR = [
   {c: 5, acc: 1, view: "settings", sel: "#stGroups", h: "A class page for each group", t: "Each group can have a class page with one link and code. Every lesson or quiz you share with that group is added to it, and students see their own progress and scores."},
   {c: 5, lead: 1, view: "settings", sel: "#stRules", h: "Your department's rules", t: "Turn on sign-off and a teacher's change waits for you before anyone else gets it. Set a delete password and deleting a lesson always asks for it."},
   {c: 5, lead: 1, view: "settings", sel: "#stTpl", h: "Your own documents", t: "Upload your college's lesson plan form and PowerPoint template, and every download uses them."},
-  {c: 5, sup: 1, view: "settings", sel: "#stSite", h: "Your college", t: "Add your college's name, logo and colour. Site setup, just below, has the sign-in, email and Claude settings."},
+  {c: 5, sup: 1, view: "settings", sel: "#stSite", h: "Your college", t: "Add your college's name, logo and colour. Site setup, just below, has the sign-in, email and Crafticulum AI settings."},
   {c: 5, acc: 1, view: "settings", sel: "#stAccount", h: "Your account", t: "Change your password, turn on two-step codes from an authenticator app, and see what you're allowed to do."},
   {c: 5, hod: 1, view: "settings", sel: "#stTeam", h: "Your team", t: "Approve people who have asked for an account, add staff yourself, and choose who can edit lessons by hand. Teachers can open and teach every lesson but can't build new ones."},
   {c: 5, view: "home", sel: ".top-search, .side-link[data-search]", h: "Search everything", t: "Press Ctrl+K, or tap the search button, to jump to any page, unit, lesson or assignment. Press ? to see every keyboard shortcut."},
@@ -5677,14 +5677,14 @@ function drawShare(){
     : st.kind === "unit" ? "One link with every built lesson in this unit, by week, each with its PowerPoint, task list and worksheets to download. New lessons you build are added for them."
     : "Students type their name, answer every question and hand in. It's marked straight away, and you see every result here.";
   const head = `<div class="sm-head"><div><div class="sm-kick">Share with students</div><h2 class="h5 mb-1" id="smH">${title}</h2><p class="small text-body-secondary mb-0">${what}</p></div><button type="button" class="btn-close" data-shx="close" aria-label="Close"></button></div>`;
-  if(!shareOk()){ box.innerHTML = head + `<div class="alert alert-info small mt-3 mb-0">Student links need the website version of Crafticulum, because students can't open your Claude workspace. Upload the latest zip to your site and use Share there.</div>`; return; }
+  if(!shareOk()){ box.innerHTML = head + `<div class="alert alert-info small mt-3 mb-0">Student links need the website version of Crafticulum, because students can't open your Crafticulum AI workspace. Upload the latest zip to your site and use Share there.</div>`; return; }
   const msg = st.msg ? `<div class="idea-msg mt-2${st.bad ? " err" : ""}" role="status">${esc(st.msg)}</div>` : "";
   if(st.kind === "test" && !qs.length){
     box.innerHTML = head + `<div class="sm-sec"><label class="form-label small fw-semibold" for="smN">How many questions</label>
       <div class="d-flex flex-wrap gap-2 align-items-center"><select class="form-select form-select-sm w-auto" id="smN">${[10, 15, 20, 25, 30].map(n => `<option ${n === st.n ? "selected" : ""}>${n}</option>`).join("")}</select>
       <button type="button" class="btn btn-primary" data-shx="write" ${st.busy ? "disabled" : ""}>${st.busy ? "Writing the questions..." : "Write the assessment"}</button>
       <button type="button" class="btn btn-outline-secondary" data-shx="fromQuiz" ${st.busy ? "disabled" : ""}>Use the exit quiz questions</button></div>
-      <div class="form-text">Claude writes fresh questions from the lessons in this unit. It can take a minute. Or reuse the exit quiz questions from the lessons you've built.</div></div>${msg}`;
+      <div class="form-text">Crafticulum AI writes fresh questions from the lessons in this unit. It can take a minute. Or reuse the exit quiz questions from the lessons you've built.</div></div>${msg}`;
     return;
   }
   const res = st.results || [], best = {}; res.forEach(r => { const k = r.name.toLowerCase(); if(!best[k] || r.score > best[k].score) best[k] = r; });
@@ -5758,7 +5758,7 @@ async function shareClick(e){
       }
       s.test = {...(s.test || {}), ...t, course: s.course, level: s.level, unit: s.unit}; saveSeq(s);
       st.busy = false; st.msg = ""; await sharePublish(); loadResults();
-    }catch(err){ st.busy = false; const c = err && err.code; say(c === "noquiz" ? "None of the built lessons in this unit have quiz questions yet. Build some lessons, or let Claude write the assessment." : c === "nosample" ? "Writing questions needs the page signed in." : c === "invalid_json" ? "The questions came back in the wrong shape. Try again." : ERR[c] || "Couldn't write the assessment. Try again.", true); }
+    }catch(err){ st.busy = false; const c = err && err.code; say(c === "noquiz" ? "None of the built lessons in this unit have quiz questions yet. Build some lessons, or let Crafticulum AI write the assessment." : c === "nosample" ? "Writing questions needs the page signed in." : c === "invalid_json" ? "The questions came back in the wrong shape. Try again." : ERR[c] || "Couldn't write the assessment. Try again.", true); }
   }
 }
 async function shareChange(e){
@@ -6800,7 +6800,7 @@ function needsSettingsHtml(){
   return `<div class="d-flex flex-wrap gap-2 align-items-center mb-3"><label class="small fw-semibold" for="stNeedG">For</label>
       <select class="form-select form-select-sm w-auto" id="stNeedG"><option value="" ${g === "" ? "selected" : ""}>Classes with no group</option>${groupNames.map(x => `<option ${x === g ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
     <div class="need-tags" role="group" aria-label="Learner needs">${NEED_TAGS.map(([t, tip]) => `<button type="button" class="need" data-need="${esc(t)}" aria-pressed="${(n.tags || []).includes(t)}" title="${esc(tip)}">${esc(t)}</button>`).join("")}</div>
-    <label class="form-label small fw-semibold mt-3" for="stNeedNotes">Anything else Claude should plan for</label>
+    <label class="form-label small fw-semibold mt-3" for="stNeedNotes">Anything else Crafticulum AI should plan for</label>
     <textarea class="form-control form-control-sm" id="stNeedNotes" rows="2" maxlength="400" placeholder="e.g. two learners use screen readers, one works best with a printed copy">${esc(n.notes || "")}</textarea>
     <div class="form-text">Don't put learners' names here. These go into every lesson built for this group, along with the exact support each need gets.</div>`;
 }
@@ -7118,7 +7118,7 @@ function autoBackupHtml(){
     <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-bk="now">Back up now</button>`;
 }
 function studentDataHtml(){
-  if(window.claude) return `<p class="small text-body-secondary mb-0">The Claude version doesn't keep students' names. Phone quizzes are anonymous and are deleted when you end them.</p>`;
+  if(window.claude) return `<p class="small text-body-secondary mb-0">The Crafticulum AI version doesn't keep students' names. Phone quizzes are anonymous and are deleted when you end them.</p>`;
   if(typeof me !== "undefined" && me && me.role !== "superadmin") return `<p class="small text-body-secondary mb-0">Your super admin sets how long students' names and answers are kept.</p>`;
   if(bk.list === null && !bk.busy) bkLoad();
   const d = bk.days ?? 0;
@@ -7150,7 +7150,7 @@ var me = null, meInfo = null;
 const ACCOUNT_KEYS = ["lb_asg", "lb_briefsup", "lb_cal", "lb_classes", "lb_classpages", "lb_courses", "lb_favs", "lb_gneeds", "lb_group", "lb_groups", "lb_hist", "lb_recent", "lb_retro", "lb_seqs"];
 const ROLE_NAME = {superadmin: "Super admin", owner: "College manager", hod: "Head of department / subject leader", teacher: "Teacher"};
 /* what the super admin can switch on or off for a head of department or subject leader */
-const PERMS = [["gen", "Build lessons with Claude"], ["team", "Add and approve teachers"], ["subjects", "Add subjects from specifications"], ["dates", "Change term dates"]];
+const PERMS = [["gen", "Build lessons with Crafticulum AI"], ["team", "Add and approve teachers"], ["subjects", "Add subjects from specifications"], ["dates", "Change term dates"]];
 const permBoxes = (attr, on) => PERMS.map(([k, l]) => `<div class="form-check mb-0"><input class="form-check-input" type="checkbox" ${attr(k)} ${!on || on[k] ? "checked" : ""}><label class="form-check-label small">${l}</label></div>`).join("");
 const permsRead = sel => { const o = {}; document.querySelectorAll(sel).forEach(x => { o[x.dataset.k] = x.checked; }); return o; };
 async function authCall(a, body){
@@ -7182,7 +7182,7 @@ function applyRole(){
     try{ const q = new URL(quizServer || "quiz/", location.href), ours = [location.host, meInfo.tempHost, new URL(meInfo.url).host]; if(ours.includes(q.host) && /\/quiz\/$/.test(q.pathname)){ quizServer = new URL("quiz/", meInfo.url).href; localStorage.setItem("lb_quizServer", quizServer); } }catch{} }
   ["superadmin", "owner", "hod", "teacher"].forEach(r => b.classList.toggle("role-" + r, me.role === r));
   b.classList.toggle("no-gen", !me.canGen); b.classList.toggle("no-edit", !me.canEdit); b.classList.toggle("no-dates", !me.canDates);
-  ERR.noperm = me.role === "hod" ? "Building with Claude isn't switched on for your account. Ask the super admin." : "Only heads of department and subject leaders can build with Claude. Ask yours to build this one.";
+  ERR.noperm = me.role === "hod" ? "Building with Crafticulum AI isn't switched on for your account. Ask the super admin." : "Only heads of department and subject leaders can build with Crafticulum AI. Ask yours to build this one.";
   if(meInfo && meInfo.oidc) METHOD_NAME.oidc = meInfo.oidc;
   const ws = document.querySelector(".workspace");
   if(ws){
@@ -7253,7 +7253,7 @@ function accountSections(sec){
   const acct = sec("stAccount", "Your account", "Who you're signed in as, and what you can do.", `
     <div class="acc-me"><span class="av">${me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : esc((me.name || me.email)[0].toUpperCase())}</span><div class="min-w-0"><div class="fw-semibold">${esc(me.name || me.email)}</div><div class="small text-body-secondary">${esc(me.email)}</div><div class="small"><span class="badge text-bg-primary">${esc(ROLE_NAME[me.role])}</span> ${top ? "The whole site. Not part of any college." : esc([me.collegeName && (meInfo.site || {}).colleges > 1 || me.role === "owner" ? me.collegeName : "", me.deptName].filter(Boolean).join(", "))}</div></div>
       <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-acc="out">Sign out</button></div>
-    <ul class="small text-body-secondary mt-3 mb-0">${top ? "<li>You can do everything, in every college: add colleges and their managers, add departments, approve heads of department and subject leaders, and choose what each one can do.</li><li>You don't belong to a college. You aren't counted as one of its people, and what you build doesn't come out of its monthly allowance.</li>" : me.role === "owner" ? `<li>You manage ${esc(me.collegeName || "your college")}: its name, logo and colour, its departments, and everyone in them. You approve the heads of department and subject leaders and choose what each one can do.</li><li>The site's own settings (sign-in, email, Claude and backups) are looked after by the super admin.</li>` : me.role === "hod" ? `<li>Your college's manager or the super admin approved your account and chose what you can do.</li>${PERMS.map(([k, l]) => `<li>${me[{gen: "canGen", team: "canTeam", subjects: "canSubjects", dates: "canDates"}[k]] ? "✓" : "✗"} ${l}</li>`).join("")}` : "<li>You use the lessons your head of department or subject leader builds. They added you, and choose what you can do.</li>"}
+    <ul class="small text-body-secondary mt-3 mb-0">${top ? "<li>You can do everything, in every college: add colleges and their managers, add departments, approve heads of department and subject leaders, and choose what each one can do.</li><li>You don't belong to a college. You aren't counted as one of its people, and what you build doesn't come out of its monthly allowance.</li>" : me.role === "owner" ? `<li>You manage ${esc(me.collegeName || "your college")}: its name, logo and colour, its departments, and everyone in them. You approve the heads of department and subject leaders and choose what each one can do.</li><li>The site's own settings (sign-in, email, Crafticulum AI and backups) are looked after by the super admin.</li>` : me.role === "hod" ? `<li>Your college's manager or the super admin approved your account and chose what you can do.</li>${PERMS.map(([k, l]) => `<li>${me[{gen: "canGen", team: "canTeam", subjects: "canSubjects", dates: "canDates"}[k]] ? "✓" : "✗"} ${l}</li>`).join("")}` : "<li>You use the lessons your head of department or subject leader builds. They added you, and choose what you can do.</li>"}
       <li>${me.canEdit ? "You can change lessons and units by hand." : "You can't change the shared lessons and units, but your own ticks, notes, groups and student links are yours."}</li></ul>
     ${supers && me.inside !== false && (meInfo.depts || []).filter(d => !top || d.college === me.college).length > 1 ? `<div class="d-flex flex-wrap gap-2 align-items-center mt-3"><label class="small fw-semibold" for="accDept">${top ? "Department you're working inside" : "Working in"}</label><select class="form-select form-select-sm w-auto" id="accDept">${meInfo.depts.filter(d => !top || d.college === me.college).map(d => `<option value="${esc(d.id)}" ${d.id === me.dept ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select><span class="small text-body-secondary">Switching loads that department's lessons and units.</span></div>` : ""}
     ${signInHtml()}
@@ -7299,7 +7299,7 @@ function accountSections(sec){
       ${supers ? `<div class="col-md-12 perm-list" id="tmPerms" hidden><span class="small fw-semibold">They can:</span>${permBoxes(k => `data-addp data-k="${k}"`)}</div>` : ""}
       <div class="col-md-12 d-flex flex-wrap gap-3 align-items-center"><div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="tmEdit"><label class="form-check-label small" for="tmEdit">Can edit lessons by hand (teachers)</label></div><div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="tmInvite" checked><label class="form-check-label small" for="tmInvite">Send a link to choose a password</label></div><button type="button" class="btn btn-sm btn-primary" data-tm="add">Add to the team</button></div>
     </div>
-    <div class="form-text">They can sign in with that email and a password, or with Google or Microsoft if it's the same email. Teachers can open every lesson and unit in the department, put them on the board and share them, but can't build with Claude.${supers ? " Heads of department and subject leaders can do the things you tick for them." : ""}</div>`);
+    <div class="form-text">They can sign in with that email and a password, or with Google or Microsoft if it's the same email. Teachers can open every lesson and unit in the department, put them on the board and share them, but can't build with Crafticulum AI.${supers ? " Heads of department and subject leaders can do the things you tick for them." : ""}</div>`);
   const myCol = depts.filter(d => !d.college || d.college === me.college);
   const deptSec = supers ? sec("stDepts", "Departments", `The departments in ${esc(me.collegeName || "your college")}. Each has its own lessons, units, term dates and staff.`, `
     <div class="st-groups">${myCol.map(d => `<div class="st-group"><input class="form-control form-control-sm dept-name" value="${esc(d.name)}" data-dn="${esc(d.id)}" aria-label="Department name" maxlength="60"><span class="small text-body-secondary text-nowrap">${d.staff} staff</span>${d.id === me.dept ? `<span class="badge text-bg-primary">You're here</span>` : ""}${myCol.length > 1 && !d.staff ? `<button type="button" class="btn btn-sm btn-link text-danger p-0 ms-auto" data-tm="deptdel" data-d="${esc(d.id)}">${teamArm === "d:" + d.id ? "Remove?" : "Remove"}</button>` : ""}</div>`).join("")}</div>
@@ -7461,7 +7461,7 @@ document.addEventListener("click", async e => {
   const b = e.target.closest('[data-regen="teach"]'); if(!b) return;
   e.stopPropagation(); if(regenBusy) return;
   const msg = () => $("#ideaMsg");
-  if(!sampleFn){ msg().className = "idea-msg err"; msg().textContent = "Fresh ideas need this page open inside Claude."; return; }
+  if(!sampleFn){ msg().className = "idea-msg err"; msg().textContent = "Fresh ideas need this page open inside Crafticulum AI."; return; }
   if(!current.starter) return;
   regenBusy = true; document.querySelectorAll("[data-regen]").forEach(x => { x.disabled = true; });
   const oldText = b.innerHTML; b.textContent = "Thinking...";
@@ -7556,7 +7556,7 @@ coverData = async function(L){
 };
 /* ===== subjects from a specification =====
    A department can add its own subjects by uploading the specification PDFs. The page reads the text out of each PDF,
-   Claude picks out the units, learning aims and criteria, the teacher checks them, and they're saved for the whole department.
+   Crafticulum AI picks out the units, learning aims and criteria, the teacher checks them, and they're saved for the whole department.
    Everything else (lessons, planning, the board, documents) then works from those units. */
 const BUILTIN_UNITS = UNITS.slice();
 const NO_SUBJECT = {s: "No subject yet", l: "Level", u: [{t: "Add a subject first", a: {}, c: []}], none: true};
@@ -7747,14 +7747,14 @@ async function specGo(){
   const s = specSt; if(!s || s.busy) return;
   if(!s.name.trim()){ s.msg = s.mode === "dept" ? "Give the department a name." : "Give the subject a name."; s.bad = true; return specDraw(); }
   if(!s.files.length){ s.msg = "Choose the specification PDF first."; s.bad = true; return specDraw(); }
-  if(!sampleFn){ s.msg = "Reading a specification needs Claude, which isn't available in this view."; s.bad = true; return specDraw(); }
+  if(!sampleFn){ s.msg = "Reading a specification needs Crafticulum AI, which isn't available in this view."; s.bad = true; return specDraw(); }
   s.busy = true; s.bad = false; s.msg = "Starting..."; specDraw();
   const say = t => { if(specSt !== s) return; s.msg = t; const el = $("#specMsg"); if(el) el.lastChild.textContent = t; };
   try{
     const out = []; for(const f of s.files){ out.push(await specRead(f, say)); if(specSt !== s) return; }
     s.results = out; s.subject = s.name.trim(); s.busy = false; s.msg = ""; specDraw();
   }catch(e){ if(specSt !== s) return; console.error(e); s.busy = false; s.bad = true;
-    s.msg = (e && e.msg) || (e && e.code === "rate_limited" ? "Claude is busy or you've hit the hourly limit. Wait a few minutes and try again." : e && e.code === "noperm" ? "Only heads of department can read a specification." : e && e.code === "network" ? "No connection to the server. Check the internet and try again." : "Couldn't read the specification. Check the internet connection and try again."); specDraw(); }
+    s.msg = (e && e.msg) || (e && e.code === "rate_limited" ? "Crafticulum AI is busy or you've hit the hourly limit. Wait a few minutes and try again." : e && e.code === "noperm" ? "Only heads of department can read a specification." : e && e.code === "network" ? "No connection to the server. Check the internet and try again." : "Couldn't read the specification. Check the internet connection and try again."); specDraw(); }
 }
 function specList(){ const s = specSt, subj = (s.mode === "dept" ? ($("#specSubj") || {}).value || s.subject || s.name : s.name).trim().slice(0, 40), by = new Map();
   s.results.forEach((r, i) => { const l = (r.level || "").trim() || "Level 3", units = r.units.filter((_, j) => !s.off.has(i + "." + j)); if(!units.length) return;
@@ -7960,7 +7960,7 @@ document.addEventListener("click", async e => {
   const b = e.target.closest("[data-fact]"); if(!b) return;
   if(b.dataset.fact === "clear"){ delete current.teachCheck; saveRecent(current); render(current); return; }
   if(factBusy || !teachOf(current).length) return;
-  if(!sampleFn){ toast("Checking the facts needs Claude, which isn't available in this view.", {bad: true}); return; }
+  if(!sampleFn){ toast("Checking the facts needs Crafticulum AI, which isn't available in this view.", {bad: true}); return; }
   factBusy = true; const d = current; render(d);
   try{ const r = await sampleFn.json(factPrompt(d), {cache: false}); const flags = (Array.isArray(r && r.flags) ? r.flags : []).filter(f => f && f.problem).slice(0, 12).map(f => ({part: Number(f.part) || 0, quote: String(f.quote || "").slice(0, 200), problem: String(f.problem).slice(0, 300), fix: String(f.fix || "").slice(0, 300), level: f.level === "wrong" ? "wrong" : "check"}));
     d.teachCheck = {at: Date.now(), flags}; if(d.id) saveRecent(d); }
@@ -8089,12 +8089,12 @@ function siteStart(){ if(!acct()) return; tplLoad(); if(me.admin) authCall("site
 const CONF_GROUPS = [
   ["Site address", "Where the site lives. Links in emails and links given to students use the main address as soon as the site answers there. Until then they use the address you're on.", [["SITE_URL", "Main address", "https://crafticulum.co.uk"], ["SITE_URL_TEMP", "Temporary address", "https://hopeful-lime-horse.185-199-220-70.cpanel.site"]]],
   ["Staying signed in", "How many days someone stays signed in on a device they use. Each day they use it starts the count again. Signing out always ends it straight away.", [["SESSION_DAYS", "Days", "30"]]],
-  ["Claude", "Lessons are written by Claude. Get a key at console.anthropic.com, under API keys.", [["ANTHROPIC_API_KEY", "API key", "sk-ant-..."], ["CLAUDE_MODEL", "Model", "claude-sonnet-5-5"], ["MAX_REQUESTS_PER_HOUR", "Requests each person can make an hour", "60"]]],
+  ["Crafticulum AI", "Lessons are written by Crafticulum AI. Get a key at console.anthropic.com, under API keys.", [["ANTHROPIC_API_KEY", "API key", "sk-ant-..."], ["CLAUDE_MODEL", "Model", "claude-sonnet-5-5"], ["MAX_REQUESTS_PER_HOUR", "Requests each person can make an hour", "60"]]],
   ["Email", "For sign-in links, password resets and sign-off emails. Your web host or IT team has these details.", [["MAIL_FROM", "Send from", "courses@yourcollege.ac.uk"], ["SMTP_HOST", "Mail server (outgoing)", "mail.yourcollege.ac.uk"], ["SMTP_PORT", "Port", "465"], ["SMTP_USER", "User name", "The whole email address"], ["SMTP_PASS", "Password", "The mailbox's password"], ["SMTP_SECURE", "Security (ssl for port 465, tls for 587)", "ssl"]]],
   ["Sign in with Google", "Make an OAuth client ID (type: Web application) in Google Cloud. Add the origin and the redirect address shown below, then paste in the client ID and client secret it gives you.", [["GOOGLE_CLIENT_ID", "Client ID", "....apps.googleusercontent.com"], ["GOOGLE_CLIENT_SECRET", "Client secret", "GOCSPX-..."]]],
   ["Sign in with Microsoft", "Register an app in Microsoft Entra and add the redirect address shown below.", [["MS_CLIENT_ID", "Application (client) ID", ""], ["MS_CLIENT_SECRET", "Client secret", ""], ["MS_TENANT", "Tenant (common, or your tenant ID)", "common"]]],
   ["College single sign-on (OpenID Connect)", "For Okta, Auth0, Keycloak or your college's own sign-in. Add the redirect address shown below.", [["OIDC_ISSUER", "Issuer address", "https://login.yourcollege.ac.uk"], ["OIDC_CLIENT_ID", "Client ID", ""], ["OIDC_CLIENT_SECRET", "Client secret", ""], ["OIDC_NAME", "Name on the button", "College login"]]],
-  ["Demo", "A Try it button on the front page. Visitors share one sample department with no sign-up. They can't change settings, send email, share with students or use Second Marker, and it's emptied every night. Building with Claude is off unless you allow a number of lessons a day, which comes out of your Claude credit.", [["DEMO", "Demo (type on or off)", "off"], ["DEMO_BUILDS", "Lessons the demo can build each day, for all visitors together", "0"]]]];
+  ["Demo", "A Try it button on the front page. Visitors share one sample department with no sign-up. They can't change settings, send email, share with students or use Second Marker, and it's emptied every night. Building with Crafticulum AI is off unless you allow a number of lessons a day, which comes out of your Crafticulum AI credit.", [["DEMO", "Demo (type on or off)", "off"], ["DEMO_BUILDS", "Lessons the demo can build each day, for all visitors together", "0"]]]];
 const siteUrls = () => [...new Set([siteInfo.main, siteInfo.url, siteInfo.temp].filter(Boolean))].slice(0, 3);
 const CONF_SECRET = ["ANTHROPIC_API_KEY", "GOOGLE_CLIENT_SECRET", "MS_CLIENT_SECRET", "OIDC_CLIENT_SECRET", "SMTP_PASS", "BACKUP_PASS"];
 function siteSections(sec){
@@ -8118,8 +8118,8 @@ function siteSections(sec){
       <div class="col-md-12"><div class="small fw-semibold mb-1">Logo</div><div class="d-flex flex-wrap gap-3 align-items-center"><span class="site-prev">${logo ? `<img src="${esc(logo)}" alt="Your logo">` : `<span class="text-body-secondary small">None</span>`}</span><label class="btn btn-sm btn-outline-secondary mb-0" for="stLogo">Choose an image</label><input class="visually-hidden" type="file" id="stLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml">${logo ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-site="nologo">Remove</button>` : ""}<span class="small text-body-secondary">A square image works best.</span></div></div>
     </div>
     <div class="d-flex flex-wrap gap-3 align-items-center mt-3"><button type="button" class="btn btn-sm btn-primary" data-site="save">Save</button><span class="idea-msg" id="siteMsg" role="status">${esc(siteMsg)}</span>${lsGet("cc_site_hide") === "1" || lsGet("cc_site_done") === "1" ? `<button type="button" class="btn btn-sm btn-link p-0 ms-auto" data-site-show>Show the set-up checklist on Start</button>` : ""}</div>`) +
-  (!top ? "" : sec("stSetup", "Site setup", "Sign-in, email and Claude. Anything saved here is used before config.php, so you never need to edit that file.", `
-    <div class="setup-ticks">${[["ANTHROPIC_API_KEY", "Claude"], ["SMTP_HOST", "Email"], ["GOOGLE_CLIENT_ID", "Google"], ["MS_CLIENT_ID", "Microsoft"], ["OIDC_ISSUER", "College sign-on"]].map(([k, l]) => `<span class="${on(k) ? "ok" : ""}">${on(k) ? "✓" : "○"} ${l}</span>`).join("")}</div>
+  (!top ? "" : sec("stSetup", "Site setup", "Sign-in, email and Crafticulum AI. Anything saved here is used before config.php, so you never need to edit that file.", `
+    <div class="setup-ticks">${[["ANTHROPIC_API_KEY", "Crafticulum AI"], ["SMTP_HOST", "Email"], ["GOOGLE_CLIENT_ID", "Google"], ["MS_CLIENT_ID", "Microsoft"], ["OIDC_ISSUER", "College sign-on"]].map(([k, l]) => `<span class="${on(k) ? "ok" : ""}">${on(k) ? "✓" : "○"} ${l}</span>`).join("")}</div>
     ${CONF_GROUPS.map(([h, help, fields], i) => `<details class="conf-g" ${i === 0 && !on("ANTHROPIC_API_KEY") ? "open" : ""}><summary>${h}</summary><p class="small text-body-secondary mb-2">${help}</p><div class="row g-2">${fields.map(field).join("")}</div>
       ${h.includes("Microsoft") ? `<div class="form-text">Redirect addresses (add both): ${siteUrls().map(u => `<code>${esc(u)}auth.php?a=ms_cb</code>`).join(" and ")}</div>` : h.includes("OpenID") ? `<div class="form-text">Redirect addresses (add both): ${siteUrls().map(u => `<code>${esc(u)}auth.php?a=oidc_cb</code>`).join(" and ")}</div>` : h.includes("Google") ? `<div class="form-text">Authorised JavaScript origins (add both): ${siteUrls().map(u => `<code>${esc(new URL(u).origin)}</code>`).join(" and ")}<br>Authorised redirect URIs (add both): ${siteUrls().map(u => `<code>${esc(u)}auth.php?a=g_cb</code>`).join(" and ")}</div>` : h === "Email" ? `<div class="form-text">Save your changes first, then send a test. Port 465 uses SSL and port 587 uses TLS. The user name is usually the whole email address.</div><button type="button" class="btn btn-sm btn-outline-secondary mt-2" data-site="mailtest">Send me a test email</button>${mailWhy ? `<div class="alert ${mailWhy.ok ? "alert-success" : "alert-danger"} small py-2 mt-2 mb-0" role="status">${esc(mailWhy.t)}</div>` : ""}` : h === "Site address" ? `<div class="alert ${siteInfo.live ? "alert-success" : "alert-warning"} small py-2 mt-2 mb-1">${siteInfo.live ? `The main address is live. Links use <b>${esc(siteInfo.links)}</b>` : `<b>${esc(siteInfo.main)}</b> isn't reaching this site yet, so links use <b>${esc(siteInfo.links)}</b> for now. They switch over on their own once it does.`}</div><button type="button" class="btn btn-sm btn-outline-secondary" data-site="urlcheck">Check again</button>` : ""}</details>`).join("")}
     <div class="d-flex flex-wrap gap-3 align-items-center mt-3"><button type="button" class="btn btn-sm btn-primary" data-site="confsave">Save site setup</button><span class="small text-body-secondary">Leave a box empty to keep what's there. Passwords and keys are never shown again once saved.</span></div>`));
@@ -8147,7 +8147,7 @@ function siteTodo(){
   const off = typeof bk !== "undefined" && bk.off ? bk.off : (siteInfo.off || {});
   /* [done, title, why, where in Settings, optional] */
   const items = [
-    [on("ANTHROPIC_API_KEY"), "Add Claude's API key", "So lessons can be built", "stSetup"],
+    [on("ANTHROPIC_API_KEY"), "Add the AI key", "So lessons can be built", "stSetup"],
     [!!siteInfo.site.name, "Add your college's name and logo", "Shown in the app and on student pages", "stSite"],
     [!!siteInfo.site.contact, "Add a contact email", "For questions and privacy requests on the public pages", "stSite"],
     [builtIn || list > 0 || (meInfo.depts || []).length > 1, "Add your first subject", "Upload its specification and the units and criteria are read from it", "stCourses"],
@@ -8381,14 +8381,14 @@ async function briefGo(){
   const hit = findUnit({course: s.course, level: s.level, unit: s.unit}); if(!hit) return say("Pick a unit.", true);
   if(!unitKey(hit.u.t)) return say("Briefs can only be added to units with a number, like Unit 3.", true);
   if(!s.file && s.text.trim().length < 200) return say("Choose the brief, or paste its text.", true);
-  if(!sampleFn) return say("Reading a brief needs Claude, which isn't available in this view.", true);
+  if(!sampleFn) return say("Reading a brief needs Crafticulum AI, which isn't available in this view.", true);
   s.busy = true; say("Reading the brief...");
   try{ const text = s.file ? await fileText(s.file) : s.text; if(text.trim().length < 200) throw {msg: "That file has no text in it. Paste the brief instead."};
     const r = await sampleFn.json(briefPrompt(hit.u, text), {cache: false}), codes = new Set(hit.u.c.map(c => c[0])), day = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? v : "";
     s.res = {a: String(r.assignment || "Assignment 1").slice(0, 30), t: String(r.title || "").slice(0, 90) || s.file && s.file.name.replace(/\.\w+$/, "") || "Assignment", out: day(r.handOut), due: day(r.handIn), text,
       tasks: (Array.isArray(r.tasks) ? r.tasks : []).map(t => ({task: String(t.task || "Task 1").slice(0, 30), criteria: (Array.isArray(t.criteria) ? t.criteria : []).map(String).filter(c => codes.has(c))})).filter(t => t.criteria.length)};
     s.busy = false; say(""); }
-  catch(e){ console.error(e); s.busy = false; say((e && e.msg) || (e && e.code === "rate_limited" ? "Claude is busy. Wait a minute and try again." : "Couldn't read the brief. Try pasting its text instead."), true); }
+  catch(e){ console.error(e); s.busy = false; say((e && e.msg) || (e && e.code === "rate_limited" ? "Crafticulum AI is busy. Wait a minute and try again." : "Couldn't read the brief. Try pasting its text instead."), true); }
 }
 async function briefSave(){
   const s = briefSt, r = s.res, hit = findUnit({course: s.course, level: s.level, unit: s.unit}), uk = unitKey(hit.u.t), uk2 = d => d ? d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) : "";
@@ -8544,7 +8544,7 @@ const numFmt = n => Number(n || 0).toLocaleString("en-GB");
 const tokFmt = n => { n = Number(n || 0); return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "m" : n >= 1e4 ? Math.round(n / 1e3) + "k" : numFmt(n); };
 function usageSection(sec){
   const a = acct(); if(!a || !a.isLead) return "";
-  const sup = a.role === "superadmin", sub = sup ? "How much each department and person has asked of Claude, what it roughly costs, and a limit for the month." : a.role === "owner" ? "How much each department and person in your college has asked of Claude this month." : "How much your department has asked of Claude this month.";
+  const sup = a.role === "superadmin", sub = sup ? "How much each department and person has asked of Crafticulum AI, what it roughly costs, and a limit for the month." : a.role === "owner" ? "How much each department and person in your college has asked of Crafticulum AI this month." : "How much your department has asked of Crafticulum AI this month.";
   if(usage === null){ usage = {loading: true}; usageLoad(""); }
   if(usage.loading) return sec("stUsage", "Usage and cost", sub, `<p class="small text-body-secondary mb-0">Loading...</p>`);
   if(usage.error) return sec("stUsage", "Usage and cost", sub, `<p class="small text-body-secondary mb-0">Couldn't load the figures. Reload the page to try again.</p>`);
@@ -8559,20 +8559,20 @@ function usageSection(sec){
   return sec("stUsage", "Usage and cost", sub, `
     ${u.blocked ? `<div class="alert alert-danger small">${esc(u.blocked)}</div>` : ""}
     <div class="d-flex flex-wrap gap-2 align-items-center mb-3"><label class="small fw-semibold" for="useMonth">Month</label><select class="form-select form-select-sm w-auto" id="useMonth">${(u.months || [u.month]).map(m => `<option value="${m}" ${m === u.month ? "selected" : ""}>${mName(m)}</option>`).join("")}</select>${u.model ? `<span class="small text-body-secondary">Model: ${esc(u.model)}</span>` : ""}</div>
-    <div class="use-tiles"><div><small>Requests to Claude</small><b>${numFmt(t.calls)}</b></div><div><small>Tokens sent</small><b>${tokFmt(t.in)}</b></div><div><small>Tokens written</small><b>${tokFmt(t.out)}</b></div><div><small>Rough cost</small><b>${priced ? money(t.cost) : "–"}</b>${priced ? "" : `<span class="small text-body-secondary">${sup ? "Add the prices below" : "Not set up"}</span>`}</div></div>
+    <div class="use-tiles"><div><small>Requests to Crafticulum AI</small><b>${numFmt(t.calls)}</b></div><div><small>Tokens sent</small><b>${tokFmt(t.in)}</b></div><div><small>Tokens written</small><b>${tokFmt(t.out)}</b></div><div><small>Rough cost</small><b>${priced ? money(t.cost) : "–"}</b>${priced ? "" : `<span class="small text-body-secondary">${sup ? "Add the prices below" : "Not set up"}</span>`}</div></div>
     ${u.marker ? `<p class="small text-body-secondary mt-2 mb-0">Of these, Second Marker made ${numFmt(u.marker.calls)} request${u.marker.calls === 1 ? "" : "s"} (${tokFmt(u.marker.in + u.marker.out)} tokens${u.marker.cost != null ? ", about " + money(u.marker.cost) : ""}).</p>` : ""}
     ${s.capCalls && sup ? meter("Requests this month", t.calls, s.capCalls, numFmt) : ""}${s.capCost && priced && sup ? meter("Spend this month", t.cost, s.capCost, money) : ""}
-    ${!t.calls ? `<p class="small text-body-secondary mt-3 mb-0">Nothing has been built with Claude in ${mName(u.month)} yet.</p>` : `
+    ${!t.calls ? `<p class="small text-body-secondary mt-3 mb-0">Nothing has been built with Crafticulum AI in ${mName(u.month)} yet.</p>` : `
       ${sup && days.length > 1 ? `<div class="small fw-semibold mt-3 mb-1">Requests each day</div><div class="use-days" role="img" aria-label="Requests each day in ${mName(u.month)}">${days.map(([d, n]) => `<span title="${+d} ${mName(u.month).split(" ")[0]}: ${n} request${n === 1 ? "" : "s"}"><i style="height:${Math.max(4, Math.round(n / dMax * 100))}%"></i><small>${+d}</small></span>`).join("")}</div>` : ""}
       ${sup && (u.depts || []).length ? `<div class="table-responsive mt-3"><table class="table table-sm align-middle use-t mb-0">${head("Department")}<tbody>${rows(u.depts)}</tbody></table></div>` : ""}
       <div class="table-responsive mt-3"><table class="table table-sm align-middle use-t mb-0">${head("Person")}<tbody>${rows(u.users || [], true)}</tbody></table></div>`}
-    <div class="form-text mt-2">A request is one thing asked of Claude. A full lesson is one request, and reading a specification is several. Tokens are how Claude counts text: about four letters each.</div>
+    <div class="form-text mt-2">A request is one thing asked of Crafticulum AI. A full lesson is one request, and reading a specification is several. Tokens are how Crafticulum AI counts text: about four letters each.</div>
     ${sup ? `<details class="conf-g mt-3" ${priced || s.capCalls || s.capCost || s.capDept ? "" : "open"}><summary>Prices and limits</summary>
-      <p class="small text-body-secondary mb-2">Type in what Claude charges for the model you use and the cost is worked out for you. The prices are on Anthropic's pricing page, per million tokens. Your Anthropic bill is always the real figure.</p>
+      <p class="small text-body-secondary mb-2">Type in what Crafticulum AI charges for the model you use and the cost is worked out for you. The prices are on Anthropic's pricing page, per million tokens. Your Anthropic bill is always the real figure.</p>
       <div class="row g-2">${num("usIn", "Price per million tokens sent", s.in, "0.00", "Listed as input")}${num("usOut", "Price per million tokens written", s.out, "0.00", "Listed as output")}<div class="col-6 col-md-4"><label class="form-label small fw-semibold mb-1" for="usCur">Currency sign</label><input class="form-control form-control-sm" id="usCur" maxlength="3" value="${esc(s.cur || "£")}"><div class="form-text">Anthropic prices are in US dollars</div></div>
         ${num("usCapCost", "Most to spend in a month", s.capCost, "No limit", "Needs the prices above")}${num("usCapCalls", "Most requests in a month", s.capCalls, "No limit", "For the whole site")}${num("usCapDept", "Most requests for each department", s.capDept, "No limit", "In a month")}</div>
       <div class="d-flex flex-wrap gap-3 align-items-center mt-3"><button type="button" class="btn btn-sm btn-primary" data-use="save">Save prices and limits</button><span class="idea-msg" role="status">${esc(usageMsg)}</span></div>
-      <div class="form-text">When a limit is reached, building with Claude stops until the 1st of next month, or until you raise the limit. Everything already built still works.</div></details>` : ""}`);
+      <div class="form-text">When a limit is reached, building with Crafticulum AI stops until the 1st of next month, or until you raise the limit. Everything already built still works.</div></details>` : ""}`);
 }
 document.addEventListener("change", e => { if(e.target.id === "useMonth") usageLoad(e.target.value); }, true);
 document.addEventListener("click", async e => { const b = e.target.closest("[data-use]"); if(!b) return; const v = id => ($("#" + id).value || "").trim();
@@ -8708,7 +8708,7 @@ function markerMine(){
     <div class="row g-3">
       <div class="col-md-6"><div class="small fw-semibold mb-1">Learner details</div>${m.anon ? `<div class="small text-body-secondary">Always anonymous in your department. Each piece of work gets a reference instead of a name.</div>` : radio("mkLm", "named", lm === "named", "Enter real names and ID numbers. They go on the record, the file names and the email") + radio("mkLm", "anon", lm === "anon", "Keep it anonymous. Each piece of work gets a reference instead") + `<div class="form-text">Either way, names and IDs are hidden before work is sent to be checked. You can still switch for one learner on the Learner step.</div>`}</div>
       <div class="col-md-6"><div class="small fw-semibold mb-1">When work is uploaded</div>${radio("mkMode", "ask", cm === "ask", "Ask me each time")}${radio("mkMode", "ai", cm === "ai", "Check it with the second marker")}${radio("mkMode", "manual", cm === "manual", "Mark it myself")}</div>
-      ${m.model ? "" : `<div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="mkMyModel">Model</label><select class="form-select form-select-sm" id="mkMyModel" data-mkp="model">${[["claude-opus-5-5", "Opus 5.5: most capable"], ["claude-sonnet-5-5", "Sonnet 5.5: fast, costs less"], ["claude-haiku-5-5", "Haiku 5.5: fastest, lowest cost"]].map(([v, t]) => `<option value="${v}" ${v === model ? "selected" : ""}>${t}</option>`).join("")}</select></div>`}
+      ${m.model ? "" : `<div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="mkMyModel">Model</label><select class="form-select form-select-sm" id="mkMyModel" data-mkp="model">${[["claude-opus-5-5", "Most capable"], ["claude-sonnet-5-5", "Balanced: fast, costs less"], ["claude-haiku-5-5", "Fastest, lowest cost"]].map(([v, t]) => `<option value="${v}" ${v === model ? "selected" : ""}>${t}</option>`).join("")}</select></div>`}
       ${m.batch ? `<div class="col-md-6"><div class="form-check form-switch mk-opt"><input class="form-check-input" type="checkbox" role="switch" id="mkMyBatch" data-mkp="batch" ${batch ? "checked" : ""}><label class="form-check-label" for="mkMyBatch"><b>Offer marking a class set</b><span>Shows the choice on the first step.</span></label></div></div>` : ""}
       ${m.pdfText ? "" : `<div class="col-md-6"><div class="small fw-semibold mb-1">PDFs with personal details</div>${radio("mkPdf", "text", pdf === "text", "Send as text with them hidden (pictures not sent)")}${radio("mkPdf", "full", pdf === "full", "Send the whole PDF (details stay in it)")}</div>`}
     </div>
@@ -8725,13 +8725,13 @@ function markerSection(sec){
   return sec("stMarker", "Second Marker", "Checks a learner's work against the unit's criteria, suggests a decision and feedback for each one, and fills in the assessment record. The assessor always makes the final decision.", `
     <div class="mk-head${m.on ? " on" : ""}"><div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="mkOn" ${m.on ? "checked" : ""}><label class="form-check-label fw-semibold" for="mkOn">Switch on Second Marker for ${esc(a.deptName || "this department")}</label></div>
       ${m.on ? `<button type="button" class="btn btn-sm btn-primary ms-auto" data-nav="marker">Open Second Marker</button>` : ""}</div>
-    <div class="alert alert-light border small mt-3 mb-3"><b>What happens to learner work.</b> It is sent to Claude to be checked and is not kept on this server. Names, ID numbers, email addresses, phone numbers and postcodes are replaced before it's sent, then put back on your screen. Drafts stay in the marker's own browser. Check this fits your college's data protection rules before you switch it on.</div>
+    <div class="alert alert-light border small mt-3 mb-3"><b>What happens to learner work.</b> It is sent to Crafticulum AI to be checked and is not kept on this server. Names, ID numbers, email addresses, phone numbers and postcodes are replaced before it's sent, then put back on your screen. Drafts stay in the marker's own browser. Check this fits your college's data protection rules before you switch it on.</div>
     <div class="row g-3">
       <div class="col-md-6"><div class="small fw-semibold mb-1">Who can use it</div>
         <div class="form-check"><input class="form-check-input" type="radio" name="mkWho" id="mkWhoL" value="leads" ${m.who !== "all" ? "checked" : ""}><label class="form-check-label small" for="mkWhoL">Heads of department and subject leaders only</label></div>
         <div class="form-check"><input class="form-check-input" type="radio" name="mkWho" id="mkWhoA" value="all" ${m.who === "all" ? "checked" : ""}><label class="form-check-label small" for="mkWhoA">Everyone in the department, teachers included</label></div></div>
       <div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="mkModel">Model</label>
-        <select class="form-select form-select-sm" id="mkModel">${[["", "Each person chooses"], ["claude-opus-5-5", "Opus 5.5: most capable"], ["claude-sonnet-5-5", "Sonnet 5.5: fast, costs less"], ["claude-haiku-5-5", "Haiku 5.5: fastest, lowest cost"]].map(([v, t]) => `<option value="${v}" ${v === (m.model || "") ? "selected" : ""}>${t}</option>`).join("")}</select>
+        <select class="form-select form-select-sm" id="mkModel">${[["", "Each person chooses"], ["claude-opus-5-5", "Most capable"], ["claude-sonnet-5-5", "Balanced: fast, costs less"], ["claude-haiku-5-5", "Fastest, lowest cost"]].map(([v, t]) => `<option value="${v}" ${v === (m.model || "") ? "selected" : ""}>${t}</option>`).join("")}</select>
         <div class="form-text">Marking a long piece of work costs more than building a lesson. Usage and cost shows how much is being used.</div></div>
     </div>
     <div class="mk-opts mt-3">
@@ -9042,7 +9042,7 @@ function errSection(sec){
   if(window.claude || !(typeof me !== "undefined" && me && me.role === "superadmin")) return "";
   const sub = "Things that went wrong for anyone on the site, newest first. What the page was doing, never what was typed, and no learner work.";
   if(errLog === null){ errLoad(); return sec("stErrors", "Error log", sub, `<p class="small text-body-secondary mb-0">Loading...</p>`); }
-  const kind = {browser: ["In the browser", "text-bg-light border"], server: ["On the server", "text-bg-danger"], claude: ["Claude", "text-bg-warning"], email: ["Email", "text-bg-warning"], backup: ["Backup", "text-bg-warning"]};
+  const kind = {browser: ["In the browser", "text-bg-light border"], server: ["On the server", "text-bg-danger"], claude: ["Crafticulum AI", "text-bg-warning"], email: ["Email", "text-bg-warning"], backup: ["Backup", "text-bg-warning"]};
   const when = t => { const d = new Date(t * 1000); return d.toLocaleDateString("en-GB", {day: "numeric", month: "short"}) + ", " + d.toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"}); };
   const week = errLog.filter(x => x.at > Date.now() / 1000 - 7 * 86400).length;
   return sec("stErrors", "Error log", sub, errLog.length ? `
@@ -9051,7 +9051,7 @@ function errSection(sec){
     ${errLog.map(x => { const k = kind[x.kind] || [x.kind || "Other", "text-bg-light border"]; return `<tr><td class="text-nowrap">${when(x.at)}</td><td><span class="badge ${k[1]} fw-normal">${esc(k[0])}</span>${x.page ? `<div class="small text-body-secondary">${esc(x.page)} page</div>` : ""}</td><td><div class="err-m">${esc(x.msg || "")}</div>${x.where ? `<code class="small">${esc(x.where)}</code>` : ""}</td><td class="small text-body-secondary">${esc([x.role === "superadmin" ? "Super admin" : x.role === "owner" ? "College manager" : x.role === "hod" ? "Head of department" : x.role === "teacher" ? "Teacher" : "", x.dept].filter(Boolean).join(", "))}${x.browser ? `<div>${esc(x.browser)}</div>` : ""}</td></tr>`; }).join("")}
     </tbody></table></div>
     <div class="d-flex flex-wrap gap-2 mt-3"><button type="button" class="btn btn-sm btn-outline-secondary" data-err="load">Check again</button><button type="button" class="btn btn-sm btn-outline-secondary" data-err="copy">Copy the list</button><button type="button" class="btn btn-sm btn-outline-danger" data-err="clear">Clear the log</button></div>`
-    : `<p class="small mb-2">Nothing has gone wrong. Errors in anyone's browser, on the server, from Claude, from email and from backups are listed here when they happen.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-err="load">Check again</button>`);
+    : `<p class="small mb-2">Nothing has gone wrong. Errors in anyone's browser, on the server, from Crafticulum AI, from email and from backups are listed here when they happen.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-err="load">Check again</button>`);
 }
 const _us24 = usageSection;
 usageSection = function(sec){ return _us24.apply(this, arguments) + errSection(sec); };
@@ -9242,7 +9242,7 @@ function mkDraw2(s){
         <div class="col-md-6"><label class="form-label" for="mkExt">Extension approved?</label><div class="d-flex gap-2"><select class="form-select form-select-sm" id="mkExt" data-mksel="extension">${["", "No", "Yes"].map(v => `<option value="${v}" ${s.f.extension === v ? "selected" : ""}>${v || "Not set"}</option>`).join("")}</select>${s.f.extension === "Yes" ? `<input class="form-control form-control-sm" id="mk_extension_date" data-mkf="extension_date" placeholder="New deadline" aria-label="Extended deadline" value="${esc(s.f.extension_date)}">` : ""}</div></div></div>
       ${s.late ? `<div class="mk-late mt-2" aria-live="polite">${s.late}</div>` : ""}</div>
     <div>${mkStep(4, "Privacy")}
-      <label class="form-label" for="mk_hide_extra">Other names to hide from Claude <span class="text-body-secondary fw-normal">(optional)</span></label><input class="form-control form-control-sm" id="mk_hide_extra" data-mkf="hide_extra" placeholder="e.g. Mrs Patel, Jordan Smith" value="${esc(s.f.hide_extra)}" autocomplete="off">
+      <label class="form-label" for="mk_hide_extra">Other names to hide from Crafticulum AI <span class="text-body-secondary fw-normal">(optional)</span></label><input class="form-control form-control-sm" id="mk_hide_extra" data-mkf="hide_extra" placeholder="e.g. Mrs Patel, Jordan Smith" value="${esc(s.f.hide_extra)}" autocomplete="off">
       <div class="form-text">Separate names with commas: staff, other learners, or the learner's own name when you're keeping it anonymous. These never go on the record.</div>
       <p class="small text-body-secondary mb-0 mt-2">Learner details stay on this computer. The name, ID, email, phone numbers and postcodes are swapped out before the work is sent to be checked, and the work itself is never kept on the server.</p></div>
   </div></div></div>
@@ -9687,7 +9687,7 @@ function collegesSection(sec){
       <div class="small">${c.managers.length ? `<b>Manager${c.managers.length > 1 ? "s" : ""}:</b> ${c.managers.map(m => esc(m.name ? `${m.name} (${m.email})` : m.email)).join(", ")}` : `<span class="text-warning-emphasis">No manager yet.</span> You look after it until you add one.`}
         ${colMgr === c.id ? "" : `<button type="button" class="btn btn-sm btn-link p-0 ms-2" data-colact="mgr">Add a manager</button>`}</div>
       ${colMgr === c.id ? `<div class="row g-2 align-items-end"><div class="col-md-5"><label class="form-label small mb-1" for="colMgrEmail">Manager's email</label><input class="form-control form-control-sm" id="colMgrEmail" type="email" autocomplete="off" placeholder="name@college.ac.uk"></div><div class="col-md-4"><label class="form-label small mb-1" for="colMgrName">Name</label><input class="form-control form-control-sm" id="colMgrName" maxlength="60" placeholder="Optional"></div><div class="col-md-3 d-flex gap-2"><button type="button" class="btn btn-sm btn-primary" data-colact="mgradd" data-d="${esc(first ? first.id : "")}">Add</button><button type="button" class="btn btn-sm btn-link" data-colact="mgrcancel">Cancel</button></div></div>` : ""}
-      <div class="d-flex flex-wrap gap-3 align-items-center"><label class="small d-flex gap-2 align-items-center mb-0">Monthly limit <input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" value="${c.cap || ""}" placeholder="None" data-colcap="${esc(c.id)}" aria-label="Monthly limit of requests to Claude for ${esc(c.name)}"> <span class="text-body-secondary">requests to Claude</span></label>
+      <div class="d-flex flex-wrap gap-3 align-items-center"><label class="small d-flex gap-2 align-items-center mb-0">Monthly limit <input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" value="${c.cap || ""}" placeholder="None" data-colcap="${esc(c.id)}" aria-label="Monthly limit of requests to Crafticulum AI for ${esc(c.name)}"> <span class="text-body-secondary">requests to Crafticulum AI</span></label>
         ${meInfo.billing ? `<label class="small d-flex gap-2 align-items-center mb-0">Plan <select class="form-select form-select-sm" style="width:auto" data-colplan="${esc(c.id)}" aria-label="Plan for ${esc(c.name)}" title="Set by hand, for a quote you've agreed or a free upgrade. It doesn't change what Stripe charges a college that already pays by card.">${Object.keys(PLAN_NAMES).map(k => `<option value="${k}" ${c.plan === k ? "selected" : ""}>${PLAN_NAMES[k]}</option>`).join("")}</select></label>${c.paid ? `<span class="badge text-bg-success fw-normal">Pays by card${c.billStatus === "past_due" ? ", payment late" : ""}</span>` : ""}` : ""}
         ${here ? "" : `<div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="colOn_${esc(c.id)}" data-colon="${esc(c.id)}" ${c.off ? "" : "checked"}><label class="form-check-label small" for="colOn_${esc(c.id)}">Staff can sign in</label></div>`}
         ${!here && list.length > 1 && !c.people ? `<button type="button" class="btn btn-sm btn-link text-danger p-0 ms-auto" data-colact="del">${colArm === c.id ? "Remove this college?" : "Remove"}</button>` : ""}</div></div>`; };
@@ -9741,7 +9741,7 @@ function billLoad(force){ if(!billOn() || !me || !me.admin || billLoading || (bi
 function plansAdmLoad(force){ if(plansAdmLoading || (plansAdm && !force)) return; plansAdmLoading = true; billCall("plansget").then(j => { plansAdm = j; }).catch(() => { plansAdm = plansAdm || {failed: true}; }).finally(() => { plansAdmLoading = false; if(view === "settings") renderSettings(); }); }
 const billDate = t => t ? new Date(t * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"}) : "";
 const planLines = p => [p.people > 0 ? (p.people === 1 ? "Just you" : `Up to ${p.people} people`) : "As many people as you need", p.depts > 0 ? (p.depts === 1 ? "One department" : `${p.depts} departments`) : "As many departments as you need",
-  p.builds > 0 ? `${p.builds} builds with Claude a month` : "No monthly limit on builds", p.checks > 0 ? `${p.checks} Second Marker checks a month` : "No monthly limit on Second Marker"];
+  p.builds > 0 ? `${p.builds} builds with Crafticulum AI a month` : "No monthly limit on builds", p.checks > 0 ? `${p.checks} Second Marker checks a month` : "No monthly limit on Second Marker"];
 /* the college's manager: what plan they're on, how much is used, and how to change it */
 function planSection(sec){
   if(!billOn() || !me || !me.admin) return "";
@@ -9762,7 +9762,7 @@ function planSection(sec){
     : b.paid && b.periodEnd ? `<p class="small text-body-secondary mb-3">Next payment on ${billDate(b.periodEnd)}. Cancel at any time and you keep the plan until then.</p>`
     : p.id === "inst" ? `<p class="small text-body-secondary mb-3">This plan was arranged directly, so there's nothing to pay here.</p>` : "";
   return sec("stPlan", "Plan and billing", `${esc(bill.college || "This college")} is on the <b>${esc(p.name)}</b> plan. Limits start again on the 1st of each month.`, `${note}
-    <div class="pl-use">${meter("Builds with Claude this month", u.builds, p.builds)}${meter("Second Marker checks this month", u.checks, p.checks)}${meter("People", u.people, p.people)}${meter("Departments", u.depts, p.depts)}</div>
+    <div class="pl-use">${meter("Builds with Crafticulum AI this month", u.builds, p.builds)}${meter("Second Marker checks this month", u.checks, p.checks)}${meter("People", u.people, p.people)}${meter("Departments", u.depts, p.depts)}</div>
     <div class="pl-grid mt-3">${bill.plans.map(card).join("")}</div>
     ${bill.pk && b.hasCustomer && bill.canPay ? billManageHtml() : `<div class="d-flex flex-wrap gap-3 align-items-center mt-3">${b.hasCustomer && bill.canPay ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-bill="portal" ${billBusy ? "disabled" : ""}>${billBusy === "portal" ? "Opening..." : "Manage billing"}</button><span class="small text-body-secondary">Change your card, see invoices or cancel. This opens Stripe, who take the payments.</span>` : `<span class="small text-body-secondary">Payments are taken by Stripe. Card details never touch this site.</span>`}</div>`}`);
 }
@@ -9790,10 +9790,10 @@ function plansAdminSection(sec){
         <div class="col-md-12"><label class="form-label small fw-semibold mb-1" for="plHookUrl">Webhook address to give Stripe</label><div class="input-group input-group-sm"><input class="form-control" id="plHookUrl" readonly value="${esc(a.hook)}"><button type="button" class="btn btn-outline-secondary" data-bill="copyhook">Copy</button></div></div></div>
       <button type="button" class="btn btn-sm btn-primary mt-2" data-bill="keysave">Save keys</button></details>
     <div class="fw-semibold small mt-3 mb-1">Prices and limits</div>
-    <div class="table-responsive"><table class="table table-sm align-middle small pl-t mb-1"><thead><tr><th scope="col">Plan</th><th scope="col">Price a month</th><th scope="col">People</th><th scope="col">Departments</th><th scope="col">Builds with Claude a month</th><th scope="col">Second Marker checks a month</th></tr></thead><tbody>${a.plans.map(row).join("")}</tbody></table></div>
-    <div class="form-text mb-2">0 means no limit. A build is one request to Claude: a lesson is usually one, and a quiz, a set of slides or a fact check is one each. A Second Marker check is one request too, and a long piece of work can take more than one. A new price is used the next time someone pays; people already paying stay on the price they signed up at until they switch plan. Prices don't include VAT: if you need to charge it, set that up in Stripe Tax.</div>
+    <div class="table-responsive"><table class="table table-sm align-middle small pl-t mb-1"><thead><tr><th scope="col">Plan</th><th scope="col">Price a month</th><th scope="col">People</th><th scope="col">Departments</th><th scope="col">Builds with Crafticulum AI a month</th><th scope="col">Second Marker checks a month</th></tr></thead><tbody>${a.plans.map(row).join("")}</tbody></table></div>
+    <div class="form-text mb-2">0 means no limit. A build is one request to Crafticulum AI: a lesson is usually one, and a quiz, a set of slides or a fact check is one each. A Second Marker check is one request too, and a long piece of work can take more than one. A new price is used the next time someone pays; people already paying stay on the price they signed up at until they switch plan. Prices don't include VAT: if you need to charge it, set that up in Stripe Tax.</div>
     <div class="fw-semibold small mt-3 mb-1">A ceiling for Free accounts</div>
-    <div class="d-flex flex-wrap gap-2 align-items-center small"><label for="plFreeCap">All Free accounts together can make at most</label><input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" id="plFreeCap" value="${a.freeCap}"><span>requests to Claude a month.</span></div>
+    <div class="d-flex flex-wrap gap-2 align-items-center small"><label for="plFreeCap">All Free accounts together can make at most</label><input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" id="plFreeCap" value="${a.freeCap}"><span>requests to Crafticulum AI a month.</span></div>
     <div class="form-text mb-2">${a.freeUsed} used so far this month, by ${a.freeAccounts} Free ${a.freeAccounts === 1 ? "account" : "accounts"}. When the ceiling is reached, Free accounts are asked to wait for the 1st or move to a paid plan, so free sign-ups can never cost you more than this. 0 means no ceiling. ${a.mail ? "People who sign up on their own must also confirm their email before anything is built." : "Set up email in Site setup and people who sign up on their own will have to confirm their email before anything is built."}</div>
     <div class="d-flex flex-wrap gap-3 align-items-center"><button type="button" class="btn btn-sm btn-primary" data-bill="plsave">Save prices and limits</button><button type="button" class="btn btn-sm btn-link p-0" data-bill="plreset">Back to the suggested ones</button><span class="idea-msg" id="plMsg" role="status">${esc(plansMsg)}</span></div>`);
 }
@@ -9908,9 +9908,9 @@ function overviewSection(sec){
       ${ovw.billing ? `<td>${esc(PLAN_NAMES[c.plan] || c.plan)}${c.paid ? ` <span class="badge text-bg-success fw-normal">Card</span>` : ""}</td>` : ""}<td>${c.depts.length}</td><td>${c.people}${c.pending ? ` <span class="badge text-bg-warning fw-normal">${c.pending} waiting</span>` : ""}</td><td>${c.lessons}</td><td>${c.calls}</td><td>${ovwAgo(c.last)}</td>
       <td class="text-end">${here ? `<span class="badge text-bg-primary fw-normal me-2">Working inside it now</span>` : ""}<button type="button" class="btn btn-sm btn-outline-primary" data-colview="${esc(c.id)}">Open</button></td></tr>`; };
   return sec("stOverview", "Site overview", "Everything on this site. You aren't part of any college: open one to see inside it and change anything, without taking one of its places or using its monthly allowance.", `
-    <div class="ov-tiles">${tile(t.colleges, t.colleges === 1 ? "college" : "colleges")}${tile(t.depts, t.depts === 1 ? "department" : "departments")}${tile(t.people, t.people === 1 ? "person" : "people")}${tile(t.lessons, "shared lessons")}${tile(t.siteCalls, "requests to Claude this month")}${t.pending ? tile(t.pending, "waiting for approval") : ""}${t.inbox ? tile(t.inbox, t.inbox === 1 ? "message to answer" : "messages to answer") : ""}${ovw.billing ? tile(t.paying, "paying by card") : ""}</div>
+    <div class="ov-tiles">${tile(t.colleges, t.colleges === 1 ? "college" : "colleges")}${tile(t.depts, t.depts === 1 ? "department" : "departments")}${tile(t.people, t.people === 1 ? "person" : "people")}${tile(t.lessons, "shared lessons")}${tile(t.siteCalls, "requests to Crafticulum AI this month")}${t.pending ? tile(t.pending, "waiting for approval") : ""}${t.inbox ? tile(t.inbox, t.inbox === 1 ? "message to answer" : "messages to answer") : ""}${ovw.billing ? tile(t.paying, "paying by card") : ""}</div>
     <div class="table-responsive mt-3"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">College</th>${ovw.billing ? `<th scope="col">Plan</th>` : ""}<th scope="col">Departments</th><th scope="col">People</th><th scope="col">Lessons</th><th scope="col">Requests this month</th><th scope="col">Last signed in</th><th scope="col" aria-label="Open"></th></tr></thead><tbody>${ovw.colleges.map(row).join("")}</tbody></table></div>
-    ${t.own ? `<div class="form-text">Your own ${t.own} ${t.own === 1 ? "request" : "requests"} to Claude this month ${t.own === 1 ? "is" : "are"} counted for the site, not for any college.</div>` : ""}
+    ${t.own ? `<div class="form-text">Your own ${t.own} ${t.own === 1 ? "request" : "requests"} to Crafticulum AI this month ${t.own === 1 ? "is" : "are"} counted for the site, not for any college.</div>` : ""}
     <details class="conf-g mt-3"><summary>Latest activity across the site</summary>${ovw.log.length ? `<ul class="list-unstyled small mb-0 ov-log">${ovw.log.map(l => `<li><span class="text-body-secondary">${ovwAgo(l.at)} · ${esc(l.college)}${l.dept ? ", " + esc(l.dept) : ""}</span><br>${esc(l.by || "Someone")} ${esc(l.act)}${l.what ? ` <span class="text-body-secondary">${esc(l.what)}</span>` : ""}</li>`).join("")}</ul>` : `<p class="small text-body-secondary mb-0">Nothing yet.</p>`}</details>
     <div class="mt-2"><button type="button" class="btn btn-sm btn-link p-0" data-ovw="retry">Refresh</button></div>`);
 }
@@ -9923,7 +9923,7 @@ const ST_GROUPS = [["overview", "Overview", ["stOverview"]], ["you", "You", ["st
   ["college", "College", ["stSite", "stPlan", "stUsage", "stLog"]], ["teaching", "Teaching", ["stCourses", "stRules", "stMarker", "stTpl", "stCal", "stGroups", "stNeeds", "stAsg", "stDiscord", "stBin"]],
   ["site", "Site", ["stSetup", "stPlans", "stInbox", "stErrors"]], ["data", "Data and backups", ["stData", "stAuto", "stPriv"]]];
 const ST_HELP = {overview: "Everything on the site at a glance.", you: "Your own account, how you sign in and how this screen looks.", people: "Who can sign in, and where they belong.", college: "The college's name and look, its plan, what it has used and who did what.",
-  teaching: "Subjects, dates, groups and the rules lessons are built to.", site: "How the whole site runs: sign-in, email, Claude, payments, messages and errors.", data: "Copies of your work, and how long students' details are kept.", other: "Everything else.", all: "Every setting on one long page."};
+  teaching: "Subjects, dates, groups and the rules lessons are built to.", site: "How the whole site runs: sign-in, email, Crafticulum AI, payments, messages and errors.", data: "Copies of your work, and how long students' details are kept.", other: "Everything else.", all: "Every setting on one long page."};
 var stTab = lsGet("cc_st_tab") || "";
 const stGroupOf = id => { const g = ST_GROUPS.find(g => g[2].includes(id)); return g ? g[0] : (document.getElementById(id) ? "other" : ""); };
 function stLayout(){
@@ -9985,7 +9985,7 @@ function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.
     <div class="d-flex flex-wrap gap-2 align-items-center mb-3"><button type="button" class="btn btn-sm btn-outline-secondary" data-colview="">&larr; All colleges</button>${colBadges(c)}${first ? `<button type="button" class="btn btn-sm btn-outline-primary ms-auto" data-colact="open" data-d="${esc(first.id)}" ${here ? "disabled" : ""} title="Open the app as this college, to see its lessons, planning and results">${here ? "You're working inside it" : "Work inside this college"}</button>` : ""}</div>
     ${colLinkHtml()}
     ${!d ? (colInfo && colInfo.failed ? `<p class="small mb-2">Couldn't load this college just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-cold="retry">Try again</button>` : `<p class="small text-body-secondary">Loading...</p>`) : `
-    <div class="ov-tiles">${[[d.people.filter(p => !p.pending).length, "people"], [d.depts.length, d.depts.length === 1 ? "department" : "departments"], [d.lessons, "shared lessons"], [d.calls, "requests to Claude this month"]].map(([n, l]) => `<div class="ov-t"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
+    <div class="ov-tiles">${[[d.people.filter(p => !p.pending).length, "people"], [d.depts.length, d.depts.length === 1 ? "department" : "departments"], [d.lessons, "shared lessons"], [d.calls, "requests to Crafticulum AI this month"]].map(([n, l]) => `<div class="ov-t"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
     ${h("Name and look")}
     <div class="row g-3 align-items-end" style="max-width:760px">
       <div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="cdName">College or school name</label><input class="form-control form-control-sm col-name" id="cdName" value="${esc(c.name)}" data-colname="${esc(c.id)}" maxlength="60" placeholder="College or school name"></div>
@@ -9995,7 +9995,7 @@ function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.
     </div><div class="form-text">Changes here save as you make them. This is what the college's staff see in the app and its students see on their pages.</div>
     ${h("Plan and limits")}
     <div class="d-flex flex-wrap gap-3 align-items-center">${meInfo.billing ? `<label class="small d-flex gap-2 align-items-center mb-0">Plan <select class="form-select form-select-sm" style="width:auto" data-colplan="${esc(c.id)}" aria-label="Plan for ${esc(colNameOf(c))}">${Object.keys(PLAN_NAMES).map(k => `<option value="${k}" ${c.plan === k ? "selected" : ""}>${PLAN_NAMES[k]}</option>`).join("")}</select></label><span class="small text-body-secondary">Used this month: ${d.used.builds} builds, ${d.used.checks} Second Marker checks.</span>` : ""}
-      <label class="small d-flex gap-2 align-items-center mb-0">Monthly limit <input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" value="${c.cap || ""}" placeholder="None" data-colcap="${esc(c.id)}" aria-label="Monthly limit of requests to Claude"> <span class="text-body-secondary">requests to Claude</span></label></div>
+      <label class="small d-flex gap-2 align-items-center mb-0">Monthly limit <input class="form-control form-control-sm" style="width:110px" type="number" min="0" step="50" inputmode="numeric" value="${c.cap || ""}" placeholder="None" data-colcap="${esc(c.id)}" aria-label="Monthly limit of requests to Crafticulum AI"> <span class="text-body-secondary">requests to Crafticulum AI</span></label></div>
     ${meInfo.billing && c.paid ? `<div class="form-text">This college pays by card. Changing its plan here doesn't change what Stripe charges it.</div>` : ""}
     ${h("Managers")}
     <div class="small">${c.managers.length ? c.managers.map(m => esc(m.name ? `${m.name} (${m.email})` : m.email)).join(", ") : `<span class="text-warning-emphasis">No manager yet.</span> You look after it until you add one.`} ${colMgr === c.id ? "" : `<button type="button" class="btn btn-sm btn-link p-0 ms-2" data-colact="mgr">Add a manager</button>`}</div>
@@ -10209,7 +10209,7 @@ function myCollegeSection(sec){
   const row = d => `<tr><th scope="row" class="fw-semibold">${esc(d.name)}${d.id === me.dept ? ` <span class="badge text-bg-primary fw-normal">You're here</span>` : ""}<div class="fw-normal small text-body-secondary">${heads(d.id).length ? esc(heads(d.id).join(", ")) : "No head of department yet"}</div></th><td>${d.staff}</td><td>${d.lessons}</td><td>${d.calls}</td>
     <td class="text-end">${d.id === me.dept ? "" : `<button type="button" class="btn btn-sm btn-outline-primary" data-mycol="go" data-d="${esc(d.id)}">Work in it</button>`}</td></tr>`;
   return sec("stMyCollege", title, solo ? "Your space at a glance." : "Your college at a glance: who is in it, what each department has made, and how much of this month's allowance is used.", `
-    <div class="ov-tiles">${tile(act.length, act.length === 1 ? "person" : "people", L.people > 1 ? L.people : 0)}${tile(c.depts.length, c.depts.length === 1 ? "department" : "departments", L.depts > 1 ? L.depts : 0)}${tile(c.lessons, "shared lessons")}${tile(c.calls, "requests to Claude this month")}</div>
+    <div class="ov-tiles">${tile(act.length, act.length === 1 ? "person" : "people", L.people > 1 ? L.people : 0)}${tile(c.depts.length, c.depts.length === 1 ? "department" : "departments", L.depts > 1 ? L.depts : 0)}${tile(c.lessons, "shared lessons")}${tile(c.calls, "requests to Crafticulum AI this month")}</div>
     ${pend.length ? `<div class="alert alert-warning small d-flex flex-wrap gap-2 align-items-center mt-3 mb-0"><span><b>${pend.length} ${pend.length === 1 ? "person is" : "people are"} waiting for approval:</b> ${esc(pend.slice(0, 3).map(p => p.name || p.email).join(", "))}${pend.length > 3 ? " and more" : ""}.</span><button type="button" class="btn btn-sm btn-warning ms-auto" data-mycol="team">Go to Team</button></div>` : ""}
     ${c.billing && (L.builds || L.checks) ? `<div class="mc-plan mt-3"><div class="d-flex flex-wrap gap-2 align-items-center mb-2"><span class="fw-semibold">${esc(c.planName || "Plan")} plan</span><button type="button" class="btn btn-sm btn-link p-0 ms-auto" data-mycol="plan">Plan and billing</button></div>${meter((c.used || {}).builds || 0, L.builds, "Lessons and documents built")}${meter((c.used || {}).checks || 0, L.checks, "Second Marker checks")}</div>` : ""}
     ${solo ? "" : `<h3 class="h6 mt-4 mb-2">Departments</h3><div class="table-responsive"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">Department</th><th scope="col">Staff</th><th scope="col">Shared lessons</th><th scope="col">Requests this month</th><th scope="col" aria-label="Work in it"></th></tr></thead><tbody>${c.depts.map(row).join("")}</tbody></table></div>
@@ -10272,7 +10272,7 @@ function studentMode(id){
       <p class="st-note" style="font-size:16px">This quiz has finished or hasn't started yet. Ask your teacher for the QR code.</p></div>`; });
 }
 const studentHash = (location.hash.match(/^#q-([0-9a-f]{32})$/i) || [])[1];
-/* ---------- self-hosted: Claude through ai.php, normal downloads, quiz room in ./quiz/ ---------- */
+/* ---------- self-hosted: Crafticulum AI through ai.php, normal downloads, quiz room in ./quiz/ ---------- */
 const STANDALONE = !window.claude;
 let loginWait = null;
 /* ---------- signing in: email and password, two-step codes, Google, Microsoft, the admin password ---------- */
@@ -10439,7 +10439,7 @@ $("#stpForm").addEventListener("submit", async e => {
   try{ const r = await fetch("setup.php", {method: "POST", headers: {"Content-Type": "application/json"}, credentials: "same-origin", body: JSON.stringify({college: v("stpCollege"), dept: v("stpDept"), first: v("stpFirst"), last: v("stpLast"), email: v("stpEmail"), password: $("#stpPass").value, apiKey: v("stpKey")})});
     const j = await r.json().catch(() => ({}));
     if(r.ok){ try{ localStorage.clear(); localStorage.setItem("cc_flash", "You're set up. Follow the list on this page to finish."); }catch{} location.reload(); return; }
-    loginSay({email: "That doesn't look like an email address.", name: "Add your first name.", pass_short: "Use at least 10 characters for the password.", key: "That doesn't look like a Claude API key. Leave it empty and add it later.", folder: "The server can't write to this folder. Ask your web host to make the site's folder writable.", data: "The server couldn't make its data folder. Ask your web host to make the site's folder writable.", done: "This site has already been set up. Reload the page to sign in."}[j.error] || "Couldn't set it up. Check your connection and try again.", true);
+    loginSay({email: "That doesn't look like an email address.", name: "Add your first name.", pass_short: "Use at least 10 characters for the password.", key: "That doesn't look like an Anthropic API key. Leave it empty and add it later.", folder: "The server can't write to this folder. Ask your web host to make the site's folder writable.", data: "The server couldn't make its data folder. Ask your web host to make the site's folder writable.", done: "This site has already been set up. Reload the page to sign in."}[j.error] || "Couldn't set it up. Check your connection and try again.", true);
   }catch{ loginSay("Couldn't reach the server. Check your connection and try again.", true); }
   b.disabled = false;
 });
@@ -10459,7 +10459,7 @@ async function askServer(prompt, tries){
   if(r.status === 429) throw {code: "rate_limited"};
   if(r.status === 403) throw {code: "noperm"};
   if(!r.ok){   // say what actually went wrong, so it can be fixed
-    const why = j.error || (r.status === 504 || r.status === 524 || r.status === 408 ? "The server stopped waiting before Claude finished. Try again, or try a shorter lesson." : `The server answered with error ${r.status} and no details. Ask your web host to check the PHP error log.`);
+    const why = j.error || (r.status === 504 || r.status === 524 || r.status === 408 ? "The server stopped waiting before Crafticulum AI finished. Try again, or try a shorter lesson." : `The server answered with error ${r.status} and no details. Ask your web host to check the PHP error log.`);
     try{ ERR.server = why; }catch{}
     throw {code: "server", message: why};
   }
@@ -10517,7 +10517,7 @@ document.addEventListener("click", e => {
 (async()=>{ try{ downloadsApi = STANDALONE ? browserDownloads : (await window.claude?.use?.("downloads") ?? null); }catch{ downloadsApi=null; }
   $("#bSave").hidden = !downloadsApi; })();
 (async()=>{ try{ sampleFn = STANDALONE ? serverSample : (await window.claude?.use?.("sample") ?? null); }catch{ sampleFn=null; }
-  if(!sampleFn){ $("#status").textContent = "Open this page in Claude to build new lessons. The board view works anywhere."; } })();
+  if(!sampleFn){ $("#status").textContent = "Open this page in Crafticulum AI to build new lessons. The board view works anywhere."; } })();
 }
 </script>
 
