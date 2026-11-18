@@ -427,6 +427,68 @@ function ccSiteUrl(): string { return ccMainLive() ? ccMainUrl() : ccHereUrl(); 
 function ccPretty(): bool { return is_file(ccDataDir() . '/_pretty'); }
 function ccAppUrl(bool $here = false): string { return ($here ? ccHereUrl() : ccSiteUrl()) . (ccPretty() ? 'app' : 'app.html'); }
 function ccMailReady(): bool { return ((ccConf('SMTP_HOST') !== '') && ccConf('SMTP_HOST')) || ((ccConf('MAIL_FROM') !== '') && ccConf('MAIL_FROM') && function_exists('mail')); }
+/* ---------- every email in the site's own look: the logo, a clear button for each link, and a footer. The plain words are sent too, for mail apps that don't show pictures ---------- */
+function ccMailButton(string $url): string {
+    if (strpos($url, '#verify=') !== false) return 'Confirm my email';
+    if (strpos($url, '#magic=') !== false) return 'Sign in to Crafticulum';
+    if (strpos($url, '#reset=') !== false) return 'Choose a new password';
+    if (strpos($url, '#invite=') !== false) return 'Choose my password';
+    if (preg_match('~/(privacy|terms|cookies)(\.html)?$~', $url, $m)) return 'Read the ' . $m[1] . ' page';
+    if (preg_match('~/s(tudent\.html)?[/?#]~', $url)) return 'Open the page';
+    return 'Open Crafticulum';
+}
+function ccMailHtml(string $subject, string $text): string {
+    $e = fn(string $x): string => htmlspecialchars($x, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $site = ccSiteUrl(); $P = '#4f46e5'; $ink = '#0f172a'; $soft = '#475569';
+    $font = "font-family:'Plus Jakarta Sans','Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+    $link = fn(string $x): string => preg_replace_callback('~https?://[^\s<>"]+[^\s<>".,;:!?)]~', fn($m) => '<a href="' . $m[0] . '" style="color:' . $P . ';font-weight:600">' . $m[0] . '</a>', $x) ?? $x;
+    $blocks = preg_split('/\n{2,}/', trim(str_replace(["\r\n", "\r"], "\n", $text))) ?: []; $out = ''; $pre = ''; $first = true;
+    foreach ($blocks as $b) {
+        $lines = array_values(array_filter(array_map('rtrim', explode("\n", $b)), fn($l) => trim($l) !== '')); if (!$lines) continue;
+        if ($first && preg_match('/^(Hello|Hi)\b.{0,70},$/u', $lines[0]) && count($lines) === 1) { $out .= '<p style="margin:0 0 14px;font-size:17px;font-weight:700;color:' . $ink . '">' . $e($lines[0]) . '</p>'; $first = false; continue; }
+        $first = false;
+        if ($pre === '' && !preg_match('~^https?://~', $lines[0])) $pre = $lines[0];
+        $i = 0; $n = count($lines);
+        while ($i < $n) {
+            $l = $lines[$i];
+            if (preg_match('~^https?://\S+$~', trim($l))) { $u = trim($l); $tok = strpos($u, '#') !== false && preg_match('/=[a-f0-9]{20,}$/', $u);
+                $out .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 18px"><tr><td bgcolor="' . $P . '" style="border-radius:10px;background:' . $P . '"><a href="' . $e($u) . '" style="display:inline-block;padding:13px 26px;' . $font . ';font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px">' . $e(ccMailButton($u)) . '</a></td></tr></table>'
+                      . ($tok ? '<p style="margin:-8px 0 18px;font-size:12px;line-height:1.5;color:#64748b">If the button doesn\'t work, copy this link into your browser:<br><span style="word-break:break-all;color:' . $soft . '">' . $e($u) . '</span></p>' : '');
+                $i++; continue; }
+            if (preg_match('/^(\d+)\.\s+(.+)$/u', $l)) { $out .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:4px 0 18px">';
+                while ($i < $n && preg_match('/^(\d+)\.\s+(.+)$/u', $lines[$i], $m)) { [$h, $rest] = array_pad(explode(': ', $m[2], 2), 2, '');
+                    $out .= '<tr><td width="44" valign="top" style="padding:8px 0"><div style="width:30px;height:30px;line-height:30px;border-radius:15px;background:#eef2ff;color:' . $P . ';font-weight:800;font-size:14px;text-align:center;' . $font . '">' . $m[1] . '</div></td><td valign="top" style="padding:8px 0;' . $font . ';font-size:15px;line-height:1.55;color:' . $soft . '">' . ($rest !== '' ? '<b style="color:' . $ink . '">' . $e($h) . '</b><br>' . $link($e($rest)) : $link($e($m[2]))) . '</td></tr>'; $i++; }
+                $out .= '</table>'; continue; }
+            if (preg_match('/^[-•]\s+/u', $l)) { $out .= '<ul style="margin:0 0 16px;padding-left:20px;color:' . $soft . '">';
+                while ($i < $n && preg_match('/^[-•]\s+(.+)$/u', $lines[$i], $m)) { $out .= '<li style="margin:0 0 6px;font-size:15px;line-height:1.55">' . $link($e($m[1])) . '</li>'; $i++; }
+                $out .= '</ul>'; continue; }
+            $para = [];
+            while ($i < $n && !preg_match('~^https?://\S+$~', trim($lines[$i])) && !preg_match('/^(\d+\.|[-•])\s+/u', $lines[$i])) { $para[] = $link($e($lines[$i])); $i++; }
+            if ($para) $out .= '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:' . $soft . '">' . implode('<br>', $para) . '</p>';
+        }
+    }
+    $host = (string) parse_url($site, PHP_URL_HOST); $ext = ccPretty() ? '' : '.html'; $s = ccSite(); $contact = (string) ($s['siteContact'] ?? ($s['contact'] ?? ''));
+    $fl = fn(string $href, string $t): string => '<a href="' . $e($href) . '" style="color:#64748b;text-decoration:underline">' . $t . '</a>';
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>' . $e($subject) . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#f5f6fa;-webkit-text-size-adjust:100%"><div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f5f6fa">' . $e(mb_substr($pre, 0, 140)) . '</div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f5f6fa" style="background:#f5f6fa"><tr><td align="center" style="padding:28px 12px">'
+        . '<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">'
+        . '<tr><td bgcolor="' . $P . '" style="padding:22px 32px;border-radius:16px 16px 0 0;background:' . $P . ';background-image:linear-gradient(135deg,#312e81 0%,' . $P . ' 60%,#7c3aed 100%)">'
+        . '<a href="' . $e($site) . '" style="text-decoration:none"><img src="' . $e($site) . 'mail-logo.png" width="30" height="30" alt="" style="vertical-align:middle;border:0;margin-right:10px"><span style="vertical-align:middle;' . $font . ';font-size:23px;font-weight:800;letter-spacing:-1px;color:#ffffff">craft<span style="color:#c7d2fe">iculum</span></span></a></td></tr>'
+        . '<tr><td bgcolor="#ffffff" style="padding:32px 32px 18px;background:#ffffff;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;' . $font . '">'
+        . '<h1 style="margin:0 0 18px;' . $font . ';font-size:24px;line-height:1.2;letter-spacing:-.5px;font-weight:800;color:' . $ink . '">' . $e($subject) . '</h1>' . $out . '</td></tr>'
+        . '<tr><td bgcolor="#ffffff" style="padding:0 32px 26px;background:#ffffff;border:1px solid #e2e8f0;border-top:0;border-radius:0 0 16px 16px;' . $font . '"><div style="border-top:1px solid #e2e8f0;padding-top:16px;font-size:13px;line-height:1.5;color:#64748b"><b style="color:' . $ink . '">Plan it. Teach it. Share it.</b><br>From one sentence to a full lesson, built against your specification.</div></td></tr>'
+        . '<tr><td align="center" style="padding:18px 24px 0;' . $font . ';font-size:12px;line-height:1.7;color:#64748b">'
+        . $fl($site, 'Crafticulum') . ' &nbsp;·&nbsp; ' . $fl($site . 'privacy' . $ext, 'Privacy') . ' &nbsp;·&nbsp; ' . $fl($site . 'terms' . $ext, 'Terms') . ' &nbsp;·&nbsp; ' . $fl($site . 'contact' . $ext, 'Contact and support')
+        . '<br>You\'re getting this because of an account or a message at ' . $e($host !== '' ? $host : 'Crafticulum') . ($contact !== '' && filter_var($contact, FILTER_VALIDATE_EMAIL) ? '. Questions? ' . $fl('mailto:' . $contact, $e($contact)) : '.')
+        . '</td></tr></table></td></tr></table></body></html>';
+}
+/* the two versions of one email, plain words first, and the header that says so */
+function ccMailParts(string $subject, string $text): array {
+    $bd = 'cc' . bin2hex(random_bytes(12)); $plain = str_replace("\n", "\r\n", str_replace(["\r\n", "\r"], "\n", $text));
+    $body = "--$bd\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n$plain\r\n\r\n--$bd\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode(ccMailHtml($subject, $text)), 76, "\r\n") . "--$bd--\r\n";
+    return ["Content-Type: multipart/alternative; boundary=\"$bd\"", $body];
+}
 function ccMail(string $to, string $subject, string $text, string $replyTo = ''): bool {
     $rt = $replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n<>]/', $replyTo) ? "Reply-To: <$replyTo>\r\n" : '';
     $GLOBALS['ccMailErr'] = '';
@@ -436,8 +498,8 @@ function ccMail(string $to, string $subject, string $text, string $replyTo = '')
     $from = ccConf('MAIL_FROM') ? (string) ccConf('MAIL_FROM') : (string) ccConf('SMTP_USER');
     if (!filter_var($from, FILTER_VALIDATE_EMAIL)) return $fail('The Send from address isn\'t an email address. Use the mailbox\'s own address.');
     $subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    $body = str_replace(["\r\n", "\r"], "\n", $text); $body = str_replace("\n", "\r\n", $body);
-    if (!ccConf('SMTP_HOST')) return @mail($to, $subj, $body, "From: Crafticulum <$from>\r\n{$rt}MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8") ?: $fail('The web host\'s own mail() refused it. Add a mail server instead.');
+    [$ctype, $body] = ccMailParts($subject, $text);
+    if (!ccConf('SMTP_HOST')) return @mail($to, $subj, $body, "From: Crafticulum <$from>\r\n{$rt}MIME-Version: 1.0\r\n$ctype") ?: $fail('The web host\'s own mail() refused it. Add a mail server instead.');
     $host = trim((string) ccConf('SMTP_HOST')); $port = (int) ccConf('SMTP_PORT') ?: 587; $secure = strtolower(trim((string) ccConf('SMTP_SECURE')));
     // the port decides the security when they disagree: 465 is always SSL from the first byte, 587 and 25 start plain and upgrade
     if ($port === 465) $secure = 'ssl'; elseif ($secure === 'ssl' && in_array($port, [587, 25, 2525], true)) $secure = 'tls'; elseif (!in_array($secure, ['ssl', 'tls', 'none'], true)) $secure = 'tls';
@@ -475,7 +537,7 @@ function ccMail(string $to, string $subject, string $text, string $replyTo = '')
     if (!$cmd("MAIL FROM:<$from>", [250])) return $bye("The mail server won't send from $from. Send from has to be the mailbox's own address.");
     if (!$cmd("RCPT TO:<$to>", [250, 251])) return $bye("The mail server won't send to $to.");
     if (!$cmd('DATA', [354])) return $bye('The mail server refused the message.');
-    $msg = "From: Crafticulum <$from>\r\n{$rt}To: <$to>\r\nSubject: $subj\r\nDate: " . date('r') . "\r\nMessage-ID: <" . bin2hex(random_bytes(8)) . "@$me>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n" . preg_replace('/^\./m', '..', $body);
+    $msg = "From: Crafticulum <$from>\r\n{$rt}To: <$to>\r\nSubject: $subj\r\nDate: " . date('r') . "\r\nMessage-ID: <" . bin2hex(random_bytes(8)) . "@$me>\r\nMIME-Version: 1.0\r\n$ctype\r\n\r\n" . preg_replace('/^\./m', '..', $body);
     if (!$cmd($msg . "\r\n.", [250])) return $bye('The mail server refused the message.');
     @fwrite($fp, "QUIT\r\n"); fclose($fp);
     return true;

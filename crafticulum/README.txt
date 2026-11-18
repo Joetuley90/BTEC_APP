@@ -843,5 +843,32 @@ NO FLASH OF THE APP BEFORE SIGN-IN (v90)
 Opening Sign in or choosing a plan no longer shows the app for a moment before
 the right screen appears. A plain cover with the logo stays up until it's ready.
 
+EMAILS IN THE SITE'S OWN LOOK (v91)
+Every email the site sends now has the Crafticulum logo and colours, the
+subject as a heading, a proper button for each link, and a footer with links
+to the site, privacy, terms and contact. The same words are still sent as
+plain text too, for mail apps that don't show pictures. The logo is a new
+file, mail-logo.png, which sits beside index.html, so upload it with the rest.
+Nothing to set up: it uses the mail settings you already have.
+
+WELCOME EMAIL (v91)
+Someone who starts their own space (with a password, Google or Microsoft) is
+sent a welcome email with three first steps: add your subject, build your
+first lesson, teach it and share it. With a password it also carries the
+button to confirm their email.
+
+THE COLLEGE MANAGER'S OVERVIEW (v91)
+A college manager's Settings now opens on an Overview of their own college:
+people, departments, shared lessons and requests this month, how much of the
+plan's monthly allowance is used, anyone waiting for approval, and each
+department with its head, staff and lessons and a Work in it button. Their
+Team list is grouped by department.
+
+SECOND MARKER: THE MARKING DESK (v91)
+Step 5 now looks like the other steps: a slim bar for the learner, the mark
+sheet and feedback in cards with numbered headings, criteria codes as pills,
+and green, red and amber for Y, N and R. Only the look changed. Highlighting,
+comments, QuickMarks, focus mode and the keyboard shortcuts work as before.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

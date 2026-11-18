@@ -1285,6 +1285,10 @@ body.sa-out #stSite,body.sa-out #stPlan,body.sa-out #stLog,body.sa-out #stDepts,
 .team-t tr.team-g th{background:var(--bs-tertiary-bg);font-size:.8rem;font-weight:700;padding:8px 10px;border-top:1px solid var(--bs-border-color)}
 .team-t tr.team-g th span{font-weight:400;color:var(--bs-secondary-color);margin-left:6px}
 
+/* ===== the manager's overview ===== */
+.ov-t b small{font-size:.8rem;font-weight:500;color:var(--bs-secondary-color)}
+.mc-plan{border:1px solid var(--cc-line);border-radius:.7rem;padding:12px 14px}.mc-m{margin-top:8px}.mc-m .progress{height:8px;margin-top:4px}
+
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
 .st-sec{scroll-margin-top:calc(var(--stick-top,58px) + 70px)!important}
@@ -8638,7 +8642,7 @@ function markerNav(){
 const themeNow = () => document.documentElement.getAttribute("data-bs-theme") === "dark" ? "dark" : "light";
 /* Second Marker's own code is loaded the first time its page is opened, and then stays, so work in progress isn't lost when you look at another page. */
 var markerSM = null, markerLoad = null, markerSub = "", markerSel = null;
-const MARKER_VER = "b450e75d8f";
+const MARKER_VER = "ca0ad25d4b";
 window.ccMarkerCtx = function(){ const m = markerNow(); return {...m, iv: !!(m.iv && me && me.isLead), group: typeof markerGroup === "string" ? markerGroup : "", name: (me && me.name) || "", dept: (me && me.deptName) || "", theme: themeNow()}; };
 window.ccMarkerActive = () => view === "marker";
 window.ccMarkerSub = t => { if(t !== markerSub){ markerSub = t || ""; if(view === "marker") syncShell(); } };
@@ -10187,6 +10191,42 @@ applyRole = function(){ const r = _applyRole36.apply(this, arguments);
 /* nothing from a college is one keypress away while standing outside them all */
 document.addEventListener("keydown", e => { if(saOut() && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key || "").toLowerCase() === "k"){ e.preventDefault(); e.stopImmediatePropagation(); } }, true);
 document.addEventListener("click", e => { if(saOut() && e.target.closest("[data-search],[data-canvas='libCanvas']")){ e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+
+/* ===== round 34: the college manager's own overview. Their college at a glance, department by department ===== */
+let myCol = null, myColBusy = false;
+function myColLoad(force){ if(myColBusy || (myCol && !force)) return; myColBusy = true; authCall("collegeget", {}).then(j => { myCol = j; }).catch(() => { myCol = myCol || {failed: true}; }).finally(() => { myColBusy = false; if(view === "settings") renderSettings(); }); }
+try{ ST_GROUPS.find(g => g[0] === "overview")[2].push("stMyCollege"); }catch{}
+function myCollegeSection(sec){
+  if(window.claude || !me || me.role !== "owner" || me.demo) return "";
+  ST_HELP.overview = "Your college at a glance.";
+  const title = esc(me.collegeName || "Your college");
+  if(!myCol){ myColLoad(); return sec("stMyCollege", title, "", `<p class="small text-body-secondary mb-0">Loading...</p>`); }
+  if(myCol.failed) return sec("stMyCollege", title, "", `<p class="small mb-2">Couldn't load your college just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-mycol="retry">Try again</button>`);
+  const c = myCol, act = c.people.filter(p => !p.pending), pend = c.people.filter(p => p.pending), L = c.limits || {}, solo = c.depts.length < 2 && act.length < 2;
+  const tile = (n, l, of) => `<div class="ov-t"><b>${n}${of ? `<small> of ${of}</small>` : ""}</b><span>${l}</span></div>`;
+  const meter = (used, max, label) => { if(!max) return ""; const pc = Math.min(100, Math.round(used / max * 100)); return `<div class="mc-m"><div class="d-flex justify-content-between small"><span>${label}</span><span class="text-body-secondary">${used} of ${max} this month</span></div><div class="progress" role="progressbar" aria-label="${label}" aria-valuenow="${pc}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar${pc >= 100 ? " bg-danger" : pc >= 80 ? " bg-warning" : ""}" style="width:${pc}%"></div></div></div>`; };
+  const heads = id => c.people.filter(p => !p.pending && p.dept === id && p.role !== "teacher").map(p => p.name || p.email);
+  const row = d => `<tr><th scope="row" class="fw-semibold">${esc(d.name)}${d.id === me.dept ? ` <span class="badge text-bg-primary fw-normal">You're here</span>` : ""}<div class="fw-normal small text-body-secondary">${heads(d.id).length ? esc(heads(d.id).join(", ")) : "No head of department yet"}</div></th><td>${d.staff}</td><td>${d.lessons}</td><td>${d.calls}</td>
+    <td class="text-end">${d.id === me.dept ? "" : `<button type="button" class="btn btn-sm btn-outline-primary" data-mycol="go" data-d="${esc(d.id)}">Work in it</button>`}</td></tr>`;
+  return sec("stMyCollege", title, solo ? "Your space at a glance." : "Your college at a glance: who is in it, what each department has made, and how much of this month's allowance is used.", `
+    <div class="ov-tiles">${tile(act.length, act.length === 1 ? "person" : "people", L.people > 1 ? L.people : 0)}${tile(c.depts.length, c.depts.length === 1 ? "department" : "departments", L.depts > 1 ? L.depts : 0)}${tile(c.lessons, "shared lessons")}${tile(c.calls, "requests to Claude this month")}</div>
+    ${pend.length ? `<div class="alert alert-warning small d-flex flex-wrap gap-2 align-items-center mt-3 mb-0"><span><b>${pend.length} ${pend.length === 1 ? "person is" : "people are"} waiting for approval:</b> ${esc(pend.slice(0, 3).map(p => p.name || p.email).join(", "))}${pend.length > 3 ? " and more" : ""}.</span><button type="button" class="btn btn-sm btn-warning ms-auto" data-mycol="team">Go to Team</button></div>` : ""}
+    ${c.billing && (L.builds || L.checks) ? `<div class="mc-plan mt-3"><div class="d-flex flex-wrap gap-2 align-items-center mb-2"><span class="fw-semibold">${esc(c.planName || "Plan")} plan</span><button type="button" class="btn btn-sm btn-link p-0 ms-auto" data-mycol="plan">Plan and billing</button></div>${meter((c.used || {}).builds || 0, L.builds, "Lessons and documents built")}${meter((c.used || {}).checks || 0, L.checks, "Second Marker checks")}</div>` : ""}
+    ${solo ? "" : `<h3 class="h6 mt-4 mb-2">Departments</h3><div class="table-responsive"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">Department</th><th scope="col">Staff</th><th scope="col">Shared lessons</th><th scope="col">Requests this month</th><th scope="col" aria-label="Work in it"></th></tr></thead><tbody>${c.depts.map(row).join("")}</tbody></table></div>
+    <div class="d-flex flex-wrap gap-3 mt-2"><button type="button" class="btn btn-sm btn-link p-0" data-mycol="depts">Add or rename departments</button><button type="button" class="btn btn-sm btn-link p-0" data-mycol="team">Add or change people</button></div>`}
+    ${c.log && c.log.length ? `<details class="conf-g mt-3"><summary>Latest activity in ${title}</summary><ul class="list-unstyled small mb-0 ov-log">${c.log.map(l => `<li><span class="text-body-secondary">${ovwAgo(l.at)}${l.dept ? " · " + esc(l.dept) : ""}</span><br>${esc(l.by || "Someone")} ${esc(l.act)}${l.what ? ` <span class="text-body-secondary">${esc(l.what)}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
+    <div class="mt-2"><button type="button" class="btn btn-sm btn-link p-0" data-mycol="retry">Refresh</button></div>`);
+}
+const _accountSections37 = accountSections;
+accountSections = function(sec){ return myCollegeSection(sec) + _accountSections37.apply(this, arguments); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-mycol]"); if(!b) return; const k = b.dataset.mycol;
+  if(k === "retry"){ myCol = null; return renderSettings(); }
+  if(k === "go") return colSwitch(b.dataset.d);
+  if(k === "team" && myCol && !myCol.failed && myCol.people.some(p => p.pending) && !(team && (team.pending || []).length)) team = null;   // someone new is waiting: fetch the team again so they show
+  goSection("settings", k === "team" ? "stTeam" : k === "depts" ? "stDepts" : "stPlan"); });
+/* anything that changes people or departments makes the overview fetch again next time it's shown */
+const _teamLoad37 = typeof teamLoad === "function" ? teamLoad : null;
+if(_teamLoad37) teamLoad = function(){ myCol = null; return _teamLoad37.apply(this, arguments); };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

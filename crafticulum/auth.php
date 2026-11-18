@@ -42,6 +42,17 @@ function deptList(array $a, ?string $college = null): array { $o = []; $many = c
 const CC_ROLE_NAMES = ['superadmin' => 'Super admin', 'owner' => 'College manager', 'hod' => 'Head of department', 'teacher' => 'Teacher'];
 function ccLink(string $type, string $t): string { return ccAppUrl() . '#' . $type . '=' . $t; }
 function siteName(): string { return 'Crafticulum'; }
+/* the welcome for someone who has just started their own space: what to do first, in three steps */
+function welcomeMail(string $email, string $name, string $verify = ''): bool {
+    if (!ccMailReady()) return false; $hi = trim(explode(' ', trim($name))[0] ?? '');
+    return ccMail($email, 'Welcome to Crafticulum', 'Hello' . ($hi !== '' ? " $hi" : '') . ",\n\nYour Crafticulum account is ready. You're on the Free plan, and you can change that at any time in Settings, Plan and billing.\n\n"
+        . ($verify !== '' ? "First, please confirm this is your email address. Lessons can be built once you have:\n$verify\n\n" : '')
+        . "Here are three things to do first:\n\n"
+        . "1. Add your subject: Upload the specification from your awarding body and its units and criteria are read from it. No specification to hand? Start with one topic instead.\n"
+        . "2. Build your first lesson: Type one sentence about what you're teaching. You get the timed plan, teaching content, tasks, an exit quiz and slides.\n"
+        . "3. Teach it and share it: Put the lesson on the board, and give your students their own page with a link or a QR code.\n\n"
+        . "Pick up where you left off:\n" . ccAppUrl() . "\n\nStuck on anything? Reply to this email or use Help and feedback in the app.\n");
+}
 /* someone signing up on their own gets their own space: a college on the Free plan with one department, which they manage */
 function newWorkspace(array &$a, string $email, string $name, string $space): string {
     $space = cleanName($space); if ($space === '') $space = trim(explode(' ', $name)[0] . "'s workspace");
@@ -63,6 +74,7 @@ function ssoArrive(string $email, string $name, string $via, string $picture = '
             $did = newWorkspace($a, $email, cleanName($name), '');
             $a['users'][$email] = ['name' => cleanName($name), 'status' => 'active', 'verified' => true, 'via' => $via, 'role' => 'owner', 'dept' => $did, 'canEdit' => true, 'added' => time(), 'last' => time(), 'methods' => [$via]] + ($picture !== '' ? ['picture' => $picture] : []);
             if (!ccSaveAccounts($a)) return ['pending' => true];
+            welcomeMail($email, cleanName($name));
             signIn($email); return ['ok' => true, 'started' => true];
         }
         $a['users'][$email] = ['name' => cleanName($name), 'status' => 'pending', 'verified' => true, 'via' => $via, 'requested' => time(), 'role' => 'teacher', 'dept' => '', 'canEdit' => false];
@@ -141,7 +153,7 @@ if ($action === 'signup') {
         $did = newWorkspace($a, $email, $name, (string) ($body['workspace'] ?? ''));
         $a['users'][$email] = ['name' => $name, 'status' => 'active', 'verified' => false, 'via' => 'password', 'role' => 'owner', 'dept' => $did, 'canEdit' => true, 'added' => time(), 'last' => time(), 'methods' => ['password'], 'pass' => password_hash($pass, PASSWORD_DEFAULT)];
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-        if (ccMailReady()) ccMail($email, 'Welcome to Crafticulum', "Hello $name,\n\nYour Crafticulum account is ready. You're on the Free plan, which you can change at any time in Settings, Plan and billing.\n\nPlease confirm this is your email address:\n" . ccLink('verify', ccToken($email, 'verify', 72)) . "\n\nSign in here:\n" . ccAppUrl() . "\n");
+        welcomeMail($email, $name, ccLink('verify', ccToken($email, 'verify', 72)));
         signIn($email);
         out(200, ['ok' => true, 'started' => true]);
     }
@@ -602,8 +614,8 @@ if ($action === 'overview') {
 }
 /* ---------- the super admin: one college, with everything in it ---------- */
 if ($action === 'collegeget') {
-    if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
-    $id = (string) ($body['id'] ?? ''); if (!isset($a['colleges'][$id])) out(404, ['error' => 'not_found']);
+    if ($me['role'] !== 'superadmin' && $me['role'] !== 'owner') out(403, ['error' => 'noperm']);
+    $id = $me['role'] === 'owner' ? (string) $me['college'] : (string) ($body['id'] ?? ''); if (!isset($a['colleges'][$id])) out(404, ['error' => 'not_found']);   // a manager only ever gets their own college
     $c = ccCollege($a, $id); $ids = ccCollegeDepts($a, $id); $u = ccUsageRead(); $supers = ccSupers(); $depts = []; $people = []; $calls = 0; $lessons = 0; $log = [];
     foreach ($ids as $d) { $dir = !empty($a['depts'][$d]['legacy']) ? ccDataDir() : ccDataDir() . '/d/' . $d; $n = count(glob($dir . '/lessons/*.json') ?: []); $dc = (int) ($u['depts'][$d]['calls'] ?? 0); $calls += $dc; $lessons += $n;
         $depts[] = ['id' => $d, 'name' => (string) $a['depts'][$d]['name'], 'lessons' => $n, 'calls' => $dc, 'staff' => 0];
@@ -614,7 +626,8 @@ if ($action === 'collegeget') {
         if ($act) foreach ($depts as &$dd) if ($dd['id'] === $d) $dd['staff']++; unset($dd); }
     usort($people, fn($x, $y) => [$x['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$x['role']] ?? 2, strtolower($x['name'] ?: $x['email'])] <=> [$y['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$y['role']] ?? 2, strtolower($y['name'] ?: $y['email'])]);
     usort($log, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
-    out(200, ['id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
+    $pl = ccPlanOf($a, $id);
+    out(200, ['planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
               'self' => !empty($a['colleges'][$id]['self']), 'created' => $c['created'], 'depts' => $depts, 'people' => $people, 'lessons' => $lessons, 'calls' => $calls, 'used' => ccPlanUsed($id, $u), 'log' => array_slice($log, 0, 12), 'billing' => ccBillingOn(), 'mail' => ccMailReady()]);
 }
 if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], true)) {
