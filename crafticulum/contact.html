@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Contact and support · Crafticulum</title>
+<meta name="description" content="Ask for help, report a problem, send feedback or ask about getting Crafticulum for your college or school.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Crafticulum">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Contact and support · Crafticulum">
+<meta property="og:description" content="Ask for help, report a problem, send feedback or ask about getting Crafticulum for your college or school.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact and support · Crafticulum">
+<meta name="twitter:description" content="Ask for help, report a problem, send feedback or ask about getting Crafticulum for your college or school.">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="favicon.ico?v=4" sizes="any">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=4">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=4">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=4">
+<meta name="apple-mobile-web-app-title" content="Crafticulum">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="pages.css?v=10">
+</head>
+<body>
+<header class="nav"><div class="wrap"><a class="brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 8 H64 V36 H36 V64 H92 V78 Q92 92 78 92 H22 Q8 92 8 78 V22 Q8 8 22 8 Z" fill="#4f46e5"/><path d="M64 8 L92 36 H64 Z" fill="#a5b4fc"/></svg><span><span class="wm">craft<span class="wm-2">iculum</span></span><small hidden></small></span></a><a class="btn btn-o btn-sm" href="app.html">Sign in</a></div></header>
+<!-- A starting point written to match what the software does. Have it checked by whoever looks after legal matters for your organisation before you rely on it. -->
+<main class="doc contact">
+<h1>Contact and support</h1>
+<p class="when">Stuck, spotted a problem, or got an idea? Tell us here. Every message is read by a person.</p>
+<form id="cf" novalidate>
+  <fieldset class="cf-kinds"><legend>What's it about?</legend>
+    <label><input type="radio" name="kind" value="support" checked><span><b>I need help</b><small>Something I can't find or can't get to work</small></span></label>
+    <label><input type="radio" name="kind" value="problem"><span><b>Something's broken</b><small>An error, or something that isn't right</small></span></label>
+    <label><input type="radio" name="kind" value="feedback"><span><b>Feedback or an idea</b><small>What's working, what isn't, what you'd add</small></span></label>
+    <label><input type="radio" name="kind" value="enquiry"><span><b>Getting Crafticulum</b><small>For your college, school or department</small></span></label>
+  </fieldset>
+  <div class="cf-row">
+    <div><label for="cfName">Your name</label><input id="cfName" name="name" maxlength="80" autocomplete="name" required></div>
+    <div><label for="cfEmail">Email, so we can reply</label><input id="cfEmail" name="email" type="email" maxlength="120" autocomplete="email" required></div>
+  </div>
+  <div class="cf-row" id="cfOrgRow" hidden><div><label for="cfOrg">College or school <span class="opt">(optional)</span></label><input id="cfOrg" name="org" maxlength="100" autocomplete="organization"></div></div>
+  <div><label for="cfMsg" id="cfMsgLabel">How can we help?</label><textarea id="cfMsg" name="msg" rows="7" maxlength="4000" required></textarea>
+    <p class="cf-hint" id="cfHint">Say what you were doing and what happened. Please don't include learners' names or their work.</p></div>
+  <div class="cf-trap" aria-hidden="true"><label for="cfWeb">Leave this empty</label><input id="cfWeb" name="website" tabindex="-1" autocomplete="off"></div>
+  <p class="cf-err" id="cfErr" role="alert" hidden></p>
+  <div class="cf-go"><button class="btn btn-p" type="submit" id="cfSend">Send message</button><span class="cf-hint">Your message is kept on this site and emailed to the person who looks after it. See the <a href="privacy.html">privacy notice</a>.</span></div>
+</form>
+<div id="cfDone" hidden><div class="cf-ok"><h2>Thanks, that's sent</h2><p id="cfDoneText">We'll reply to the email address you gave.</p><p><a class="btn btn-o" href="./">Back to the front page</a> <button class="btn btn-o" type="button" id="cfAgain">Send another</button></p></div></div>
+<p class="cf-alt" data-if-contact hidden>Prefer email? Write to <a data-contact data-contact-text href="#">us</a>.</p>
+</main>
+<footer><div class="wrap"><span>&copy; <span data-year></span> Crafticulum. Lessons are written with Claude, made by Anthropic.</span>
+<nav aria-label="Legal"><a href="./">About</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="contact.html">Contact</a><a href="app.html">Sign in</a></nav></div></footer>
+<script src="pages.js?v=7"></script>
+<script src="contact.js?v=1"></script>
+</body>
+</html>

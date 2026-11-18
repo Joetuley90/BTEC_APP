@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="favicon.ico?v=4" sizes="any">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=4">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=4">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=4">
+<meta name="apple-mobile-web-app-title" content="Crafticulum">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="robots" content="noindex">
+<script>try{const a=JSON.parse(localStorage.getItem("cc_read")||"{}"),d=document.documentElement;["theme","size","font","ov"].forEach(k=>{if(a[k])d.dataset[k]=a[k];});}catch(e){}</script>
+<title>Crafticulum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@400;600;700;800&display=swap">
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--soft:#f1f3f8;--line:#e5e7ef;--ink:#0f172a;--muted:#5c6579;--faint:#6b7489;--p:#4f46e5;--pt:#4338ca;--ps:#eef0ff;
+  --ok:#059669;--oks:#e6f6ef;--okt:#065f46;--bad:#e11d48;--bads:#fdebef;--badt:#9f1239;--warn:#fef4e2;--warnt:#92400e;
+  --grad:linear-gradient(135deg,#6366f1 0%,#8b5cf6 55%,#a855f7 100%);--sh:0 1px 3px rgba(15,23,42,.06),0 8px 24px -12px rgba(15,23,42,.12);
+  --f:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a0d16;--card:#111623;--soft:#171d2d;--line:#232a3b;--ink:#e7eaf3;--muted:#9aa3b8;--faint:#8a94ad;--p:#818cf8;--pt:#a5b4fc;--ps:rgba(99,102,241,.15);
+  --ok:#34d399;--oks:rgba(16,185,129,.13);--okt:#6ee7b7;--bad:#fb7185;--bads:rgba(244,63,94,.13);--badt:#fda4af;--warn:rgba(245,158,11,.13);--warnt:#fcd34d;--sh:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0a0d16;--card:#111623;--soft:#171d2d;--line:#232a3b;--ink:#e7eaf3;--muted:#9aa3b8;--faint:#8a94ad;--p:#818cf8;--pt:#a5b4fc;--ps:rgba(99,102,241,.15);
+  --ok:#34d399;--oks:rgba(16,185,129,.13);--okt:#6ee7b7;--bad:#fb7185;--bads:rgba(244,63,94,.13);--badt:#fda4af;--warn:rgba(245,158,11,.13);--warnt:#fcd34d;--sh:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right)) 64px max(16px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.top svg{width:26px;height:26px;flex:none}.wm{font-weight:800;letter-spacing:-.04em}.wm-2{color:var(--pt)}
+.top b{font-weight:800;letter-spacing:-.02em}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;position:relative}
+.dlm{position:relative}
+.aa{position:static}
+.aa-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;min-width:44px;font:800 15px var(--f);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:11px;padding:0 12px;cursor:pointer;box-shadow:var(--sh)}
+.aa-btn:hover{border-color:var(--p)}
+.aa-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:21;width:min(320px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 50px -20px rgba(15,23,42,.45);padding:12px 14px 14px}
+.aa-panel h4{margin:10px 0 6px;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.aa-panel h4:first-child{margin-top:0}
+.seg{display:flex;gap:4px;background:var(--soft);border-radius:10px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);font:700 14px var(--f);padding:7px 6px;border-radius:8px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.15)}
+.ovs{display:flex;gap:8px;flex-wrap:wrap}
+.ovs button{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);cursor:pointer;background:var(--card);color:var(--muted);font:700 11px var(--f)}
+.ovs button[aria-pressed=true]{border-color:var(--p);box-shadow:0 0 0 3px var(--ps)}
+.aa-reset{margin-top:12px;border:0;background:transparent;color:var(--pt);font:700 13px var(--f);padding:0;cursor:pointer;text-decoration:underline}
+:root[data-size=l] #app{zoom:1.15}
+:root[data-size=xl] #app{zoom:1.3}
+:root[data-font=easy]{--f:"Lexend",ui-sans-serif,system-ui,sans-serif}
+:root[data-font=easy] body{line-height:1.8;letter-spacing:.012em;word-spacing:.1em}
+:root[data-font=easy] h1,:root[data-font=easy] h2{letter-spacing:0}
+:root[data-ov] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;mix-blend-mode:multiply;opacity:.38}
+:root[data-ov=cream] body::after{background:#ffe9a8}
+:root[data-ov=blue] body::after{background:#a9d4ff}
+:root[data-ov=green] body::after{background:#b9efb0}
+:root[data-ov=pink] body::after{background:#ffc2d6}
+:root[data-ov=grey] body::after{background:#c9ccd3}
+.dl-btn{display:inline-flex;align-items:center;gap:7px;font:700 15px var(--f);color:#fff;background-image:var(--grad);border:0;border-radius:11px;padding:9px 15px;cursor:pointer;box-shadow:0 8px 18px -8px rgba(99,102,241,.75)}
+.dl-btn svg{width:18px;height:18px}
+.dl-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:20;width:min(330px,calc(100vw - 32px));max-height:min(70vh,520px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 50px -20px rgba(15,23,42,.45);padding:6px}
+.dl-menu h4{margin:8px 10px 4px;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.dl-menu a{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:9px;color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
+.dl-menu a:hover,.dl-menu a:focus-visible{background:var(--soft)}
+.dl-menu a span{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted)}
+.dl-row{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.dl-row a{font-size:13px;font-weight:700;color:var(--pt);background:var(--ps);border-radius:99px;padding:4px 11px;text-decoration:none}
+.top small{display:block;color:var(--muted);font-size:12px;line-height:1.2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:clamp(16px,3.5vw,28px);margin-bottom:16px}
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--grad)}
+.kick{font-size:13px;color:var(--muted);margin-bottom:4px}
+h1{font-size:clamp(24px,5vw,34px);line-height:1.15;letter-spacing:-.025em;margin:0 0 6px;text-wrap:balance}
+h2{font-size:19px;letter-spacing:-.015em;margin:0 0 10px}
+h3{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
+p{margin:0 0 10px}
+ul,ol{margin:0 0 10px;padding-left:1.3em}
+li{margin-bottom:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--ps);color:var(--pt)}
+.obj{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:start}
+.tag{font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;white-space:nowrap}
+.t-p{background:var(--oks);color:var(--okt)}.t-m{background:var(--warn);color:var(--warnt)}.t-d{background:var(--bads);color:var(--badt)}
+.prompt{background:var(--ps);color:var(--pt);font-weight:700;font-size:18px;border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.plan{list-style:none;padding:0}
+.plan li{display:grid;grid-template-columns:4.5rem 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+.plan li:last-child{border-bottom:0}
+.plan b{color:var(--pt);font-variant-numeric:tabular-nums}
+.task{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:var(--card)}
+.tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:12px;align-items:start}
+.tasks-grid .task{margin-bottom:0}
+@media (min-width:900px){.obj{max-width:none}.prompt{font-size:20px}}
+.task-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.num{font-size:12px;font-weight:800;color:#fff;background:var(--p);border-radius:7px;padding:2px 8px}
+.task-h h4{margin:0;font-size:16px;flex:1;min-width:0}
+.mins{font-size:13px;color:var(--muted)}
+.goal{background:var(--soft);border-radius:9px;padding:8px 12px;font-size:14px;margin-bottom:8px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.check li{list-style:none;position:relative;padding-left:1.6em}
+.check{padding-left:0}
+.check li::before{content:"";position:absolute;left:0;top:.3em;width:1em;height:1em;border:2px solid var(--line);border-radius:4px}
+.tip b{color:var(--ok)}.stretch b{color:var(--bad)}
+.week{margin-bottom:10px;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.week>button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);font:inherit;padding:14px 16px;cursor:pointer}
+.week>button:hover{background:var(--soft)}
+.week .wn{font-weight:800;white-space:nowrap}
+.week .wd{font-size:13px;color:var(--muted);white-space:nowrap}
+.week .wt{flex:1;min-width:0;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.week .chev{width:16px;height:16px;flex:none;transition:transform .15s;color:var(--faint)}
+.week.open .chev{transform:rotate(90deg)}
+.week-body{padding:0 16px 16px}
+.lesson-in{border-top:1px solid var(--line);padding-top:14px;margin-top:4px}
+.lesson-in+.lesson-in{margin-top:16px}
+label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+input[type=text]{width:100%;font:inherit;font-size:17px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink)}
+input[type=text]:focus{outline:3px solid rgba(99,102,241,.3);border-color:var(--p)}
+.q{margin-bottom:14px}
+.q p{font-weight:700;margin-bottom:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;cursor:pointer}
+.opt:hover{border-color:var(--p)}
+.opt .l{width:1.6em;height:1.6em;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--soft);color:var(--muted)}
+.opt[aria-pressed=true]{border-color:var(--p);background:var(--ps)}
+.opt[aria-pressed=true] .l{background:var(--p);color:#fff}
+.opt.right{border-color:var(--ok);background:var(--oks)}.opt.right .l{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bads)}.opt.wrong .l{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 16px var(--f);color:#fff;background-image:var(--grad);border:0;border-radius:12px;padding:13px 22px;cursor:pointer;box-shadow:0 8px 20px -8px rgba(99,102,241,.7)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:var(--card);background-image:none;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+:focus-visible{outline:3px solid var(--p);outline-offset:2px}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;background-image:var(--grad);transition:width .2s}
+.score{font-size:clamp(44px,10vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0}
+.mark{font-size:13px;font-weight:800;margin:-2px 0 8px}
+.mark.ok{color:var(--ok)}.mark.no{color:var(--bad)}
+.why{font-size:14px;color:var(--muted);background:var(--soft);border-radius:9px;padding:8px 12px}
+.err{background:var(--bads);color:var(--badt);border-radius:10px;padding:10px 14px;font-weight:600;margin-top:10px}
+.sticky{position:sticky;bottom:0;padding:12px 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.next{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;background:var(--ps);color:var(--pt);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.next span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.next b{font-size:17px}.next em{font-style:normal;font-weight:600}
+.dl-wrap{overflow-x:auto}
+.dl{width:100%;border-collapse:collapse;font-size:14px}
+@media (max-width:480px){.dl{font-size:13px}.dl th,.dl td{padding:7px 5px}}
+.dl th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.dl td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.dl tr:last-child td{border-bottom:0}
+.dl td.past{color:var(--muted);text-decoration:line-through}
+.fnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;gap:4px;padding:5px;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:99px;box-shadow:0 14px 34px -14px rgba(15,23,42,.45)}
+.fnav::-webkit-scrollbar{display:none}
+.fnav button{flex:none;border:0;background:transparent;color:var(--muted);font:700 14px var(--f);padding:8px 14px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.fnav button:hover{color:var(--ink);background:var(--soft)}
+.fnav button[aria-current=true]{color:#fff;background-image:var(--grad)}
+body.has-nav .wrap{padding-bottom:110px}
+[data-sec]{scroll-margin-top:16px}
+.l-short{display:none}
+@media (max-width:480px){.fnav button{font-size:13px;padding:8px 12px}.l-long{display:none}.l-short{display:inline}}
+.foot{font-size:12px;color:var(--faint);text-align:center;margin-top:24px}
+.livebar{position:sticky;top:0;z-index:18;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:-8px 0 14px;padding:10px 14px;border-radius:14px;background:#111827;color:#fff;box-shadow:0 12px 30px -14px rgba(15,23,42,.6)}
+.livebar .ld{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fca5a5}
+.livebar .ld::before{content:"";width:9px;height:9px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.3);animation:lp 1.4s ease-in-out infinite}
+@keyframes lp{50%{opacity:.3}}
+.livebar .lw{font-weight:700;flex:1;min-width:10rem}
+.res-row{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.res-a{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;font-weight:700;background:var(--card)}
+.res-a:hover{border-color:var(--p)}
+.res-a span{flex:none;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pt);background:var(--ps);border-radius:6px;padding:2px 7px}
+.res-a img{width:56px;height:40px;object-fit:cover;border-radius:6px;flex:none}
+.steps{padding-left:0;list-style:none;counter-reset:st}
+.steps li{position:relative;padding-left:2.1em;counter-increment:st;cursor:pointer;border-radius:8px}
+.steps li::before{content:counter(st);position:absolute;left:0;top:.05em;width:1.5em;height:1.5em;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;font-size:.8em;font-weight:800;color:var(--muted);background:var(--card)}
+.steps li.ticked{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--faint)}
+.steps li.ticked::before{content:"\2713";background:var(--ok);border-color:var(--ok);color:#fff}
+.steps li:focus-visible{outline:3px solid var(--p);outline-offset:2px}
+.fin{margin-top:6px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:700 14px var(--f);padding:8px 13px;border-radius:10px;cursor:pointer}
+.fin[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}
+.task.finished{border-color:var(--ok)}
+.livebar .lname{display:flex;gap:6px;flex-basis:100%}
+.livebar .lname input{flex:1;min-width:0;font:inherit;font-size:15px;padding:7px 10px;border-radius:9px;border:0}
+.livebar .lhelp[aria-pressed=true]{background:#f59e0b;border-color:#f59e0b;color:#111}
+.livebar .lt{font:800 20px/1 var(--f);font-variant-numeric:tabular-nums;padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.12)}
+.livebar .lt.low{background:#b91c1c}
+.livebar .lt.paused{opacity:.7}
+.livebar button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:700 13px var(--f);padding:6px 11px;border-radius:9px;cursor:pointer}
+.task.now{border-color:var(--p);box-shadow:0 0 0 3px var(--ps)}
+.top .site-logo{width:36px;height:36px;border-radius:9px;object-fit:contain;background:#fff;flex:none}
+.back-c{display:inline-block;margin:0 0 12px;font-weight:600;font-size:14px}
+.who-row{display:flex;gap:8px;flex-wrap:wrap}
+.who-row input{flex:1 1 180px;min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.who-row .go{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px 18px;background:var(--p);color:#fff;cursor:pointer}
+.cls-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.cls-stats b{display:block;font-size:22px}
+.cls-stats span{font-size:13px;color:var(--muted)}
+.cls-row{display:flex;gap:12px;align-items:center;padding:12px 2px;border-top:1px solid var(--line);text-decoration:none;color:inherit}
+.cls-row:first-of-type{border-top:0}
+.cls-main{flex:1;min-width:0;display:grid}
+.cls-main small{color:var(--muted);font-size:13px}
+.cls-pill{flex:none;font-size:12px;font-weight:700;border-radius:99px;padding:3px 10px;background:var(--soft);color:var(--muted)}
+.cls-pill.ok{background:#dcfce7;color:#166534}
+.learn .num{background:#059669}
+.learn-p{margin:0 0 10px;line-height:1.6}
+.terms{margin:10px 0;display:grid;gap:6px}
+.terms dt{font-weight:700;font-size:14px}
+.terms dd{margin:0;font-size:14px;color:var(--muted)}
+.task.now .num{background:#ef4444}
+[data-part].now{color:var(--pt)}
+.cal-acts{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.cal-btn{display:inline-flex;align-items:center;gap:7px;font:700 14px var(--f);color:var(--pt);background:var(--ps);border:0;border-radius:10px;padding:8px 13px;text-decoration:none;cursor:pointer}
+.cal-btn svg{width:17px;height:17px}
+.gcal{font-size:12px;font-weight:700;color:var(--pt);text-decoration:none;white-space:nowrap}
+.cover-note{background:var(--warn);color:var(--warnt);border-radius:12px;padding:10px 14px;font-weight:600;margin-bottom:14px}
+.tp{width:100%;border-collapse:collapse;font-size:15px}
+.tp th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.tp td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tp td:first-child{white-space:nowrap;font-weight:700;color:var(--pt)}
+.ans{background:var(--oks);color:var(--okt);border-radius:10px;padding:10px 14px;margin:6px 0 10px}
+.qa li{margin-bottom:10px}.qa .right{font-weight:700;color:var(--ok)}
+.board-btn{margin-left:auto}
+.cboard{position:fixed;inset:0;z-index:50;background:#1f2a24;color:#f4f1e8;display:flex;flex-direction:column}
+.cboard .cb-top{display:flex;gap:8px;align-items:center;padding:10px 14px;background:rgba(0,0,0,.25)}
+.cboard .cb-top b{flex:1;font-size:14px;opacity:.8}
+.cboard button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:700 15px var(--f);padding:8px 14px;border-radius:10px;cursor:pointer}
+.cboard .cb-body{flex:1;overflow:auto;padding:clamp(20px,5vw,64px);font-size:clamp(20px,2.6vw,34px);line-height:1.35}
+.cboard .cb-k{font-size:.55em;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9fd3ff;margin-bottom:.3em}
+.cboard h2{font-size:1.6em;margin:0 0 .4em;line-height:1.1}
+.cboard .cb-p{font-weight:700;color:#ffe58a;font-size:1.15em;margin-bottom:.5em}
+.cboard li{margin-bottom:.3em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.livebar .ld::before{animation:none}}
+.cc-visual{display:grid;gap:14px;margin:12px 0}.cc-visual figure{margin:0}
+.cc-dg{border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:6px;background:var(--card,#fff);overflow:hidden;--dg-ink:var(--ink,#111827);--dg-mute:var(--muted,#4b5563);--dg-box:var(--ps,#eef2ff);--dg-line:var(--line,#c3c8d4);--dg-accent:var(--p,#4f46e5)}
+.cc-dg svg{display:block;width:100%;height:auto}
+.cc-pic img{display:block;width:100%;height:auto;max-height:420px;object-fit:cover;border-radius:14px;background:var(--soft,#f3f4f6)}
+.cc-pic figcaption{font-size:.84rem;margin-top:6px}.cc-credit{color:var(--muted,#6b7280);font-size:.74rem}.cc-credit a{color:inherit}
+@media print{.cc-pic img{max-height:260px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 8 H64 V36 H36 V64 H92 V78 Q92 92 78 92 H22 Q8 92 8 78 V22 Q8 8 22 8 Z" fill="var(--p,#4f46e5)"/><path d="M64 8 L92 36 H64 Z" fill="var(--fold,#a5b4fc)"/></svg>
+    <div><b class="wm">craft<span class="wm-2">iculum</span></b><small id="sub">Loading...</small></div>
+    <div class="tools">
+    <div class="aa" id="aa"><button type="button" class="aa-btn" id="aaBtn" aria-expanded="false" aria-controls="aaPanel" aria-label="Reading options: theme, text size, font and colour overlay">Aa</button>
+      <div class="aa-panel" id="aaPanel" role="dialog" aria-label="Reading options" hidden>
+        <h4 id="aaTh">Theme</h4><div class="seg" role="group" aria-labelledby="aaTh"><button type="button" data-aa="theme" data-v="">Auto</button><button type="button" data-aa="theme" data-v="light">Light</button><button type="button" data-aa="theme" data-v="dark">Dark</button></div>
+        <h4 id="aaSz">Text size</h4><div class="seg" role="group" aria-labelledby="aaSz"><button type="button" data-aa="size" data-v="" aria-label="Normal text">A</button><button type="button" data-aa="size" data-v="l" aria-label="Large text" style="font-size:16px">A+</button><button type="button" data-aa="size" data-v="xl" aria-label="Extra large text" style="font-size:18px">A++</button></div>
+        <h4 id="aaFt">Font</h4><div class="seg" role="group" aria-labelledby="aaFt"><button type="button" data-aa="font" data-v="">Standard</button><button type="button" data-aa="font" data-v="easy" style="font-family:Lexend,sans-serif">Easy read</button></div>
+        <h4 id="aaOv">Colour overlay</h4><div class="ovs" role="group" aria-labelledby="aaOv"><button type="button" data-aa="ov" data-v="" aria-label="No overlay">Off</button><button type="button" data-aa="ov" data-v="cream" aria-label="Cream" style="background:#ffe9a8"></button><button type="button" data-aa="ov" data-v="blue" aria-label="Blue" style="background:#a9d4ff"></button><button type="button" data-aa="ov" data-v="green" aria-label="Green" style="background:#b9efb0"></button><button type="button" data-aa="ov" data-v="pink" aria-label="Pink" style="background:#ffc2d6"></button><button type="button" data-aa="ov" data-v="grey" aria-label="Grey" style="background:#c9ccd3"></button></div>
+        <button type="button" class="aa-reset" data-aa="reset">Back to normal</button>
+      </div></div>
+    <div class="dlm" id="dlm" hidden>
+      <button type="button" class="dl-btn" id="dlBtn" aria-expanded="false" aria-controls="dlMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download</button>
+      <div class="dl-menu" id="dlMenu" hidden></div>
+    </div>
+    </div>
+  </div>
+  <div class="livebar" id="liveBar" role="status" aria-live="polite" hidden></div>
+  <main id="app"><div class="card">Loading...</div></main>
+  <nav class="fnav" id="fnav" aria-label="Jump to a section" hidden></nav>
+<div class="foot">Shared by your teacher. Bookmark this page to come back to it. <a href="privacy.html" style="color:inherit">Privacy</a> · <a href="cookies.html" style="color:inherit">Cookies</a></div>
+</div>
+<script src="visuals.js?v=1"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const id = (new URLSearchParams(location.search).get("id") || (location.pathname.match(/\/s\/([A-Za-z0-9]+)$/) || [])[1] || location.hash.slice(1) || "").replace(/[^A-Za-z0-9]/g, "");
+const api = (a, body) => fetch("share.php?a=" + a + (body ? "" : "&id=" + encodeURIComponent(id)), body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {}).then(async r => ({ok: r.ok, status: r.status, json: await r.json().catch(() => ({}))}));
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+const fileUrl = (f, slot) => "share.php?a=file&k=" + encodeURIComponent(f.key) + "&f=" + encodeURIComponent(slot);
+const kind = n => /pptx$/.test(n) ? "PPTX" : "DOCX";
+function setDownloads(groups){
+  const box = $("#dlm"), menu = $("#dlMenu"), btn = $("#dlBtn");
+  const gs = (groups || []).filter(g => g.files && g.files.key && (g.files.list || []).length);
+  if(!gs.length){ box.hidden = true; return; }
+  menu.innerHTML = gs.map(g => `${g.head ? `<h4>${esc(g.head)}</h4>` : ""}${g.files.list.map(x => `<a href="${fileUrl(g.files, x.slot)}" download="${esc(x.name)}">${esc(x.label)}<span>${kind(x.name)}</span></a>`).join("")}`).join("");
+  box.hidden = false;
+  btn.onclick = e => { e.stopPropagation(); const ap = $("#aaPanel"); if(ap){ ap.hidden = true; $("#aaBtn").setAttribute("aria-expanded", "false"); } const open = menu.hidden; menu.hidden = !open; btn.setAttribute("aria-expanded", open); };
+  document.addEventListener("click", e => { if(!e.target.closest("#dlm")){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); } });
+  document.addEventListener("keydown", e => { if(e.key === "Escape"){ menu.hidden = true; btn.setAttribute("aria-expanded", "false"); } });
+}
+const dlRow = f => f && f.key && (f.list || []).length ? `<div class="dl-row">${f.list.map(x => `<a href="${fileUrl(f, x.slot)}" download="${esc(x.name)}">${esc(x.label)}</a>`).join("")}</div>` : "";
+/* floating nav: jump to the lesson or unit, the objectives, the tasks and the deadlines */
+let openLatest = null, navKind = "";
+const NAV = [["top", ""], ["obj", "Learning objectives"], ["tasks", "Tasks"], ["dl", "Deadlines"]];
+function setNav(kind, hasDl){
+  navKind = kind; const nav = $("#fnav");
+  const items = NAV.filter(([k]) => k !== "dl" || hasDl).filter(([k]) => kind === "unit" || k === "top" || document.querySelector(`[data-sec="${k}"]`));
+  nav.innerHTML = items.map(([k, l]) => `<button type="button" data-go="${k}">${k === "top" ? (kind === "unit" ? "Unit" : "Lesson") : k === "obj" ? `<span class="l-long">${l}</span><span class="l-short">Objectives</span>` : l}</button>`).join("");
+  nav.hidden = items.length < 2; document.body.classList.toggle("has-nav", !nav.hidden); syncNav();
+}
+const visSec = k => [...document.querySelectorAll(`[data-sec="${k}"]`)].filter(e => e.getClientRects().length);
+function navTarget(k){
+  let v = visSec(k);
+  if(!v.length && navKind === "unit" && openLatest && k !== "dl"){ openLatest(); v = visSec(k); }
+  if(!v.length) return null;
+  if(navKind !== "unit") return v[0];
+  return v.find(e => e.getBoundingClientRect().top > 24) || v[0];   // in a unit, tapping again steps on to the next open lesson
+}
+function syncNav(){
+  const nav = $("#fnav"); if(!nav || nav.hidden) return;
+  const mid = innerHeight * 0.35; let cur = "top", best = -Infinity;
+  NAV.forEach(([k]) => visSec(k).forEach(e => { const t = e.getBoundingClientRect().top; if(t <= mid && t > best){ best = t; cur = k; } }));
+  if(scrollY < 40) cur = "top";
+  if(navKind === "lesson" && innerHeight + scrollY >= document.documentElement.scrollHeight - 4 && visSec("dl").length) cur = "dl";
+  nav.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", b.dataset.go === cur ? "true" : "false"));
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-go]"); if(!b) return;
+  const k = b.dataset.go;
+  if(k === "top"){ scrollTo({top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return; }
+  const t = navTarget(k); if(!t) return;
+  scrollTo({top: t.getBoundingClientRect().top + scrollY - 16, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+});
+addEventListener("scroll", () => requestAnimationFrame(syncNav), {passive: true});
+const grade = c => /D\d/.test(c) ? "t-d" : /M\d/.test(c) ? "t-m" : "t-p";
+const list = (a, cls) => (a && a.length) ? `<${cls === "ol" ? "ol" : "ul"}${cls && cls !== "ol" ? ` class="${cls}"` : ""}>${a.map(x => `<li>${esc(x)}</li>`).join("")}</${cls === "ol" ? "ol" : "ul"}>` : "";
+
+function lessonBody(L){
+  const o = L.objectives || {};
+  return `
+    ${o.all ? `<h3 data-sec="obj" data-part="objectives">Learning objectives</h3><div class="obj"><span class="tag t-p">All</span><span>${esc(o.all)}</span>${o.most ? `<span class="tag t-m">Most</span><span>${esc(o.most)}</span>` : ""}${o.some ? `<span class="tag t-d">Some</span><span>${esc(o.some)}</span>` : ""}</div>` : ""}
+    ${L.starter && L.starter.prompt ? `<h3 data-part="starter">Starter: ${esc(L.starter.title)}</h3><div class="prompt">${esc(L.starter.prompt)}</div>${list(L.starter.instructions)}` : ""}
+    ${(L.plan || []).length ? `<h3 data-part="plan">The lesson plan</h3><ul class="plan">${L.plan.map(r => `<li><b>${esc(r.time)}</b><span>${esc(r.what)}</span></li>`).join("")}</ul>` : ""}
+    ${(L.howTo || []).length ? `<h3>How to work</h3>${list(L.howTo)}` : ""}
+    ${(L.resources || []).length ? `<h3 data-part="res">Resources</h3><div class="res-row">${L.resources.map(r => `<a class="res-a" href="${esc(r.url)}" target="_blank" rel="noopener">${r.img ? `<img src="${esc(r.url)}" alt="">` : ""}<span>${esc(r.kind)}</span>${esc(r.title)}</a>`).join("")}</div>` : ""}
+    ${(L.teach || []).length ? `<h3 data-sec="learn" data-part="teach">What you need to know</h3>${L.teach.map((t, i) => `<div class="task learn" data-teach="${i}">
+      <div class="task-h"><span class="num">Part ${i + 1}</span><h4>${esc(t.title)}</h4></div>
+      ${t.explain ? `<p class="learn-p">${esc(t.explain)}</p>` : ""}
+      ${window.ccVisualHtml ? ccVisualHtml(t) : ""}
+      ${(t.points || []).length ? `<div class="small"><b>Key points</b>${list(t.points)}</div>` : ""}
+      ${(t.terms || []).length ? `<dl class="terms">${t.terms.map(k => `<div><dt>${esc(k.term)}</dt><dd>${esc(k.meaning)}</dd></div>`).join("")}</dl>` : ""}
+      ${t.example ? `<div class="goal"><b>Example:</b> ${esc(t.example)}</div>` : ""}
+      ${t.ask ? `<p class="small tip" style="margin-bottom:0"><b>Check yourself:</b> ${esc(t.ask)}</p>` : ""}
+    </div>`).join("")}` : ""}
+    ${(L.tasks || []).length ? `<h3 data-sec="tasks" data-part="tasks">Tasks</h3><div class="tasks-grid">${L.tasks.map((t, i) => `<div class="task" data-task="${i}">
+      <div class="task-h"><span class="num">Task ${i + 1}</span><h4>${esc(t.title)}</h4>${t.mins ? `<span class="mins">${esc(t.mins)} min</span>` : ""}</div>
+      ${t.goal ? `<div class="goal"><b>You will produce:</b> ${esc(t.goal)}</div>` : ""}
+      ${(t.steps || []).length ? `<ol class="steps">${t.steps.map((s, j) => `<li data-si="${j}" tabindex="0" role="checkbox" aria-checked="false">${esc(s)}</li>`).join("")}</ol>` : ""}
+      ${(t.check || []).length ? `<div class="small"><b>Check before you move on</b>${list(t.check, "check")}</div>` : ""}
+      ${t.tip ? `<p class="small tip"><b>Tip:</b> ${esc(t.tip)}</p>` : ""}${t.stretch ? `<p class="small stretch"><b>Stretch:</b> ${esc(t.stretch)}</p>` : ""}
+      <button type="button" class="fin" data-fin="${i}" aria-pressed="false">I've finished this task</button>
+    </div>`).join("")}</div>` : (L.steps || []).length ? `<h3 data-sec="tasks">Today's task</h3>${list(L.steps, "ol")}` : ""}
+    ${(L.doneBy || []).length ? `<h3>Done by the end of the lesson</h3>${list(L.doneBy, "check")}` : ""}
+    ${L.study ? `<h3>Independent study${L.study.mins ? ` · about ${esc(L.study.mins)} minutes` : ""}</h3><div class="task"><h4 style="margin:0 0 6px">${esc(L.study.title)}</h4>
+      ${L.study.goal ? `<div class="goal"><b>You will produce:</b> ${esc(L.study.goal)}</div>` : ""}${list(L.study.steps, "ol")}
+      ${(L.study.sources || []).length ? `<div class="small"><b>Where to look</b>${list(L.study.sources)}</div>` : ""}
+      ${L.study.bring ? `<p class="small"><b>Bring next lesson:</b> ${esc(L.study.bring)}</p>` : ""}${L.study.stretch ? `<p class="small stretch"><b>Stretch:</b> ${esc(L.study.stretch)}</p>` : ""}</div>` : ""}`;
+}
+const today = (() => { const n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); })();
+const day = iso => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-GB", {weekday: "short", day: "numeric", month: "short"}) : "";
+const daysTo = iso => Math.round((new Date(iso + "T00:00:00") - new Date(today + "T00:00:00")) / 864e5);
+const ymd = iso => iso.replace(/-/g, "");
+const dayAfter = iso => { const t = new Date(iso + "T00:00:00Z"); t.setUTCDate(t.getUTCDate() + 1); return t.toISOString().slice(0, 10); };
+function calEvents(list){ return (list || []).flatMap(a => [[a.due, a.name + " hand-in", a.title], [a.resub, a.name + " resubmission", a.title]]).filter(x => x[0] && x[0] >= today); }
+function icsText(list, unit){
+  const E = s => String(s || "").replace(/[\\;,]/g, m => "\\" + m).replace(/\r?\n/g, "\\n");
+  const fold = l => { const out = []; while(l.length > 74){ out.push(l.slice(0, 74)); l = " " + l.slice(74); } out.push(l); return out.join("\r\n"); };
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Crafticulum//Deadlines//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-WR-CALNAME:" + E(unit ? "Deadlines: " + unit : "Assignment deadlines")];
+  calEvents(list).forEach(([d, what, title], i) => lines.push("BEGIN:VEVENT", "UID:" + ymd(d) + "-" + i + "-" + (id || "cc") + "@course-creator", "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + ymd(d), "DTEND;VALUE=DATE:" + ymd(dayAfter(d)),
+    "SUMMARY:" + E(what), "DESCRIPTION:" + E((title ? title + ". " : "") + (unit ? unit + ". " : "") + "Your lesson page: " + location.href), "TRANSP:TRANSPARENT",
+    "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + E(what + " in 3 days"), "TRIGGER:-P3D", "END:VALARM",
+    "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + E(what + " tomorrow"), "TRIGGER:-PT15H", "END:VALARM", "END:VEVENT"));
+  lines.push("END:VCALENDAR");
+  return lines.map(fold).join("\r\n") + "\r\n";
+}
+const gcalUrl = (d, what, title, unit) => "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(what) + "&dates=" + ymd(d) + "/" + ymd(dayAfter(d)) + "&details=" + encodeURIComponent((title ? title + ". " : "") + (unit ? unit + ". " : "") + location.href);
+const CALI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>';
+function deadlines(list, unit){
+  if(!(list || []).length) return "";
+  const evs = calEvents(list), ics = evs.length ? "data:text/calendar;charset=utf-8," + encodeURIComponent(icsText(list, unit)) : "";
+  const next = list.flatMap(a => [[a.due, a.name + " hand-in"], [a.resub, a.name + " resubmission"]]).filter(x => x[0] && x[0] >= today).sort((a, b) => a[0] < b[0] ? -1 : 1)[0];
+  return `<div class="card" data-sec="dl">${next ? `<div class="next"><span>Next deadline</span><b>${esc(next[1])}</b><em>${day(next[0])}${daysTo(next[0]) === 0 ? " · today" : daysTo(next[0]) === 1 ? " · tomorrow" : ` · in ${daysTo(next[0])} days`}</em></div>` : ""}
+    <h2>Assignment dates</h2>${evs.length ? `<div class="cal-acts"><a class="cal-btn" href="${ics}" download="${esc((unit || "Assignment").replace(/[^A-Za-z0-9 ]+/g, " ").trim())} deadlines.ics">${CALI}Add deadlines to my calendar</a></div><p class="muted small" style="margin-top:-6px">Works with Outlook, Apple Calendar and Google Calendar, with a reminder 3 days before and the day before. Or add one at a time to Google below.</p>` : ""}<div class="dl-wrap"><table class="dl"><thead><tr><th>Assignment</th><th>Handed out</th><th>Hand in by</th><th>Resubmission</th></tr></thead><tbody>
+    ${list.map(a => `<tr><td><b>${esc(a.name)}</b><br><span class="muted small">${esc(a.title)}</span></td><td>${day(a.out) || "Not set"}</td><td class="${a.due && a.due < today ? "past" : ""}">${day(a.due) || "Not set"}${a.due && a.due >= today ? `<br><a class="gcal" href="${gcalUrl(a.due, a.name + " hand-in", a.title, unit)}" target="_blank" rel="noopener">+ Google Calendar</a>` : ""}</td><td>${day(a.resub) || "-"}${a.resub && a.resub >= today ? `<br><a class="gcal" href="${gcalUrl(a.resub, a.name + " resubmission", a.title, unit)}" target="_blank" rel="noopener">+ Google Calendar</a>` : ""}</td></tr>`).join("")}</tbody></table></div></div>`;
+}
+function heroHtml(kick, title, sub, chips){
+  return `<div class="card hero" data-sec="top"><div class="kick">${esc(kick)}</div><h1>${esc(title)}</h1>${sub ? `<div class="muted">${esc(sub)}</div>` : ""}${(chips || []).length ? `<div class="chips">${chips.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div>` : ""}</div>`;
+}
+function showLesson(L){
+  document.title = L.title + " · Crafticulum"; $("#sub").textContent = "Lesson"; setDownloads([{files: L.files}]);
+  setTimeout(() => setNav("lesson", !!(L.assignments || []).length), 0);
+  $("#app").innerHTML = heroHtml(`${L.course || ""} · ${L.level || ""}${L.length ? " · " + L.length : ""}`, L.title, L.unit, L.criteria) + `<div class="card" data-live="${esc(L.live || id)}">${lessonBody(L)}</div>` + deadlines(L.assignments, L.unit);
+  paintTicks();
+  liveWatch([L.live]);
+}
+function showUnit(U){
+  document.title = U.unit + " · Crafticulum"; $("#sub").textContent = "Unit lessons";
+  setDownloads((U.lessons || []).slice().reverse().map(L => ({head: `Week ${L.week} · ${L.title}`, files: L.files})));
+  const weeks = []; (U.lessons || []).forEach(L => { const w = weeks.find(x => x.week === L.week); if(w) w.items.push(L); else weeks.push({week: L.week, wc: L.wc, items: [L]}); });
+  const open = new Set([weeks.length ? weeks[weeks.length - 1].week : 0]);
+  openLatest = () => { if(!weeks.length) return; const w = weeks[weeks.length - 1].week; if(!open.has(w)){ open.add(w); draw(); } };
+  const draw = () => {
+    $("#app").innerHTML = heroHtml(`${U.course || ""} · ${U.level || ""}`, U.unit, `${(U.lessons || []).length} lessons so far. Open a week to see its lessons and tasks.`) + deadlines(U.assignments, U.unit) +
+      weeks.map(w => `<section class="week${open.has(w.week) ? " open" : ""}"><button type="button" data-w="${w.week}" aria-expanded="${open.has(w.week)}">${CHEV}<span class="wn">Week ${esc(w.week)}</span>${w.wc ? `<span class="wd">w/c ${esc(w.wc)}</span>` : ""}<span class="wt">${open.has(w.week) ? "" : esc(w.items.map(x => x.title).join(" · "))}</span></button>
+        ${open.has(w.week) ? `<div class="week-body">${w.items.map(L => `<div class="lesson-in" data-live="${esc(L.live || "")}"><h2>${esc(L.title)}</h2>${(L.criteria || []).length ? `<div class="chips" style="margin:-4px 0 6px">${L.criteria.map(c => `<span class="chip">${esc(c)}</span>`).join("")}</div>` : ""}${dlRow(L.files)}${lessonBody(L)}</div>`).join("")}</div>` : ""}</section>`).join("") ||
+      `<div class="card muted">No lessons have been added yet. Check back later.</div>`;
+  };
+  $("#app").onclick = e => { const b = e.target.closest("[data-w]"); if(!b) return; const w = +b.dataset.w; if(open.has(w)) open.delete(w); else open.add(w); draw(); paintTicks(); syncNav(); };
+  openLive = key => { const w = weeks.find(x => x.items.some(L => L.live === key)); if(w && !open.has(w.week)){ open.add(w.week); draw(); paintTicks(); } };
+  draw(); paintTicks(); setNav("unit", !!(U.assignments || []).length);
+  liveWatch((U.lessons || []).map(L => L.live));
+}
+function showTest(T){
+  document.title = T.title + " · Crafticulum"; $("#sub").textContent = "Assessment"; setDownloads([]);
+  const qs = T.questions || [], ans = qs.map(() => -1); let name = ""; try{ name = localStorage.getItem("cc_name") || ""; }catch{}
+  if(!T.open){ $("#app").innerHTML = heroHtml(`${T.course || ""} · ${T.level || ""}`, T.title, T.unit) + `<div class="card"><h2>This assessment is closed</h2><p class="muted">Your teacher isn't taking answers right now. Ask them when it opens.</p></div>`; return; }
+  const draw = (err) => {
+    const done = ans.filter(a => a >= 0).length;
+    $("#app").innerHTML = heroHtml(`${T.course || ""} · ${T.level || ""} · ${qs.length} questions`, T.title, T.unit) +
+      `<div class="card"><p>${esc(T.intro || "Answer every question, then press Hand in. Pick the best answer for each one.")}</p>
+        <label for="nm">Your full name</label><input type="text" id="nm" maxlength="60" autocomplete="name" value="${esc(name)}" placeholder="First name and surname"></div>
+      ${qs.map((q, i) => `<div class="card q"><p>${i + 1}. ${esc(q.q)}</p>${q.options.map((o, j) => `<button type="button" class="opt" data-q="${i}" data-o="${j}" aria-pressed="${ans[i] === j}"><span class="l">${"ABCD"[j] || j + 1}</span><span>${esc(o)}</span></button>`).join("")}</div>`).join("")}
+      <div class="sticky"><div class="small muted">${done} of ${qs.length} answered</div><div class="bar"><i style="width:${qs.length ? Math.round(done / qs.length * 100) : 0}%"></i></div>
+        ${err ? `<div class="err">${esc(err)}</div>` : ""}<div style="margin-top:10px"><button type="button" class="btn" id="go">Hand in</button></div></div>`;
+  };
+  $("#app").oninput = e => { if(e.target.id === "nm"){ name = e.target.value; try{ localStorage.setItem("cc_name", name); }catch{} } };
+  $("#app").onclick = async e => {
+    const o = e.target.closest(".opt[data-q]");
+    if(o && !o.disabled){ ans[+o.dataset.q] = +o.dataset.o; const y = scrollY; draw(); scrollTo(0, y); return; }
+    if(!e.target.closest("#go")) return;
+    if(!name.trim()){ draw("Type your full name at the top first."); $("#nm").focus(); return; }
+    const miss = ans.findIndex(a => a < 0);
+    if(miss >= 0){ const y = scrollY; draw(`You haven't answered question ${miss + 1} yet.`); scrollTo(0, y); return; }
+    $("#go").disabled = true; $("#go").textContent = "Handing in...";
+    try{
+      const r = await api("submit", {id, name: name.trim(), answers: ans});
+      if(!r.ok){ const c = r.json.error; const y = scrollY; draw(c === "closed" ? "This assessment has just been closed by your teacher." : c === "name" ? "Type your full name at the top first." : "Couldn't hand in. Check your internet and try again."); scrollTo(0, y); return; }
+      try{ const sc = JSON.parse(localStorage.getItem("cc_scores") || "{}"); sc[id] = {score: r.json.score, of: r.json.of, at: Date.now()}; localStorage.setItem("cc_scores", JSON.stringify(sc)); }catch{}
+      showResult(T, r.json, ans);
+    }catch{ const y = scrollY; draw("Couldn't hand in. Check your internet and try again."); scrollTo(0, y); }
+  };
+  draw();
+}
+function showResult(T, R, ans){
+  const pct = R.of ? Math.round(R.score / R.of * 100) : 0;
+  $("#app").innerHTML = heroHtml(`${T.course || ""} · ${T.level || ""}`, T.title, T.unit) +
+    `<div class="card"><div class="kick">Handed in. Your score</div><div class="score">${R.score} / ${R.of}</div><div class="muted">${pct}%. ${pct >= 80 ? "Great work." : pct >= 50 ? "Good effort. Look back at the ones you got wrong." : "Go back over the lessons and ask your teacher about the ones you got wrong."}</div></div>` +
+    (T.questions || []).map((q, i) => { const rv = R.review[i] || {}; return `<div class="card q"><p>${i + 1}. ${esc(q.q)}</p><div class="mark ${rv.correct ? "ok" : "no"}">${rv.correct ? "Correct" : "Not quite"}</div>
+      ${q.options.map((o, j) => { const cls = R.showAnswers ? (j === rv.answer ? "right" : j === ans[i] ? "wrong" : "") : (j === ans[i] ? (rv.correct ? "right" : "wrong") : ""); return `<button type="button" class="opt ${cls}" disabled><span class="l">${"ABCD"[j] || j + 1}</span><span>${esc(o)}</span></button>`; }).join("")}
+      ${R.showAnswers && rv.why ? `<div class="why">${esc(rv.why)}</div>` : ""}</div>`; }).join("");
+  scrollTo(0, 0);
+}
+/* ---------- live lesson: follow the teacher's board ---------- */
+let openLive = null, liveT = null, liveS = null, liveFollow = true, liveSeen = "", liveTick = null, liveLeft = null, liveKeys = [];
+function liveWatch(keys){
+  liveKeys = (keys || []).filter(Boolean); if(!liveKeys.length) return;
+  const poll = async () => {
+    if(document.hidden){ liveT = setTimeout(poll, 8000); return; }
+    try{ const r = await fetch("share.php?a=liveget&k=" + encodeURIComponent(liveKeys.join(",")), {cache: "no-store"}); const j = await r.json(); liveShow(j && j.on ? j : null); }catch{}
+    liveT = setTimeout(poll, liveS ? 3000 : 12000);
+  };
+  clearTimeout(liveT); poll();
+  document.addEventListener("visibilitychange", () => { if(!document.hidden){ clearTimeout(liveT); poll(); } });
+}
+const SLIDE_NAME = {starter: "Starter", objectives: "Learning objectives", plan: "Today's plan", quiz: "Exit quiz on the board", plenary: "Plenary", students: "Open this page on your device", tools: "Look at the board"};
+const mmss = s => Math.floor(s / 60) + ":" + String(Math.max(0, Math.floor(s % 60))).padStart(2, "0");
+function liveShow(s){
+  const bar = $("#liveBar");
+  if(!s){ if(liveS){ liveS = null; liveShow.bsig = ""; bar.hidden = true; clearInterval(liveTick); document.querySelectorAll(".task.now,[data-part].now").forEach(x => x.classList.remove("now")); } return; }
+  liveS = s; liveLeft = s.left != null ? s.left - (s.running ? (s.age || 0) : 0) : null;
+  const what = s.slide === "teach" ? `Learn${s.taskTitle ? ": " + s.taskTitle : ""}` : s.slide === "tasks" ? `Task ${s.task + 1}${s.taskTitle ? ": " + s.taskTitle : ""}` : SLIDE_NAME[s.slide] || "Your teacher is presenting";
+  const bsig = [what, liveLeft != null, s.running, liveFollow, who, helpOn].join("|");
+  if(bsig !== liveShow.bsig){
+    liveShow.bsig = bsig;
+    bar.innerHTML = `<span class="ld">Live</span><span class="lw">${esc(what)}</span>${liveLeft != null ? `<span class="lt${s.running ? "" : " paused"}" id="liveTime"></span>` : ""}<button type="button" id="liveFol" aria-pressed="${liveFollow}">${liveFollow ? "Following" : "Follow the board"}</button>${who ? `<button type="button" class="lhelp" id="liveHelp" aria-pressed="${helpOn}">${helpOn ? "Help is coming · cancel" : "I need help"}</button>` : `<form class="lname" id="liveName"><input id="liveWho" maxlength="30" placeholder="Your name, so your teacher can see your progress" aria-label="Your name" autocomplete="given-name"><button type="submit">Save</button></form>`}`;
+    bar.hidden = false;
+    $("#liveFol").onclick = () => { liveFollow = !liveFollow; liveSeen = ""; liveShow(liveS); };
+    const lh = $("#liveHelp"); if(lh) lh.onclick = () => { helpOn = !helpOn; liveShow(liveS); sendProg(); };
+    const ln = $("#liveName"); if(ln) ln.onsubmit = e => { e.preventDefault(); const v = ($("#liveWho").value || "").trim().slice(0, 30); if(!v) return; who = v; try{ localStorage.setItem("cc_who", who); }catch{} liveShow(liveS); sendProg(); };
+  }
+  if(liveShow.sent !== s.key){ liveShow.sent = s.key; sendProg(); }
+  const drawT = () => { const t = $("#liveTime"); if(!t || liveLeft == null) return; t.textContent = liveLeft <= 0 ? "Time's up" : (s.running ? "" : "Paused ") + mmss(liveLeft); t.classList.toggle("low", s.running && liveLeft <= 60); };
+  clearInterval(liveTick); drawT(); if(s.running && liveLeft != null) liveTick = setInterval(() => { liveLeft = Math.max(0, liveLeft - 1); drawT(); }, 1000);
+  const sig = s.key + "|" + s.slide + "|" + s.task;
+  if(liveFollow && sig !== liveSeen){ liveSeen = sig; liveGo(s); }
+}
+function liveGo(s){
+  if(openLive) openLive(s.key);
+  const scope = document.querySelector(`.lesson-in[data-live="${s.key}"]`) || $("#app");
+  document.querySelectorAll(".task.now,[data-part].now").forEach(x => x.classList.remove("now"));
+  let el = null;
+  if(s.slide === "tasks"){ el = scope.querySelector(`.task[data-task="${s.task}"]`) || scope.querySelector('[data-part="tasks"]'); }
+  else if(s.slide === "teach"){ el = scope.querySelector(`.task[data-teach="${s.task}"]`) || scope.querySelector('[data-part="teach"]'); }
+  else if(["starter", "objectives", "plan"].includes(s.slide)) el = scope.querySelector(`[data-part="${s.slide}"]`);
+  else if(s.slide === "plenary" || s.slide === "quiz") el = null;
+  if(el){ el.classList.add("now"); const bar = $("#liveBar"); scrollTo({top: el.getBoundingClientRect().top + scrollY - (bar.offsetHeight + 24), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
+}
+/* ---------- ticking off steps, and sending progress to the teacher in a live lesson ---------- */
+let ticks = {}; try{ ticks = JSON.parse(localStorage.getItem("cc_ticks") || "{}") || {}; }catch{}
+let who = ""; try{ who = localStorage.getItem("cc_who") || ""; }catch{}
+let wid = ""; try{ wid = localStorage.getItem("cc_wid") || ""; if(!wid){ wid = Array.from(crypto.getRandomValues(new Uint8Array(12)), x => "abcdefghjkmnpqrstuvwxyz23456789"[x % 31]).join(""); localStorage.setItem("cc_wid", wid); } }catch{ wid = "anon" + Math.random().toString(36).slice(2, 10); }
+let helpOn = false, progT = null;
+const tk = k => ticks[k] || (ticks[k] = {s: {}, f: []});
+const saveTicks = () => { try{ const keys = Object.keys(ticks); if(keys.length > 60) keys.slice(0, keys.length - 60).forEach(k => delete ticks[k]); localStorage.setItem("cc_ticks", JSON.stringify(ticks)); }catch{} };
+function paintTicks(){
+  document.querySelectorAll("[data-live]").forEach(sc => {
+    const k = sc.dataset.live; if(!k) return; const t = ticks[k] || {s: {}, f: []};
+    sc.querySelectorAll(".task[data-task]").forEach(task => { const i = task.dataset.task, done = new Set(t.s[i] || []), fin = (t.f || []).includes(+i);
+      task.querySelectorAll(".steps li").forEach(li => { const on = done.has(+li.dataset.si); li.classList.toggle("ticked", on); li.setAttribute("aria-checked", on); });
+      task.classList.toggle("finished", fin); const b = task.querySelector(".fin"); if(b){ b.setAttribute("aria-pressed", fin); b.textContent = fin ? "Finished ✓" : "I've finished this task"; } });
+  });
+}
+function tickAt(el){
+  const sc = el.closest("[data-live]"), task = el.closest(".task[data-task]"); if(!sc || !task) return;
+  const k = sc.dataset.live, i = task.dataset.task, t = tk(k);
+  if(el.matches(".fin")){ const n = +i; t.f = (t.f || []).includes(n) ? t.f.filter(x => x !== n) : [...(t.f || []), n]; }
+  else { const s = new Set(t.s[i] || []), j = +el.dataset.si; if(s.has(j)) s.delete(j); else s.add(j); t.s[i] = [...s];
+    const all = task.querySelectorAll(".steps li").length; if(s.size === all && all && !(t.f || []).includes(+i)) t.f = [...(t.f || []), +i]; }
+  saveTicks(); paintTicks(); sendProg(k);
+}
+document.addEventListener("click", e => { const el = e.target.closest(".steps li[data-si], .fin[data-fin]"); if(el) tickAt(el); });
+document.addEventListener("keydown", e => { const el = e.target.closest && e.target.closest(".steps li[data-si]"); if(el && (e.key === " " || e.key === "Enter")){ e.preventDefault(); tickAt(el); } });
+function sendProg(k){
+  if(!liveS || !who || (k && k !== liveS.key)) return;
+  clearTimeout(progT);
+  progT = setTimeout(() => {
+    const key = liveS && liveS.key; if(!key) return; const t = ticks[key] || {s: {}, f: []}, n = Math.max(0, ...Object.keys(t.s).map(Number), ...(t.f || []), -1) + 1;
+    fetch("share.php?a=prog", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({key, wid, who, steps: Array.from({length: n}, (_, i) => (t.s[i] || []).length), fin: t.f || [], help: helpOn})}).catch(() => {});
+  }, 600);
+}
+/* ---------- cover teacher page ---------- */
+function showCover(L){
+  const C = L.cover || {};
+  document.title = "Cover: " + L.title + " · Crafticulum"; $("#sub").textContent = "Cover lesson"; setDownloads([{files: L.files}]);
+  const plan = (C.plan || []).length ? `<h3>Teacher plan</h3><div class="dl-wrap"><table class="tp"><thead><tr><th>Time</th><th>What happens</th></tr></thead><tbody>${C.plan.map(r => `<tr><td>${esc(r.time)}${r.mins ? `<br><span class="muted small">${esc(r.mins)} min</span>` : ""}</td><td>${esc(r.activity)}</td></tr>`).join("")}</tbody></table></div>` : "";
+  const quiz = (C.quiz || []).length ? `<h3>Exit quiz with answers</h3><ol class="qa">${C.quiz.map(q => `<li><b>${esc(q.q)}</b><br>${(q.options || []).map((o, j) => `<span class="${j === q.answer ? "right" : "muted"}">${String.fromCharCode(65 + j)}. ${esc(o)}${j === q.answer ? " ✓" : ""}</span>`).join("<br>")}${q.why ? `<div class="why" style="margin-top:4px">${esc(q.why)}</div>` : ""}</li>`).join("")}</ol>` : "";
+  $("#app").innerHTML = heroHtml(`Cover lesson · ${L.course || ""} · ${L.level || ""}${L.length ? " · " + L.length : ""}`, L.title, L.unit, L.criteria) +
+    `<div class="cover-note">This page is for the cover teacher. It has the answers, so please don't share it with students.</div>
+    <div class="card"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><h2 style="margin:0">Running the lesson</h2><button type="button" class="btn board-btn" id="cbOpen">Show on the board</button></div>
+      ${C.notes ? `<p class="muted small" style="margin-top:8px"><b>Notes from the teacher:</b> ${esc(C.notes)}</p>` : ""}
+      ${plan}
+      ${C.starterAnswers ? `<h3>Starter answers</h3><div class="ans">${esc(C.starterAnswers)}</div>` : ""}
+      ${(C.teach || []).some(t => t && t.answer) ? `<h3>Teaching content: what to look for</h3><div class="ans">${(L.teach || []).map((t, i) => { const a = (C.teach[i] || {}).answer; return a ? `<p style="margin:0 0 6px"><b>${esc(t.ask || t.title)}</b><br>${esc(a)}</p>` : ""; }).join("")}</div>` : ""}
+      ${C.support ? `<h3>Support</h3><p>${esc(C.support)}</p>` : ""}${C.stretch ? `<h3>Stretch</h3><p>${esc(C.stretch)}</p>` : ""}
+      ${C.plenary && C.plenary.prompt ? `<h3>Plenary: ${esc(C.plenary.title)}</h3><div class="prompt">${esc(C.plenary.prompt)}</div>` : ""}
+      ${quiz}</div>
+    <div class="card"><h2>What students see</h2>${lessonBody(L)}</div>` + deadlines(L.assignments, L.unit);
+  setTimeout(() => setNav("lesson", !!(L.assignments || []).length), 0);
+  $("#cbOpen").onclick = () => coverBoard(L);
+}
+function coverBoard(L){
+  const C = L.cover || {}, o = L.objectives || {}, slides = [];
+  if(L.starter && L.starter.prompt) slides.push(`<div class="cb-k">Starter</div><h2>${esc(L.starter.title)}</h2><div class="cb-p">${esc(L.starter.prompt)}</div>${list(L.starter.instructions)}`);
+  if(o.all) slides.push(`<div class="cb-k">Learning objectives</div><h2>${esc(L.title)}</h2><ul><li><b>All:</b> ${esc(o.all)}</li>${o.most ? `<li><b>Most:</b> ${esc(o.most)}</li>` : ""}${o.some ? `<li><b>Some:</b> ${esc(o.some)}</li>` : ""}</ul>`);
+  if((L.plan || []).length) slides.push(`<div class="cb-k">Today's plan</div><ul>${L.plan.map(r => `<li><b>${esc(r.time)}</b> ${esc(r.what)}</li>`).join("")}</ul>`);
+  (L.teach || []).forEach((t, i) => {
+    slides.push(`<div class="cb-k">Learn · part ${i + 1}</div><h2>${esc(t.title)}</h2>${(t.points || []).length ? list(t.points) : `<div class="cb-p">${esc(t.explain || "")}</div>`}${t.example ? `<p><b>Example:</b> ${esc(t.example)}</p>` : ""}${t.ask ? `<p><b>Check:</b> ${esc(t.ask)}</p>` : ""}`); });
+  (L.tasks || []).forEach((t, i) => slides.push(`<div class="cb-k">Task ${i + 1}${t.mins ? " · " + esc(t.mins) + " min" : ""}</div><h2>${esc(t.title)}</h2>${t.goal ? `<div class="cb-p">${esc(t.goal)}</div>` : ""}${list(t.steps, "ol")}`));
+  (C.quiz || []).forEach((q, i) => slides.push(`<div class="cb-k">Exit quiz · ${i + 1} of ${C.quiz.length}</div><h2>${esc(q.q)}</h2><ol type="A">${(q.options || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol>`));
+  if(C.plenary && C.plenary.prompt) slides.push(`<div class="cb-k">Plenary</div><h2>${esc(C.plenary.title)}</h2><div class="cb-p">${esc(C.plenary.prompt)}</div>`);
+  if(!slides.length) return;
+  let i = 0; const wrap = document.createElement("div"); wrap.className = "cboard"; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-label", "Board view");
+  wrap.innerHTML = `<div class="cb-top"><b id="cbN"></b><button type="button" id="cbP">Back</button><button type="button" id="cbX">Next</button><button type="button" id="cbF">Full screen</button><button type="button" id="cbC">Close</button></div><div class="cb-body" id="cbB"></div>`;
+  document.body.appendChild(wrap);
+  const draw = () => { $("#cbB").innerHTML = slides[i]; $("#cbN").textContent = `${i + 1} of ${slides.length}`; $("#cbP").disabled = i === 0; $("#cbX").disabled = i === slides.length - 1; };
+  const close = () => { document.removeEventListener("keydown", key); if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); wrap.remove(); $("#cbOpen").focus(); };
+  const key = e => { if(e.key === "ArrowRight" && i < slides.length - 1){ i++; draw(); } else if(e.key === "ArrowLeft" && i > 0){ i--; draw(); } else if(e.key === "Escape") close(); };
+  $("#cbP").onclick = () => { if(i > 0){ i--; draw(); } }; $("#cbX").onclick = () => { if(i < slides.length - 1){ i++; draw(); } };
+  $("#cbF").onclick = () => { (document.fullscreenElement ? document.exitFullscreen() : wrap.requestFullscreen && wrap.requestFullscreen()).catch?.(() => {}); };
+  $("#cbC").onclick = close; document.addEventListener("keydown", key); draw(); $("#cbX").focus();
+}
+/* ---------- the class page: one link for everything a teacher shares with a group, with this student's own progress ---------- */
+const fromClass = (new URLSearchParams(location.search).get("c") || "").replace(/[^A-Za-z0-9]/g, "");
+function backToClass(){ if(!fromClass || fromClass === id) return; const a = document.createElement("a"); a.href = "student.html?id=" + fromClass; a.className = "back-c"; a.textContent = "← Back to my class page"; $("#app").prepend(a); }
+function showClass(C){
+  document.title = C.name + " · Crafticulum"; $("#sub").textContent = "Class page";
+  try{ localStorage.setItem("cc_class", id); }catch{}
+  let scores = {}; try{ scores = JSON.parse(localStorage.getItem("cc_scores") || "{}") || {}; }catch{}
+  const day = t => new Date(t).toLocaleDateString("en-GB", {day: "numeric", month: "short"});
+  const draw = () => {
+    const lessons = (C.lessons || []).slice().sort((a, b) => b.at - a.at), tests = (C.tests || []).slice().sort((a, b) => b.at - a.at);
+    const done = L => { const t = ticks[L.live || L.id] || ticks[L.id] || {}; return (t.f || []).length; };
+    const nDone = lessons.filter(L => L.tasks && done(L) >= L.tasks).length, nSc = tests.filter(T => scores[T.id]).length;
+    $("#app").innerHTML = heroHtml("Your class", C.name, who ? `Hello ${who}. Everything your teacher shares with this class is here.` : "Everything your teacher shares with this class is here.") +
+      (who ? "" : `<form class="card" id="clsWho"><h2 style="margin-top:0">What's your name?</h2><p class="muted">So your teacher knows who's who when you ask for help or hand in a quiz. It's saved on this device.</p><div class="who-row"><input id="clsName" maxlength="30" placeholder="First name and last initial" autocomplete="name" required><button type="submit" class="go">Save</button></div></form>`) +
+      `<div class="card"><div class="cls-stats"><div><b>${lessons.length}</b><span>lessons</span></div><div><b>${nDone}</b><span>finished</span></div><div><b>${nSc} of ${tests.length}</b><span>quizzes done</span></div></div></div>` +
+      (tests.length ? `<div class="card"><h2 style="margin-top:0">Quizzes and assessments</h2>${tests.map(T => { const sc = scores[T.id]; return `<a class="cls-row" href="student.html?id=${esc(T.id)}&c=${esc(id)}"><span class="cls-main"><b>${esc(T.title)}</b><small>${esc(T.unit || "")} · ${day(T.at)}</small></span>${sc ? `<span class="cls-pill ok">${sc.score} / ${sc.of}</span>` : `<span class="cls-pill">To do</span>`}</a>`; }).join("")}</div>` : "") +
+      `<div class="card"><h2 style="margin-top:0">Lessons</h2>${lessons.length ? lessons.map(L => { const d = done(L), all = L.tasks && d >= L.tasks; return `<a class="cls-row" href="student.html?id=${esc(L.id)}&c=${esc(id)}"><span class="cls-main"><b>${esc(L.title)}</b><small>${esc(L.unit || "")} · ${day(L.at)}</small></span>${L.tasks ? `<span class="cls-pill${all ? " ok" : ""}">${all ? "Finished" : d ? `${d} of ${L.tasks} tasks` : "Not started"}</span>` : ""}</a>`; }).join("") : `<p class="muted" style="margin:0">Nothing has been shared yet. Check back after your next lesson.</p>`}</div>` +
+      `<p class="muted" style="text-align:center;font-size:13px">Your progress and scores are kept on this device. Use the same phone or computer to see them again.</p>`;
+    const f = $("#clsWho"); if(f) f.onsubmit = e => { e.preventDefault(); const v = ($("#clsName").value || "").trim().slice(0, 30); if(!v) return; who = v; try{ localStorage.setItem("cc_who", who); if(!localStorage.getItem("cc_name")) localStorage.setItem("cc_name", who); }catch{} draw(); };
+  };
+  draw();
+}
+function askCode(msg){
+  let last = ""; try{ last = localStorage.getItem("cc_class") || ""; }catch{}
+  $("#sub").textContent = ""; $("#app").innerHTML = `<form class="card" id="codeForm"><h2 style="margin-top:0">Enter your class code</h2><p class="muted">Your teacher has the code. It's on the class page link or QR code.</p><div class="who-row"><input id="codeIn" maxlength="24" placeholder="Class code" autocapitalize="off" autocomplete="off" spellcheck="false" required><button type="submit" class="go">Open</button></div>${msg ? `<p class="muted" style="color:#b91c1c;margin-bottom:0">${esc(msg)}</p>` : ""}${last ? `<p style="margin:14px 0 0"><a href="student.html?id=${esc(last)}">Go to my class page</a></p>` : ""}</form>`;
+  $("#codeForm").onsubmit = e => { e.preventDefault(); const v = ($("#codeIn").value || "").replace(/[^A-Za-z0-9]/g, ""); if(v) location.href = "student.html?id=" + v; };
+}
+async function boot(){
+  if(!id){ askCode(""); return; }
+  try{
+    const r = await api("get");
+    if(!r.ok){ $("#sub").textContent = ""; $("#app").innerHTML = `<div class="card"><h2>${r.status === 404 ? "This link has stopped working" : "Couldn't open this page"}</h2><p class="muted">${r.status === 404 ? "Your teacher may have stopped sharing it. Ask them for a new link." : "Check your internet and refresh the page."}</p></div>`; return; }
+    const {kind, data} = r.json;
+    try{ const st = r.json.site; if(st){ const top = document.querySelector(".top"); if(st.name) top.querySelector("b").textContent = st.name;
+      if(st.logo){ const sv = top.querySelector("svg"); if(sv){ const im = new Image(); im.src = st.logo; im.alt = ""; im.className = "site-logo"; sv.replaceWith(im); } }
+      if(/^#[0-9a-f]{6}$/i.test(st.color || "")){ const d = document.documentElement.style; d.setProperty("--p", st.color); d.setProperty("--pt", `color-mix(in srgb,${st.color} 78%,var(--ink))`); d.setProperty("--ps", `color-mix(in srgb,${st.color} 12%,transparent)`); } } }catch{}
+    if(kind === "cover") showCover(data); else if(kind === "lesson") showLesson(data); else if(kind === "unit") showUnit(data); else if(kind === "test") showTest(data); else if(kind === "class") showClass(data);
+    if(kind === "lesson" || kind === "test") backToClass();
+  }catch{ $("#app").innerHTML = `<div class="card"><h2>Couldn't open this page</h2><p class="muted">Check your internet and refresh the page.</p></div>`; }
+}
+/* reading options: theme, text size, easy read font and a colour overlay, remembered on this device */
+(function(){
+  const root = document.documentElement, btn = $("#aaBtn"), panel = $("#aaPanel");
+  let a = {}; try{ a = JSON.parse(localStorage.getItem("cc_read") || "{}") || {}; }catch{}
+  const paint = () => { ["theme", "size", "font", "ov"].forEach(k => { if(a[k]) root.dataset[k] = a[k]; else delete root.dataset[k]; });
+    panel.querySelectorAll("[data-aa][data-v]").forEach(b => b.setAttribute("aria-pressed", (a[b.dataset.aa] || "") === b.dataset.v)); };
+  const save = () => { try{ localStorage.setItem("cc_read", JSON.stringify(a)); }catch{} };
+  const open = on => { panel.hidden = !on; btn.setAttribute("aria-expanded", on); if(on){ const f = panel.querySelector('[aria-pressed="true"]') || panel.querySelector("button"); f.focus(); } };
+  btn.onclick = e => { e.stopPropagation(); const dm = $("#dlMenu"); if(dm) dm.hidden = true; open(panel.hidden); };
+  panel.onclick = e => { e.stopPropagation(); const b = e.target.closest("[data-aa]"); if(!b) return; if(b.dataset.aa === "reset") a = {}; else a[b.dataset.aa] = b.dataset.v; paint(); save(); };
+  document.addEventListener("click", e => { if(!e.target.closest("#aa")) open(false); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !panel.hidden){ open(false); btn.focus(); } });
+  paint();
+})();
+boot();
+})();
+</script>
+</body>
+</html>
