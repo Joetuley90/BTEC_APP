@@ -15,6 +15,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="robots" content="noindex">
 <meta name="description" content="Sign in to Crafticulum: lessons, planning and student pages built against your specification.">
+<style>html.cc-boot{overflow:hidden}html.cc-boot::before{content:"";position:fixed;inset:0;z-index:99999;background:#f5f6fa url("favicon.svg?v=4") center/52px 52px no-repeat}@media (prefers-color-scheme:dark){html.cc-boot::before{background-color:#0a0d16}}</style>
+<script>document.documentElement.classList.add("cc-boot");setTimeout(function(){document.documentElement.classList.remove("cc-boot")},8000);</script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>Crafticulum</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1253,6 +1255,7 @@ body.no-gen [data-sq="redoYear"]{display:none!important}
 .up-box{width:min(520px,100%)}.up-body{padding:16px 18px;overflow:auto}.up-body p{margin:0 0 .6rem}.up-foot{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px 16px}
 .up-next{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid #c7cbf5;background:#f5f6ff;border-radius:.8rem;padding:12px 14px;margin:0 0 .7rem}.up-next b{display:block}.up-next span{font-size:.86rem;color:#475569}.up-price{font-size:1.4rem;font-weight:700;white-space:nowrap}.up-price small{font-size:.75rem;font-weight:400;color:#64748b}
 @media (max-width:575.98px){.up-box{height:auto;max-height:100dvh;border-radius:1rem 1rem 0 0;align-self:end}}
+.col-wipe{border:1px solid var(--bs-danger-border-subtle);background:var(--bs-danger-bg-subtle);border-radius:.7rem;padding:14px 16px}
 /* ===== settings in groups ===== */
 nav.st-jump.st-grouped{display:block!important;overflow:hidden!important;max-width:100%;padding:8px 10px}.st-tabs,.st-subs{max-width:100%;min-width:0}
 .st-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--cc-line);padding-bottom:6px}.st-tabs::-webkit-scrollbar{display:none}
@@ -1268,6 +1271,19 @@ nav.st-jump.st-grouped{display:block!important;overflow:hidden!important;max-wid
 .brand .logo{width:28px;height:28px;filter:none}.home-logo svg{filter:none}
 .al-logo{width:34px;height:34px;border-radius:0;box-shadow:none}
 [data-bs-theme=dark]{--cc-fold:#818cf8}
+
+/* ===== super admin: outside every college, or working inside one ===== */
+#saBar{position:static;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center;padding:8px 16px;background:#1e1b4b;color:#fff;font-size:.85rem;text-align:center;min-height:var(--demo-h,48px)}
+#saBar .btn{flex:none;font-weight:600}
+body.sa-in{--demo-h:48px}@media (min-width:992px){body.sa-in .side{height:calc(100vh - var(--demo-h))}body.sa-in .app{min-height:calc(100vh - var(--demo-h))}}
+@media (max-width:900px){#saBar{font-size:.78rem;padding:6px 10px}#saBar span{flex:1 1 220px;text-align:left}}
+body.sa-out .side-nav [data-nav]:not([data-nav="settings"]),body.sa-out .side [data-search],body.sa-out .side [data-canvas],body.sa-out .top-search,body.sa-out #batchPill,body.sa-out #savePill,body.sa-out .bnav,body.sa-out #fabBoard,body.sa-out .site-todo{display:none!important}
+body.sa-out #stSite,body.sa-out #stPlan,body.sa-out #stLog,body.sa-out #stDepts,body.sa-out #stData,body.sa-out #stPriv,body.sa-out #stCourses,body.sa-out #stRules,body.sa-out #stMarker,body.sa-out #stTpl,body.sa-out #stCal,body.sa-out #stGroups,body.sa-out #stNeeds,body.sa-out #stAsg,body.sa-out #stDiscord,body.sa-out #stBin{display:none!important}
+/* ===== team: a college, then its departments ===== */
+.team-col{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:14px;padding:12px 14px;border:1px solid var(--bs-border-color);border-radius:12px;background:var(--bs-tertiary-bg)}
+.team-col .form-select{min-width:220px;font-weight:600}
+.team-t tr.team-g th{background:var(--bs-tertiary-bg);font-size:.8rem;font-weight:700;padding:8px 10px;border-top:1px solid var(--bs-border-color)}
+.team-t tr.team-g th span{font-weight:400;color:var(--bs-secondary-color);margin-left:6px}
 
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
@@ -7167,7 +7183,7 @@ function applyRole(){
   const ws = document.querySelector(".workspace");
   if(ws){
     const ini = (me.name || me.email).split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join("");
-    ws.innerHTML = `<span class="av">${me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : esc(ini)}</span><span class="min-w-0"><b class="text-truncate d-block">${esc(me.name || me.email)}</b><small class="text-truncate d-block">${esc(ROLE_NAME[me.role])} · ${me.role === "superadmin" ? "looking at " : ""}${esc(me.role === "superadmin" && me.collegeName && (meInfo.colleges || []).length > 1 ? me.collegeName : me.deptName)}</small></span>`;
+    ws.innerHTML = `<span class="av">${me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : esc(ini)}</span><span class="min-w-0"><b class="text-truncate d-block">${esc(me.name || me.email)}</b><small class="text-truncate d-block">${esc(ROLE_NAME[me.role])} · ${me.role === "superadmin" ? (me.inside === false ? "whole site" : "inside ") : ""}${esc(me.role === "superadmin" && me.collegeName && (meInfo.colleges || []).length > 1 ? me.collegeName : me.deptName)}</small></span>`;
     ws.insertAdjacentHTML("beforeend", `<svg class="ws-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`);
     ws.setAttribute("role", "button"); ws.tabIndex = 0; ws.title = "Your account"; ws.setAttribute("aria-label", `Your account: ${me.name || me.email}`);
     ws.onclick = () => goSection("settings", "stAccount"); ws.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ws.click(); } };
@@ -7225,6 +7241,8 @@ async function teamLoad(){
   try{ team = await authCall("team"); teamErr = ""; if(meInfo){ meInfo.pending = (team.pending || []).length; paintPending(); } }catch(e){ team = {team: [], depts: [], supers: []}; teamErr = e && e.code; }
   teamBusy = false; if(view === "settings") renderSettings();
 }
+var teamCol = "";
+document.addEventListener("change", e => { if(e.target && e.target.id === "tmCol"){ teamCol = e.target.value; renderSettings(); const s = document.getElementById("tmCol"); if(s) s.focus({preventScroll: true}); } });
 function accountSections(sec){
   if(window.claude || !me) return "";
   const top = me.role === "superadmin", supers = top || me.role === "owner";   // top: the whole site. supers: anyone who runs a college
@@ -7233,37 +7251,47 @@ function accountSections(sec){
       <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" data-acc="out">Sign out</button></div>
     <ul class="small text-body-secondary mt-3 mb-0">${top ? "<li>You can do everything, in every college: add colleges and their managers, add departments, approve heads of department and subject leaders, and choose what each one can do.</li><li>You don't belong to a college. You aren't counted as one of its people, and what you build doesn't come out of its monthly allowance.</li>" : me.role === "owner" ? `<li>You manage ${esc(me.collegeName || "your college")}: its name, logo and colour, its departments, and everyone in them. You approve the heads of department and subject leaders and choose what each one can do.</li><li>The site's own settings (sign-in, email, Claude and backups) are looked after by the super admin.</li>` : me.role === "hod" ? `<li>Your college's manager or the super admin approved your account and chose what you can do.</li>${PERMS.map(([k, l]) => `<li>${me[{gen: "canGen", team: "canTeam", subjects: "canSubjects", dates: "canDates"}[k]] ? "✓" : "✗"} ${l}</li>`).join("")}` : "<li>You use the lessons your head of department or subject leader builds. They added you, and choose what you can do.</li>"}
       <li>${me.canEdit ? "You can change lessons and units by hand." : "You can't change the shared lessons and units, but your own ticks, notes, groups and student links are yours."}</li></ul>
-    ${supers && (meInfo.depts || []).length > 1 ? `<div class="d-flex flex-wrap gap-2 align-items-center mt-3"><label class="small fw-semibold" for="accDept">${top ? "Looking at" : "Working in"}</label><select class="form-select form-select-sm w-auto" id="accDept">${meInfo.depts.map(d => `<option value="${esc(d.id)}" ${d.id === me.dept ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select><span class="small text-body-secondary">Switching loads that department's lessons and units.</span></div>` : ""}
+    ${supers && me.inside !== false && (meInfo.depts || []).filter(d => !top || d.college === me.college).length > 1 ? `<div class="d-flex flex-wrap gap-2 align-items-center mt-3"><label class="small fw-semibold" for="accDept">${top ? "Department you're working inside" : "Working in"}</label><select class="form-select form-select-sm w-auto" id="accDept">${meInfo.depts.filter(d => !top || d.college === me.college).map(d => `<option value="${esc(d.id)}" ${d.id === me.dept ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select><span class="small text-body-secondary">Switching loads that department's lessons and units.</span></div>` : ""}
     ${signInHtml()}
     ${top ? setupNote() : ""}`) + (typeof profileSection === "function" ? profileSection(sec) : "");
   if(!me.canTeam) return acct;
   if(team === null){ teamLoad(); return acct + sec("stTeam", "Team", "", `<p class="small text-body-secondary mb-0">Loading your team...</p>`); }
   const depts = team.depts || [], dName = id => (depts.find(d => d.id === id) || {}).name || id;
-  const row = u => `<tr><td class="min-w-0"><div class="fw-semibold">${esc(u.name || u.email)}</div>${u.name ? `<div class="small text-body-secondary">${esc(u.email)}</div>` : ""}${u.dept === me.dept && typeof madeBy === "function" ? (n => `<div class="small text-body-secondary">${n ? `${n} lesson${n === 1 ? "" : "s"} created` : "No lessons created yet"}</div>`)(madeBy(u.email).length) : ""}</td>
+  // the super admin picks a college first, then sees its departments and who is in each
+  const tCols = top ? (meInfo.colleges || []).filter(c => depts.some(d => d.college === c.id)) : [], pickCol = tCols.length > 1;
+  if(pickCol && !tCols.some(c => c.id === teamCol)) teamCol = me.inside !== false && tCols.some(c => c.id === me.college) ? me.college : tCols[0].id;
+  const inCol = id => !pickCol || (depts.find(d => d.id === id) || {}).college === teamCol, colDepts = depts.filter(d => inCol(d.id)), homeDept = colDepts.some(d => d.id === me.dept) && me.inside !== false ? me.dept : (colDepts[0] || {}).id;
+  const dOpts = sel => { const o = d => `<option value="${esc(d.id)}" ${d.id === sel ? "selected" : ""}>${esc((!pickCol && d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`, rest = pickCol ? tCols.filter(c => c.id !== teamCol) : [];
+    return colDepts.map(o).join("") + rest.map(c => `<optgroup label="Move to ${esc(c.name || "another college")}">${depts.filter(d => d.college === c.id).map(o).join("")}</optgroup>`).join(""); };
+  const row = u => `<tr><td class="min-w-0"><div class="fw-semibold">${esc(u.name || u.email)}</div>${u.name ? `<div class="small text-body-secondary">${esc(u.email)}</div>` : ""}${u.dept === me.dept && me.inside !== false && typeof madeBy === "function" ? (n => `<div class="small text-body-secondary">${n ? `${n} lesson${n === 1 ? "" : "s"} created` : "No lessons created yet"}</div>`)(madeBy(u.email).length) : ""}</td>
     <td>${supers ? `<select class="form-select form-select-sm" data-tm="role" data-em="${esc(u.email)}" aria-label="Role for ${esc(u.email)}"><option value="teacher" ${u.role === "teacher" ? "selected" : ""}>Teacher</option><option value="hod" ${u.role === "hod" ? "selected" : ""}>Head of dept / subject leader</option>${top ? `<option value="owner" ${u.role === "owner" ? "selected" : ""}>College manager</option>` : ""}</select>` : `<span class="small">${esc(ROLE_NAME[u.role] || u.role)}</span>`}</td>
     <td>${u.role === "teacher" ? `<div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="ce-${esc(u.email)}" data-tm="canEdit" data-em="${esc(u.email)}" ${u.canEdit ? "checked" : ""}><label class="form-check-label small" for="ce-${esc(u.email)}">Edit lessons</label></div>` : u.role === "owner" ? `<span class="small text-body-secondary">Everything in their college</span>` : supers ? `<div class="perm-list">${permBoxes(k => `data-tm="perm" data-k="${k}" data-em="${esc(u.email)}" aria-label="${k}"`, u.perms)}</div>` : `<span class="small text-body-secondary">Set by your college's manager</span>`}</td>
-    ${supers ? `<td><select class="form-select form-select-sm" data-tm="dept" data-em="${esc(u.email)}" aria-label="Department for ${esc(u.email)}">${depts.map(d => `<option value="${esc(d.id)}" ${d.id === u.dept ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select></td>` : ""}
+    ${supers ? `<td><select class="form-select form-select-sm" data-tm="dept" data-em="${esc(u.email)}" aria-label="Department for ${esc(u.email)}">${dOpts(u.dept)}</select></td>` : ""}
     <td class="small text-body-secondary"><div class="text-nowrap">${u.last ? "Signed in " + esc(agoText(u.last * 1000)) : "Not signed in yet"}</div><div>${(u.methods || []).map(x => esc(METHOD_NAME[x] || x)).join(", ")}${u.totp ? " · two-step on" : ""}</div></td>
     <td class="text-end text-nowrap">${u.email === me.email ? "" : `<button type="button" class="btn btn-sm btn-link p-0 me-2" data-tm="link" data-em="${esc(u.email)}">${u.hasPass ? "Reset link" : "Password link"}</button>${u.totp ? `<button type="button" class="btn btn-sm btn-link p-0 me-2" data-tm="totpReset" data-em="${esc(u.email)}">Turn off two-step</button>` : ""}<button type="button" class="btn btn-sm btn-link text-danger p-0" data-tm="del" data-em="${esc(u.email)}">${teamArm === u.email ? "Remove?" : "Remove"}</button>`}</td></tr>`;
-  const pend = team.pending || [];
+  const pend = (team.pending || []).filter(u => !u.wantDept || inCol(u.wantDept));
   const prow = u => `<div class="pend-i"><div class="min-w-0"><div class="fw-semibold">${esc(u.name || u.email)}</div><div class="small text-body-secondary">${esc(u.email)} · ${esc(METHOD_NAME[u.via] || u.via)} · ${u.verified ? "email confirmed" : `<span class="text-warning-emphasis">email not confirmed</span>`}${u.wantDept ? " · asked for " + esc(dName(u.wantDept)) : ""}${u.wantRole === "hod" ? " · <b>asked to be a head of department or subject leader</b>" : ""} · ${esc(agoText((u.requested || 0) * 1000))}</div></div>
     <div class="d-flex flex-wrap gap-2 align-items-center">${supers ? `<select class="form-select form-select-sm w-auto" data-pr="role" data-em="${esc(u.email)}" aria-label="Role"><option value="teacher">Teacher</option><option value="hod" ${u.wantRole === "hod" ? "selected" : ""}>Head of dept / subject leader</option></select>` : `<span class="small text-body-secondary">Joins as a teacher</span>`}
-      ${supers ? `<select class="form-select form-select-sm w-auto" data-pr="dept" data-em="${esc(u.email)}" aria-label="Department">${depts.map(d => `<option value="${esc(d.id)}" ${d.id === (u.wantDept || me.dept) ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select>` : ""}
+      ${supers ? `<select class="form-select form-select-sm w-auto" data-pr="dept" data-em="${esc(u.email)}" aria-label="Department">${dOpts(u.wantDept || homeDept)}</select>` : ""}
       <div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="pe-${esc(u.email)}" data-pr="canEdit" data-em="${esc(u.email)}"><label class="form-check-label small" for="pe-${esc(u.email)}">Edit lessons</label></div>
       ${supers ? `<div class="perm-list pr-perms w-100" data-em="${esc(u.email)}" ${u.wantRole === "hod" ? "" : "hidden"}><span class="small fw-semibold">They can:</span>${permBoxes(k => `data-prp data-k="${k}" data-em="${esc(u.email)}"`)}</div>` : ""}
       <button type="button" class="btn btn-sm btn-success" data-tm="approve" data-em="${esc(u.email)}">Approve</button><button type="button" class="btn btn-sm btn-outline-danger" data-tm="decline" data-em="${esc(u.email)}">${teamArm === "x:" + u.email ? "Decline?" : "Decline"}</button></div></div>`;
-  const list = team.team || [];
-  const teamSec = sec("stTeam", "Team", top ? "Everyone in every college and department. College managers look after their own college. Heads of department and subject leaders add and approve the teachers in their own department." : supers ? `Everyone in ${esc(me.collegeName || "your college")}. You approve the heads of department and subject leaders and choose what each one can do. They add and approve the teachers in their own department.` : `The teachers in your department. Approve new requests, or add a teacher yourself. Heads of department and subject leaders are added by your college's manager.`, `
+  const list = (team.team || []).filter(u => inCol(u.dept) && (!top || depts.some(d => d.id === u.dept)));
+  const groups = supers && colDepts.length > 1 ? colDepts.map(d => [d, list.filter(u => u.dept === d.id)]) : null, cols = supers ? 6 : 5;
+  const body = groups ? groups.map(([d, us]) => `<tr class="team-g"><th colspan="${cols}" scope="colgroup">${esc(d.name)} <span>${us.length} ${us.length === 1 ? "person" : "people"}</span></th></tr>${us.length ? us.map(row).join("") : `<tr><td colspan="${cols}" class="small text-body-secondary">No one in this department yet.</td></tr>`}`).join("") : list.map(row).join("");
+  const colPick = pickCol ? `<div class="team-col"><label class="fw-semibold small" for="tmCol">College</label><select class="form-select w-auto" id="tmCol">${tCols.map(c => `<option value="${esc(c.id)}" ${c.id === teamCol ? "selected" : ""}>${esc(c.name || "College with no name yet")}</option>`).join("")}</select><span class="small text-body-secondary">${list.length} ${list.length === 1 ? "person" : "people"} in ${colDepts.length} ${colDepts.length === 1 ? "department" : "departments"}</span></div>` : "";
+  const teamSec = sec("stTeam", "Team", top ? (pickCol ? "Pick a college to see its departments and the people in each. " : "Everyone in every college and department. ") + "College managers look after their own college. Heads of department and subject leaders add and approve the teachers in their own department." : supers ? `Everyone in ${esc(me.collegeName || "your college")}. You approve the heads of department and subject leaders and choose what each one can do. They add and approve the teachers in their own department.` : `The teachers in your department. Approve new requests, or add a teacher yourself. Heads of department and subject leaders are added by your college's manager.`, `
     ${teamErr ? `<div class="alert alert-danger small">Couldn't load the team. Try again.</div>` : ""}
+    ${colPick}
     ${pend.length ? `<div class="pend"><h3 class="h6 mb-2">Waiting for approval <span class="badge text-bg-warning">${pend.length}</span></h3>${pend.map(prow).join("")}</div>` : ""}
     ${teamLink && !teamLink.college ? `<div class="alert alert-info small"><div class="mb-1">${teamLink.mailed ? `Emailed to ${esc(teamLink.email)}. You can also copy the link:` : `Send this link to ${esc(teamLink.email)} yourself${team.mail ? "" : " (email isn't set up)"}:`}</div><div class="input-group input-group-sm"><input class="form-control" id="tlLink" readonly value="${esc(teamLink.link)}" aria-label="Link"><button type="button" class="btn btn-primary" data-tm="copylink">Copy</button></div><div class="form-text">It works once${teamLink.type === "reset" ? ", for 24 hours" : ", for 7 days"}.</div></div>` : ""}
-    ${list.length ? `<div class="table-responsive"><table class="table table-sm align-middle team-t mb-0"><thead><tr><th>Person</th><th>Role</th><th>Can</th>${supers ? "<th>Department</th>" : ""}<th>Last seen</th><th></th></tr></thead><tbody>${list.map(row).join("")}</tbody></table></div>` : `<p class="small text-body-secondary">No one added yet.</p>`}
+    ${list.length ? `<div class="table-responsive"><table class="table table-sm align-middle team-t mb-0"><thead><tr><th>Person</th><th>Role</th><th>Can</th>${supers ? "<th>Department</th>" : ""}<th>Last seen</th><th></th></tr></thead><tbody>${body}</tbody></table></div>` : `<p class="small text-body-secondary">No one ${pickCol ? "in this college" : "added"} yet.</p>`}
     <h3 class="h6 mt-4 mb-2">Add someone</h3>
     <div class="row g-2 align-items-end team-add">
       <div class="col-md-4"><label class="form-label small fw-semibold" for="tmEmail">Email</label><input class="form-control form-control-sm" id="tmEmail" type="email" autocomplete="off" placeholder="name@example.com"></div>
       <div class="col-md-3"><label class="form-label small fw-semibold" for="tmName">Name</label><input class="form-control form-control-sm" id="tmName" maxlength="60" placeholder="Optional"></div>
       ${supers ? `<div class="col-md-2"><label class="form-label small fw-semibold" for="tmRole">Role</label><select class="form-select form-select-sm" id="tmRole"><option value="teacher">Teacher</option><option value="hod">Head of dept / subject leader</option>${top ? `<option value="owner">College manager</option>` : ""}</select></div>` : ""}
-      ${supers ? `<div class="col-md-3"><label class="form-label small fw-semibold" for="tmDept">Department</label><select class="form-select form-select-sm" id="tmDept">${depts.map(d => `<option value="${esc(d.id)}" ${d.id === me.dept ? "selected" : ""}>${esc((d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select></div>` : ""}
+      ${supers ? `<div class="col-md-3"><label class="form-label small fw-semibold" for="tmDept">Department</label><select class="form-select form-select-sm" id="tmDept">${colDepts.map(d => `<option value="${esc(d.id)}" ${d.id === homeDept ? "selected" : ""}>${esc((!pickCol && d.collegeName ? d.collegeName + ": " : "") + d.name)}</option>`).join("")}</select></div>` : ""}
       ${supers ? `<div class="col-md-12 perm-list" id="tmPerms" hidden><span class="small fw-semibold">They can:</span>${permBoxes(k => `data-addp data-k="${k}"`)}</div>` : ""}
       <div class="col-md-12 d-flex flex-wrap gap-3 align-items-center"><div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="tmEdit"><label class="form-check-label small" for="tmEdit">Can edit lessons by hand (teachers)</label></div><div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="tmInvite" checked><label class="form-check-label small" for="tmInvite">Send a link to choose a password</label></div><button type="button" class="btn btn-sm btn-primary" data-tm="add">Add to the team</button></div>
     </div>
@@ -9646,7 +9674,7 @@ async function colCall(action, body){ const j = await authCall(action, body || {
 function collegesSection(sec){
   if(window.claude || !(typeof me !== "undefined" && me && me.role === "superadmin")) return "";
   const list = colList();
-  const card = c => { const here = c.id === me.college, first = c.depts[0];
+  const card = c => { const here = (me.inside !== false && c.id === me.college), first = c.depts[0];
     return `<div class="col-i${c.off ? " off" : ""}" data-col="${esc(c.id)}">
       <div class="d-flex flex-wrap gap-2 align-items-center">${c.color ? `<span class="col-dot" style="background:${esc(c.color)}"></span>` : ""}<input class="form-control form-control-sm col-name" value="${esc(c.name)}" data-colname="${esc(c.id)}" aria-label="College name" maxlength="60" placeholder="College or school name">
         ${here ? `<span class="badge text-bg-primary">Looking at it now</span>` : ""}${c.off ? `<span class="badge text-bg-secondary">Switched off</span>` : ""}${c.plain ? "" : `<span class="badge text-bg-light border fw-normal" title="This college has the subjects that come with Crafticulum">Built-in subjects</span>`}${c.self ? `<span class="badge text-bg-light border fw-normal" title="Someone signed up on their own from the front page">Signed up themselves</span>` : ""}
@@ -9694,7 +9722,7 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
 });
 document.addEventListener("change", async e => { const t = e.target; if(!t || !t.dataset) return;
   try{
-    if(t.dataset.colname != null){ const v = t.value.trim(); if(!v){ renderSettings(); return; } const j = await colCall("collegeset", {id: t.dataset.colname, name: v}); if(t.dataset.colname === me.college){ me.collegeName = v; try{ const r = await authCall("siteget"); siteInfo = r; meInfo.site = r.site; siteApply(r.site); }catch{} } return colSay("Renamed."); }
+    if(t.dataset.colname != null){ const v = t.value.trim(); if(!v){ renderSettings(); return; } const j = await colCall("collegeset", {id: t.dataset.colname, name: v}); if(me.inside !== false && t.dataset.colname === me.college){ me.collegeName = v; try{ const r = await authCall("siteget"); siteInfo = r; meInfo.site = r.site; siteApply(r.site); }catch{} } return colSay("Renamed."); }
     if(t.dataset.colcap != null){ await colCall("collegeset", {id: t.dataset.colcap, cap: Math.max(0, parseInt(t.value, 10) || 0)}); return colSay(parseInt(t.value, 10) > 0 ? "Limit saved." : "No limit."); }
     if(t.dataset.colon != null){ await colCall("collegeset", {id: t.dataset.colon, off: !t.checked}); return colSay(t.checked ? "Switched on. Its staff can sign in." : "Switched off. Its staff can't sign in until you switch it back on."); }
   }catch(err){ colSay(colErr(err), true); }
@@ -9826,7 +9854,7 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
 document.addEventListener("change", async e => { const t = e.target; if(!t) return;
   if(t.id === "plOn"){ const on = t.checked;
     try{ siteInfo = await authCall("siteset", {conf: {BILLING: on ? "on" : "off"}}); plansAdm = await billCall("plansget"); bill = null; const j = await authCall("me"); me = j.me; meInfo = j; plSay(on ? "Plans are on." : "Plans are off. Every college has everything again."); }catch{ plSay("Couldn't change that. Try again.", true); } return; }
-  if(t.dataset && t.dataset.colplan != null){ try{ await colCall("collegeset", {id: t.dataset.colplan, plan: t.value}); if(t.dataset.colplan === me.college){ bill = null; const j = await authCall("me"); me = j.me; meInfo = j; } colSay(`Now on ${PLAN_NAMES[t.value]}.`); }catch(err){ colSay(colErr(err), true); } }
+  if(t.dataset && t.dataset.colplan != null){ try{ await colCall("collegeset", {id: t.dataset.colplan, plan: t.value}); if(me.inside !== false && t.dataset.colplan === me.college){ bill = null; const j = await authCall("me"); me = j.me; meInfo = j; } colSay(`Now on ${PLAN_NAMES[t.value]}.`); }catch(err){ colSay(colErr(err), true); } }
 });
 /* coming back from Stripe, or arriving from the prices on the front page */
 (() => { let q; try{ q = new URLSearchParams(location.search); }catch{ return; } const back = q.get("billing"), session = q.get("session") || "", start = q.get("start");
@@ -9871,10 +9899,10 @@ function overviewSection(sec){
   if(!ovw){ ovwLoad(); return sec("stOverview", "Site overview", "", `<p class="small text-body-secondary mb-0">Loading...</p>`); }
   if(ovw.failed) return sec("stOverview", "Site overview", "", `<p class="small mb-2">Couldn't load the overview just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-ovw="retry">Try again</button>`);
   const t = ovw.total, tile = (n, l) => `<div class="ov-t"><b>${n}</b><span>${l}</span></div>`;
-  const row = c => { const here = c.id === me.college, first = c.depts[0];
+  const row = c => { const here = (me.inside !== false && c.id === me.college), first = c.depts[0];
     return `<tr class="${c.off ? "text-body-secondary" : ""}"><th scope="row" class="fw-semibold">${esc(c.name || "College with no name yet")}${c.off ? ` <span class="badge text-bg-secondary fw-normal">Off</span>` : ""}${c.self ? ` <span class="badge text-bg-light border fw-normal">Signed up themselves</span>` : ""}<div class="fw-normal small text-body-secondary">${c.managers.length ? esc(c.managers.join(", ")) : "No manager yet"}</div></th>
       ${ovw.billing ? `<td>${esc(PLAN_NAMES[c.plan] || c.plan)}${c.paid ? ` <span class="badge text-bg-success fw-normal">Card</span>` : ""}</td>` : ""}<td>${c.depts.length}</td><td>${c.people}${c.pending ? ` <span class="badge text-bg-warning fw-normal">${c.pending} waiting</span>` : ""}</td><td>${c.lessons}</td><td>${c.calls}</td><td>${ovwAgo(c.last)}</td>
-      <td class="text-end">${here ? `<span class="badge text-bg-primary fw-normal me-2">Looking at it now</span>` : ""}<button type="button" class="btn btn-sm btn-outline-primary" data-colview="${esc(c.id)}">Open</button></td></tr>`; };
+      <td class="text-end">${here ? `<span class="badge text-bg-primary fw-normal me-2">Working inside it now</span>` : ""}<button type="button" class="btn btn-sm btn-outline-primary" data-colview="${esc(c.id)}">Open</button></td></tr>`; };
   return sec("stOverview", "Site overview", "Everything on this site. You aren't part of any college: open one to see inside it and change anything, without taking one of its places or using its monthly allowance.", `
     <div class="ov-tiles">${tile(t.colleges, t.colleges === 1 ? "college" : "colleges")}${tile(t.depts, t.depts === 1 ? "department" : "departments")}${tile(t.people, t.people === 1 ? "person" : "people")}${tile(t.lessons, "shared lessons")}${tile(t.siteCalls, "requests to Claude this month")}${t.pending ? tile(t.pending, "waiting for approval") : ""}${t.inbox ? tile(t.inbox, t.inbox === 1 ? "message to answer" : "messages to answer") : ""}${ovw.billing ? tile(t.paying, "paying by card") : ""}</div>
     <div class="table-responsive mt-3"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">College</th>${ovw.billing ? `<th scope="col">Plan</th>` : ""}<th scope="col">Departments</th><th scope="col">People</th><th scope="col">Lessons</th><th scope="col">Requests this month</th><th scope="col">Last signed in</th><th scope="col" aria-label="Open"></th></tr></thead><tbody>${ovw.colleges.map(row).join("")}</tbody></table></div>
@@ -9921,15 +9949,15 @@ tourPlace = function(){ try{ if(tourI >= 0 && view === "settings"){ const m = /^
 document.addEventListener("click", e => { const b = e.target.closest("[data-sttab]"); if(!b) return; stTab = b.dataset.sttab; lsSet("cc_st_tab", stTab); renderSettings(); const n = $("nav.st-jump"); if(n){ try{ n.scrollIntoView({block: "start", behavior: "instant"}); }catch{ n.scrollIntoView(); } const t = n.querySelector(".st-tab.on"); if(t) t.focus({preventScroll: true}); } });
 
 /* ===== round 29: the super admin's colleges. A list of every college; open one to see and change everything in it ===== */
-let colOpen = "", colInfo = null, colInfoBusy = false, colInfoStale = false, colDeptArm = "";
+let colOpen = "", colInfo = null, colInfoBusy = false, colInfoStale = false, colDeptArm = "", colWipe = 0, colWipeBusy = false;
 const _colCall33 = colCall;
 colCall = async function(){ const j = await _colCall33.apply(this, arguments); colInfoStale = true; return j; };
 function colInfoLoad(){ if(colInfoBusy || !colOpen) return; colInfoBusy = true; const id = colOpen;
   authCall("collegeget", {id}).then(j => { if(colOpen === id){ colInfo = j; colInfoStale = false; } }).catch(e => { colInfoStale = false; if(e && e.code === "not_found"){ colOpen = ""; colInfo = null; } else if(!colInfo) colInfo = {failed: true, id}; }).finally(() => { colInfoBusy = false; if(view === "settings") renderSettings(); }); }
-async function colView(id){ if(id && !colList().some(c => c.id === id)){ try{ await _colCall33("colleges"); }catch{} }   // a college added somewhere else since this page loaded
-  colOpen = id || ""; colInfo = null; colInfoStale = false; colMgr = ""; colArm = ""; if(teamLink && teamLink.college) teamLink = null; if(view === "settings") renderSettings(); goSection("settings", "stColleges"); }
+async function colView(id){ if(id && typeof teamCol !== "undefined") teamCol = id;   /* the team list below follows the college that's open */ if(id && !colList().some(c => c.id === id)){ try{ await _colCall33("colleges"); }catch{} }   // a college added somewhere else since this page loaded
+  colOpen = id || ""; colInfo = null; colInfoStale = false; colMgr = ""; colArm = ""; colWipe = 0; if(teamLink && teamLink.college) teamLink = null; if(view === "settings") renderSettings(); goSection("settings", "stColleges"); }
 const colLinkHtml = () => teamLink && teamLink.college ? `<div class="alert alert-info small"><div class="mb-1">${teamLink.mailed ? `An invitation was emailed to ${esc(teamLink.email)}. You can also copy the link:` : `Send this link to ${esc(teamLink.email)} yourself${meInfo.mail ? "" : " (email isn't set up)"}:`}</div><div class="input-group input-group-sm"><input class="form-control" id="tlLink" readonly value="${esc(teamLink.link)}" aria-label="Link"><button type="button" class="btn btn-primary" data-tm="copylink">Copy</button></div><div class="form-text">It works once, for 7 days.</div></div>` : "";
-const colBadges = c => `${c.id === me.college ? `<span class="badge text-bg-primary fw-normal">Looking at it now</span>` : ""}${c.off ? `<span class="badge text-bg-secondary fw-normal">Switched off</span>` : ""}${c.plain ? "" : `<span class="badge text-bg-light border fw-normal" title="This college has the subjects that come with Crafticulum">Built-in subjects</span>`}${c.self ? `<span class="badge text-bg-light border fw-normal" title="Someone signed up on their own from the front page">Signed up themselves</span>` : ""}${c.paid ? `<span class="badge text-bg-success fw-normal">Pays by card${c.billStatus === "past_due" ? ", payment late" : ""}</span>` : ""}`;
+const colBadges = c => `${(me.inside !== false && c.id === me.college) ? `<span class="badge text-bg-primary fw-normal">Working inside it now</span>` : ""}${c.off ? `<span class="badge text-bg-secondary fw-normal">Switched off</span>` : ""}${c.plain ? "" : `<span class="badge text-bg-light border fw-normal" title="This college has the subjects that come with Crafticulum">Built-in subjects</span>`}${c.self ? `<span class="badge text-bg-light border fw-normal" title="Someone signed up on their own from the front page">Signed up themselves</span>` : ""}${c.paid ? `<span class="badge text-bg-success fw-normal">Pays by card${c.billStatus === "past_due" ? ", payment late" : ""}</span>` : ""}`;
 const colNameOf = c => c.name || "College with no name yet";
 function colListHtml(){ const list = colList();
   return `${colLinkHtml()}<div class="table-responsive"><table class="table table-sm align-middle small col-t mb-0"><thead><tr><th scope="col">College</th><th scope="col">Manager</th><th scope="col">Departments</th><th scope="col">People</th>${meInfo.billing ? `<th scope="col">Plan</th>` : ""}<th scope="col" aria-label="Open"></th></tr></thead><tbody>
@@ -9945,7 +9973,7 @@ function colListHtml(){ const list = colList();
         <div class="col-md-3"><button type="button" class="btn btn-sm btn-primary w-100" data-colact="add" ${colBusy ? "disabled" : ""}>${colBusy ? "Adding..." : "Add college"}</button></div></div>
       <div class="form-text">The manager gets a link to choose a password. Leave the manager empty to set the college up yourself first. A new college starts with no subjects: its staff upload their own specifications.</div></details>
     <span class="idea-msg" id="colMsg" role="status">${esc(colMsg)}</span>`; }
-function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.failed ? colInfo : null, here = c.id === me.college, first = c.depts[0], many = colList().length > 1;
+function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.failed ? colInfo : null, here = (me.inside !== false && c.id === me.college), first = c.depts[0], many = colList().length > 1;
   const h = t => `<h3 class="h6 mt-4 mb-2">${t}</h3>`, roleName = r => ({owner: "College manager", hod: "Head of department", teacher: "Teacher"}[r] || r), deptName = id => (c.depts.find(x => x.id === id) || {}).name || "";
   if(!d){ if(!colInfoBusy && !(colInfo && colInfo.failed)) colInfoLoad(); }
   else if(colInfoStale && !colInfoBusy) colInfoLoad();
@@ -9980,7 +10008,13 @@ function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.
     ${d.log.length ? `<details class="conf-g mt-4"><summary>Latest activity in this college</summary><ul class="list-unstyled small mb-0 ov-log">${d.log.map(l => `<li><span class="text-body-secondary">${ovwAgo(l.at)}${l.dept ? " · " + esc(l.dept) : ""}</span><br>${esc(l.by || "Someone")} ${esc(l.act)}${l.what ? ` <span class="text-body-secondary">${esc(l.what)}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
     ${h("Switch off or remove")}
     <div class="d-flex flex-wrap gap-3 align-items-center">${here ? `<span class="small text-body-secondary">You're working inside this college, so it can't be switched off or removed. Work inside another one first.</span>` : `<div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="colOn_${esc(c.id)}" data-colon="${esc(c.id)}" ${c.off ? "" : "checked"}><label class="form-check-label small" for="colOn_${esc(c.id)}">Staff can sign in</label></div>
-      ${many && !c.people ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-colact="del">${colArm === c.id ? "Remove this college?" : "Remove this college"}</button>` : many ? `<span class="small text-body-secondary">To remove it, move or remove its people first.</span>` : ""}`}</div>`}
+      ${many && !c.people ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-colact="del">${colArm === c.id ? "Remove this college?" : "Remove this college"}</button>` : ""}
+      ${many && !colWipe ? `<button type="button" class="btn btn-sm btn-outline-danger" data-cold="wipe1">Delete this college and everything in it</button>` : ""}`}</div>
+    ${many && !here && colWipe ? `<div class="col-wipe mt-3" role="group" aria-labelledby="cwH"><div class="fw-semibold text-danger mb-1" id="cwH">Delete ${esc(colNameOf(c))} for good?</div>
+      <p class="small mb-2">This removes ${d.people.length} ${d.people.length === 1 ? "person" : "people"} and their accounts, ${d.depts.length} ${d.depts.length === 1 ? "department" : "departments"}, ${d.lessons} shared ${d.lessons === 1 ? "lesson" : "lessons"}, everyone's own lessons and planning, marking results, and the pages given to students. It can't be undone from here. If you might want any of it back, make a backup first in Data and backups.</p>
+      ${c.paid ? `<p class="small text-danger mb-2">This college pays by card. Cancel its plan first (work inside it, then Plan and billing), or it will keep being charged.</p>` : ""}
+      <label class="form-label small fw-semibold mb-1" for="cwName">Type ${c.name ? `the college's name, <b>${esc(c.name)}</b>,` : `the word <b>delete</b>`} to confirm</label>
+      <div class="d-flex flex-wrap gap-2 align-items-center"><input class="form-control form-control-sm" style="max-width:300px" id="cwName" autocomplete="off" spellcheck="false"><button type="button" class="btn btn-sm btn-danger" data-cold="wipe2" ${colWipeBusy ? "disabled" : ""}>${colWipeBusy ? "Deleting..." : colWipe === 2 ? "Yes, delete it all for good" : "Delete for good"}</button><button type="button" class="btn btn-sm btn-link" data-cold="wipe0">Keep it</button></div></div>` : ""}`}
     <span class="idea-msg d-block mt-2" id="colMsg" role="status">${esc(colMsg)}</span></div>`; }
 collegesSection = function(sec){
   if(window.claude || !(typeof me !== "undefined" && me && me.role === "superadmin")) return "";
@@ -9989,12 +10023,20 @@ collegesSection = function(sec){
            : sec("stColleges", "Colleges", "Every college on this site. Each has its own name, logo, colour, departments, staff and lessons, and none can see another's. Open one to see inside it and change anything.", colListHtml());
 };
 const colRefresh = async () => { team = null; try{ const r = await authCall("me"); me = r.me; meInfo = r; }catch{} colInfoStale = true; };
-const colBrand = async id => { if(id !== me.college) return; try{ const r = await authCall("siteget"); siteInfo = r; meInfo.site = r.site; siteApply(r.site); }catch{} };
+const colBrand = async id => { if(me.inside === false || id !== me.college) return; try{ const r = await authCall("siteget"); siteInfo = r; meInfo.site = r.site; siteApply(r.site); }catch{} };
 document.addEventListener("click", async e => {
   const v = e.target.closest("[data-colview]"); if(v) return colView(v.dataset.colview);
   const b = e.target.closest("[data-cold]"); if(!b) return; const k = b.dataset.cold, id = colOpen;
   try{
     if(k === "retry"){ colInfo = null; return renderSettings(); }
+    if(k === "wipe1"){ colWipe = 1; renderSettings(); const i = $("#cwName"); if(i) i.focus(); return; }
+    if(k === "wipe0"){ colWipe = 0; return renderSettings(); }
+    if(k === "wipe2"){ const c = colList().find(x => x.id === id), typed = ($("#cwName").value || "").trim(), want = c && c.name ? c.name : "delete", keep = () => { const i = $("#cwName"); if(i) i.value = typed; };
+      if(typed.replace(/\s+/g, " ").toLowerCase() !== want.replace(/\s+/g, " ").toLowerCase()){ colWipe = 1; colSay(c && c.name ? "That doesn't match the college's name. Type it exactly." : "Type the word delete to confirm.", true); keep(); const i = $("#cwName"); if(i) i.focus(); return; }
+      if(colWipe < 2){ colWipe = 2; renderSettings(); keep(); const b2 = $('[data-cold="wipe2"]'); if(b2) b2.focus(); setTimeout(() => { if(colWipe === 2 && !colWipeBusy){ colWipe = 1; if(view === "settings"){ const t = ($("#cwName") || {}).value || ""; renderSettings(); const i = $("#cwName"); if(i) i.value = t; } } }, 8000); return; }
+      colWipeBusy = true; renderSettings(); keep();
+      try{ const j = await colCall("collegedel", {id, force: true, confirm: typed}); colWipeBusy = false; colWipe = 0; colOpen = ""; colInfo = null; ovw = null; team = null; try{ const r = await authCall("me"); me = r.me; meInfo = r; }catch{} return colSay(`${want === "delete" ? "The college" : want} has been deleted, with ${j.gone ? j.gone.people : 0} ${j.gone && j.gone.people === 1 ? "person" : "people"} and everything in it.`); }
+      catch(err){ colWipeBusy = false; colWipe = 1; colSay({confirm: "That doesn't match the college's name. Type it exactly.", paying: "This college pays by card. Cancel its plan first, then delete it.", own: "You're working inside this college. Work inside another one first.", last: "This is the only college, so it can't be deleted."}[err && err.code] || colErr(err), true); keep(); return; } }
     if(k === "nocolor"){ await colCall("collegeset", {id, color: ""}); await colBrand(id); return colSay("Back to Crafticulum's own colour."); }
     if(k === "nologo"){ await colCall("collegeset", {id, logo: ""}); await colBrand(id); return colSay("Logo removed."); }
     if(k === "deptadd"){ const name = $("#cdDeptNew").value.trim(); if(!name) return colSay("Give the department a name.", true); await authCall("deptadd", {name, college: id}); await colRefresh(); await colCall("colleges"); return colSay(`Added ${name}.`); }
@@ -10107,6 +10149,44 @@ renderHome = function(){ const r = _renderHome35.apply(this, arguments);
 (() => { let h = null; try{ const m = location.hash.match(/^#verify=([A-Za-z0-9_]+)$/); if(m) h = {type: "verify", val: m[1]}; }catch{} try{ if(!h && typeof AUTH_HASH !== "undefined") h = AUTH_HASH; }catch{} if(!h || h.type !== "verify" || window.claude) return;
   let n = 0; const t = setInterval(async () => { if(++n > 240) return clearInterval(t); if(typeof me === "undefined" || !me || !meInfo) return; clearInterval(t); if(typeof askLogin !== "undefined" && askLogin.used) return;
     try{ await authCall("verify", {token: h.val}); const r = await authCall("me"); me = r.me; meInfo = r; toast("Thanks, your email is confirmed."); if(view === "home") render(current); }catch{ if(meInfo.needVerify) toast("That link has been used or has run out. Use Send it again on the Start page.", {bad: true}); } }, 250); })();
+
+/* nothing of the app shows until we know who this is: the sign-in page or the app appears once, with no flash of the other */
+(() => { const d = document.documentElement; if(!d.classList.contains("cc-boot")) return;
+  const t = setInterval(() => { const m = document.getElementById("loginModal"); if((typeof me !== "undefined" && me && typeof meInfo !== "undefined" && meInfo) || document.body.classList.contains("auth-gate") || (m && m.classList.contains("show"))){ clearInterval(t); requestAnimationFrame(() => requestAnimationFrame(() => d.classList.remove("cc-boot"))); } }, 40); })();
+
+/* ===== round 33: the super admin stands outside every college. They step inside one to work in it, and step back out again ===== */
+const saOut = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside === false;
+const saIn = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside !== false && typeof meInfo !== "undefined" && !!meInfo && (meInfo.colleges || []).length > 1;
+function saGroups(){ try{ const g = k => ST_GROUPS.find(x => x[0] === k)[2], c = g("college"), s = g("site"); [c, s].forEach(a => { const i = a.indexOf("stUsage"); if(i >= 0) a.splice(i, 1); }); if(saOut()) s.splice(1, 0, "stUsage"); else c.splice(2, 0, "stUsage"); }catch{} }
+function saPaint(){
+  const out = saOut(), inn = saIn(), b = document.body; b.classList.toggle("sa-out", out); b.classList.toggle("sa-in", inn); let bar = $("#saBar");
+  if(!inn){ if(bar) bar.remove(); }
+  else { const t = `<span>You're working inside <b>${esc(me.collegeName || "a college")}</b> as super admin. You aren't one of its people, and nothing you do here uses its allowance.</span><button type="button" class="btn btn-sm btn-light" data-sa-leave>&larr; Back to super admin</button>`;
+    if(!bar){ b.insertAdjacentHTML("afterbegin", `<div id="saBar" role="status"></div>`); bar = $("#saBar"); } if(bar.dataset.c !== me.collegeName){ bar.dataset.c = me.collegeName || ""; bar.innerHTML = t; } }
+  const cap = document.querySelector(".side .side-sec .side-cap"); if(cap) cap.closest(".side-sec").hidden = out;
+}
+async function saLeave(){ try{ await authCall("leave"); try{ ACCOUNT_KEYS.forEach(k => localStorage.removeItem(k)); localStorage.removeItem("cc_user"); }catch{} lsSet("cc_st_tab", "overview"); try{ sessionStorage.setItem("cc_sa_go", "settings"); }catch{} location.reload(); }catch{ toast("Couldn't step back out. Try again.", {bad: true}); } }
+document.addEventListener("click", e => { if(e.target.closest("[data-sa-leave]")) saLeave(); });
+/* stepping inside a college lands on its start screen, not back on Settings */
+const _colSwitch36 = colSwitch;
+colSwitch = async function(dept){ try{ if(me && me.role === "superadmin") sessionStorage.setItem("cc_sa_go", "home"); }catch{} return _colSwitch36.apply(this, arguments); };
+const _setView36 = setView;
+setView = function(v){ if(saOut() && v !== "settings") v = "settings"; return _setView36.call(this, v); };
+const _showLesson36 = showLesson;
+showLesson = function(){ if(saOut()) return; return _showLesson36.apply(this, arguments); };
+const _render36 = render;
+render = function(){ if(saOut() && view !== "settings"){ view = "settings"; } return _render36.apply(this, arguments); };
+const _renderSettings36 = renderSettings;
+renderSettings = function(){ saGroups(); return _renderSettings36.apply(this, arguments); };
+const _applyRole36 = applyRole;
+applyRole = function(){ const r = _applyRole36.apply(this, arguments);
+  try{ saPaint(); let go = ""; try{ go = sessionStorage.getItem("cc_sa_go") || ""; sessionStorage.removeItem("cc_sa_go"); }catch{}
+    if(saOut()){ if(view !== "settings" || go){ if(go || !stTab || stTab === "college" || stTab === "teaching") stTab = "overview"; _setView36("settings"); } else if(view === "settings") renderSettings(); }
+    else if(go === "home" && me && me.role === "superadmin") _setView36("home"); }catch(e){ console.error(e); }
+  return r; };
+/* nothing from a college is one keypress away while standing outside them all */
+document.addEventListener("keydown", e => { if(saOut() && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key || "").toLowerCase() === "k"){ e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+document.addEventListener("click", e => { if(saOut() && e.target.closest("[data-search],[data-canvas='libCanvas']")){ e.preventDefault(); e.stopImmediatePropagation(); } }, true);
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
