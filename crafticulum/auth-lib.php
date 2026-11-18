@@ -234,7 +234,9 @@ function ccMe(): ?array {
     }
     $u['email'] = $uid;
     if ($u['role'] === 'superadmin') {
-        $d = (string) ($_SESSION['dept'] ?? ($u['dept'] ?? ''));
+        // the super admin belongs to no college. With more than one college on the site they stand outside all of them until they choose to work inside one
+        $u['inside'] = count(ccCollegeIds($a)) < 2 || !empty($_SESSION['inside']);
+        $d = $u['inside'] ? (string) ($_SESSION['dept'] ?? ($u['dept'] ?? '')) : '';
         if (!isset($a['depts'][$d])) $d = (string) array_key_first($a['depts']);
         $u['dept'] = $d;
     } elseif (!isset($a['depts'][$u['dept'] ?? ''])) return null;
@@ -249,6 +251,7 @@ function ccMe(): ?array {
     $u['canEdit'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true) || !empty($u['canEdit']);
     $u['deptName'] = (string) ($a['depts'][$u['dept']]['name'] ?? '');
     $u['collegeName'] = ccCollege($a, $u['college'])['name'];
+    if ($u['role'] === 'superadmin' && !$u['inside']) { $u['collegeName'] = ''; $u['deptName'] = ''; }
     $u['isLead'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true);
     $u['admin'] = in_array($u['role'], ['owner', 'superadmin'], true);   // runs a college: its departments, people and profile
     $u['demo'] = $uid === CC_DEMO_USER;
@@ -357,7 +360,7 @@ function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) c
 function ccPublic(array $u): array {
     return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => (string) ($u['picture'] ?? ''), 'role' => $u['role'], 'dept' => $u['dept'],
             'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
-            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin'])];
+            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
 
 /* ---------- accounts that are waiting for approval ---------- */

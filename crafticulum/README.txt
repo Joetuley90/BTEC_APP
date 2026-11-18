@@ -813,5 +813,35 @@ College, Teaching, Site (super admin), and Data and backups. Each group shows
 only its own parts. Everything, at the end, shows the lot on one page as
 before. Links from elsewhere in the app open the right group for you.
 
+THE SUPER ADMIN STANDS OUTSIDE EVERY COLLEGE (v90)
+Once the site has more than one college, the super admin signs in to their own
+home: Settings, with the site overview, colleges, team, usage, the site's own
+settings and backups. No college's name, colour, lessons or planning is shown,
+and the workspace screens are hidden. To see inside a college, open it in
+Colleges and press Work inside this college. A bar across the top then says
+which college you are inside, with Back to super admin to step out again.
+Every new sign-in starts outside. On a site with a single college nothing
+changes.
+
+TEAM BY COLLEGE (v90)
+For the super admin, Team now starts with a College drop-down. Pick one and
+its people are listed under each of its departments. Add someone and they go
+into the college that is picked. The department list on each person also has
+"Move to ..." for moving them to another college.
+
+DELETING A COLLEGE FOR GOOD (v90)
+Open a college in Colleges. Under Switch off or remove there is now Delete
+this college and everything in it. You type the college's name, press Delete
+for good, then press again to confirm. It removes the college's people and
+their accounts, its departments, lessons, planning, results, activity log and
+the pages given to its students. It can't be undone from the app, so take a
+backup first if you might want any of it back. It is refused for the last
+college on the site, the one you are working inside, and one that is still
+paying by card (cancel its plan first).
+
+NO FLASH OF THE APP BEFORE SIGN-IN (v90)
+Opening Sign in or choosing a plan no longer shows the app for a moment before
+the right screen appears. A plain cover with the logo stays up until it's ready.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.
