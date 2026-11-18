@@ -128,6 +128,18 @@ if ($action === 'all') {
     out(200, ['docs' => (object) $docs]);
 }
 
+/* every class list and set of marks in this department, for its leaders to look at. Each one still belongs to the teacher who made it */
+if ($action === 'deptlearners') {
+    if (empty($me['isLead'])) out(403, ['error' => 'noperm']);
+    $sets = []; $who = $acc['users']; foreach (ccSupers() as $e) if (!isset($who[$e])) $who[$e] = ['name' => ''];
+    foreach ($who as $e => $u) { foreach (glob($base . '/u/' . sha1((string) $e) . '/' . $dept . '/*.json') ?: [] as $f) {
+        $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue;
+        $s = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($s) || empty($s['learners']) || !is_array($s['learners'])) continue;
+        $sets[] = ['by' => (string) ((($u['name'] ?? '') ?: $e)), 'mine' => (string) $e === $me['email'], 'set' => ['name' => (string) ($s['name'] ?? ''), 'learners' => array_slice($s['learners'], 0, 80), 'marks' => (array) ($s['marks'] ?? [])]]; } }
+    usort($sets, fn($x, $y) => strcasecmp($x['set']['name'] . $x['by'], $y['set']['name'] . $y['by']));
+    out(200, ['sets' => $sets]);
+}
+
 $lead = !empty($me['isLead']);
 function pendFile(string $ddir, string $p): string { return $ddir . '/_pending/' . sha1($p) . '.json'; }
 function pendRead(string $ddir, string $p): ?array { $j = json_decode((string) @file_get_contents(pendFile($ddir, $p)), true); return is_array($j) && is_array($j['data'] ?? null) ? $j : null; }

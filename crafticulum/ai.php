@@ -32,7 +32,8 @@ $me = ccMe();
 if (!$me) out(401, ['error' => 'login']);
 /* AI Tools and the assistant can be open to every member of staff (a department setting, on to begin with). Building lessons stays with the people given that permission */
 $tool = is_string($body['tool'] ?? null) && preg_match('/^[a-z]{1,20}$/', $body['tool']) ? $body['tool'] : ''; $toolMins = $tool !== '' ? max(0, min(240, (int) ($body['mins'] ?? 0))) : 0;
-if (!$me['canGen'] && !($tool !== '' && ccDeptPrefs(ccAccounts(), (string) $me['dept'])['tools'])) out(403, ['error' => 'noperm']);
+if ($tool !== '') { if (!ccRoom(ccAccounts(), $me, $tool === 'chat' ? 'assistant' : 'tools')) out(403, ['error' => 'noperm']); }   // the room has to be open to this person
+elseif (!$me['canGen']) out(403, ['error' => 'noperm']);
 if ($action !== 'ask') out(404, ['error' => 'Unknown action.']);
 
 // Rate limit per signed-in session

@@ -952,8 +952,8 @@ knew is still there under its heading. Settings stays separate, below.
 
 AI TOOLS FOR EVERY TEACHER (v95)
 Teachers can now use AI Tools and the assistant, not only people who can build
-lessons. A head of department can turn this off in Settings, Teaching,
-Department rules ("AI Tools for every teacher"). Building full lessons with
+lessons. Since v96 the college's manager controls this in "Who can use what"
+(see ROOMS below). Building full lessons with
 the AI is unchanged and still needs that permission. Every use counts toward
 the month's allowance.
 
@@ -1001,6 +1001,46 @@ The size limit is 20 MB, or your host's own PHP upload limit if that is lower
 (many hosts start at 2 MB; raise upload_max_filesize and post_max_size in
 cPanel, "MultiPHP INI Editor", if students need more).
 New files: handin.php and handin.html. Upload .htaccess too (new addresses).
+
+ROOMS: WHO CAN USE WHAT (v96)
+Each part of the app is a room: AI Tools, Crafti, Resource library, Learners,
+Hand-in links and Second Marker. Every plan has every room.
+  - Super admin: Settings, Site, Rooms. Close a room and it is gone for every
+    college, from the menu, by its address and on the server. You can still
+    go into every room yourself. Working inside a college, "Who can use what"
+    also lets you close a room for that college only.
+  - College manager: Settings, College, "Who can use what". A switch for each
+    room for heads of department, and one for teachers. The manager has every
+    room that hasn't been closed above them.
+The department switch "AI Tools for every teacher" from v95 has gone: this
+replaces it. Hand-in links and Second Marker still have to be switched on by
+each department as well. Building full lessons with the AI is still its own
+permission in Team.
+
+CRAFTI (v96)
+The assistant is now called Crafti. He has his own cartoon face, says hello
+by name, and talks in a livelier, friendlier way. He is told to drop the jokes
+for anything serious (safeguarding, behaviour, SEND, complaints) and to write
+anything you'll send to someone else in a normal professional voice.
+
+FRONT PAGE (v96)
+A new section, "An AI toolkit for the rest of the job", introduces Crafti, the
+32 tools, Learners and the library, with a link in the top menu and a new
+question in Questions people ask.
+
+JOINED UP (v96)
+  - Handed-in work: a PDF or Word file now has "Check in Second Marker". One
+    press fetches the file and loads it into Second Marker, ready to check.
+    Nothing new is stored: Second Marker still keeps no learner work.
+  - Learners: heads of department and above get a "Whole department" tab with
+    every teacher's groups for a unit, how much each has achieved and what is
+    most missed. They can look inside a group but only its teacher can change
+    it. Teachers are told on the page that their leaders can see their lists.
+  - Any lesson can be opened in the same editor as the tools' resources: from
+    the bottom of the lesson, or from the Resource library ("Open in the
+    editor"). It opens as a copy, part by part, to rewrite, save and download
+    as Word, PDF or PowerPoint. The lesson, its board and its student page are
+    not changed, and lessons keep their own edit screen for those.
 
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

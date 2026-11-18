@@ -278,7 +278,7 @@ function ccMarker(array $a, string $dept): array {
             'pdfText' => !array_key_exists('pdfText', $m) || !empty($m['pdfText']), 'feedback' => !array_key_exists('feedback', $m) || !empty($m['feedback']),
             'emailDomain' => (string) ($m['emailDomain'] ?? ''), 'guide' => (string) ($m['guide'] ?? ''), 'ivTarget' => max(0, min(100, (int) ($m['ivTarget'] ?? 0)))];
 }
-function ccMarkerCan(array $me, array $a): bool { $m = ccMarker($a, (string) $me['dept']); return $m['on'] && (!empty($me['isLead']) || $m['who'] === 'all'); }
+function ccMarkerCan(array $me, array $a): bool { $m = ccMarker($a, (string) $me['dept']); return $m['on'] && ccRoom($a, $me, 'marker') && (!empty($me['isLead']) || $m['who'] === 'all'); }
 /* ---------- the error log: things that went wrong, for the super admin to read in Settings. No learner work and no passwords go in it ---------- */
 function ccErr(string $kind, string $msg, array $extra = []): void {
     try {
@@ -369,9 +369,23 @@ function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) c
 function ccPublic(array $u): array {
     return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => (string) ($u['picture'] ?? ''), 'role' => $u['role'], 'dept' => $u['dept'],
             'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
-            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
+            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
 
+/* ---------- rooms: the parts of the app that can be switched on and off.
+   The super admin can close a room for the whole site or for one college. A college's manager chooses which rooms its heads of department
+   and its teachers get. Every plan has every room; plans differ in how much can be built, not in what is there. ---------- */
+const CC_ROOMS = ['tools' => ['AI Tools', 'The toolkit: worksheets, quizzes, reports, emails and the rest.'], 'assistant' => ['Crafti', 'The assistant you can chat to.'], 'library' => ['Resource library', 'Lessons and saved resources in one place.'],
+    'learners' => ['Learners', 'Class lists and each learner against each criterion.'], 'handin' => ['Hand-in links', 'Students hand in work through a link. Each department still has to switch this on itself.'], 'marker' => ['Second Marker', 'Checking learner work against the criteria. Each department still switches this on itself.']];
+function ccRoomsCollege(array $a, string $college): array {   // which rooms are open in this college at all, before roles come into it
+    $site = (array) (($a['rooms'] ?? [])['off'] ?? []); $col = (array) (($a['colleges'][$college] ?? [])['roomsOff'] ?? []); $o = [];
+    foreach (CC_ROOMS as $k => $_) $o[$k] = !in_array($k, $site, true) && !in_array($k, $col, true); return $o; }
+function ccRooms(array $a, array $me): array {
+    $role = (string) ($me['role'] ?? 'teacher'); if ($role === 'superadmin') return array_fill_keys(array_keys(CC_ROOMS), true);   // the super admin can always walk into every room
+    $cid = (string) ($me['college'] ?? ''); $open = ccRoomsCollege($a, $cid); if ($role === 'owner' || !empty($me['demo'])) return $open;
+    $roles = (array) (($a['colleges'][$cid] ?? [])['rooms'] ?? []); $r = $role === 'hod' ? 'hod' : 'teacher'; $o = [];
+    foreach ($open as $k => $on) $o[$k] = $on && !(isset($roles[$k]) && is_array($roles[$k]) && array_key_exists($r, $roles[$k]) && empty($roles[$k][$r])); return $o; }
+function ccRoom(array $a, array $me, string $room): bool { return !empty(ccRooms($a, $me)[$room]); }
 /* ---------- hand-in links: the only learner work kept on the server, only where a department has switched it on, and only for a while ---------- */
 const CC_HANDIN_DAYS = 30;
 function ccHandinDir(): string { return ccDataDir() . '/_handin'; }

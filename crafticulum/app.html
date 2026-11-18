@@ -1360,6 +1360,26 @@ button.ln-c:hover{border-color:var(--cc-primary)}.ln-rm{border:0;background:none
 .ln-help{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--cc-primary-soft)}.ln-help ul{padding-left:1.1rem;margin-top:4px}.flex-none{flex:none}
 .ln-hand{margin-top:28px;padding-top:20px;border-top:1px solid var(--cc-line)}.ln-new{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 .ln-links{display:grid;gap:10px;margin-top:16px}.ln-link{padding:12px 14px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}.ln-link-h{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}.ln-link table{margin-top:10px}
+/* ===== Crafti ===== */
+.cr-av{width:38px;height:38px;flex:none;filter:drop-shadow(0 2px 4px rgba(79,70,229,.25))}.cr-hero{width:132px;height:132px;margin-bottom:4px;animation:crBob 3.2s ease-in-out infinite}
+@keyframes crBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes crDot{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
+@media (prefers-reduced-motion:reduce){.cr-hero,.as-dots i,.as-think .cr-av{animation:none!important}}
+.as-hi{font-family:"Lexend","Plus Jakarta Sans",sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(90deg,#4f46e5,#7c3aed 55%,#db2777);-webkit-background-clip:text;background-clip:text;color:transparent}
+.as-m.as-a{grid-template-columns:38px minmax(0,1fr);column-gap:10px;align-items:start}.as-m.as-a>.cr-av{grid-row:1 / span 2}.as-m.as-a>.as-acts{grid-column:2}
+.as-a .as-b{background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(79,70,229,.07));border:1px solid rgba(var(--cc-primary-rgb),.18)}
+.as-u .as-b{background-color:#5b3fe8;background-image:linear-gradient(135deg,#4f46e5,#7c3aed)}
+.as-log{background:radial-gradient(1200px 300px at 10% -10%,rgba(124,58,237,.08),transparent 60%),radial-gradient(900px 260px at 100% 0,rgba(219,39,119,.06),transparent 60%),var(--bs-body-bg)}
+.as-think .cr-av{animation:crBob 1.2s ease-in-out infinite}.as-dots{display:inline-flex;gap:4px;margin-right:8px;vertical-align:middle}.as-dots i{width:7px;height:7px;border-radius:50%;background:var(--cc-primary);animation:crDot 1.1s infinite}.as-dots i:nth-child(2){animation-delay:.15s}.as-dots i:nth-child(3){animation-delay:.3s}
+.btn.as-send{background-color:#5b3fe8;background-image:linear-gradient(135deg,#4f46e5,#7c3aed)!important;border:0;color:#fff}.as-chips button{transition:transform .12s,border-color .12s}.as-chips button:hover{transform:translateY(-1px)}
+#sideAssist svg{color:#7c3aed}
+/* ===== rooms ===== */
+.rm-list{display:grid}.rm-list li{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--cc-line)}.rm-list li:first-child{border-top:0;padding-top:0}
+.rm-sw .form-check-input{width:2.4em;height:1.3em;margin:0;float:none}.rm-t th[scope=col]{font-size:.74rem;font-weight:700;color:var(--bs-secondary-color);text-transform:uppercase;letter-spacing:.04em}.rm-t td{width:150px}.rm-t tr.rm-shut th{opacity:.6}
+.ln-tabs{margin-bottom:18px}.ln-d th,.ln-d td{padding:9px 10px;font-size:.9rem}.ln-pc{display:flex;gap:10px;align-items:center;min-width:170px}.ln-pc .progress{flex:1 1 90px;height:8px}.ln-pc span{font-size:.8rem;white-space:nowrap}
+.ln-dd>td{background:var(--bs-tertiary-bg);padding:10px}.ln-dd span.ln-c{width:28px;height:28px;font-size:.78rem}.ln-crits{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;font-weight:400}.ln-d tfoot th{font-size:.8rem;font-weight:600;color:var(--bs-secondary-color)}
+.les-res{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;justify-content:space-between;margin-top:22px;padding:14px 18px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:.9rem;font-size:.9rem;color:var(--bs-secondary-color)}.les-res b{color:var(--bs-body-color)}.les-res>div{flex:1 1 320px;min-width:0}
+@media print{.les-res{display:none!important}}
 .tk-chips button small{font-weight:500;opacity:.75;margin-left:2px}
 
 /* ===== round 5 ===== */
@@ -8094,8 +8114,6 @@ function rulesSection(sec){
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlSign" ${p.signoff ? "checked" : ""} aria-label="Teachers' changes need signing off"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Start from our lessons</div><div class="small text-body-secondary">Before a new lesson is built, the lessons your department already has for that unit are offered first: open one, use one as the base, or build a new one. New lessons are also written to match them and not repeat them.</div></div>
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlBase" ${p.base !== false ? "checked" : ""} aria-label="Start from our lessons"></div></div>
-    <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">AI Tools for every teacher</div><div class="small text-body-secondary">When this is on, every member of staff can use AI Tools and the assistant. When it's off, only people who can build lessons can. Each use counts towards the month's allowance either way.</div></div>
-      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlTools" ${p.tools !== false ? "checked" : ""} aria-label="AI Tools for every teacher"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Hand-in links for students</div><div class="small text-body-secondary">Off to begin with. When this is on, staff can make a link that students use to hand in a file for an assignment. <b>This is the one place learners' work is kept on the server.</b> Each file is kept for 30 days and then deleted, and only the teacher who made the link and the department's leaders can download it. Check this fits your college's data protection rules before switching it on.</div></div>
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlHandin" ${p.handin ? "checked" : ""} aria-label="Hand-in links for students"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Pictures in lessons</div><div class="small text-body-secondary">New lessons get a photo for each part of the teaching content where one helps, found on Wikimedia Commons and shown with its credit. The photo is loaded from Wikimedia's servers when a teacher or student opens the lesson. Diagrams are drawn by Crafticulum itself and aren't affected by this switch.</div></div>
@@ -8113,7 +8131,6 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-rl]"
   if(k === "nopass") rulesSet({delPassword: ""}, "Delete password removed.");
   if(k === "log"){ logData = null; renderSettings(); } });
 document.addEventListener("change", e => { if(e.target.id === "rlHandin") rulesSet({handin: e.target.checked}, e.target.checked ? "On. Staff can make hand-in links from Learners. Files are kept for 30 days." : "Off. No new work can be handed in. Files already handed in stay until they are 30 days old or you delete them."); });
-document.addEventListener("change", e => { if(e.target.id === "rlTools") rulesSet({tools: e.target.checked}, e.target.checked ? "On. Every teacher can use AI Tools." : "Off. Only people who can build lessons can use AI Tools."); });
 document.addEventListener("change", e => { if(e.target.id === "rlPics") rulesSet({pics: e.target.checked}, e.target.checked ? "On. New lessons get pictures." : "Off. New lessons get diagrams only."); });
 document.addEventListener("change", e => { if(e.target.id === "rlBase") rulesSet({base: e.target.checked}, e.target.checked ? "On. Your team's lessons are offered first." : "Off. Lessons are built from scratch."); });
 document.addEventListener("change", e => { if(e.target.id === "rlSign") rulesSet({signoff: e.target.checked}, e.target.checked ? "Sign-off is on. Teachers' changes are drafts until you sign them off." : "Sign-off is off."); });
@@ -10254,7 +10271,7 @@ renderHome = function(){ const r = _renderHome35.apply(this, arguments);
 /* ===== round 33: the super admin stands outside every college. They step inside one to work in it, and step back out again ===== */
 const saOut = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside === false;
 const saIn = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside !== false && typeof meInfo !== "undefined" && !!meInfo && (meInfo.colleges || []).length > 1;
-function saGroups(){ try{ const g = k => ST_GROUPS.find(x => x[0] === k)[2], c = g("college"), s = g("site"); [c, s].forEach(a => { const i = a.indexOf("stUsage"); if(i >= 0) a.splice(i, 1); }); if(saOut()) s.splice(1, 0, "stUsage"); else c.splice(2, 0, "stUsage"); }catch{} }
+function saGroups(){ try{ const g = k => ST_GROUPS.find(x => x[0] === k)[2], c = g("college"), s = g("site"); [c, s].forEach(a => { const i = a.indexOf("stUsage"); if(i >= 0) a.splice(i, 1); }); if(saOut()) s.splice(1, 0, "stUsage"); else c.splice(c.indexOf("stPlan") + 1, 0, "stUsage"); }catch{} }
 function saPaint(){
   const out = saOut(), inn = saIn(), b = document.body; b.classList.toggle("sa-out", out); b.classList.toggle("sa-in", inn); let bar = $("#saBar");
   if(!inn){ if(bar) bar.remove(); }
@@ -10550,7 +10567,8 @@ const TK_TONE_HOW = {warm: "Warm, encouraging and human, without gushing.", form
 
 let tkOpen = "", tkQ = "", tkCat = "", tkTab = "tools", tkVals = {}, tkDoc = null, tkBusy = false, tkErr = "", tkAbort = null, tkSecBusy = -1, tkDirty = false, tkSay = "", tkLibQ = "", tkTonesOpen = false, tkDelArm = "";
 let tkPrefs = {tones: [], made: 0, mins: 0, recent: [], mem: [], prompts: []}, tkMine = [], tkShared = [], tkSubbed = false, tkWait = 0, tkTries = 0;
-const tkCan = () => !acct() || !!me.canGen || (typeof prefsNow === "function" && prefsNow().tools !== false);
+const roomOn = k => !acct() || !me.rooms || me.rooms[k] !== false;   // rooms are switched on and off in Settings by the super admin and the college's manager
+const tkCan = () => roomOn("tools");
 const tkLocal = () => { try{ return JSON.parse(lsGet("lb_tk") || "{}") || {}; }catch{ return {}; } };
 function tkLoad(){
   const l = tkLocal(); if(l.prefs) tkPrefs = {...tkPrefs, ...l.prefs}; if(Array.isArray(l.docs)) tkMine = l.docs;
@@ -10684,7 +10702,7 @@ async function tkRun(){
   }catch(e){ if(!(e && (e.name === "AbortError" || e.code === "aborted"))) tkErr = tkWhy(e); }
   finally{ tkBusy = false; tkAbort = null; if(view === "tools") tkDraw(); }
 }
-const tkWhy = e => (e && e.code === "noperm") ? "AI Tools are switched off for teachers in your department. Ask your head of department." : (e && e.code === "invalid_json") ? "That didn't come back in a form that could be used. Try again." : (e && e.code === "server" && e.message) ? e.message : (e && e.status === 402) || (e && e.code === "limit") ? "This month's limit has been reached." : "That didn't work. Check your connection and try again.";
+const tkWhy = e => (e && e.code === "noperm") ? "This isn't switched on for you. Ask your college's manager." : (e && e.code === "invalid_json") ? "That didn't come back in a form that could be used. Try again." : (e && e.code === "server" && e.message) ? e.message : (e && e.status === 402) || (e && e.code === "limit") ? "This month's limit has been reached." : "That didn't work. Check your connection and try again.";
 async function tkSecRun(i, how){
   if(!tkDoc || tkSecBusy >= 0 || tkBusy || !how) return; tkSync(); tkSecBusy = i; tkErr = ""; tkDraw();
   try{ const r = await sampleFn.json(tkSecPrompt(TK_BY[tkDoc.tool], tkDoc, i, how), {cache: false, meta: {tool: TK_BY[tkDoc.tool] ? tkDoc.tool : "edit", mins: 0}}); if(!r || !r.body) throw {code: "invalid_json"};
@@ -10767,7 +10785,7 @@ function tkFormHtml(t){ const v = tkVals[t.id] || {};
     ${t.tone && tkTonesOpen ? tkTonesHtml() : ""}
     ${t.personal ? `<div class="tk-wide tk-priv"><b>About one learner.</b> Their name stays on this device, and emails, phone numbers and postcodes are taken out of your notes before anything is sent. Don't type surnames, dates of birth or addresses. You check and send it, not Crafticulum.</div>` : ""}
     ${tkErr ? `<div class="tk-wide alert alert-danger small mb-0" role="alert">${esc(tkErr)}</div>` : ""}
-    <div class="tk-wide d-flex flex-wrap gap-2 align-items-center"><button type="submit" class="btn btn-primary" ${tkBusy || !tkCan() ? "disabled" : ""}>${tkBusy ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Writing...` : tkDoc && tkDoc.tool === t.id ? "Write it again" : "Write it"}</button>${tkBusy ? `<button type="button" class="btn btn-outline-secondary" data-tk="stop">Stop</button>` : ""}${!tkCan() ? `<span class="small text-body-secondary">AI Tools are switched off for teachers in your department. Ask your head of department.</span>` : ""}</div>
+    <div class="tk-wide d-flex flex-wrap gap-2 align-items-center"><button type="submit" class="btn btn-primary" ${tkBusy || !tkCan() ? "disabled" : ""}>${tkBusy ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Writing...` : tkDoc && tkDoc.tool === t.id ? "Write it again" : "Write it"}</button>${tkBusy ? `<button type="button" class="btn btn-outline-secondary" data-tk="stop">Stop</button>` : ""}${!tkCan() ? `<span class="small text-body-secondary">AI Tools aren't switched on for you. Ask your college's manager.</span>` : ""}</div>
   </form>`; }
 function tkTonesHtml(){ return `<div class="tk-wide tk-tones"><div class="fw-semibold small mb-1">Your own tones</div><p class="small text-body-secondary mb-2">Describe how you write, or paste a paragraph you've written and it will match it. Saved for you on every tool that has a tone.</p>
     ${(tkPrefs.tones || []).map(x => `<div class="tk-tone"><span><b>${esc(x.name)}</b> <span class="text-body-secondary">${esc(x.how.slice(0, 90))}${x.how.length > 90 ? "..." : ""}</span></span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-tk="tonedel" data-id="${esc(x.id)}">Remove</button></div>`).join("")}
@@ -10923,6 +10941,15 @@ async function tkPptxBlob(doc){
 async function tkPptx(){ tkSync(); try{ const blob = await tkPptxBlob(tkDoc); await (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: tkFile(tkDoc.title) + ".pptx", data: blob}); }catch(e){ console.error(e); tkNote("Couldn't make the PowerPoint file.", true); } }
 
 /* ---------- the assistant: a conversation that knows your units and what you've asked it to remember. Chats are kept; attached files are not ---------- */
+const CRAFTI = (cls, wave) => `<svg class="${cls || "cr-av"}" viewBox="0 0 120 120" role="img" aria-label="Crafti"><defs><linearGradient id="crG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs>
+  <ellipse cx="60" cy="110" rx="30" ry="5" fill="#0f172a" opacity=".12"/>
+  ${wave ? `<path d="M96 62 q14 -10 12 -24" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/><circle cx="108" cy="36" r="6" fill="#fbbf24"/>` : `<path d="M96 70 q10 4 12 14" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/>`}
+  <path d="M24 72 q-10 4 -12 14" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/>
+  <path d="M34 14 H74 L98 38 V88 Q98 104 82 104 H38 Q22 104 22 88 V26 Q22 14 34 14 Z" fill="url(#crG)"/><path d="M74 14 L98 38 H80 Q74 38 74 32 Z" fill="#c4b5fd"/>
+  <circle cx="45" cy="58" r="11" fill="#fff"/><circle cx="75" cy="58" r="11" fill="#fff"/><circle cx="47" cy="60" r="5" fill="#0f172a"/><circle cx="77" cy="60" r="5" fill="#0f172a"/><circle cx="49" cy="58" r="1.800" fill="#fff"/><circle cx="79" cy="58" r="1.800" fill="#fff"/>
+  <path d="M46 78 Q60 92 74 78" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="33" cy="74" r="5" fill="#f472b6" opacity=".7"/><circle cx="87" cy="74" r="5" fill="#f472b6" opacity=".7"/>
+  <path d="M14 30 l2.500 6 6 2.500 -6 2.500 -2.500 6 -2.500 -6 -6 -2.500 6 -2.500z" fill="#fbbf24"/></svg>`;
+const asCan = () => roomOn("assistant");
 const AS_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h4"/></svg>`;
 const LIB_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h3v18H6a2 2 0 0 1-2-2z"/><path d="M9 3h5v18H9z"/><path d="M14.5 6.5l3.8-1 3.2 13.5-3.8 1z"/></svg>`;
 const AS_STARTERS = ["Give me three ways to teach this unit's hardest idea", "What do learners usually get wrong in this unit, and how do I head it off?", "Write a 10-minute retrieval task on last lesson", "Turn this unit's criteria into questions I can ask in class", "Suggest a practical activity that needs no special equipment"];
@@ -10933,8 +10960,10 @@ function asLoad(){ tkLoad(); if(asSubbed) return; if(!db || !myId){ try{ if(!asC
 function asSave(c){ c.updatedAt = Date.now(); const rec = {...c, msgs: c.msgs.slice(-60)}; if(db && myId) return db.doc("data/users/" + myId + "/chats/" + c.id).set({json: JSON.stringify(rec), title: c.title, updatedAt: c.updatedAt}).catch(() => {}); lsSet("lb_chats", JSON.stringify(asChats.slice(0, 30))); }
 function asPrompt(c, text){
   const hist = c.msgs.slice(-12).map(m => (m.r === "u" ? "Teacher: " : "You: ") + String(m.t).slice(0, 4000)).join("\n\n");
-  return `You are Crafticulum AI, an assistant for teachers in UK schools and colleges. Help with planning, resources, assessment, feedback, behaviour, inclusion and the admin around teaching.
-${TK_RULES}
+  return `You are Crafticulum AI, an assistant for teachers in UK schools and colleges. Your name is Crafti. Help with planning, resources, assessment, feedback, behaviour, inclusion and the admin around teaching.
+How you talk: you are upbeat, warm and a little playful, like the colleague everyone hopes is in the staffroom. Open with energy, be on the teacher's side, and notice what's good in their idea before you build on it. An emoji now and then is welcome (one or two in a reply, never a row of them). Keep it brisk: the fun is in the voice, not in extra words, and the substance has to be as sharp as ever.
+Drop the jokes and the emoji completely, and be calm and plain, whenever the subject is serious: safeguarding, a learner in distress, behaviour concerns, SEND, bereavement, a complaint, or anything formal the teacher will send to someone else. Anything you draft for the teacher to use (a letter, a worksheet, a report) is written in a normal professional voice, not yours.
+${TK_RULES.replace("No filler, no praise for the request, no closing remarks.", "No waffle.")}
 - Answer the question that was asked, at the length it needs. Use simple Markdown: short paragraphs, "- " bullets, "1. " lists, **bold**, "## " headings for a longer answer, and | tables | where a table helps.
 - Never say that a learner's work meets, or will meet, an assessment criterion. That is the teacher's judgement.
 - If the teacher shares details about a learner, do not repeat names; refer to "the learner".${tkCtxText({ctx: 1, needs: 1}, {_unit: asUnit, _needs: true})}${tkMemText()}${asFile ? `\n\nThe teacher has attached "${tkScrub(asFile.name)}". Its text${asFile.cut ? " (the first part)" : ""}:\n"""\n${asFile.text}\n"""` : ""}${hist ? `\n\nThe conversation so far:\n${hist}` : ""}
@@ -10943,11 +10972,11 @@ Teacher: ${text}
 
 Reply to the teacher now, in Markdown, with no preamble.`; }
 async function asSend(text){
-  text = tkScrub(String(text || "").trim()).slice(0, 6000); if(!text || asBusy) return; if(!sampleFn){ asErr = "Crafticulum AI isn't available just now. Try again in a moment."; return asDraw(); }
+  text = tkScrub(String(text || "").trim()).slice(0, 6000); if(!text || asBusy) return; if(!sampleFn){ asErr = "Crafti isn't available just now. Try again in a moment."; return asDraw(); }
   let c = asChat(); if(!c){ c = {id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: text.replace(/\s+/g, " ").slice(0, 60), msgs: [], unit: asUnit, createdAt: Date.now()}; asChats.unshift(c); asCur = c.id; }
   const prompt = asPrompt(c, text); c.msgs.push({r: "u", t: text, at: Date.now(), file: asFile ? asFile.name : ""}); asBusy = true; asErr = ""; asDraft = ""; asAbort = new AbortController(); asDraw(true);
   try{ const r = await sampleFn(prompt, {signal: asAbort.signal, meta: {tool: "chat", mins: 0, signal: asAbort.signal}}), t = String((r && r.text) || (typeof r === "string" ? r : "")).trim(); if(!t) throw {code: "invalid_json"}; c.msgs.push({r: "a", t: t.slice(0, 20000), at: Date.now()}); asSave(c); }
-  catch(e){ c.msgs.pop(); asDraft = text; if(!(e && (e.name === "AbortError" || e.code === "aborted"))) asErr = (e && e.code === "noperm") ? "The assistant is switched off for teachers in your department. Ask your head of department." : tkWhy(e); }
+  catch(e){ c.msgs.pop(); asDraft = text; if(!(e && (e.name === "AbortError" || e.code === "aborted"))) asErr = (e && e.code === "noperm") ? "Crafti isn't switched on for you. Ask your college's manager." : tkWhy(e); }
   finally{ asBusy = false; asAbort = null; if(view === "assistant") asDraw(true); }
 }
 /* a reply becomes a resource you can edit, save and download: each heading starts a new part */
@@ -10962,20 +10991,20 @@ function asToDoc(c, i){ const m = c.msgs[i]; if(!m) return; const parts = []; le
 function asHtml(){ const c = asChat(), q = [...AS_STARTERS.slice(0, 3).map(t => ({t})), ...(tkPrefs.prompts || []).map(t => ({t, mine: 1}))];
   const unitSel = `<select class="form-select form-select-sm as-unit" id="asUnit" aria-label="Unit this is about"><option value="">No particular unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${asUnit === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select>`;
   const msg = (m, i) => m.r === "u" ? `<div class="as-m as-u"><div class="as-b">${esc(m.t).replace(/\n/g, "<br>")}${m.file ? `<div class="as-att">Attached: ${esc(m.file)}</div>` : ""}</div><div class="as-acts"><button type="button" class="btn btn-link btn-sm p-0" data-as="keep" data-i="${i}">Save as a prompt</button><button type="button" class="btn btn-link btn-sm p-0" data-as="mem" data-i="${i}">Remember this</button></div></div>`
-    : `<div class="as-m as-a"><div class="as-b tk-body">${tkClean(tkMd(m.t))}</div><div class="as-acts"><button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="${i}">Make this a resource</button><button type="button" class="btn btn-link btn-sm p-0" data-as="copy" data-i="${i}">Copy</button></div></div>`;
+    : `<div class="as-m as-a">${CRAFTI()}<div class="as-b tk-body">${tkClean(tkMd(m.t))}</div><div class="as-acts"><button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="${i}">Make this a resource</button><button type="button" class="btn btn-link btn-sm p-0" data-as="copy" data-i="${i}">Copy</button></div></div>`;
   return `<div class="tk-wrap as-wrap"><div class="as-two">
     <aside class="as-side" aria-label="Your chats"><button type="button" class="btn btn-primary w-100 mb-2" data-as="new">New chat</button>
       <ul class="list-unstyled as-list">${asChats.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 40).map(x => `<li class="${x.id === asCur ? "on" : ""}"><button type="button" class="as-open" data-as="open" data-id="${esc(x.id)}"><span>${esc(x.title || "Chat")}</span><small>${new Date(x.updatedAt || x.createdAt || Date.now()).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</small></button><button type="button" class="btn btn-link btn-sm text-danger p-0" data-as="del" data-id="${esc(x.id)}" aria-label="Delete chat ${esc(x.title || "")}">${asDelArm === x.id ? "Sure?" : "&times;"}</button></li>`).join("") || `<li class="small text-body-secondary px-1">Your chats are kept here.</li>`}</ul>
-      <button type="button" class="btn btn-link btn-sm p-0" data-as="memopen">${asMemOpen ? "Close" : `What it remembers${(tkPrefs.mem || []).length ? " (" + tkPrefs.mem.length + ")" : ""}`}</button>
-      ${asMemOpen ? `<div class="as-mem"><p class="small text-body-secondary mb-2">Things you've asked it to keep in mind. They're used by the assistant and by every tool, and only for you.</p>${(tkPrefs.mem || []).map((m, i) => `<div class="as-mem-i"><span>${esc(m)}</span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-as="memdel" data-i="${i}">Forget</button></div>`).join("")}<div class="input-group input-group-sm mt-2"><input class="form-control" id="asMemNew" maxlength="200" placeholder="e.g. My created lessons are 90 minutes" aria-label="Something to remember"><button type="button" class="btn btn-outline-primary" data-as="memadd">Add</button></div></div>` : ""}</aside>
+      <button type="button" class="btn btn-link btn-sm p-0" data-as="memopen">${asMemOpen ? "Close" : `What Crafti remembers${(tkPrefs.mem || []).length ? " (" + tkPrefs.mem.length + ")" : ""}`}</button>
+      ${asMemOpen ? `<div class="as-mem"><p class="small text-body-secondary mb-2">Things you've asked Crafti to keep in mind. They're used in every chat and by every tool, and only for you.</p>${(tkPrefs.mem || []).map((m, i) => `<div class="as-mem-i"><span>${esc(m)}</span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-as="memdel" data-i="${i}">Forget</button></div>`).join("")}<div class="input-group input-group-sm mt-2"><input class="form-control" id="asMemNew" maxlength="200" placeholder="e.g. My created lessons are 90 minutes" aria-label="Something to remember"><button type="button" class="btn btn-outline-primary" data-as="memadd">Add</button></div></div>` : ""}</aside>
     <section class="as-main" aria-label="Conversation">
-      <div class="as-log" id="asLog" aria-live="polite">${c && c.msgs.length ? c.msgs.map(msg).join("") : `<div class="tk-empty as-empty"><div class="tk-empty-i">${AS_ICO}</div><div class="fw-semibold">Ask anything about your teaching</div><div class="small text-body-secondary mb-3">It knows the unit you pick and its criteria. Anything it writes can become a resource you edit, save and download.</div><div class="as-chips">${q.map(x => `<button type="button" data-as="use" data-t="${esc(x.t)}">${esc(x.t)}</button>`).join("")}</div></div>`}
-        ${asBusy ? `<div class="as-m as-a"><div class="as-b"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Thinking...</div></div>` : ""}</div>
+      <div class="as-log" id="asLog" aria-live="polite">${c && c.msgs.length ? c.msgs.map(msg).join("") : `<div class="tk-empty as-empty">${CRAFTI("cr-hero", 1)}<div class="as-hi">Hi${me && me.name ? " " + esc(String(me.name).trim().split(" ")[0]) : ""}, I'm Crafti!</div><div class="text-body-secondary mb-3">Your teaching sidekick. Ask me anything, hand me the boring bits, or pick a unit and I'll know its criteria. Anything I write can become a resource you edit, save and download.</div><div class="as-chips">${q.map(x => `<button type="button" data-as="use" data-t="${esc(x.t)}">${esc(x.t)}</button>`).join("")}</div></div>`}
+        ${asBusy ? `<div class="as-m as-a as-think">${CRAFTI()}<div class="as-b"><span class="as-dots" aria-hidden="true"><i></i><i></i><i></i></span>Crafti is on it...</div></div>` : ""}</div>
       ${asErr ? `<div class="alert alert-danger small mb-2" role="alert">${esc(asErr)}</div>` : ""}
-      <form class="as-form" id="asForm"><textarea class="form-control" id="asText" rows="2" maxlength="6000" placeholder="Ask a question, or say what you need" aria-label="Your message" ${tkCan() ? "" : "disabled"}>${esc(asDraft)}</textarea>
+      <form class="as-form" id="asForm"><textarea class="form-control" id="asText" rows="2" maxlength="6000" placeholder="Ask Crafti anything, or say what you need" aria-label="Your message to Crafti" ${asCan() ? "" : "disabled"}>${esc(asDraft)}</textarea>
         <div class="as-row">${unitSel}<label class="btn btn-sm btn-outline-secondary mb-0">${asFile ? "Change file" : "Attach a file"}<input type="file" id="asFileIn" hidden accept=".pdf,.docx,.txt,.md,.pptx"></label>${asFile ? `<span class="small text-body-secondary as-file">${esc(asFile.name)} <button type="button" class="btn btn-link btn-sm p-0" data-as="unfile">Remove</button></span>` : ""}
-          <span class="ms-auto d-flex gap-2">${asBusy ? `<button type="button" class="btn btn-outline-secondary" data-as="stop">Stop</button>` : ""}<button type="submit" class="btn btn-primary" ${asBusy || !tkCan() ? "disabled" : ""}>Send</button></span></div>
-        <div class="form-text">${tkCan() ? "Don't paste learners' work or full names here. Emails, phone numbers and postcodes are taken out before sending. Attached files are read for this chat and not kept." : "The assistant is switched off for teachers in your department. Ask your head of department."}</div></form>
+          <span class="ms-auto d-flex gap-2">${asBusy ? `<button type="button" class="btn btn-outline-secondary" data-as="stop">Stop</button>` : ""}<button type="submit" class="btn btn-primary as-send" ${asBusy || !asCan() ? "disabled" : ""}>Send</button></span></div>
+        <div class="form-text">${asCan() ? "Don't paste learners' work or full names here. Emails, phone numbers and postcodes are taken out before sending. Attached files are read for this chat and not kept. Crafti can be wrong, so check what matters." : "Crafti isn't switched on for you. Ask your college's manager."}</div></form>
       ${(tkPrefs.prompts || []).length && c && c.msgs.length ? `<div class="as-chips mt-2">${tkPrefs.prompts.map((t, i) => `<span class="as-chip"><button type="button" data-as="use" data-t="${esc(t)}">${esc(t.slice(0, 60))}${t.length > 60 ? "..." : ""}</button><button type="button" data-as="unkeep" data-i="${i}" aria-label="Remove saved prompt">&times;</button></span>`).join("")}</div>` : ""}
     </section></div></div>`; }
 function asDraw(down){ const o = $("#out"); if(!o || view !== "assistant") return; const ta = $("#asText"), keep = ta && document.activeElement === ta, val = ta ? ta.value : asDraft; if(ta && !asBusy) asDraft = val;
@@ -10993,7 +11022,7 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
   if(k === "stop"){ if(asAbort) try{ asAbort.abort(); }catch{} return; }
   if(k === "unfile"){ keepDraft(); asFile = null; return asDraw(); }
   if(k === "memopen"){ keepDraft(); asMemOpen = !asMemOpen; return asDraw(); }
-  if(k === "memadd" || k === "mem"){ keepDraft(); const t = tkScrub(k === "mem" ? ((c && c.msgs[+b.dataset.i]) || {}).t : ($("#asMemNew") || {}).value || "").replace(/\s+/g, " ").trim().slice(0, 200); if(t.length < 3) return; tkPrefs.mem = [...(tkPrefs.mem || []).filter(x => x !== t), t].slice(-12); tkSavePrefs(); asMemOpen = true; tkNote("It will keep that in mind."); return asDraw(); }
+  if(k === "memadd" || k === "mem"){ keepDraft(); const t = tkScrub(k === "mem" ? ((c && c.msgs[+b.dataset.i]) || {}).t : ($("#asMemNew") || {}).value || "").replace(/\s+/g, " ").trim().slice(0, 200); if(t.length < 3) return; tkPrefs.mem = [...(tkPrefs.mem || []).filter(x => x !== t), t].slice(-12); tkSavePrefs(); asMemOpen = true; tkNote("Got it. Crafti will keep that in mind."); return asDraw(); }
   if(k === "memdel"){ keepDraft(); tkPrefs.mem = (tkPrefs.mem || []).filter((_, i) => i !== +b.dataset.i); tkSavePrefs(); return asDraw(); }
   if(k === "keep"){ keepDraft(); const t = ((c && c.msgs[+b.dataset.i]) || {}).t; if(!t) return; tkPrefs.prompts = [...(tkPrefs.prompts || []).filter(x => x !== t), t.slice(0, 600)].slice(-10); tkSavePrefs(); tkNote("Saved. It's under the message box whenever you need it."); return asDraw(); }
   if(k === "unkeep"){ keepDraft(); tkPrefs.prompts = (tkPrefs.prompts || []).filter((_, i) => i !== +b.dataset.i); tkSavePrefs(); return asDraw(); }
@@ -11004,8 +11033,8 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
 let lbQ = "", lbKind = "";
 function lbItems(){ const out = [];
   try{ libItems().forEach(it => out.push({kind: "lesson", id: it.id, title: it.title || "Lesson", sub: [it.level, it.unit].filter(Boolean).join(" · "), at: it.at || 0, by: it.author || "", shared: !!acct(), it})); }catch{}
-  tkMine.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From the assistant" : "Resource"), at: d.updatedAt || d.createdAt || 0, shared: false}));
-  tkShared.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From the assistant" : "Resource"), at: d.updatedAt || d.createdAt || 0, by: (d.by || {}).name || "", shared: true}));
+  tkMine.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From Crafti" : "Resource"), at: d.updatedAt || d.createdAt || 0, shared: false}));
+  tkShared.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From Crafti" : "Resource"), at: d.updatedAt || d.createdAt || 0, by: (d.by || {}).name || "", shared: true}));
   return out; }
 function lbHtml(){ const q = lbQ.trim().toLowerCase(), all = lbItems(), list = all.filter(x => (!lbKind || (lbKind === "shared" ? x.shared : lbKind === "mine" ? !x.shared : x.kind === lbKind)) && (!q || (x.title + " " + x.sub).toLowerCase().includes(q))).sort((a, b) => (b.at || 0) - (a.at || 0));
   const n = k => all.filter(x => k === "shared" ? x.shared : k === "mine" ? !x.shared : x.kind === k).length, chip = (k, t) => `<button type="button" class="${lbKind === k ? "on" : ""}" data-lb="kind" data-k="${k}">${t}${k ? ` <small>${n(k)}</small>` : ""}</button>`;
@@ -11025,7 +11054,7 @@ function navAreas(){ const nav = document.querySelector(".side .side-nav"); if(!
   const cap = (t, before) => { if(before) before.insertAdjacentHTML("beforebegin", `<div class="side-cap nav-cap">${t}</div>`); }, q = s => nav.querySelector(s);
   const home = q('[data-nav="home"]'); if(home){ const l = home.querySelector(".lbl"); if(l) l.textContent = "Dashboard"; home.setAttribute("aria-label", "Dashboard"); }
   const tools = $("#sideTools"); if(home && tools) home.insertAdjacentElement("afterend", tools);
-  tools.insertAdjacentHTML("afterend", `<button type="button" class="side-link" id="sideAssist" data-x-nav="assistant" aria-label="Assistant">${AS_ICO}<span class="lbl">Assistant</span></button>`);
+  tools.insertAdjacentHTML("afterend", `<button type="button" class="side-link" id="sideAssist" data-x-nav="assistant" aria-label="Crafti, your assistant">${AS_ICO}<span class="lbl">Crafti</span></button>`);
   cap("AI tools", tools); cap("Curriculum and lessons", q('[data-nav="week"]')); cap("Learners and assessment", q('[data-nav="results"]'));
   const libBtn = nav.querySelector('[data-canvas="libCanvas"]'); const last = libBtn || nav.lastElementChild;
   last.insertAdjacentHTML(libBtn ? "beforebegin" : "afterend", `<div class="side-cap nav-cap">Resource library</div><button type="button" class="side-link" id="sideLib" data-x-nav="library" aria-label="Resource library">${LIB_ICO}<span class="lbl">Library</span></button>`);
@@ -11037,7 +11066,7 @@ render = function(){ const out = typeof saOut === "function" && saOut();
   return _render40.apply(this, arguments); };
 const _syncShell40 = syncShell;
 syncShell = function(){ const r = _syncShell40.apply(this, arguments);
-  try{ navAreas(); const names = {assistant: "Assistant", library: "Resource library"}; ["assistant", "library"].forEach(v => { const b = document.querySelector(`[data-x-nav="${v}"]`), on = view === v; if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); } });
+  try{ navAreas(); const names = {assistant: "Crafti", library: "Resource library"}; ["assistant", "library"].forEach(v => { const b = document.querySelector(`[data-x-nav="${v}"]`), on = view === v; if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); } });
     if(names[view]){ document.querySelectorAll(".side-link[data-nav].active,.bnav [data-nav].active,#sideTools.active").forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = names[view]; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = names[view]; document.title = names[view] + " · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } }
     if(view === "home"){ const pt = $("#pageTitle"); if(pt && pt.textContent === "Start") pt.textContent = "Dashboard"; const cr = document.querySelector(".crumbs span"); if(cr && cr.textContent === "Start") cr.textContent = "Dashboard"; if(document.title === "Start · Crafticulum") document.title = "Dashboard · Crafticulum"; } }catch(e){ console.error(e); }
   return r; };
@@ -11069,7 +11098,7 @@ function lnHtml(){ const s = lnSet(), U = lnU(), groups = [...new Set([...(typeo
   const cell = (l, c) => { const v = st(l.id, c[0]), d = LN_STATES.find(x => x[0] === v) || LN_STATES[0]; return `<td><button type="button" class="ln-c ln-${v || "x"}" data-ln="mark" data-l="${esc(l.id)}" data-c="${esc(c[0])}" aria-label="${esc(l.name)}, ${esc(c[0])}: ${d[1]}" title="${esc(c[0] + " " + c[1])}">${d[2] || "·"}</button></td>`; };
   const done = l => crit.filter(c => st(l.id, c[0]) === "a").length, colDone = c => s.learners.filter(l => st(l.id, c[0]) === "a").length;
   const behind = crit.map(c => [c, s.learners.filter(l => ["n", "r"].includes(st(l.id, c[0]))).length, s.learners.filter(l => st(l.id, c[0]) && st(l.id, c[0]) !== "a").length]).filter(x => x[1] || x[2]).sort((a, b) => (b[1] * 2 + b[2]) - (a[1] * 2 + a[2])).slice(0, 5);
-  const handOn = acct() && typeof prefsNow === "function" && !!prefsNow().handin;
+  const handOn = acct() && typeof prefsNow === "function" && !!prefsNow().handin && roomOn("handin");
   return `<div class="tk-wrap"><div class="tk-head"><div><h1 class="h3 mb-1">Learners</h1><p class="text-body-secondary mb-0">Your class list, and where each learner is on each criterion of a unit. Every mark here is your decision, never the AI's. It's kept in your own space.</p></div></div>
     <div class="ln-bar"><div><label class="form-label" for="lnGroup">Group</label><select class="form-select" id="lnGroup">${groups.map(g => `<option ${g === s.name ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></div>
       <div class="ln-grow"><label class="form-label" for="lnUnit">Unit</label><select class="form-select" id="lnUnit"><option value="">Choose a unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${lnUnit === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select></div>
@@ -11129,6 +11158,121 @@ syncShell = function(){ const r = _syncShell41.apply(this, arguments);
     if(on){ document.querySelectorAll(".side-link[data-nav].active,.bnav [data-nav].active,#sideTools.active").forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = "Learners"; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = "Learners"; document.title = "Learners · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } } }catch(e){ console.error(e); }
   return r; };
 try{ ACCOUNT_KEYS.push("lb_learners"); }catch{}
+
+/* ===== round 39: rooms. Each part of the app can be opened or closed: by the super admin for the whole site or one college,
+   and by a college's manager for its heads of department and its teachers. A closed room disappears from the menu and can't be opened by its address. ===== */
+const ROOM_VIEWS = {tools: "tools", assistant: "assistant", library: "library", learners: "learners"}, ROOM_NAV = {tools: "#sideTools", assistant: "#sideAssist", library: "#sideLib", learners: "#sideLearn"};
+function roomsNav(){ Object.keys(ROOM_NAV).forEach(k => { const b = document.querySelector(ROOM_NAV[k]); if(b) b.hidden = !roomOn(k); });
+  document.querySelectorAll(".side-nav .nav-cap").forEach(c => { let n = c.nextElementSibling, any = false; while(n && !n.classList.contains("nav-cap")){ if(!n.hidden && getComputedStyle(n).display !== "none") any = true; n = n.nextElementSibling; } c.hidden = !any; }); }
+const _render42 = render;
+render = function(){ const k = Object.keys(ROOM_VIEWS).find(x => ROOM_VIEWS[x] === view); if(k && !roomOn(k)) view = "home"; return _render42.apply(this, arguments); };
+const _syncShell42 = syncShell;
+syncShell = function(){ const r = _syncShell42.apply(this, arguments); try{ roomsNav(); }catch(e){ console.error(e); } return r; };
+let roomInfo = null, roomBusy = false, roomMsg = "";
+function roomLoad(){ if(roomBusy) return; roomBusy = true; authCall("roomsget").then(j => { roomInfo = j; }).catch(() => { roomInfo = roomInfo || {failed: true}; }).finally(() => { roomBusy = false; if(view === "settings") renderSettings(); }); }
+try{ ST_GROUPS.find(g => g[0] === "site")[2].push("stRooms"); ST_GROUPS.find(g => g[0] === "college")[2].unshift("stRoomRoles"); }catch{}
+const roomSw = (id, on, label, data, dis) => `<div class="form-check form-switch mb-0 rm-sw"><input class="form-check-input" type="checkbox" role="switch" id="${id}" ${on ? "checked" : ""} ${dis ? "disabled" : ""} ${data} aria-label="${esc(label)}"></div>`;
+function roomSections(sec){
+  if(window.claude || !me || me.demo || !(me.role === "superadmin" || me.role === "owner")) return "";
+  if(!roomInfo){ roomLoad(); return (me.role === "superadmin" ? sec("stRooms", "Rooms", "", `<p class="small text-body-secondary mb-0">Loading...</p>`) : "") + sec("stRoomRoles", "Who can use what", "", `<p class="small text-body-secondary mb-0">Loading...</p>`); }
+  if(roomInfo.failed) return sec(me.role === "superadmin" ? "stRooms" : "stRoomRoles", "Rooms", "", `<p class="small mb-2">Couldn't load this just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-room="retry">Try again</button>`);
+  const R = roomInfo, siteOff = k => R.siteOff.includes(k), colOff = k => R.collegeOff.includes(k), msg = roomMsg ? `<div class="idea-msg mt-2" role="status">${esc(roomMsg)}</div>` : "";
+  const site = R.super ? sec("stRooms", "Rooms", "Each part of the app is a room. Close one here and it's gone for every college on the site, from the menu and by its address. You can still walk into every room yourself. Every plan includes every room.", `
+    <ul class="list-unstyled rm-list mb-0">${R.rooms.map(r => `<li><div class="min-w-0"><div class="fw-semibold">${esc(r.name)} ${siteOff(r.id) ? `<span class="badge text-bg-secondary fw-normal">Closed for everyone</span>` : ""}</div><div class="small text-body-secondary">${esc(r.about)}</div></div>${roomSw("rmS-" + r.id, !siteOff(r.id), r.name + " for the whole site", `data-roomsw="site" data-room-id="${r.id}"`)}</li>`).join("")}</ul>${R.college ? "" : msg}
+    ${R.college ? "" : `<p class="small text-body-secondary mt-3 mb-0">To close a room for one college only, or to choose what its heads of department and teachers get, open the college in Colleges and press Work inside this college.</p>`}`) : "";
+  const roles = R.college ? sec("stRoomRoles", R.super ? `Who can use what in ${esc(R.collegeName || "this college")}` : "Who can use what", R.super ? "Close a room for this college only, or choose what its heads of department and teachers get. Its manager can change the last two columns too." : "Choose which rooms your heads of department and your teachers get. You have every room yourself. Changes take effect the next time each person opens the app.", `
+    <div class="table-responsive"><table class="table table-sm align-middle rm-t mb-0"><thead><tr><th scope="col">Room</th>${R.super ? `<th scope="col">Open in this college</th>` : ""}<th scope="col">Heads of department</th><th scope="col">Teachers</th></tr></thead><tbody>
+      ${R.rooms.map(r => { const shut = siteOff(r.id) || colOff(r.id), ro = (R.roles[r.id] || {hod: true, teacher: true}); return `<tr class="${shut ? "rm-shut" : ""}"><th scope="row"><span class="fw-semibold">${esc(r.name)}</span><div class="fw-normal small text-body-secondary">${siteOff(r.id) ? "Closed for the whole site" + (R.super ? "" : " by the site's owner") : colOff(r.id) && !R.super ? "Closed for your college by the site's owner" : esc(r.about)}</div></th>
+        ${R.super ? `<td>${roomSw("rmC-" + r.id, !shut, r.name + " in this college", `data-roomsw="college" data-room-id="${r.id}"`, siteOff(r.id))}</td>` : ""}
+        <td>${roomSw("rmH-" + r.id, ro.hod && !shut, r.name + " for heads of department", `data-roomsw="role" data-role="hod" data-room-id="${r.id}"`, shut)}</td><td>${roomSw("rmT-" + r.id, ro.teacher && !shut, r.name + " for teachers", `data-roomsw="role" data-role="teacher" data-room-id="${r.id}"`, shut)}</td></tr>`; }).join("")}
+    </tbody></table></div>${msg}
+    <p class="small text-body-secondary mt-3 mb-0">Hand-in links and Second Marker also have to be switched on by each department that wants them, in Department rules and Second Marker settings. Building full lessons with the AI is a separate permission, set per head of department in Team.</p>`) : "";
+  return site + roles;
+}
+const _accountSections42 = accountSections;
+accountSections = function(sec){ return _accountSections42.apply(this, arguments) + roomSections(sec); };
+document.addEventListener("click", e => { if(e.target.closest('[data-room="retry"]')){ roomInfo = null; renderSettings(); } });
+document.addEventListener("change", async e => { const t = e.target; if(!t || !t.dataset || !t.dataset.roomsw) return; const room = t.dataset.roomId, on = t.checked, name = ((roomInfo.rooms.find(r => r.id === room) || {}).name) || "That room";
+  try{ roomInfo = await authCall("roomsset", {scope: t.dataset.roomsw, room, on, role: t.dataset.role || "", college: roomInfo.college || ""}); if(roomInfo.me) me.rooms = roomInfo.me;
+    roomMsg = t.dataset.roomsw === "site" ? `${name} is ${on ? "open" : "closed"} for the whole site.` : t.dataset.roomsw === "college" ? `${name} is ${on ? "open" : "closed"} for this college.` : `${name} is ${on ? "open" : "closed"} for ${t.dataset.role === "hod" ? "heads of department" : "teachers"}.`; }
+  catch{ roomMsg = "Couldn't save that. Try again."; }
+  renderSettings(); try{ syncShell(); }catch{} const again = document.getElementById(t.id); if(again) again.focus({preventScroll: true}); setTimeout(() => { roomMsg = ""; }, 6000); });
+
+/* ===== round 40: joining things up. Handed-in work goes into Second Marker in one press; leaders see learner progress across the department;
+   and any lesson can be opened in the same editor as everything the tools make. ===== */
+
+/* ---------- one press from a handed-in file to Second Marker. The file is fetched into this page's memory and handed over: nothing new is stored ---------- */
+const lnMarkOk = () => typeof markerNow === "function" && !!(acct() && markerNow().can);
+async function lnCheck(code, id, name, orig){
+  if(!lnMarkOk()) return toast("Second Marker isn't switched on for you.", {bad: true});
+  if(!/\.(pdf|docx)$/i.test(orig)) return toast("Second Marker reads PDF and Word (.docx) files. Download this one instead.", {bad: true});
+  try{ toast("Fetching the work...");
+    const r = await fetch(`handin.php?a=get&c=${encodeURIComponent(code)}&f=${encodeURIComponent(id)}`, {credentials: "same-origin"}); if(!r.ok) throw 0;
+    const blob = await r.blob(), file = new File([blob], orig, {type: /\.pdf$/i.test(orig) ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    setView("marker"); for(let i = 0; i < 100 && !markerSM; i++) await new Promise(ok => setTimeout(ok, 200)); if(!markerSM) throw 0;
+    await new Promise(ok => setTimeout(ok, 300)); window.__mkFile = file; window.__mkHandin = {name, orig, at: Date.now()};
+    markerSM.run("handleFile(window.__mkFile)"); try{ if(typeof mkNativeTick === "function") mkNativeTick(); }catch{}
+    toast(`${name}'s work is loaded into Second Marker. Pick the unit and assignment if you haven't, then run the check.`);
+  }catch{ toast("Couldn't load that into Second Marker. Download it and add it there instead.", {bad: true}); }
+}
+document.addEventListener("click", e => { const b = e.target.closest('[data-ln="check"]'); if(!b) return; const li = b.closest("[data-code]"); if(li) lnCheck(li.dataset.code, b.dataset.f, b.dataset.n, b.dataset.o); });
+const _lnHandHtml43 = lnHandHtml;
+lnHandHtml = function(){ let h = _lnHandHtml43.apply(this, arguments); if(!lnMarkOk() || !lnLinks) return h;
+  lnLinks.forEach(l => l.files.forEach(f => { if(!/\.(pdf|docx)$/i.test(f.orig)) return; const dl = `href="handin.php?a=get&amp;c=${esc(l.code)}&amp;f=${esc(f.id)}" download>Download</a>`; h = h.replace(dl, dl + ` <button type="button" class="btn btn-sm btn-primary" data-ln="check" data-f="${esc(f.id)}" data-n="${esc(f.name)}" data-o="${esc(f.orig)}">Check in Second Marker</button>`); }));
+  return h.replace("Download it to mark it, or to check it in Second Marker.", "Download it to mark it, or press Check in Second Marker to load a PDF or Word file straight in."); };
+
+/* ---------- learner progress across the department, for its leaders. Teachers' own lists stay theirs to change; leaders can look ---------- */
+let lnScope = "mine", lnDept = null, lnDeptBusy = false, lnDeptOpen = "";
+function lnDeptLoad(){ if(lnDeptBusy) return; lnDeptBusy = true; storeCall("deptlearners").then(j => { lnDept = j.sets || []; }).catch(() => { lnDept = lnDept || []; }).finally(() => { lnDeptBusy = false; if(view === "learners") lnDraw(); }); }
+function lnDeptHtml(){ const U = lnU();
+  const head = `<div class="tk-head"><div><h1 class="h3 mb-1">Learners</h1><p class="text-body-secondary mb-0">Every group in ${esc((me && me.deptName) || "your department")}, as each teacher has marked it. You can look, and only the teacher who owns a list can change it.</p></div></div>`;
+  const pick = `<div class="ln-bar"><div class="ln-grow"><label class="form-label" for="lnUnit">Unit</label><select class="form-select" id="lnUnit"><option value="">Choose a unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${lnUnit === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select></div><div class="d-flex align-items-end"><button type="button" class="btn btn-outline-secondary" data-lnd="refresh">Refresh</button></div></div>`;
+  if(lnDept === null){ lnDeptLoad(); return head + pick + `<p class="small text-body-secondary">Loading...</p>`; }
+  if(!lnDept.length) return head + pick + `<div class="tk-empty"><div class="fw-semibold">No class lists in the department yet</div><div class="small text-body-secondary">They appear here as teachers add learners and mark criteria.</div></div>`;
+  if(!U) return head + pick + `<div class="tk-empty"><div class="fw-semibold">${lnDept.length} ${lnDept.length === 1 ? "group" : "groups"}, ${lnDept.reduce((a, s) => a + s.set.learners.length, 0)} learners</div><div class="small text-body-secondary">Choose a unit to see how each group is doing on its criteria.</div></div>`;
+  const crit = U.u.c || [], rows = lnDept.map((s, i) => { const m = (s.set.marks || {})[U.key] || {}, L = s.set.learners, n = L.length, tot = n * crit.length, ach = L.reduce((a, l) => a + crit.filter(c => (m[l.id] || {})[c[0]] === "a").length, 0), marked = L.reduce((a, l) => a + crit.filter(c => (m[l.id] || {})[c[0]]).length, 0),
+      gap = crit.map(c => [c, L.filter(l => ["n", "r"].includes((m[l.id] || {})[c[0]])).length]).filter(x => x[1]).sort((a, b) => b[1] - a[1])[0]; return {s, i, m, n, tot, ach, marked, gap, pc: tot ? Math.round(ach / tot * 100) : 0}; });
+  const all = rows.reduce((a, r) => ({tot: a.tot + r.tot, ach: a.ach + r.ach, n: a.n + r.n}), {tot: 0, ach: 0, n: 0});
+  const colAll = c => rows.reduce((a, r) => a + r.s.set.learners.filter(l => (r.m[l.id] || {})[c[0]] === "a").length, 0);
+  return head + pick + `<div class="ov-tiles"><div class="ov-t"><b>${rows.length}</b><span>${rows.length === 1 ? "group" : "groups"}</span></div><div class="ov-t"><b>${all.n}</b><span>learners</span></div><div class="ov-t"><b>${all.tot ? Math.round(all.ach / all.tot * 100) : 0}%</b><span>of criteria achieved across the department</span></div></div>
+    <div class="table-responsive ln-tw mt-3"><table class="table table-sm align-middle ln-d"><thead><tr><th scope="col">Group</th><th scope="col">Teacher</th><th scope="col">Learners</th><th scope="col">Achieved</th><th scope="col">Most missed</th><th scope="col" aria-label="Open"></th></tr></thead><tbody>
+      ${rows.map(r => `<tr><th scope="row">${esc(r.s.set.name || "Group")}</th><td>${esc(r.s.by)}</td><td>${r.n}</td><td><div class="ln-pc"><div class="progress" role="progressbar" aria-label="Achieved" aria-valuenow="${r.pc}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:${r.pc}%"></div></div><span>${r.marked ? r.pc + "%" : "Not marked"}</span></div></td><td>${r.gap ? `<b>${esc(r.gap[0][0])}</b> <span class="text-body-secondary">${r.gap[1]} not yet</span>` : `<span class="text-body-secondary">None</span>`}</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" data-lnd="open" data-i="${r.i}">${lnDeptOpen === String(r.i) ? "Hide" : "Look"}</button></td></tr>
+        ${lnDeptOpen === String(r.i) ? `<tr class="ln-dd"><td colspan="6"><div class="table-responsive"><table class="table table-sm align-middle ln-t mb-0"><thead><tr><th scope="col">Learner</th>${crit.map(c => `<th scope="col" title="${esc(c[1])}">${esc(c[0])}</th>`).join("")}</tr></thead><tbody>${r.s.set.learners.map(l => `<tr><th scope="row">${esc(l.name)}</th>${crit.map(c => { const v = (r.m[l.id] || {})[c[0]] || "", d = LN_STATES.find(x => x[0] === v) || LN_STATES[0]; return `<td><span class="ln-c ln-${v || "x"}" title="${d[1]}">${d[2] || "·"}</span></td>`; }).join("")}</tr>`).join("")}</tbody></table></div></td></tr>` : ""}`).join("")}
+    </tbody><tfoot><tr><th scope="row" colspan="3">Learners who have achieved each criterion</th><td colspan="3"><div class="ln-crits">${crit.map(c => `<span title="${esc(c[1])}"><b>${esc(c[0])}</b> ${colAll(c)} of ${all.n}</span>`).join("")}</div></td></tr></tfoot></table></div>`; }
+const _lnHtml43 = lnHtml;
+lnHtml = function(){ const lead = !!(acct() && me.isLead); if(!lead) return _lnHtml43.apply(this, arguments).replace("It's kept in your own space.", acct() ? "Only you can change it. The leaders of your department can see it." : "It's kept in your own space.");
+  const tabs = `<div class="tk-tabs ln-tabs" role="tablist"><button type="button" role="tab" aria-selected="${lnScope === "mine"}" class="${lnScope === "mine" ? "on" : ""}" data-lnd="scope" data-s="mine">My groups</button><button type="button" role="tab" aria-selected="${lnScope === "dept"}" class="${lnScope === "dept" ? "on" : ""}" data-lnd="scope" data-s="dept">Whole department</button></div>`;
+  if(lnScope === "dept") return `<div class="tk-wrap">${tabs}${lnDeptHtml()}</div>`;
+  return _lnHtml43.apply(this, arguments).replace('<div class="tk-wrap">', '<div class="tk-wrap">' + tabs).replace("It's kept in your own space.", "Only you can change it. The other leaders of your department can see it."); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-lnd]"); if(!b) return; const k = b.dataset.lnd;
+  if(k === "scope"){ lnScope = b.dataset.s; if(lnScope === "dept"){ try{ lnFlush(); }catch{} lnDept = null; } return lnDraw(); }
+  if(k === "refresh"){ lnDept = null; return lnDraw(); }
+  if(k === "open"){ lnDeptOpen = lnDeptOpen === b.dataset.i ? "" : b.dataset.i; return lnDraw(); } });
+
+/* ---------- any lesson, in the same editor as everything else. It opens as a copy: the lesson itself, its board and its student page are untouched ---------- */
+function lessonToDoc(L){ const sec = [], li = a => (a || []).filter(Boolean).map(x => "- " + String(x).replace(/\n/g, " ")).join("\n"), cell = x => String(x == null ? "" : x).replace(/\|/g, "/").replace(/\n/g, " ");
+  const o = L.objectives || {}; if(o.all || o.most || o.some) sec.push(["Objectives", [o.all && "- **All:** " + o.all, o.most && "- **Most:** " + o.most, o.some && "- **Some:** " + o.some].filter(Boolean).join("\n")]);
+  const st = L.starter || {}; if(st.title || st.prompt) sec.push(["Starter" + (st.title ? ": " + st.title : ""), [st.prompt, li(st.instructions), st.answers && "**Answers:** " + st.answers].filter(Boolean).join("\n\n")]);
+  if(Array.isArray(L.plan) && L.plan.length) sec.push(["Lesson plan", "| Time | Minutes | Activity | Criteria |\n|---|---|---|---|\n" + L.plan.map(r => `| ${cell(r.time)} | ${cell(r.mins)} | ${cell(r.activity)} | ${cell(r.criteria)} |`).join("\n")]);
+  (Array.isArray(L.teach) ? L.teach : []).forEach(t => { if(!t || !t.title) return; sec.push(["Teach: " + t.title, [t.explain, li(t.points), (t.terms || []).length ? "| Term | Meaning |\n|---|---|\n" + t.terms.map(x => `| ${cell(Array.isArray(x) ? x[0] : x.term || x.t || x)} | ${cell(Array.isArray(x) ? x[1] : x.meaning || x.d || "")} |`).join("\n") : "", t.example && "**Example:** " + t.example, t.ask && "**Ask:** " + t.ask + (t.answer ? " (" + t.answer + ")" : "")].filter(Boolean).join("\n\n")]); });
+  (Array.isArray(L.tasks) ? L.tasks : []).forEach((t, i) => { if(!t || !t.title) return; sec.push([`Task ${i + 1}: ${t.title}`, [t.goal, (t.steps || []).map((s, k) => `${k + 1}. ${String(s).replace(/\n/g, " ")}`).join("\n"), (t.check || []).length ? "**Success criteria**\n\n" + li(t.check) : "", t.tip && "**Tip:** " + t.tip, t.stretch && "**Stretch:** " + t.stretch].filter(Boolean).join("\n\n")]); });
+  if(Array.isArray(L.quiz) && L.quiz.length) sec.push(["Exit quiz", L.quiz.map((q, i) => `${i + 1}. ${String(q.q).replace(/\n/g, " ")}\n${(q.options || []).map((x, k) => `   ${String.fromCharCode(65 + k)}. ${x}`).join("\n")}`).join("\n") + "\n\n**Answers:** " + L.quiz.map((q, i) => `${i + 1} ${String.fromCharCode(65 + (Number(q.answer) || 0))}`).join(", ")]);
+  if(L.stretch || L.support) sec.push(["Stretch and support", [L.stretch && "**Stretch:** " + L.stretch, L.support && "**Support:** " + L.support].filter(Boolean).join("\n\n")]);
+  const pl = L.plenary || {}; if(pl.title || pl.prompt) sec.push(["Plenary" + (pl.title ? ": " + pl.title : ""), [pl.prompt, li(pl.instructions)].filter(Boolean).join("\n\n")]);
+  const m = L.meta || {}; let unit = ""; try{ UNITS.forEach((Lv, a) => (Lv.u || []).forEach((u, b2) => { if(u.t === m.unit && (!m.level || Lv.l === m.level)) unit = a + ":" + b2; })); }catch{}
+  return {id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), tool: "fromlesson", title: String(L.title || "Lesson").slice(0, 140), vals: {_unit: unit}, personal: false, saved: false, fromLesson: L.id || "", createdAt: Date.now(), updatedAt: Date.now(),
+    sections: sec.filter(s => s[1]).slice(0, 14).map(s => ({h: s[0].slice(0, 120), html: tkClean(tkMd(s[1]))}))}; }
+function lessonOpenAsDoc(L){ if(!L) return; const d = lessonToDoc(L); if(!d.sections.length) return toast("There's nothing in that lesson to open yet.", {bad: true}); tkDoc = d; tkDirty = true; tkOpen = "_doc"; tkErr = ""; setView("tools"); toast("Opened as a copy. The lesson itself hasn't changed."); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-les-doc]"); if(!b) return; e.preventDefault();
+  if(b.dataset.lesDoc === "cur") return lessonOpenAsDoc(current); const it = lbItems().find(x => x.kind === "lesson" && String(x.id) === b.dataset.lesDoc); if(it){ try{ lessonOpenAsDoc(it.it.load()); }catch{ toast("Couldn't open that lesson.", {bad: true}); } } });
+const _lbHtml43 = lbHtml;
+lbHtml = function(){ let h = _lbHtml43.apply(this, arguments); if(!roomOn("tools")) return h;
+  return h.replace(/(<button type="button" class="tk-lib-open" data-lb="open" data-kind="lesson" data-id="([^"]*)">[\s\S]*?<\/button>)(<span class="badge text-bg-light border fw-normal">Lesson<\/span>)/g, (m, a, id, c) => a + `<button type="button" class="btn btn-sm btn-outline-secondary" data-les-doc="${id}">Open in the editor</button>` + c); };
+const _render43 = render;
+render = function(){ const r = _render43.apply(this, arguments);
+  try{ const o = $("#out"); if(o){ const old = o.querySelector(".les-res"); if(old) old.remove(); if(view === "lesson" && current && current.title && Array.isArray(current.plan) && !current.retroBoard && roomOn("tools") && !editMode && !window.claude)
+      o.insertAdjacentHTML("beforeend", `<div class="les-res"><div><b>Want this as a document?</b> Open it in the editor to rewrite a part, change the reading level, and download it as Word, PDF or PowerPoint. It opens as a copy, so this lesson stays as it is.</div><button type="button" class="btn btn-outline-primary flex-none" data-les-doc="cur">Open in the editor</button></div>`); } }catch(e){ console.error(e); }
+  return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
