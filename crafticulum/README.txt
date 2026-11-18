@@ -945,5 +945,62 @@ and keep their own copy of anything shared with the department.
 Each run counts as one build against the month's allowance.
 Upload .htaccess with this update: it carries the new /ai-tools address.
 
+THE MENU IN FIVE AREAS (v95)
+The side menu is grouped as Dashboard (was Start), AI tools, Curriculum and
+lessons, Learners and assessment, and Resource library. Every screen people
+knew is still there under its heading. Settings stays separate, below.
+
+AI TOOLS FOR EVERY TEACHER (v95)
+Teachers can now use AI Tools and the assistant, not only people who can build
+lessons. A head of department can turn this off in Settings, Teaching,
+Department rules ("AI Tools for every teacher"). Building full lessons with
+the AI is unchanged and still needs that permission. Every use counts toward
+the month's allowance.
+
+THE ASSISTANT (v95)
+A chat for teaching questions, at /assistant. Chats are saved. It knows the
+unit you pick and its criteria. "Remember this" keeps a note it uses in every
+chat and every tool. "Save as a prompt" keeps a message to reuse. A file can
+be attached for the chat (PDF with real text, Word, plain text): it is read
+for that chat and not kept. "Make this a resource" opens any reply in the
+editor, to save, share and download.
+
+RESOURCE LIBRARY (v95)
+One page, at /library, with every lesson and everything the tools and the
+assistant have made, yours and the department's, with search and filters.
+
+POWERPOINT FOR TOOL RESOURCES, AND TIME SAVED (v95)
+Anything in the AI Tools editor can be downloaded as an editable PowerPoint.
+The college manager's overview shows how many resources AI Tools made this
+month and a rough estimate of the time saved. There is a new planning tool,
+Intervention session.
+
+LEARNERS (v95)
+A new page, at /learners. A teacher pastes a class list, picks a unit, and
+marks each learner against each criterion: working towards, achieved, not yet
+or resubmission. It shows where the group needs help and can plan an
+intervention session from that (only the counts are sent, never names). The
+grid downloads as a spreadsheet file. Each teacher's lists and marks are in
+their own space, and every mark is the teacher's decision.
+
+HAND-IN LINKS FOR STUDENTS (v95). OFF UNLESS YOU SWITCH IT ON.
+Settings, Teaching, Department rules, "Hand-in links for students". Only a
+head of department or above can switch it on, for their own department.
+When on, staff can make a link in Learners for an assignment. Students open
+it with no sign-in, type their name and hand in one file (PDF, Word,
+PowerPoint, text, pictures, zip).
+THIS IS THE ONE PLACE LEARNERS' WORK IS KEPT ON THE SERVER. Before switching
+it on, check it fits your data protection rules. What it does to keep it safe:
+  - Each file is deleted after 30 days. Staff can delete sooner.
+  - Files are stored in data/_handin under random names with no file type,
+    and are only ever sent to the teacher who made the link or a leader of
+    that department, as a download.
+  - Programs and web pages can't be handed in.
+  - Second Marker is unchanged: it still keeps no learner work.
+The size limit is 20 MB, or your host's own PHP upload limit if that is lower
+(many hosts start at 2 MB; raise upload_max_filesize and post_max_size in
+cPanel, "MultiPHP INI Editor", if students need more).
+New files: handin.php and handin.html. Upload .htaccess too (new addresses).
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

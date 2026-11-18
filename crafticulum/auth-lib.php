@@ -111,6 +111,7 @@ function ccPlans(?array $a = null): array { $set = (array) ((($a ?? ccAccounts()
 function ccPlanOf(array $a, string $college): array { $c = ccCollege($a, $college); return ['id' => $c['plan']] + ccPlans($a)[$c['plan']]; }
 /* how much of this month's allowance a college has used */
 function ccPlanUsed(string $college, ?array $u = null): array { $r = (array) ((($u ?? ccUsageRead())['colleges'] ?? [])[$college] ?? []); return ['builds' => (int) ($r['builds'] ?? 0), 'checks' => (int) ($r['checks'] ?? 0)]; }
+function ccSaved(string $college = '', ?array $u = null): array { $s = (array) (($u ?? ccUsageRead())['saved'] ?? []); $r = (array) ($college === '' ? ($s['total'] ?? []) : (($s['colleges'] ?? [])[$college] ?? [])); return ['n' => (int) ($r['n'] ?? 0), 'mins' => (int) ($r['mins'] ?? 0)]; }
 function ccCollegePeople(array $a, string $college): int { $d = ccCollegeDepts($a, $college); $s = ccSupers(); return count(array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, $s, true) && in_array((string) ($u['dept'] ?? ''), $d, true), ARRAY_FILTER_USE_BOTH)); }   // super admins belong to no college, so they never take a place
 function ccCollegeDepts(array $a, string $college): array { return array_values(array_filter(array_keys($a['depts']), fn($d) => $d !== CC_DEMO_DEPT && ccCollegeOf($a, (string) $d) === $college)); }
 /* what a page needs to know about the site. With a college named, that college's name, logo and colour; without one, the site's only college, or none if there are several */
@@ -130,7 +131,7 @@ function ccUsageFile(string $ym): string { return ccDataDir() . '/_usage/' . (pr
 function ccUsageRead(string $ym = ''): array { $f = ccUsageFile($ym); $j = is_file($f) ? json_decode((string) @file_get_contents($f), true) : null;
     if (!is_array($j)) $j = []; return $j + ['total' => ['calls' => 0, 'in' => 0, 'out' => 0], 'depts' => [], 'users' => [], 'days' => []]; }
 function ccUsageCost(array $row, array $set): float { return (($row['in'] ?? 0) * $set['in'] + ($row['out'] ?? 0) * $set['out']) / 1000000; }
-function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $kind = ''): void {
+function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $kind = '', int $mins = 0): void {
     $dir = ccDataDir() . '/_usage'; if (!is_dir($dir)) @mkdir($dir, 0700, true);
     $fh = @fopen(ccUsageFile(''), 'c+'); if (!$fh) return;
     if (flock($fh, LOCK_EX)) {
@@ -144,6 +145,11 @@ function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $ki
         $day = date('d'); $j['days'][$day] = (array) ($j['days'][$day] ?? []); $bump($j['days'][$day]);
         if ($kind !== '') { $j['kinds'][$kind] = (array) ($j['kinds'][$kind] ?? []); $bump($j['kinds'][$kind]); }
         $cid = (string) ($me['college'] ?? ''); if ($cid !== '' && empty($me['demo']) && !$sup) { $ck = $kind === 'marker' ? 'checks' : 'builds'; $j['colleges'][$cid][$ck] = (int) ($j['colleges'][$cid][$ck] ?? 0) + 1; $note = [$cid, $ck, $j['colleges'][$cid][$ck]]; }
+        if ($kind === 'tool') {   // what the tools made, and a rough count of the time they saved, for the overviews
+            $sv = function (&$r) use ($mins) { $r['n'] = (int) ($r['n'] ?? 0) + ($mins > 0 ? 1 : 0); $r['mins'] = (int) ($r['mins'] ?? 0) + $mins; };
+            $j['saved'] = (array) ($j['saved'] ?? []); $j['saved']['total'] = (array) ($j['saved']['total'] ?? []); $sv($j['saved']['total']);
+            if (!$sup) { $j['saved']['depts'][$d] = (array) ($j['saved']['depts'][$d] ?? []); $sv($j['saved']['depts'][$d]); if ($cid !== '') { $j['saved']['colleges'][$cid] = (array) ($j['saved']['colleges'][$cid] ?? []); $sv($j['saved']['colleges'][$cid]); } }
+        }
         if ($freeUse) { $j['free'] = (array) ($j['free'] ?? []); $bump($j['free']); }
         if ($model !== '' && $kind === '') $j['model'] = $model;
         ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($j, JSON_UNESCAPED_UNICODE)); fflush($fh); flock($fh, LOCK_UN);
@@ -262,7 +268,7 @@ function ccMe(): ?array {
     return $u;
 }
 /* a department's own settings: whether teachers' changes need signing off, and whether deleting a lesson needs the department's password */
-function ccDeptPrefs(array $a, string $dept): array { $d = $a['depts'][$dept] ?? []; return ['signoff' => !empty($d['signoff']), 'delPass' => !empty($d['delHash']), 'base' => !array_key_exists('base', $d) || !empty($d['base']), 'pics' => !array_key_exists('pics', $d) || !empty($d['pics'])]; }
+function ccDeptPrefs(array $a, string $dept): array { $d = $a['depts'][$dept] ?? []; return ['signoff' => !empty($d['signoff']), 'delPass' => !empty($d['delHash']), 'base' => !array_key_exists('base', $d) || !empty($d['base']), 'tools' => !array_key_exists('tools', $d) || !empty($d['tools']), 'handin' => !empty($d['handin']), 'pics' => !array_key_exists('pics', $d) || !empty($d['pics'])]; }
 /* ---------- Second Marker: checking learner work against the criteria. Each department's leader switches it on and sets how it works ---------- */
 const CC_MARKER_MODELS = ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5'];
 function ccMarker(array $a, string $dept): array {
@@ -366,6 +372,15 @@ function ccPublic(array $u): array {
             'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
 
+/* ---------- hand-in links: the only learner work kept on the server, only where a department has switched it on, and only for a while ---------- */
+const CC_HANDIN_DAYS = 30;
+function ccHandinDir(): string { return ccDataDir() . '/_handin'; }
+function ccHandinPurge(): int { $n = 0; $cut = time() - CC_HANDIN_DAYS * 86400;
+    foreach ((array) glob(ccHandinDir() . '/*/*.json') as $f) { $f = (string) $f; $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j)) continue; $dir = substr($f, 0, -5); $keep = []; $ch = false;
+        foreach ((array) ($j['files'] ?? []) as $x) { if ((int) ($x['at'] ?? 0) < $cut) { @unlink($dir . '/' . preg_replace('/[^a-f0-9]/', '', (string) ($x['id'] ?? '')) . '.bin'); $n++; $ch = true; } else $keep[] = $x; }
+        if (!$keep && (int) ($j['created'] ?? 0) < $cut - 30 * 86400) { foreach ((array) glob($dir . '/*.bin') as $p) @unlink((string) $p); @rmdir($dir); @unlink($f); @unlink($f . '.lock'); continue; }   // an old, empty link goes too
+        if ($ch) { $j['files'] = $keep; @file_put_contents($f, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX); } }
+    return $n; }
 /* ---------- deleted colleges: kept out of sight for a while, then removed ---------- */
 const CC_DELETED_DAYS = 14;
 function ccDeletedRm(string $p): void { $base = ccDataDir() . '/_deleted/'; if (strpos($p, $base) !== 0 || strlen($p) <= strlen($base) || is_link($p)) return;

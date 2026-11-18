@@ -40,7 +40,7 @@ AddType application/manifest+json .webmanifest
   RewriteRule ^robots\.txt$ page.php?p=robots [L]
 
   # the app and its pages
-  RewriteRule ^(app|signin|this-week|lessons|planning|results|second-marker|ai-tools|settings)$ app.html [L]
+  RewriteRule ^(app|signin|this-week|lessons|planning|results|second-marker|ai-tools|assistant|library|learners|settings)$ app.html [L]
 
   # a student's lesson or class page
   RewriteRule ^s/([A-Za-z0-9]+)$ page.php?p=student&id=$1 [L,QSA]

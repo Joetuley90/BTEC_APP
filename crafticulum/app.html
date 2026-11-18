@@ -1331,6 +1331,37 @@ body.sa-out #stSite,body.sa-out #stPlan,body.sa-out #stLog,body.sa-out #stDepts,
 body.sa-out #sideTools{display:none!important}
 .home-tools{display:flex;justify-content:center;margin-top:14px}.home-tools button{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--cc-line);background:var(--bs-body-bg);color:inherit;border-radius:99px;padding:.45rem 1rem;font-size:.88rem;font-weight:600}.home-tools button svg{width:16px;height:16px;color:var(--cc-primary)}.home-tools button:hover{border-color:var(--cc-primary)}
 
+/* ===== the assistant, the library and the menu's five areas ===== */
+.side-nav .nav-cap{margin:14px 0 4px}.side-nav .nav-cap:first-child{margin-top:0}
+body.sa-out #sideAssist,body.sa-out #sideLib,body.sa-out .side-nav .nav-cap{display:none!important}
+.as-two{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}@media (min-width:992px){.as-two{grid-template-columns:260px minmax(0,1fr);align-items:start}.as-side{position:sticky;top:76px}}
+.as-side{padding:14px;border:1px solid var(--cc-line);border-radius:.9rem;background:var(--bs-body-bg)}
+.as-list{display:grid;gap:2px;max-height:46vh;overflow:auto;margin-bottom:10px}.as-list li{display:flex;align-items:center;gap:6px;border-radius:.5rem;padding-right:6px}.as-list li.on{background:var(--cc-primary-soft)}
+.as-open{flex:1 1 auto;min-width:0;display:grid;text-align:left;border:0;background:none;color:inherit;padding:7px 8px;border-radius:.5rem;font-size:.86rem}.as-open span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.as-open small{color:var(--bs-secondary-color);font-size:.72rem}
+.as-mem{margin-top:8px;padding-top:8px;border-top:1px solid var(--cc-line)}.as-mem-i{display:flex;gap:10px;justify-content:space-between;align-items:baseline;font-size:.84rem;padding:3px 0}
+.as-main{display:grid;gap:10px;min-width:0}
+.as-log{display:grid;gap:14px;align-content:start;min-height:38vh;max-height:calc(100vh - 330px);overflow:auto;padding:16px;border:1px solid var(--cc-line);border-radius:.9rem;background:var(--bs-body-bg)}
+.as-m{display:grid;gap:4px;max-width:min(760px,100%)}.as-u{justify-self:end;justify-items:end}.as-b{padding:10px 14px;border-radius:.9rem;font-size:.95rem;line-height:1.55;overflow-wrap:anywhere;min-width:0}
+.as-u .as-b{background:var(--cc-primary);color:#fff;border-bottom-right-radius:.25rem}.as-a .as-b{background:var(--bs-tertiary-bg);border-bottom-left-radius:.25rem;margin:0}.as-a .as-b>:last-child{margin-bottom:0}
+.as-acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:.8rem}.as-att{font-size:.76rem;opacity:.85;margin-top:4px}
+.as-empty{border:0;padding:30px 10px}.as-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.as-chips button,.as-chip{border:1px solid var(--cc-line);background:var(--bs-body-bg);color:inherit;border-radius:99px;padding:.35rem .9rem;font-size:.84rem;text-align:left}.as-chips button:hover{border-color:var(--cc-primary)}
+.as-chip{display:inline-flex;gap:6px;padding:0 .5rem 0 0}.as-chip button{border:0!important;background:none}.as-chips.mt-2{justify-content:flex-start}
+.as-form{display:grid;gap:8px;padding:12px;border:1px solid var(--cc-line);border-radius:.9rem;background:var(--bs-body-bg)}.as-form textarea{border:0;box-shadow:none;resize:vertical;padding:4px 2px;min-height:52px}.as-form textarea:focus{box-shadow:none}
+.as-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.as-unit{width:auto;max-width:260px}.as-file{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.sa-out #sideLearn{display:none!important}
+.ln-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:16px}.ln-bar .form-label,.ln-new .form-label,.ln-add .form-label{font-size:.82rem;font-weight:600;margin-bottom:4px}.ln-grow{flex:1 1 260px;min-width:0}
+.ln-add{padding:14px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:.8rem;margin-bottom:16px}
+.ln-key{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:.82rem;margin-bottom:8px}.ln-key span{display:inline-flex;gap:6px;align-items:center}.ln-key b.ln-c{width:22px;height:22px;font-size:.72rem;cursor:default}
+.ln-tw{border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}.ln-t{margin:0;font-size:.88rem}.ln-t th,.ln-t td{text-align:center;white-space:nowrap;padding:6px 8px}.ln-t th:first-child{text-align:left;position:sticky;left:0;background:var(--bs-body-bg);z-index:1;min-width:150px}.ln-t thead th{font-size:.74rem;font-weight:700;color:var(--bs-secondary-color);border-bottom-width:1px}.ln-t tfoot th,.ln-t tfoot td{font-size:.78rem;color:var(--bs-secondary-color);border-bottom:0}
+.ln-c{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:.5rem;border:1px solid var(--cc-line-strong,#d4d8e3);background:var(--bs-body-bg);color:var(--bs-secondary-color);font-weight:800;font-size:.85rem;padding:0;line-height:1}
+.ln-c.ln-a{background:#15803d;border-color:#15803d;color:#fff}.ln-c.ln-n{background:#b91c1c;border-color:#b91c1c;color:#fff}.ln-c.ln-r{background:#b45309;border-color:#b45309;color:#fff}.ln-c.ln-w{background:var(--cc-primary-soft);border-color:rgba(var(--cc-primary-rgb),.4);color:var(--cc-primary-text)}
+button.ln-c:hover{border-color:var(--cc-primary)}.ln-rm{border:0;background:none;color:var(--bs-secondary-color);font-size:.8rem;padding:0 4px;opacity:.5}.ln-rm:hover,.ln-rm:focus-visible{opacity:1;color:var(--bs-danger)}
+.ln-names{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}.ln-name{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--cc-line);border-radius:99px;padding:.2rem .4rem .2rem .8rem;font-size:.84rem}.ln-name button{border:0;background:none;color:var(--bs-secondary-color);padding:0 4px}
+.ln-help{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--cc-primary-soft)}.ln-help ul{padding-left:1.1rem;margin-top:4px}.flex-none{flex:none}
+.ln-hand{margin-top:28px;padding-top:20px;border-top:1px solid var(--cc-line)}.ln-new{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.ln-links{display:grid;gap:10px;margin-top:16px}.ln-link{padding:12px 14px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}.ln-link-h{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}.ln-link table{margin-top:10px}
+.tk-chips button small{font-weight:500;opacity:.75;margin-left:2px}
+
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
 .st-sec{scroll-margin-top:calc(var(--stick-top,58px) + 70px)!important}
@@ -8063,6 +8094,10 @@ function rulesSection(sec){
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlSign" ${p.signoff ? "checked" : ""} aria-label="Teachers' changes need signing off"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Start from our lessons</div><div class="small text-body-secondary">Before a new lesson is built, the lessons your department already has for that unit are offered first: open one, use one as the base, or build a new one. New lessons are also written to match them and not repeat them.</div></div>
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlBase" ${p.base !== false ? "checked" : ""} aria-label="Start from our lessons"></div></div>
+    <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">AI Tools for every teacher</div><div class="small text-body-secondary">When this is on, every member of staff can use AI Tools and the assistant. When it's off, only people who can build lessons can. Each use counts towards the month's allowance either way.</div></div>
+      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlTools" ${p.tools !== false ? "checked" : ""} aria-label="AI Tools for every teacher"></div></div>
+    <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Hand-in links for students</div><div class="small text-body-secondary">Off to begin with. When this is on, staff can make a link that students use to hand in a file for an assignment. <b>This is the one place learners' work is kept on the server.</b> Each file is kept for 30 days and then deleted, and only the teacher who made the link and the department's leaders can download it. Check this fits your college's data protection rules before switching it on.</div></div>
+      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlHandin" ${p.handin ? "checked" : ""} aria-label="Hand-in links for students"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Pictures in lessons</div><div class="small text-body-secondary">New lessons get a photo for each part of the teaching content where one helps, found on Wikimedia Commons and shown with its credit. The photo is loaded from Wikimedia's servers when a teacher or student opens the lesson. Diagrams are drawn by Crafticulum itself and aren't affected by this switch.</div></div>
       <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="rlPics" ${p.pics !== false ? "checked" : ""} aria-label="Pictures in lessons"></div></div>
     <div class="acc-row"><div class="min-w-0"><div class="fw-semibold small">Delete password</div><div class="small text-body-secondary">${p.delPass ? "A password is set. Anyone deleting a lesson has to type it, so only give it to people you trust to delete." : "No password yet. Only people who can edit lessons can delete them. Set one and deleting a lesson always asks for it."}</div>
@@ -8077,6 +8112,8 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-rl]"
   if(k === "pass"){ const v = $("#rlPass").value; if(!v){ $("#rlPass").focus(); return; } rulesSet({delPassword: v}, "Delete password saved. Deleting a lesson now asks for it."); }
   if(k === "nopass") rulesSet({delPassword: ""}, "Delete password removed.");
   if(k === "log"){ logData = null; renderSettings(); } });
+document.addEventListener("change", e => { if(e.target.id === "rlHandin") rulesSet({handin: e.target.checked}, e.target.checked ? "On. Staff can make hand-in links from Learners. Files are kept for 30 days." : "Off. No new work can be handed in. Files already handed in stay until they are 30 days old or you delete them."); });
+document.addEventListener("change", e => { if(e.target.id === "rlTools") rulesSet({tools: e.target.checked}, e.target.checked ? "On. Every teacher can use AI Tools." : "Off. Only people who can build lessons can use AI Tools."); });
 document.addEventListener("change", e => { if(e.target.id === "rlPics") rulesSet({pics: e.target.checked}, e.target.checked ? "On. New lessons get pictures." : "Off. New lessons get diagrams only."); });
 document.addEventListener("change", e => { if(e.target.id === "rlBase") rulesSet({base: e.target.checked}, e.target.checked ? "On. Your team's lessons are offered first." : "Off. Lessons are built from scratch."); });
 document.addEventListener("change", e => { if(e.target.id === "rlSign") rulesSet({signoff: e.target.checked}, e.target.checked ? "Sign-off is on. Teachers' changes are drafts until you sign them off." : "Sign-off is off."); });
@@ -9367,7 +9404,7 @@ setInterval(() => { if(markerSM && !mkN.timer && view === "marker") mkNativeStar
 /* ===== round 21: clean addresses. Each page of the app has its own address (/planning, /second-marker and so on),
    the back button moves between pages, and student links are short (/s/CODE). The server's .htaccess makes them work.
    If the host can't do that, none of this switches on and the old addresses carry on. ===== */
-const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", tools: "ai-tools", settings: "settings"};
+const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", tools: "ai-tools", assistant: "assistant", library: "library", learners: "learners", settings: "settings"};
 const ccSlugNow = () => { const m = location.pathname.match(/\/([a-z-]+)$/); return m && (m[1] === "signin" || Object.values(CC_ROUTES).includes(m[1])) ? m[1] : ""; };
 /* the folder the site lives in. The app's own pages (/app, /planning ...) all sit directly in it */
 const ccRoot = () => { const s = ccSlugNow(); return s ? location.pathname.slice(0, -s.length) : location.pathname.replace(/[^/]*$/, ""); };
@@ -10265,7 +10302,7 @@ function myCollegeSection(sec){
   const row = d => `<tr><th scope="row" class="fw-semibold">${esc(d.name)}${d.id === me.dept ? ` <span class="badge text-bg-primary fw-normal">You're here</span>` : ""}<div class="fw-normal small text-body-secondary">${heads(d.id).length ? esc(heads(d.id).join(", ")) : "No head of department yet"}</div></th><td>${d.staff}</td><td>${d.lessons}</td><td>${d.calls}</td>
     <td class="text-end">${d.id === me.dept ? "" : `<button type="button" class="btn btn-sm btn-outline-primary" data-mycol="go" data-d="${esc(d.id)}">Work in it</button>`}</td></tr>`;
   return sec("stMyCollege", title, solo ? "Your space at a glance." : "Your college at a glance: who is in it, what each department has made, and how much of this month's allowance is used.", `
-    <div class="ov-tiles">${tile(act.length, act.length === 1 ? "person" : "people", L.people > 1 ? L.people : 0)}${tile(c.depts.length, c.depts.length === 1 ? "department" : "departments", L.depts > 1 ? L.depts : 0)}${tile(c.lessons, "shared lessons")}${tile(c.calls, "requests to Crafticulum AI this month")}</div>
+    <div class="ov-tiles">${tile(act.length, act.length === 1 ? "person" : "people", L.people > 1 ? L.people : 0)}${tile(c.depts.length, c.depts.length === 1 ? "department" : "departments", L.depts > 1 ? L.depts : 0)}${tile(c.lessons, "shared lessons")}${tile(c.calls, "requests to Crafticulum AI this month")}${c.saved && c.saved.n ? tile(c.saved.n, "made with AI Tools this month, about " + (c.saved.mins >= 60 ? (Math.round(c.saved.mins / 6) / 10) + " hours" : c.saved.mins + " minutes") + " saved") : ""}</div>
     ${pend.length ? `<div class="alert alert-warning small d-flex flex-wrap gap-2 align-items-center mt-3 mb-0"><span><b>${pend.length} ${pend.length === 1 ? "person is" : "people are"} waiting for approval:</b> ${esc(pend.slice(0, 3).map(p => p.name || p.email).join(", "))}${pend.length > 3 ? " and more" : ""}.</span><button type="button" class="btn btn-sm btn-warning ms-auto" data-mycol="team">Go to Team</button></div>` : ""}
     ${c.billing && (L.builds || L.checks) ? `<div class="mc-plan mt-3"><div class="d-flex flex-wrap gap-2 align-items-center mb-2"><span class="fw-semibold">${esc(c.planName || "Plan")} plan</span><button type="button" class="btn btn-sm btn-link p-0 ms-auto" data-mycol="plan">Plan and billing</button></div>${meter((c.used || {}).builds || 0, L.builds, "Lessons and documents built")}${meter((c.used || {}).checks || 0, L.checks, "Second Marker checks")}</div>` : ""}
     ${solo ? "" : `<h3 class="h6 mt-4 mb-2">Departments</h3><div class="table-responsive"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">Department</th><th scope="col">Staff</th><th scope="col">Shared lessons</th><th scope="col">Requests this month</th><th scope="col" aria-label="Work in it"></th></tr></thead><tbody>${c.depts.map(row).join("")}</tbody></table></div>
@@ -10397,6 +10434,10 @@ const TK_TOOLS = [
     fields: [F.topic, {k: "kind", label: "Kind of check", type: "select", opts: ["Short-answer questions", "Hinge questions (multiple choice)", "A practical task", "Exit ticket", "Peer assessment with a checklist", "Extended response"]}, F.mins(20), F.notes],
     ask: v => `Write a formative assessment activity on "${v.topic}". Kind: ${v.kind}. It should take about ${v.mins} minutes. It is for checking understanding in class, not a summative assignment, so do not write an assignment brief and do not claim it meets any assessment criterion.`,
     shape: `Sections: "For learners" (the questions or task, numbered), "Mark scheme" (answers or what earns credit, with common mistakes to look for), "What to do with the results" (how to respond if most, some or few get it).`},
+  {id: "interv", cat: "plan", name: "Intervention session", desc: "A short, targeted session for learners who haven't got something yet, built from what they got wrong.", ctx: 2, needs: 1, mins: 35,
+    fields: [{k: "gaps", label: "What they got wrong or haven't shown yet", type: "area", rows: 3, req: true, ph: "e.g. confuse bandwidth with latency; can describe but not explain; missed A.P2"}, {k: "who", label: "Who it's for", type: "select", opts: ["A small group", "One learner", "Half the class", "The whole class"]}, F.mins(30), F.notes],
+    ask: v => `Plan a ${v.mins}-minute intervention session for: ${v.who.toLowerCase()}. What they got wrong or haven't shown yet:\n${v.gaps}\nStart from the misunderstanding, not from the beginning of the topic. Re-teach it a different way from a normal lesson, then let them practise with support that is taken away step by step. Do not say that any criterion is or will be met.`,
+    shape: `Sections: "What's gone wrong" (the likely misunderstanding in a line or two), "The session" (a table: Minutes, What happens, What to listen for), "Explain it differently" (the re-teach, with one analogy or worked example), "Practice" (3 to 5 tasks that get harder), "Check before they leave" (two questions with answers), "If it still isn't secure".`},
   // ----- resources
   {id: "slides", cat: "res", name: "Editable PowerPoint", desc: "Every lesson you build comes with slides you can edit in PowerPoint. Build a lesson to get them.", go: "home"},
   {id: "worksheet", cat: "res", name: "Worksheet", desc: "A worksheet that builds from easy to hard, with an answer sheet.", ctx: 2, needs: 1, mins: 30,
@@ -10508,8 +10549,8 @@ const TK_TONES = [["", "Your usual professional voice"], ["warm", "Warm and enco
 const TK_TONE_HOW = {warm: "Warm, encouraging and human, without gushing.", formal: "Formal and measured, as in official college correspondence.", direct: "Plain and direct. Short sentences. No softening phrases.", brief: "As brief as it can be while staying polite."};
 
 let tkOpen = "", tkQ = "", tkCat = "", tkTab = "tools", tkVals = {}, tkDoc = null, tkBusy = false, tkErr = "", tkAbort = null, tkSecBusy = -1, tkDirty = false, tkSay = "", tkLibQ = "", tkTonesOpen = false, tkDelArm = "";
-let tkPrefs = {tones: [], made: 0, mins: 0, recent: []}, tkMine = [], tkShared = [], tkSubbed = false, tkWait = 0, tkTries = 0;
-const tkCan = () => !acct() || !!me.canGen;
+let tkPrefs = {tones: [], made: 0, mins: 0, recent: [], mem: [], prompts: []}, tkMine = [], tkShared = [], tkSubbed = false, tkWait = 0, tkTries = 0;
+const tkCan = () => !acct() || !!me.canGen || (typeof prefsNow === "function" && prefsNow().tools !== false);
 const tkLocal = () => { try{ return JSON.parse(lsGet("lb_tk") || "{}") || {}; }catch{ return {}; } };
 function tkLoad(){
   const l = tkLocal(); if(l.prefs) tkPrefs = {...tkPrefs, ...l.prefs}; if(Array.isArray(l.docs)) tkMine = l.docs;
@@ -10588,6 +10629,7 @@ function tkCtxText(t, v){
   if(t.needs && v._needs && typeof needsBlock === "function"){ const n = needsBlock(); if(n) s += "\n" + n.trim().replace("Build the support into the starter, every task and the worksheets, for the whole class, without singling anyone out", "Build the support in for the whole class, without singling anyone out"); }
   return s;
 }
+const tkMemText = () => (tkPrefs.mem || []).length ? `\nThe teacher has asked you to keep these in mind:\n${tkPrefs.mem.map(m => "- " + m).join("\n")}` : "";
 function tkToneText(v){ const id = v._tone || ""; if(!id) return ""; if(TK_TONE_HOW[id]) return `\nTone: ${TK_TONE_HOW[id]}`; const c = (tkPrefs.tones || []).find(x => x.id === id); return c ? `\nTone: write in this voice. ${c.how}` : ""; }
 const TK_RULES = `Rules:
 - British English, the way UK teachers write. Plain words. No filler, no praise for the request, no closing remarks.
@@ -10599,7 +10641,7 @@ function tkPrompt(t, v){
   const safe = {}; Object.keys(v).forEach(k => { if(k[0] !== "_" && k !== "name") safe[k] = typeof v[k] === "string" ? tkScrub(v[k], v.name) : v[k]; });
   if(safe.pron) safe.pron = String(safe.pron);
   return `You are helping a teacher in a UK school or college. Tool: ${t.name}.
-${t.ask(safe)}${t.personal ? `\nThe learner is called [Name].${safe.pron ? " Pronouns: " + safe.pron + "." : ""}` : ""}${safe.notes ? `\nThe teacher adds: ${safe.notes}` : ""}${tkCtxText(t, v)}${tkToneText(v)}
+${t.ask(safe)}${t.personal ? `\nThe learner is called [Name].${safe.pron ? " Pronouns: " + safe.pron + "." : ""}` : ""}${safe.notes ? `\nThe teacher adds: ${safe.notes}` : ""}${tkCtxText(t, v)}${tkToneText(v)}${tkMemText()}
 
 ${TK_RULES}
 
@@ -10634,7 +10676,7 @@ async function tkRun(){
   if(!sampleFn){ tkErr = "Crafticulum AI isn't available just now. Try again in a moment."; return tkDraw(); }
   tkBusy = true; tkErr = ""; tkAbort = new AbortController(); tkDraw();
   try{
-    const r = await sampleFn.json(tkPrompt(t, v), {signal: tkAbort.signal, cache: false});
+    const r = await sampleFn.json(tkPrompt(t, v), {signal: tkAbort.signal, cache: false, meta: {tool: t.id, mins: t.mins || 15, signal: tkAbort.signal}});
     if(!r || !Array.isArray(r.sections) || !r.sections.length) throw {code: "invalid_json"};
     tkDoc = {id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), tool: t.id, title: (v.name && String(v.name).trim() ? String(r.title || t.name).replace(/\[Name\]/g, String(v.name).trim()) : String(r.title || t.name)).slice(0, 140), vals: v, personal: !!t.personal,
       sections: r.sections.filter(s => s && (s.h || s.body)).slice(0, 14).map(s => ({h: String(s.h || "").slice(0, 120), html: tkPut(tkClean(tkMd(s.body)), v.name)})), createdAt: Date.now(), updatedAt: Date.now(), saved: false};
@@ -10642,10 +10684,10 @@ async function tkRun(){
   }catch(e){ if(!(e && (e.name === "AbortError" || e.code === "aborted"))) tkErr = tkWhy(e); }
   finally{ tkBusy = false; tkAbort = null; if(view === "tools") tkDraw(); }
 }
-const tkWhy = e => (e && e.code === "invalid_json") ? "That didn't come back in a form that could be used. Try again." : (e && e.code === "server" && e.message) ? e.message : (e && e.status === 402) || (e && e.code === "limit") ? "This month's limit has been reached." : "That didn't work. Check your connection and try again.";
+const tkWhy = e => (e && e.code === "noperm") ? "AI Tools are switched off for teachers in your department. Ask your head of department." : (e && e.code === "invalid_json") ? "That didn't come back in a form that could be used. Try again." : (e && e.code === "server" && e.message) ? e.message : (e && e.status === 402) || (e && e.code === "limit") ? "This month's limit has been reached." : "That didn't work. Check your connection and try again.";
 async function tkSecRun(i, how){
   if(!tkDoc || tkSecBusy >= 0 || tkBusy || !how) return; tkSync(); tkSecBusy = i; tkErr = ""; tkDraw();
-  try{ const r = await sampleFn.json(tkSecPrompt(TK_BY[tkDoc.tool], tkDoc, i, how), {cache: false}); if(!r || !r.body) throw {code: "invalid_json"};
+  try{ const r = await sampleFn.json(tkSecPrompt(TK_BY[tkDoc.tool], tkDoc, i, how), {cache: false, meta: {tool: TK_BY[tkDoc.tool] ? tkDoc.tool : "edit", mins: 0}}); if(!r || !r.body) throw {code: "invalid_json"};
     tkDoc.sections[i] = {h: String(r.h || tkDoc.sections[i].h).slice(0, 120), html: tkPut(tkClean(tkMd(r.body)), (tkDoc.vals || {}).name)}; tkDoc.updatedAt = Date.now(); tkDirty = true;
   }catch(e){ tkErr = tkWhy(e); }
   finally{ tkSecBusy = -1; if(view === "tools") tkDraw(); }
@@ -10725,7 +10767,7 @@ function tkFormHtml(t){ const v = tkVals[t.id] || {};
     ${t.tone && tkTonesOpen ? tkTonesHtml() : ""}
     ${t.personal ? `<div class="tk-wide tk-priv"><b>About one learner.</b> Their name stays on this device, and emails, phone numbers and postcodes are taken out of your notes before anything is sent. Don't type surnames, dates of birth or addresses. You check and send it, not Crafticulum.</div>` : ""}
     ${tkErr ? `<div class="tk-wide alert alert-danger small mb-0" role="alert">${esc(tkErr)}</div>` : ""}
-    <div class="tk-wide d-flex flex-wrap gap-2 align-items-center"><button type="submit" class="btn btn-primary" ${tkBusy || !tkCan() ? "disabled" : ""}>${tkBusy ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Writing...` : tkDoc && tkDoc.tool === t.id ? "Write it again" : "Write it"}</button>${tkBusy ? `<button type="button" class="btn btn-outline-secondary" data-tk="stop">Stop</button>` : ""}${!tkCan() ? `<span class="small text-body-secondary">You don't have permission to build with Crafticulum AI. Ask your head of department.</span>` : ""}</div>
+    <div class="tk-wide d-flex flex-wrap gap-2 align-items-center"><button type="submit" class="btn btn-primary" ${tkBusy || !tkCan() ? "disabled" : ""}>${tkBusy ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Writing...` : tkDoc && tkDoc.tool === t.id ? "Write it again" : "Write it"}</button>${tkBusy ? `<button type="button" class="btn btn-outline-secondary" data-tk="stop">Stop</button>` : ""}${!tkCan() ? `<span class="small text-body-secondary">AI Tools are switched off for teachers in your department. Ask your head of department.</span>` : ""}</div>
   </form>`; }
 function tkTonesHtml(){ return `<div class="tk-wide tk-tones"><div class="fw-semibold small mb-1">Your own tones</div><p class="small text-body-secondary mb-2">Describe how you write, or paste a paragraph you've written and it will match it. Saved for you on every tool that has a tone.</p>
     ${(tkPrefs.tones || []).map(x => `<div class="tk-tone"><span><b>${esc(x.name)}</b> <span class="text-body-secondary">${esc(x.how.slice(0, 90))}${x.how.length > 90 ? "..." : ""}</span></span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-tk="tonedel" data-id="${esc(x.id)}">Remove</button></div>`).join("")}
@@ -10735,7 +10777,7 @@ function tkDocHtml(){ const d = tkDoc, t = TK_BY[d.tool];
   return `<article class="tk-doc" id="tkDoc" aria-label="What was written">
     <div class="tk-bar"><div class="tk-bar-l"><span class="badge ${d.saved && !tkDirty ? "text-bg-success" : "text-bg-secondary"} fw-normal">${d.saved && !tkDirty ? (d.shared ? "Saved for the department" : "Saved") : d.saved ? "Changed since saving" : "Not saved yet"}</span><span class="small text-body-secondary">Click any text to change it.</span>${d.personal && d.sections.some(s => s.html.includes("[Name]")) ? `<button type="button" class="btn btn-sm btn-link p-0" data-tk="putname">Put the name in</button>` : ""}</div>
       <div class="tk-bar-r"><div class="btn-group"><button type="button" class="btn btn-sm btn-primary" data-tk="save">Save to my library</button>${d.personal ? "" : `<button type="button" class="btn btn-sm btn-outline-primary" data-tk="share" ${acct() && !me.canEdit ? "disabled" : ""}>Save for the department</button>`}</div>
-      <button type="button" class="btn btn-sm btn-outline-secondary" data-tk="word">Word</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="print">Print or PDF</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="copy">Copy</button></div></div>
+      <button type="button" class="btn btn-sm btn-outline-secondary" data-tk="word">Word</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="pptx">PowerPoint</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="print">Print or PDF</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="copy">Copy</button></div></div>
     <h2 class="tk-title" id="tkTitle" contenteditable="true" spellcheck="true" role="textbox" aria-label="Title">${esc(d.title)}</h2>
     ${d.sections.map((s, i) => `<section class="tk-sec ${tkSecBusy === i ? "busy" : ""}" data-i="${i}">
       <div class="tk-sec-h"><h3 class="tk-h" contenteditable="true" spellcheck="true" role="textbox" aria-label="Heading">${esc(s.h)}</h3>
@@ -10810,6 +10852,7 @@ document.addEventListener("click", e => {
   if(k === "save") return tkSave(false).then(() => tkDraw());
   if(k === "share") return tkSave(true).then(() => tkDraw());
   if(k === "word") return tkWord();
+  if(k === "pptx") return tkPptx();
   if(k === "print") return tkPrint();
   if(k === "copy") return tkCopy();
 });
@@ -10829,6 +10872,263 @@ applyRole = function(){ const r = _applyRole39.apply(this, arguments); try{ tkNa
 try{ ACCOUNT_KEYS.push("lb_tk"); }catch{}
 const _renderHome39 = renderHome;
 renderHome = function(){ const r = _renderHome39.apply(this, arguments); try{ const c = document.querySelector("#out .composer"); if(c && !document.querySelector("#out .home-tools") && tkCan()) c.insertAdjacentHTML("afterend", `<div class="home-tools"><button type="button" data-tk-go>${TK_ICO}<span>Or pick an AI tool: worksheets, quizzes, reports, emails and more</span></button></div>`); }catch(e){ console.error(e); } return r; };
+
+/* ===== round 37: the rest of the suite. Slides for anything the tools make, the assistant, one resource library, and the menu in five areas ===== */
+
+/* ---------- PowerPoint for a toolkit document: a title slide, then each part on as many slides as it needs. Built here, no template needed ---------- */
+function tkSlides(doc){
+  const out = [{kind: "title", title: doc.title, sub: (siteNow && siteNow.name) || ""}], d = document.createElement("div");
+  doc.sections.forEach(s => { d.innerHTML = tkClean(s.html); let lines = [], n = 0;
+    const flush = () => { if(lines.length){ out.push({kind: "text", title: s.h + (n ? " (continued)" : ""), lines}); n++; lines = []; } };
+    const add = (t, o = {}) => { String(t).split("\n").map(x => x.trim()).filter(Boolean).forEach(x => { const size = lines.reduce((a, l) => a + Math.max(1, Math.ceil(l.t.length / 80)), 0); if(size + Math.ceil(x.length / 80) > 8) flush(); lines.push({t: x.slice(0, 420), ...o}); }); };
+    [...d.childNodes].forEach(nd => { if(nd.nodeType !== 1){ if(nd.textContent.trim()) add(nd.textContent); return; }
+      if(nd.nodeName === "TABLE"){ flush(); const rows = [...nd.querySelectorAll("tr")].map(r => [...r.children].map(c => c.textContent.trim().slice(0, 160))), head = nd.querySelector("th") ? rows.shift() : null;
+        for(let i = 0; i < Math.max(1, rows.length); i += 7){ out.push({kind: "table", title: s.h + (n ? " (continued)" : ""), head, rows: rows.slice(i, i + 7)}); n++; } return; }
+      if(nd.nodeName === "UL" || nd.nodeName === "OL") return [...nd.children].forEach((li, i) => add(li.innerText || li.textContent, {b: nd.nodeName === "OL" ? (i + 1) + "." : "•"}));
+      add(nd.innerText || nd.textContent, /^H[34]$/.test(nd.nodeName) ? {bold: 1} : {}); });
+    flush(); });
+  return out;
+}
+async function tkPptxBlob(doc){
+  const X = xEsc, col = ((siteNow && siteNow.color) || "#4f46e5").replace("#", "").toUpperCase().slice(0, 6) || "4F46E5", slides = tkSlides(doc), zip = new JSZip(), NOF = {createFolders: false};
+  const NS = `xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"`, HEAD = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`;
+  const run = (t, o = {}) => `<a:r><a:rPr lang="en-GB" sz="${o.sz || 1800}"${o.b ? ' b="1"' : ""} dirty="0">${o.fill ? `<a:solidFill><a:srgbClr val="${o.fill}"/></a:solidFill>` : ""}<a:latin typeface="Calibri"/></a:rPr><a:t>${X(t)}</a:t></a:r>`;
+  const box = (id, name, x, y, w, h, paras, anchor) => `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="${name}"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${w}" cy="${h}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" anchor="${anchor || "t"}"><a:normAutofit/></a:bodyPr><a:lstStyle/>${paras}</p:txBody></p:sp>`;
+  const bar = `<p:sp><p:nvSpPr><p:cNvPr id="90" name="Bar"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="12192000" cy="137160"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="${col}"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="en-GB"/></a:p></p:txBody></p:sp>`;
+  const wrap = inner => `${HEAD}<p:sld ${NS}><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${inner}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
+  const para = (inner, o = {}) => `<a:p><a:pPr${o.ind ? ` marL="${o.ind}" indent="-${o.ind}"` : ""}><a:spcAft><a:spcPts val="${o.aft == null ? 900 : o.aft}"/></a:spcAft><a:buNone/></a:pPr>${inner}</a:p>`;
+  const one = s => {
+    if(s.kind === "title") return wrap(bar + box(2, "Title", 838200, 2130552, 10515600, 1600200, para(run(s.title, {sz: 4400, b: 1, fill: "0F172A"})), "b") + box(3, "Sub", 838200, 3886200, 10515600, 700000, para(run(s.sub || " ", {sz: 2000, fill: "64748B"}))));
+    const head = box(2, "Title", 685800, 420000, 10820400, 900000, para(run(s.title, {sz: 3000, b: 1, fill: col})), "ctr");
+    if(s.kind === "table"){ const cols = Math.max(1, ...(s.head ? [s.head.length] : []), ...s.rows.map(r => r.length)), w = Math.floor(10820400 / cols), cell = (t, h) => `<a:tc><a:txBody><a:bodyPr/><a:lstStyle/><a:p>${run(t || " ", {sz: 1500, b: h, fill: h ? "FFFFFF" : "0F172A"})}</a:p></a:txBody><a:tcPr marL="91440" marR="91440" marT="60960" marB="60960">${h ? `<a:solidFill><a:srgbClr val="${col}"/></a:solidFill>` : `<a:solidFill><a:srgbClr val="F5F6FA"/></a:solidFill>`}</a:tcPr></a:tc>`;
+      const row = (r, h) => `<a:tr h="500000">${Array.from({length: cols}, (_, i) => cell(r[i] || "", h)).join("")}</a:tr>`;
+      return wrap(bar + head + `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="4" name="Table"/><p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="685800" y="1500000"/><a:ext cx="10820400" cy="${500000 * (s.rows.length + (s.head ? 1 : 0))}"/></p:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table"><a:tbl><a:tblPr firstRow="1"/><a:tblGrid>${`<a:gridCol w="${w}"/>`.repeat(cols)}</a:tblGrid>${s.head ? row(s.head, 1) : ""}${s.rows.map(r => row(r, 0)).join("")}</a:tbl></a:graphicData></a:graphic></p:graphicFrame>`); }
+    return wrap(bar + head + box(3, "Body", 685800, 1500000, 10820400, 4800000, s.lines.map(l => para((l.b ? run(l.b + "\t", {sz: 2000, fill: col, b: 1}) : "") + run(l.t, {sz: 2000, b: l.bold, fill: "0F172A"}), l.b ? {ind: 457200} : {})).join("") || para(run(" "))));
+  };
+  const REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships", PK = "http://schemas.openxmlformats.org/package/2006/relationships", CT = "application/vnd.openxmlformats-officedocument.presentationml";
+  zip.file("[Content_Types].xml", `${HEAD}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="${CT}.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="${CT}.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="${CT}.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slides.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" ContentType="${CT}.slide+xml"/>`).join("")}</Types>`, NOF);
+  zip.file("_rels/.rels", `${HEAD}<Relationships xmlns="${PK}"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="ppt/presentation.xml"/></Relationships>`, NOF);
+  zip.file("ppt/presentation.xml", `${HEAD}<p:presentation ${NS}><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slides.map((_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 3}"/>`).join("")}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>`, NOF);
+  zip.file("ppt/_rels/presentation.xml.rels", `${HEAD}<Relationships xmlns="${PK}"><Relationship Id="rId1" Type="${REL}/slideMaster" Target="slideMasters/slideMaster1.xml"/><Relationship Id="rId2" Type="${REL}/theme" Target="theme/theme1.xml"/>${slides.map((_, i) => `<Relationship Id="rId${i + 3}" Type="${REL}/slide" Target="slides/slide${i + 1}.xml"/>`).join("")}</Relationships>`, NOF);
+  const tree = `<p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld>`;
+  zip.file("ppt/slideMasters/slideMaster1.xml", `${HEAD}<p:sldMaster ${NS}>${tree}<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr sz="3000" b="1"><a:latin typeface="Calibri"/></a:defRPr></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr sz="2000"><a:latin typeface="Calibri"/></a:defRPr></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr sz="1800"><a:latin typeface="Calibri"/></a:defRPr></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>`, NOF);
+  zip.file("ppt/slideMasters/_rels/slideMaster1.xml.rels", `${HEAD}<Relationships xmlns="${PK}"><Relationship Id="rId1" Type="${REL}/slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="${REL}/theme" Target="../theme/theme1.xml"/></Relationships>`, NOF);
+  zip.file("ppt/slideLayouts/slideLayout1.xml", `${HEAD}<p:sldLayout ${NS} type="blank" preserve="1"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`, NOF);
+  zip.file("ppt/slideLayouts/_rels/slideLayout1.xml.rels", `${HEAD}<Relationships xmlns="${PK}"><Relationship Id="rId1" Type="${REL}/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`, NOF);
+  const fnt = `<a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/>`, fill3 = `<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>`.repeat(3), ln3 = `<a:ln w="9525"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln>`.repeat(3);
+  zip.file("ppt/theme/theme1.xml", `${HEAD}<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Crafticulum"><a:themeElements><a:clrScheme name="Crafticulum"><a:dk1><a:srgbClr val="0F172A"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="312E81"/></a:dk2><a:lt2><a:srgbClr val="F5F6FA"/></a:lt2><a:accent1><a:srgbClr val="${col}"/></a:accent1><a:accent2><a:srgbClr val="7C3AED"/></a:accent2><a:accent3><a:srgbClr val="15803D"/></a:accent3><a:accent4><a:srgbClr val="B45309"/></a:accent4><a:accent5><a:srgbClr val="B91C1C"/></a:accent5><a:accent6><a:srgbClr val="64748B"/></a:accent6><a:hlink><a:srgbClr val="${col}"/></a:hlink><a:folHlink><a:srgbClr val="7C3AED"/></a:folHlink></a:clrScheme><a:fontScheme name="Crafticulum"><a:majorFont>${fnt}</a:majorFont><a:minorFont>${fnt}</a:minorFont></a:fontScheme><a:fmtScheme name="Crafticulum"><a:fillStyleLst>${fill3}</a:fillStyleLst><a:lnStyleLst>${ln3}</a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst>${fill3}</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`, NOF);
+  slides.forEach((s, i) => { zip.file(`ppt/slides/slide${i + 1}.xml`, one(s), NOF); zip.file(`ppt/slides/_rels/slide${i + 1}.xml.rels`, `${HEAD}<Relationships xmlns="${PK}"><Relationship Id="rId1" Type="${REL}/slideLayout" Target="../slideLayouts/slideLayout1.xml"/></Relationships>`, NOF); });
+  return zip.generateAsync({type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation"});
+}
+async function tkPptx(){ tkSync(); try{ const blob = await tkPptxBlob(tkDoc); await (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: tkFile(tkDoc.title) + ".pptx", data: blob}); }catch(e){ console.error(e); tkNote("Couldn't make the PowerPoint file.", true); } }
+
+/* ---------- the assistant: a conversation that knows your units and what you've asked it to remember. Chats are kept; attached files are not ---------- */
+const AS_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h4"/></svg>`;
+const LIB_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h3v18H6a2 2 0 0 1-2-2z"/><path d="M9 3h5v18H9z"/><path d="M14.5 6.5l3.8-1 3.2 13.5-3.8 1z"/></svg>`;
+const AS_STARTERS = ["Give me three ways to teach this unit's hardest idea", "What do learners usually get wrong in this unit, and how do I head it off?", "Write a 10-minute retrieval task on last lesson", "Turn this unit's criteria into questions I can ask in class", "Suggest a practical activity that needs no special equipment"];
+let asChats = [], asCur = "", asBusy = false, asErr = "", asFile = null, asUnit = "", asSubbed = false, asAbort = null, asMemOpen = false, asDelArm = "", asDraft = "";
+const asChat = () => asChats.find(c => c.id === asCur) || null;
+function asLoad(){ tkLoad(); if(asSubbed) return; if(!db || !myId){ try{ if(!asChats.length) asChats = JSON.parse(lsGet("lb_chats") || "[]") || []; }catch{} return setTimeout(() => { if(view === "assistant" && !asSubbed) asLoad(); }, 700); }
+  asSubbed = true; try{ db.collection("data/users/" + myId + "/chats").onSnapshot(s => { const got = s.docs.map(d => { try{ return JSON.parse(d.data().json); }catch{ return null; } }).filter(c => c && c.id && Array.isArray(c.msgs)); const cur = asChat(); asChats = got; if(cur && asBusy && !got.find(c => c.id === cur.id)) asChats.unshift(cur); if(view === "assistant" && !asBusy) asDraw(); }); }catch(e){ console.error(e); } }
+function asSave(c){ c.updatedAt = Date.now(); const rec = {...c, msgs: c.msgs.slice(-60)}; if(db && myId) return db.doc("data/users/" + myId + "/chats/" + c.id).set({json: JSON.stringify(rec), title: c.title, updatedAt: c.updatedAt}).catch(() => {}); lsSet("lb_chats", JSON.stringify(asChats.slice(0, 30))); }
+function asPrompt(c, text){
+  const hist = c.msgs.slice(-12).map(m => (m.r === "u" ? "Teacher: " : "You: ") + String(m.t).slice(0, 4000)).join("\n\n");
+  return `You are Crafticulum AI, an assistant for teachers in UK schools and colleges. Help with planning, resources, assessment, feedback, behaviour, inclusion and the admin around teaching.
+${TK_RULES}
+- Answer the question that was asked, at the length it needs. Use simple Markdown: short paragraphs, "- " bullets, "1. " lists, **bold**, "## " headings for a longer answer, and | tables | where a table helps.
+- Never say that a learner's work meets, or will meet, an assessment criterion. That is the teacher's judgement.
+- If the teacher shares details about a learner, do not repeat names; refer to "the learner".${tkCtxText({ctx: 1, needs: 1}, {_unit: asUnit, _needs: true})}${tkMemText()}${asFile ? `\n\nThe teacher has attached "${tkScrub(asFile.name)}". Its text${asFile.cut ? " (the first part)" : ""}:\n"""\n${asFile.text}\n"""` : ""}${hist ? `\n\nThe conversation so far:\n${hist}` : ""}
+
+Teacher: ${text}
+
+Reply to the teacher now, in Markdown, with no preamble.`; }
+async function asSend(text){
+  text = tkScrub(String(text || "").trim()).slice(0, 6000); if(!text || asBusy) return; if(!sampleFn){ asErr = "Crafticulum AI isn't available just now. Try again in a moment."; return asDraw(); }
+  let c = asChat(); if(!c){ c = {id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: text.replace(/\s+/g, " ").slice(0, 60), msgs: [], unit: asUnit, createdAt: Date.now()}; asChats.unshift(c); asCur = c.id; }
+  const prompt = asPrompt(c, text); c.msgs.push({r: "u", t: text, at: Date.now(), file: asFile ? asFile.name : ""}); asBusy = true; asErr = ""; asDraft = ""; asAbort = new AbortController(); asDraw(true);
+  try{ const r = await sampleFn(prompt, {signal: asAbort.signal, meta: {tool: "chat", mins: 0, signal: asAbort.signal}}), t = String((r && r.text) || (typeof r === "string" ? r : "")).trim(); if(!t) throw {code: "invalid_json"}; c.msgs.push({r: "a", t: t.slice(0, 20000), at: Date.now()}); asSave(c); }
+  catch(e){ c.msgs.pop(); asDraft = text; if(!(e && (e.name === "AbortError" || e.code === "aborted"))) asErr = (e && e.code === "noperm") ? "The assistant is switched off for teachers in your department. Ask your head of department." : tkWhy(e); }
+  finally{ asBusy = false; asAbort = null; if(view === "assistant") asDraw(true); }
+}
+/* a reply becomes a resource you can edit, save and download: each heading starts a new part */
+function asToDoc(c, i){ const m = c.msgs[i]; if(!m) return; const parts = []; let cur = {h: "", body: []};
+  String(m.t).split("\n").forEach(l => { const h = l.match(/^#{1,6}\s+(.+)$/) || l.match(/^\*\*([^*]{3,80})\*\*:?\s*$/); if(h){ if(cur.body.join("").trim() || cur.h) parts.push(cur); cur = {h: h[1].replace(/[*:]+$/g, "").trim(), body: []}; } else cur.body.push(l); });
+  if(cur.body.join("").trim() || cur.h) parts.push(cur);
+  const title = (parts.length > 1 && !parts[0].body.join("").trim() ? parts.shift().h : "") || c.title;
+  tkDoc = {id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), tool: "chat", title: title.slice(0, 140), vals: {}, personal: false, saved: false, createdAt: Date.now(), updatedAt: Date.now(),
+    sections: parts.map((p, k) => ({h: p.h || (k ? "More" : "Content"), html: tkClean(tkMd(p.body.join("\n")))})).filter(s => s.html || s.h).slice(0, 14)};
+  if(!tkDoc.sections.length) tkDoc.sections = [{h: "Content", html: tkClean(tkMd(m.t))}];
+  tkDirty = true; tkOpen = "_doc"; tkErr = ""; setView("tools"); }
+function asHtml(){ const c = asChat(), q = [...AS_STARTERS.slice(0, 3).map(t => ({t})), ...(tkPrefs.prompts || []).map(t => ({t, mine: 1}))];
+  const unitSel = `<select class="form-select form-select-sm as-unit" id="asUnit" aria-label="Unit this is about"><option value="">No particular unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${asUnit === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select>`;
+  const msg = (m, i) => m.r === "u" ? `<div class="as-m as-u"><div class="as-b">${esc(m.t).replace(/\n/g, "<br>")}${m.file ? `<div class="as-att">Attached: ${esc(m.file)}</div>` : ""}</div><div class="as-acts"><button type="button" class="btn btn-link btn-sm p-0" data-as="keep" data-i="${i}">Save as a prompt</button><button type="button" class="btn btn-link btn-sm p-0" data-as="mem" data-i="${i}">Remember this</button></div></div>`
+    : `<div class="as-m as-a"><div class="as-b tk-body">${tkClean(tkMd(m.t))}</div><div class="as-acts"><button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="${i}">Make this a resource</button><button type="button" class="btn btn-link btn-sm p-0" data-as="copy" data-i="${i}">Copy</button></div></div>`;
+  return `<div class="tk-wrap as-wrap"><div class="as-two">
+    <aside class="as-side" aria-label="Your chats"><button type="button" class="btn btn-primary w-100 mb-2" data-as="new">New chat</button>
+      <ul class="list-unstyled as-list">${asChats.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 40).map(x => `<li class="${x.id === asCur ? "on" : ""}"><button type="button" class="as-open" data-as="open" data-id="${esc(x.id)}"><span>${esc(x.title || "Chat")}</span><small>${new Date(x.updatedAt || x.createdAt || Date.now()).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</small></button><button type="button" class="btn btn-link btn-sm text-danger p-0" data-as="del" data-id="${esc(x.id)}" aria-label="Delete chat ${esc(x.title || "")}">${asDelArm === x.id ? "Sure?" : "&times;"}</button></li>`).join("") || `<li class="small text-body-secondary px-1">Your chats are kept here.</li>`}</ul>
+      <button type="button" class="btn btn-link btn-sm p-0" data-as="memopen">${asMemOpen ? "Close" : `What it remembers${(tkPrefs.mem || []).length ? " (" + tkPrefs.mem.length + ")" : ""}`}</button>
+      ${asMemOpen ? `<div class="as-mem"><p class="small text-body-secondary mb-2">Things you've asked it to keep in mind. They're used by the assistant and by every tool, and only for you.</p>${(tkPrefs.mem || []).map((m, i) => `<div class="as-mem-i"><span>${esc(m)}</span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-as="memdel" data-i="${i}">Forget</button></div>`).join("")}<div class="input-group input-group-sm mt-2"><input class="form-control" id="asMemNew" maxlength="200" placeholder="e.g. My created lessons are 90 minutes" aria-label="Something to remember"><button type="button" class="btn btn-outline-primary" data-as="memadd">Add</button></div></div>` : ""}</aside>
+    <section class="as-main" aria-label="Conversation">
+      <div class="as-log" id="asLog" aria-live="polite">${c && c.msgs.length ? c.msgs.map(msg).join("") : `<div class="tk-empty as-empty"><div class="tk-empty-i">${AS_ICO}</div><div class="fw-semibold">Ask anything about your teaching</div><div class="small text-body-secondary mb-3">It knows the unit you pick and its criteria. Anything it writes can become a resource you edit, save and download.</div><div class="as-chips">${q.map(x => `<button type="button" data-as="use" data-t="${esc(x.t)}">${esc(x.t)}</button>`).join("")}</div></div>`}
+        ${asBusy ? `<div class="as-m as-a"><div class="as-b"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Thinking...</div></div>` : ""}</div>
+      ${asErr ? `<div class="alert alert-danger small mb-2" role="alert">${esc(asErr)}</div>` : ""}
+      <form class="as-form" id="asForm"><textarea class="form-control" id="asText" rows="2" maxlength="6000" placeholder="Ask a question, or say what you need" aria-label="Your message" ${tkCan() ? "" : "disabled"}>${esc(asDraft)}</textarea>
+        <div class="as-row">${unitSel}<label class="btn btn-sm btn-outline-secondary mb-0">${asFile ? "Change file" : "Attach a file"}<input type="file" id="asFileIn" hidden accept=".pdf,.docx,.txt,.md,.pptx"></label>${asFile ? `<span class="small text-body-secondary as-file">${esc(asFile.name)} <button type="button" class="btn btn-link btn-sm p-0" data-as="unfile">Remove</button></span>` : ""}
+          <span class="ms-auto d-flex gap-2">${asBusy ? `<button type="button" class="btn btn-outline-secondary" data-as="stop">Stop</button>` : ""}<button type="submit" class="btn btn-primary" ${asBusy || !tkCan() ? "disabled" : ""}>Send</button></span></div>
+        <div class="form-text">${tkCan() ? "Don't paste learners' work or full names here. Emails, phone numbers and postcodes are taken out before sending. Attached files are read for this chat and not kept." : "The assistant is switched off for teachers in your department. Ask your head of department."}</div></form>
+      ${(tkPrefs.prompts || []).length && c && c.msgs.length ? `<div class="as-chips mt-2">${tkPrefs.prompts.map((t, i) => `<span class="as-chip"><button type="button" data-as="use" data-t="${esc(t)}">${esc(t.slice(0, 60))}${t.length > 60 ? "..." : ""}</button><button type="button" data-as="unkeep" data-i="${i}" aria-label="Remove saved prompt">&times;</button></span>`).join("")}</div>` : ""}
+    </section></div></div>`; }
+function asDraw(down){ const o = $("#out"); if(!o || view !== "assistant") return; const ta = $("#asText"), keep = ta && document.activeElement === ta, val = ta ? ta.value : asDraft; if(ta && !asBusy) asDraft = val;
+  o.innerHTML = asHtml(); const n = $("#asText"); if(n && keep){ n.focus({preventScroll: true}); try{ n.setSelectionRange(n.value.length, n.value.length); }catch{} } if(down){ const lg = $("#asLog"); if(lg) lg.scrollTop = lg.scrollHeight; } }
+document.addEventListener("submit", e => { if(e.target && e.target.id === "asForm"){ e.preventDefault(); const t = $("#asText").value; asDraft = ""; asSend(t); } });
+document.addEventListener("keydown", e => { if(e.target && e.target.id === "asText" && e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); const t = e.target.value; if(t.trim() && !asBusy){ asDraft = ""; asSend(t); } } });
+document.addEventListener("change", async e => { const t = e.target; if(!t) return; if(t.id === "asUnit"){ asUnit = t.value; return; }
+  if(t.id === "asFileIn" && t.files && t.files[0]){ const f = t.files[0]; asDraft = ($("#asText") || {}).value || asDraft; if(f.size > 20 * 1024 * 1024){ asErr = "That file is over 20 MB. Try a smaller one."; return asDraw(); }
+    try{ const raw = String(await fileText(f) || "").replace(/\s+\n/g, "\n").trim(); if(raw.length < 20) throw 0; asFile = {name: f.name.slice(0, 80), text: tkScrub(raw.slice(0, 14000)), cut: raw.length > 14000}; asErr = ""; }catch{ asFile = null; asErr = "Couldn't read that file. PDFs with real text, Word files and plain text work best."; } asDraw(); } });
+document.addEventListener("click", async e => { const b = e.target.closest("[data-as]"); if(!b) return; const k = b.dataset.as, c = asChat(), keepDraft = () => { asDraft = ($("#asText") || {}).value || ""; };
+  if(k === "new"){ asCur = ""; asFile = null; asErr = ""; asDraft = ""; asDraw(); const t = $("#asText"); if(t) t.focus(); return; }
+  if(k === "open"){ asCur = b.dataset.id; asFile = null; asErr = ""; asDraft = ""; const x = asChat(); asUnit = (x && x.unit) || ""; return asDraw(true); }
+  if(k === "del"){ const id = b.dataset.id; if(asDelArm !== id){ asDelArm = id; asDraw(); setTimeout(() => { if(asDelArm === id){ asDelArm = ""; if(view === "assistant") asDraw(); } }, 5000); return; } asDelArm = ""; asChats = asChats.filter(x => x.id !== id); if(asCur === id) asCur = ""; if(db && myId) db.doc("data/users/" + myId + "/chats/" + id).delete().catch(() => {}); else lsSet("lb_chats", JSON.stringify(asChats)); return asDraw(); }
+  if(k === "use"){ const t = $("#asText"); if(t){ t.value = b.dataset.t; t.focus(); } return; }
+  if(k === "stop"){ if(asAbort) try{ asAbort.abort(); }catch{} return; }
+  if(k === "unfile"){ keepDraft(); asFile = null; return asDraw(); }
+  if(k === "memopen"){ keepDraft(); asMemOpen = !asMemOpen; return asDraw(); }
+  if(k === "memadd" || k === "mem"){ keepDraft(); const t = tkScrub(k === "mem" ? ((c && c.msgs[+b.dataset.i]) || {}).t : ($("#asMemNew") || {}).value || "").replace(/\s+/g, " ").trim().slice(0, 200); if(t.length < 3) return; tkPrefs.mem = [...(tkPrefs.mem || []).filter(x => x !== t), t].slice(-12); tkSavePrefs(); asMemOpen = true; tkNote("It will keep that in mind."); return asDraw(); }
+  if(k === "memdel"){ keepDraft(); tkPrefs.mem = (tkPrefs.mem || []).filter((_, i) => i !== +b.dataset.i); tkSavePrefs(); return asDraw(); }
+  if(k === "keep"){ keepDraft(); const t = ((c && c.msgs[+b.dataset.i]) || {}).t; if(!t) return; tkPrefs.prompts = [...(tkPrefs.prompts || []).filter(x => x !== t), t.slice(0, 600)].slice(-10); tkSavePrefs(); tkNote("Saved. It's under the message box whenever you need it."); return asDraw(); }
+  if(k === "unkeep"){ keepDraft(); tkPrefs.prompts = (tkPrefs.prompts || []).filter((_, i) => i !== +b.dataset.i); tkSavePrefs(); return asDraw(); }
+  if(k === "doc" && c) return asToDoc(c, +b.dataset.i);
+  if(k === "copy" && c){ const t = (c.msgs[+b.dataset.i] || {}).t || ""; try{ await navigator.clipboard.writeText(t); tkNote("Copied."); }catch{ tkNote("Couldn't copy.", true); } } });
+
+/* ---------- one resource library: lessons and everything the tools made, yours and the department's ---------- */
+let lbQ = "", lbKind = "";
+function lbItems(){ const out = [];
+  try{ libItems().forEach(it => out.push({kind: "lesson", id: it.id, title: it.title || "Lesson", sub: [it.level, it.unit].filter(Boolean).join(" · "), at: it.at || 0, by: it.author || "", shared: !!acct(), it})); }catch{}
+  tkMine.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From the assistant" : "Resource"), at: d.updatedAt || d.createdAt || 0, shared: false}));
+  tkShared.forEach(d => out.push({kind: "res", id: d.id, title: d.title, sub: (TK_BY[d.tool] || {}).name || (d.tool === "chat" ? "From the assistant" : "Resource"), at: d.updatedAt || d.createdAt || 0, by: (d.by || {}).name || "", shared: true}));
+  return out; }
+function lbHtml(){ const q = lbQ.trim().toLowerCase(), all = lbItems(), list = all.filter(x => (!lbKind || (lbKind === "shared" ? x.shared : lbKind === "mine" ? !x.shared : x.kind === lbKind)) && (!q || (x.title + " " + x.sub).toLowerCase().includes(q))).sort((a, b) => (b.at || 0) - (a.at || 0));
+  const n = k => all.filter(x => k === "shared" ? x.shared : k === "mine" ? !x.shared : x.kind === k).length, chip = (k, t) => `<button type="button" class="${lbKind === k ? "on" : ""}" data-lb="kind" data-k="${k}">${t}${k ? ` <small>${n(k)}</small>` : ""}</button>`;
+  return `<div class="tk-wrap"><div class="tk-head"><div><h1 class="h3 mb-1">Resource library</h1><p class="text-body-secondary mb-0">Every lesson you've built and everything the tools have made, in one place. Yours, and the ones shared with your department.</p></div></div>
+    <div class="tk-find"><input type="search" class="form-control" id="lbQ" placeholder="Search ${all.length} ${all.length === 1 ? "item" : "items"}" value="${esc(lbQ)}" aria-label="Search the library"><div class="tk-chips" role="group" aria-label="What to show">${chip("", "Everything")}${chip("lesson", "Lessons")}${chip("res", "Resources")}${acct() ? chip("shared", "Department") + chip("mine", "Only you") : ""}</div></div>
+    ${list.length ? `<ul class="list-unstyled tk-lib">${list.slice(0, 200).map(x => `<li class="tk-lib-i"><button type="button" class="tk-lib-open" data-lb="open" data-kind="${x.kind}" data-id="${esc(x.id)}"><span class="fw-semibold">${esc(x.title)}</span><span class="small text-body-secondary">${esc(x.sub)}${x.at ? " · " + new Date(x.at).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"}) : ""}${x.by ? " · " + esc(x.by) : ""}</span></button><span class="badge text-bg-light border fw-normal">${x.kind === "lesson" ? "Lesson" : "Resource"}</span>${acct() ? `<span class="badge ${x.shared ? "text-bg-primary" : "text-bg-light border"} fw-normal">${x.shared ? "Department" : "Only you"}</span>` : ""}</li>`).join("")}</ul>`
+      : `<div class="tk-empty"><div class="tk-empty-i">${LIB_ICO}</div><div class="fw-semibold">${q || lbKind ? "Nothing matches" : "Nothing here yet"}</div><div class="small text-body-secondary">${q || lbKind ? "Try a different word or filter." : "Build a lesson or make something with AI Tools and it appears here."}</div></div>`}</div>`; }
+function lbDraw(){ const o = $("#out"); if(!o || view !== "library") return; tkLoad(); const keep = document.activeElement && document.activeElement.id === "lbQ" ? document.activeElement.selectionStart : null; o.innerHTML = lbHtml(); if(keep != null){ const el = $("#lbQ"); el.focus({preventScroll: true}); try{ el.setSelectionRange(keep, keep); }catch{} } }
+document.addEventListener("input", e => { if(e.target && e.target.id === "lbQ"){ lbQ = e.target.value; lbDraw(); } });
+document.addEventListener("click", e => { const b = e.target.closest("[data-lb]"); if(!b) return;
+  if(b.dataset.lb === "kind"){ lbKind = b.dataset.k; return lbDraw(); }
+  if(b.dataset.kind === "lesson"){ const it = lbItems().find(x => x.kind === "lesson" && String(x.id) === b.dataset.id); if(it){ try{ showLesson(it.it.load()); }catch{ toast("Couldn't open that lesson.", {bad: true}); } } return; }
+  setView("tools"); tkOpenDoc(b.dataset.id); });
+
+/* ---------- the menu in five areas: Dashboard, AI Tools, Curriculum and lessons, Learners and assessment, Resource library ---------- */
+function navAreas(){ const nav = document.querySelector(".side .side-nav"); if(!nav || nav.dataset.areas) return; if(!nav.querySelector('[data-nav="home"]') || !$("#sideTools")) return; nav.dataset.areas = "1";
+  const cap = (t, before) => { if(before) before.insertAdjacentHTML("beforebegin", `<div class="side-cap nav-cap">${t}</div>`); }, q = s => nav.querySelector(s);
+  const home = q('[data-nav="home"]'); if(home){ const l = home.querySelector(".lbl"); if(l) l.textContent = "Dashboard"; home.setAttribute("aria-label", "Dashboard"); }
+  const tools = $("#sideTools"); if(home && tools) home.insertAdjacentElement("afterend", tools);
+  tools.insertAdjacentHTML("afterend", `<button type="button" class="side-link" id="sideAssist" data-x-nav="assistant" aria-label="Assistant">${AS_ICO}<span class="lbl">Assistant</span></button>`);
+  cap("AI tools", tools); cap("Curriculum and lessons", q('[data-nav="week"]')); cap("Learners and assessment", q('[data-nav="results"]'));
+  const libBtn = nav.querySelector('[data-canvas="libCanvas"]'); const last = libBtn || nav.lastElementChild;
+  last.insertAdjacentHTML(libBtn ? "beforebegin" : "afterend", `<div class="side-cap nav-cap">Resource library</div><button type="button" class="side-link" id="sideLib" data-x-nav="library" aria-label="Resource library">${LIB_ICO}<span class="lbl">Library</span></button>`);
+  const first = document.querySelector(".side .side-sec .side-cap:not(.nav-cap)"); if(first && /workspace/i.test(first.textContent)) first.hidden = true; }
+document.addEventListener("click", e => { const b = e.target.closest("[data-x-nav]"); if(!b) return; e.preventDefault(); setView(b.dataset.xNav); });
+const _render40 = render;
+render = function(){ const out = typeof saOut === "function" && saOut();
+  if((view === "assistant" || view === "library") && !out){ navAreas(); if(typeof markerShow === "function") try{ markerShow(false); }catch{} if(view === "assistant"){ asLoad(); asDraw(true); } else lbDraw(); syncShell(); try{ ccUrlSync(); }catch{} return; }
+  return _render40.apply(this, arguments); };
+const _syncShell40 = syncShell;
+syncShell = function(){ const r = _syncShell40.apply(this, arguments);
+  try{ navAreas(); const names = {assistant: "Assistant", library: "Resource library"}; ["assistant", "library"].forEach(v => { const b = document.querySelector(`[data-x-nav="${v}"]`), on = view === v; if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); } });
+    if(names[view]){ document.querySelectorAll(".side-link[data-nav].active,.bnav [data-nav].active,#sideTools.active").forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = names[view]; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = names[view]; document.title = names[view] + " · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } }
+    if(view === "home"){ const pt = $("#pageTitle"); if(pt && pt.textContent === "Start") pt.textContent = "Dashboard"; const cr = document.querySelector(".crumbs span"); if(cr && cr.textContent === "Start") cr.textContent = "Dashboard"; if(document.title === "Start · Crafticulum") document.title = "Dashboard · Crafticulum"; } }catch(e){ console.error(e); }
+  return r; };
+setTimeout(() => { try{ navAreas(); }catch{} }, 1800);
+try{ ACCOUNT_KEYS.push("lb_chats"); }catch{}
+
+
+/* ===== round 38: Learners. A class list, and where each learner is on each criterion of a unit. Every mark is the teacher's own decision.
+   It's kept in your own space, like your classes. Hand-in links (only where the department has switched them on) are listed here too. ===== */
+const LN_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.5-3.4 3-5.2 6-5.2s5.500 1.800 6 5.200"/><circle cx="17.500" cy="9" r="2.400"/><path d="M16.500 14.700c2.500.200 4.100 1.800 4.500 4.300"/></svg>`;
+const LN_STATES = [["", "Not marked", ""], ["w", "Working towards", "W"], ["a", "Achieved", "✓"], ["n", "Not yet", "✗"], ["r", "Resubmission", "R"]];
+let lnSets = {}, lnGroup = "", lnUnit = "", lnSubbed = false, lnAdding = false, lnLinks = null, lnLinkBusy = false, lnMsg = "", lnArm = "", lnOpenLink = "";
+const lnKey = g => "g" + (String(g || "my class").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "class");
+const lnSet = () => { const k = lnKey(lnGroup); return lnSets[k] || (lnSets[k] = {id: k, name: lnGroup || "My class", learners: [], marks: {}}); };
+const lnU = () => { const [li, ui] = String(lnUnit).split(":").map(Number), L = UNITS[li], u = L && L.u[ui]; return u ? {L, u, key: (L.s + "|" + L.l + "|" + u.t).slice(0, 160)} : null; };
+function lnLoad(){ if(lnSubbed) return; if(!db || !myId){ try{ if(!Object.keys(lnSets).length) lnSets = JSON.parse(lsGet("lb_learners") || "{}") || {}; }catch{} return setTimeout(() => { if(view === "learners" && !lnSubbed) lnLoad(); }, 700); }
+  lnSubbed = true; try{ db.collection("data/users/" + myId + "/learners").onSnapshot(s => { const got = {}; s.docs.forEach(d => { try{ const x = JSON.parse(d.data().json); if(x && x.id) got[x.id] = x; }catch{} }); Object.keys(got).forEach(k => { if(!lnDirtyIds.has(k) && (!lnSets[k] || (got[k].updatedAt || 0) >= (lnSets[k].updatedAt || 0))) lnSets[k] = got[k]; }); if(view === "learners" && !lnAdding && document.activeElement && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.nodeName)) lnDraw(); }); }catch(e){ console.error(e); } }
+/* quick presses are saved together, one save at a time, so an earlier save can never land on top of a later one */
+let lnSaveT = 0, lnSaving = Promise.resolve(), lnDirtyIds = new Set();
+function lnFlush(){ clearTimeout(lnSaveT); lnSaveT = 0; const ids = [...lnDirtyIds]; lnDirtyIds.clear(); if(!ids.length) return lnSaving;
+  if(!(db && myId)){ lsSet("lb_learners", JSON.stringify(lnSets)); return lnSaving; }
+  ids.forEach(id => { const s = lnSets[id]; if(!s) return; const rec = {json: JSON.stringify(s), title: s.name, updatedAt: s.updatedAt}; lnSaving = lnSaving.then(() => db.doc("data/users/" + myId + "/learners/" + id).set(rec)).catch(() => { toast("Couldn't save that. Check your connection.", {bad: true}); }); });
+  return lnSaving; }
+function lnSave(){ const s = lnSet(); s.updatedAt = Date.now(); lnDirtyIds.add(s.id); clearTimeout(lnSaveT); lnSaveT = setTimeout(lnFlush, 500); }
+addEventListener("pagehide", () => { try{ lnFlush(); }catch{} });
+function lnHtml(){ const s = lnSet(), U = lnU(), groups = [...new Set([...(typeof groupNames !== "undefined" ? groupNames : []), ...Object.values(lnSets).map(x => x.name)].filter(Boolean))];
+  if(!groups.includes(s.name)) groups.unshift(s.name);
+  const crit = U ? (U.u.c || []) : [], marks = U ? (s.marks[U.key] || {}) : {}, st = (lid, c) => (marks[lid] || {})[c] || "";
+  const cell = (l, c) => { const v = st(l.id, c[0]), d = LN_STATES.find(x => x[0] === v) || LN_STATES[0]; return `<td><button type="button" class="ln-c ln-${v || "x"}" data-ln="mark" data-l="${esc(l.id)}" data-c="${esc(c[0])}" aria-label="${esc(l.name)}, ${esc(c[0])}: ${d[1]}" title="${esc(c[0] + " " + c[1])}">${d[2] || "·"}</button></td>`; };
+  const done = l => crit.filter(c => st(l.id, c[0]) === "a").length, colDone = c => s.learners.filter(l => st(l.id, c[0]) === "a").length;
+  const behind = crit.map(c => [c, s.learners.filter(l => ["n", "r"].includes(st(l.id, c[0]))).length, s.learners.filter(l => st(l.id, c[0]) && st(l.id, c[0]) !== "a").length]).filter(x => x[1] || x[2]).sort((a, b) => (b[1] * 2 + b[2]) - (a[1] * 2 + a[2])).slice(0, 5);
+  const handOn = acct() && typeof prefsNow === "function" && !!prefsNow().handin;
+  return `<div class="tk-wrap"><div class="tk-head"><div><h1 class="h3 mb-1">Learners</h1><p class="text-body-secondary mb-0">Your class list, and where each learner is on each criterion of a unit. Every mark here is your decision, never the AI's. It's kept in your own space.</p></div></div>
+    <div class="ln-bar"><div><label class="form-label" for="lnGroup">Group</label><select class="form-select" id="lnGroup">${groups.map(g => `<option ${g === s.name ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></div>
+      <div class="ln-grow"><label class="form-label" for="lnUnit">Unit</label><select class="form-select" id="lnUnit"><option value="">Choose a unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${lnUnit === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select></div>
+      <div class="d-flex gap-2 align-items-end"><button type="button" class="btn btn-outline-primary" data-ln="add">${lnAdding ? "Close" : "Add learners"}</button>${s.learners.length && U ? `<button type="button" class="btn btn-outline-secondary" data-ln="csv">Download</button>` : ""}</div></div>
+    ${lnAdding ? `<div class="ln-add"><label class="form-label" for="lnNames">Names, one on each line</label><textarea class="form-control" id="lnNames" rows="5" placeholder="First name and initial is enough, e.g.&#10;Aisha K&#10;Ben T"></textarea><div class="form-text">Keep to what you need to tell learners apart. Names are stored in your own space and are never sent to the AI.</div><button type="button" class="btn btn-primary mt-2" data-ln="addgo">Add to ${esc(s.name)}</button></div>` : ""}
+    ${!s.learners.length ? `<div class="tk-empty"><div class="tk-empty-i">${LN_ICO}</div><div class="fw-semibold">No learners in ${esc(s.name)} yet</div><div class="small text-body-secondary">Press Add learners and paste your class list.</div></div>`
+      : !U ? `<div class="tk-empty"><div class="fw-semibold">${s.learners.length} ${s.learners.length === 1 ? "learner" : "learners"} in ${esc(s.name)}</div><div class="small text-body-secondary">Choose a unit to see and mark its criteria.</div><div class="ln-names">${s.learners.map(l => `<span class="ln-name">${esc(l.name)}<button type="button" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></span>`).join("")}</div></div>`
+      : `<div class="ln-key">${LN_STATES.slice(1).map(x => `<span><b class="ln-c ln-${x[0]}">${x[2]}</b> ${x[1]}</span>`).join("")}<span class="text-body-secondary">Press a box to change it.</span></div>
+      <div class="table-responsive ln-tw"><table class="table table-sm align-middle ln-t"><thead><tr><th scope="col">Learner</th>${crit.map(c => `<th scope="col" title="${esc(c[1])}">${esc(c[0])}</th>`).join("")}<th scope="col">Achieved</th></tr></thead>
+        <tbody>${s.learners.map(l => `<tr><th scope="row">${esc(l.name)} <button type="button" class="ln-rm" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></th>${crit.map(c => cell(l, c)).join("")}<td class="text-nowrap">${done(l)} of ${crit.length}</td></tr>`).join("")}</tbody>
+        <tfoot><tr><th scope="row">Achieved</th>${crit.map(c => `<td>${colDone(c)}</td>`).join("")}<td></td></tr></tfoot></table></div>
+      ${behind.length ? `<div class="ln-help"><div><div class="fw-semibold">Where the group needs help</div><ul class="small mb-0">${behind.map(([c, n, w]) => `<li><b>${esc(c[0])}</b> ${esc(c[1])} <span class="text-body-secondary">(${n ? n + " not yet or resubmitting" : ""}${n && w - n > 0 ? ", " : ""}${w - n > 0 ? (w - n) + " working towards" : ""})</span></li>`).join("")}</ul></div><button type="button" class="btn btn-primary flex-none" data-ln="interv">Plan an intervention session</button></div>` : ""}`}
+    ${handOn ? lnHandHtml() : ""}</div>`; }
+function lnDraw(){ const o = $("#out"); if(!o || view !== "learners") return; o.innerHTML = lnHtml(); }
+const lnLinkUrl = c => new URL("handin.html?c=" + c, window.ccBase || new URL(typeof ccRoot === "function" ? ccRoot() : "./", location.href).href).href;
+async function lnHand(a, body){ const r = await fetch("handin.php?a=" + a, {method: "POST", headers: {"Content-Type": "application/json"}, credentials: "same-origin", body: JSON.stringify(body || {})}); let j = {}; try{ j = await r.json(); }catch{} if(!r.ok) throw {code: j.error || "x", status: r.status}; return j; }
+function lnLinksLoad(){ if(lnLinkBusy) return; lnLinkBusy = true; lnHand("list").then(j => { lnLinks = j.links || []; }).catch(() => { lnLinks = lnLinks || []; }).finally(() => { lnLinkBusy = false; if(view === "learners") lnDraw(); }); }
+function lnHandHtml(){ if(lnLinks === null){ lnLinksLoad(); return `<section class="ln-hand"><h2 class="h5">Hand-in links</h2><p class="small text-body-secondary mb-0">Loading...</p></section>`; }
+  const kb = n => n > 1048576 ? (Math.round(n / 104857.6) / 10) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+  return `<section class="ln-hand" aria-labelledby="lnHandH"><h2 class="h5 mb-1" id="lnHandH">Hand-in links</h2><p class="small text-body-secondary">Give students a link to hand in a file for an assignment. Each file is kept for 30 days, then deleted. Download it to mark it, or to check it in Second Marker.</p>
+    <form class="ln-new" id="lnNew"><div class="ln-grow"><label class="form-label" for="lnTitle">Assignment</label><input class="form-control" id="lnTitle" maxlength="100" placeholder="e.g. Unit 1 Assignment 2" required></div><div><label class="form-label" for="lnCloses">Closes (optional)</label><input type="date" class="form-control" id="lnCloses"></div><button type="submit" class="btn btn-primary">Make a link</button></form>
+    ${lnMsg ? `<div class="idea-msg mt-2" role="status">${esc(lnMsg)}</div>` : ""}
+    ${lnLinks.length ? `<ul class="list-unstyled ln-links">${lnLinks.map(l => `<li class="ln-link" data-code="${esc(l.code)}"><div class="ln-link-h"><div class="min-w-0"><span class="fw-semibold">${esc(l.title)}</span> <span class="badge ${l.open ? "text-bg-success" : "text-bg-secondary"} fw-normal">${l.open ? "Open" : "Closed"}</span><div class="small text-body-secondary">${l.group ? esc(l.group) + " · " : ""}${l.files.length} handed in${l.closes ? " · closes " + new Date(l.closes * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "short"}) : ""}${l.by && l.by !== (me.name || me.email) ? " · " + esc(l.by) : ""}</div></div>
+        <div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-outline-primary" data-ln="copy">Copy link</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ln="files">${lnOpenLink === l.code ? "Hide files" : "Show files"}</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ln="close" data-re="${l.open ? "" : "1"}">${l.open ? "Close" : "Reopen"}</button><button type="button" class="btn btn-sm btn-link text-danger p-0" data-ln="dellink">${lnArm === "L" + l.code ? "Delete it and its files?" : "Delete"}</button></div></div>
+        ${lnOpenLink === l.code ? (l.files.length ? `<div class="table-responsive"><table class="table table-sm align-middle small mb-0"><thead><tr><th scope="col">Learner</th><th scope="col">File</th><th scope="col">Handed in</th><th scope="col">Deleted in</th><th scope="col" aria-label="Actions"></th></tr></thead><tbody>${l.files.map(f => `<tr><th scope="row">${esc(f.name)}</th><td>${esc(f.orig)} <span class="text-body-secondary">${kb(f.size)}</span></td><td>${new Date(f.at * 1000).toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"})}</td><td>${f.left} ${f.left === 1 ? "day" : "days"}</td><td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-primary" href="handin.php?a=get&amp;c=${esc(l.code)}&amp;f=${esc(f.id)}" download>Download</a> <button type="button" class="btn btn-sm btn-link text-danger p-0" data-ln="delfile" data-f="${esc(f.id)}">${lnArm === "F" + f.id ? "Sure?" : "Delete"}</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="small text-body-secondary mb-0 mt-2">Nothing handed in yet.</p>`) : ""}</li>`).join("")}</ul>` : `<p class="small text-body-secondary mb-0 mt-3">No links yet.</p>`}</section>`; }
+const lnArmFor = (k, fn) => { if(lnArm !== k){ lnArm = k; lnDraw(); setTimeout(() => { if(lnArm === k){ lnArm = ""; if(view === "learners") lnDraw(); } }, 5000); return; } lnArm = ""; fn(); };
+document.addEventListener("change", e => { const t = e.target; if(!t) return; if(t.id === "lnGroup"){ lnGroup = t.value; lnAdding = false; return lnDraw(); } if(t.id === "lnUnit"){ lnUnit = t.value; return lnDraw(); } });
+document.addEventListener("submit", async e => { if(!e.target || e.target.id !== "lnNew") return; e.preventDefault(); const title = $("#lnTitle").value.trim(); if(title.length < 2) return;
+  try{ const j = await lnHand("open", {title, group: lnSet().name, closes: $("#lnCloses").value}); lnLinks = [j.link, ...(lnLinks || [])]; lnMsg = "Link made. Copy it and give it to your students."; }catch(err){ lnMsg = err && err.code === "off" ? "Hand-in links have been switched off for your department." : "Couldn't make the link. Try again."; } lnDraw(); });
+document.addEventListener("click", async e => { const b = e.target.closest("[data-ln]"); if(!b) return; const k = b.dataset.ln, s = lnSet(), U = lnU(), li = b.closest("[data-code]"), code = li ? li.dataset.code : "";
+  if(k === "add"){ lnAdding = !lnAdding; lnDraw(); const t = $("#lnNames"); if(t) t.focus(); return; }
+  if(k === "addgo"){ const names = ($("#lnNames").value || "").split(/\n|,/).map(x => x.replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 40)).filter(x => x.length > 1), have = new Set(s.learners.map(l => l.name.toLowerCase())); let n = 0;
+    names.forEach(nm => { if(have.has(nm.toLowerCase()) || s.learners.length >= 80) return; have.add(nm.toLowerCase()); s.learners.push({id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + n, name: nm}); n++; });
+    s.learners.sort((a, b2) => a.name.localeCompare(b2.name)); if(n){ lnSave(); toast(`${n} ${n === 1 ? "learner" : "learners"} added.`); } lnAdding = false; return lnDraw(); }
+  if(k === "rm") return lnArmFor(b.dataset.l, () => { s.learners = s.learners.filter(l => l.id !== b.dataset.l); Object.values(s.marks).forEach(m => { delete m[b.dataset.l]; }); lnSave(); lnDraw(); });
+  if(k === "mark" && U){ const m = s.marks[U.key] || (s.marks[U.key] = {}), row = m[b.dataset.l] || (m[b.dataset.l] = {}), i = LN_STATES.findIndex(x => x[0] === (row[b.dataset.c] || "")), nx = LN_STATES[(i + 1) % LN_STATES.length];
+    if(nx[0]) row[b.dataset.c] = nx[0]; else delete row[b.dataset.c]; lnSave(); const y = window.scrollY, tw = document.querySelector(".ln-tw"), x = tw ? tw.scrollLeft : 0; lnDraw(); const t2 = document.querySelector(".ln-tw"); if(t2) t2.scrollLeft = x; window.scrollTo({top: y}); const again = document.querySelector(`[data-ln="mark"][data-l="${CSS.escape(b.dataset.l)}"][data-c="${CSS.escape(b.dataset.c)}"]`); if(again) again.focus({preventScroll: true}); return; }
+  if(k === "csv" && U){ const crit = U.u.c || [], m = s.marks[U.key] || {}, q = x => `"${String(x).replace(/"/g, '""')}"`, word = v => (LN_STATES.find(x => x[0] === v) || LN_STATES[0])[1];
+    const csv = [["Learner", ...crit.map(c => c[0])].map(q).join(","), ...s.learners.map(l => [l.name, ...crit.map(c => word((m[l.id] || {})[c[0]] || ""))].map(q).join(","))].join("\r\n");
+    return (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: tkFile(s.name + " " + U.u.t) + ".csv", data: new Blob(["﻿" + csv], {type: "text/csv"})}); }
+  if(k === "interv" && U){ const crit = U.u.c || [], m = s.marks[U.key] || {}, cnt = c => s.learners.filter(l => ["n", "r", "w"].includes((m[l.id] || {})[c[0]])).length, gaps = crit.map(c => [c, cnt(c)]).filter(x => x[1]).sort((a, b2) => b2[1] - a[1]).slice(0, 4);
+    tkVals.interv = {_unit: lnUnit, gaps: "Criteria the group hasn't secured yet:\n" + gaps.map(([c, n]) => `- ${c[0]} ${c[1]} (${n} of ${s.learners.length} learners)`).join("\n"), who: gaps.some(g => g[1] > s.learners.length / 2) ? "The whole class" : "A small group", mins: 30};   // counts only: no names are sent
+    tkOpen = "interv"; tkDoc = null; tkDirty = false; tkErr = ""; return setView("tools"); }
+  if(k === "copy"){ try{ await navigator.clipboard.writeText(lnLinkUrl(code)); lnMsg = "Link copied: " + lnLinkUrl(code); }catch{ lnMsg = "Copy this link: " + lnLinkUrl(code); } return lnDraw(); }
+  if(k === "files"){ lnOpenLink = lnOpenLink === code ? "" : code; return lnDraw(); }
+  if(k === "close"){ try{ const j = await lnHand("close", {code, reopen: !!b.dataset.re}); lnLinks = lnLinks.map(l => l.code === code ? j.link : l); }catch{ lnMsg = "Couldn't change that."; } return lnDraw(); }
+  if(k === "dellink") return lnArmFor("L" + code, async () => { try{ await lnHand("del", {code}); lnLinks = lnLinks.filter(l => l.code !== code); lnMsg = "Deleted, with every file handed in to it."; }catch{ lnMsg = "Couldn't delete that."; } lnDraw(); });
+  if(k === "delfile") return lnArmFor("F" + b.dataset.f, async () => { try{ const j = await lnHand("del", {code, file: b.dataset.f}); lnLinks = lnLinks.map(l => l.code === code ? j.link : l); }catch{ lnMsg = "Couldn't delete that."; } lnDraw(); }); });
+function lnNavAdd(){ const nav = document.querySelector(".side .side-nav"); if(!nav || $("#sideLearn") || !nav.dataset.areas) return; const res = nav.querySelector('[data-nav="results"]'); if(!res) return;
+  res.insertAdjacentHTML("beforebegin", `<button type="button" class="side-link" id="sideLearn" data-x-nav="learners" aria-label="Learners">${LN_ICO}<span class="lbl">Learners</span></button>`); }
+const _render41 = render;
+render = function(){ if(view !== "learners" && lnDirtyIds.size) try{ lnFlush(); }catch{}
+  if(view === "learners" && !(typeof saOut === "function" && saOut())){ if(typeof markerShow === "function") try{ markerShow(false); }catch{} if(!lnGroup && typeof curGroup === "string") lnGroup = curGroup; lnLoad(); lnDraw(); syncShell(); try{ ccUrlSync(); }catch{} return; } return _render41.apply(this, arguments); };
+const _syncShell41 = syncShell;
+syncShell = function(){ const r = _syncShell41.apply(this, arguments);
+  try{ lnNavAdd(); const b = $("#sideLearn"), on = view === "learners"; if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
+    if(on){ document.querySelectorAll(".side-link[data-nav].active,.bnav [data-nav].active,#sideTools.active").forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = "Learners"; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = "Learners"; document.title = "Learners · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } } }catch(e){ console.error(e); }
+  return r; };
+try{ ACCOUNT_KEYS.push("lb_learners"); }catch{}
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
@@ -11053,10 +11353,10 @@ function parseJsonReply(text){
   if(a >= 0 && b > a){ try{ return JSON.parse(t.slice(a, b + 1)); }catch{} }
   throw {code: "invalid_json"};
 }
-async function askServer(prompt, tries){
-  const r = await fetch("ai.php?a=ask", {method:"POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", body: JSON.stringify({prompt})}).catch(() => null);
+async function askServer(prompt, tries, meta){
+  const r = await fetch("ai.php?a=ask", {method:"POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", body: JSON.stringify(meta && meta.tool ? {prompt, tool: meta.tool, mins: meta.mins || 0} : {prompt}), signal: meta && meta.signal || undefined}).catch(e => { if(e && e.name === "AbortError") throw e; return null; });
   if(!r) throw {code: "network", message: "No connection to the server."};
-  if(r.status === 401 && (tries || 0) < 2){ const ok = await askLogin(); if(!ok) throw {code: "cancelled"}; return askServer(prompt, (tries || 0) + 1); }
+  if(r.status === 401 && (tries || 0) < 2){ const ok = await askLogin(); if(!ok) throw {code: "cancelled"}; return askServer(prompt, (tries || 0) + 1, meta); }
   let j = {}; try{ j = await r.json(); }catch{}
   if(r.status === 429) throw {code: "rate_limited"};
   if(r.status === 403) throw {code: "noperm"};
@@ -11067,8 +11367,8 @@ async function askServer(prompt, tries){
   }
   return j.text || "";
 }
-const serverSample = Object.assign(async (prompt) => ({text: await askServer(String(prompt)), truncated: false}), {
-  json: async (prompt) => parseJsonReply(await askServer(typeof prompt === "string" ? prompt : JSON.stringify(prompt)))
+const serverSample = Object.assign(async (prompt, o) => ({text: await askServer(String(prompt), 0, o && o.meta), truncated: false}), {
+  json: async (prompt, o) => parseJsonReply(await askServer(typeof prompt === "string" ? prompt : JSON.stringify(prompt), 0, o && o.meta))
 });
 async function storeCall(a, body){
   const r = await fetch("store.php?a=" + a, {method:"POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", body: JSON.stringify(body || {})});
