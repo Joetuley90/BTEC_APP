@@ -885,5 +885,42 @@ Teachers no longer see the AI service's own error text. They get a plain
 "tell whoever looks after the site", and the detail goes to the super admin.
 In Second Marker the model choices are now Most capable, Balanced and Fastest.
 
+NOTIFICATIONS (v93)
+Settings, You, Notifications. Each person switches them on for each phone,
+tablet or computer they want, and chooses what to hear about:
+  - When something finishes: a lesson, a set of lessons or a Second Marker
+    check that finishes while they're on another tab or app.
+  - Assignment dates: the day before and on the day an assignment is handed
+    out, is due in, or has resubmissions due. The dates are the ones in that
+    person's own planning.
+  - Comments and sign-off, people waiting for approval, messages from the
+    contact page, and (for a college's manager) plan limits and payments.
+Nothing to set up and no outside service to pay for. The site makes its own
+key the first time (kept in data/_vapid.json; don't delete it or everyone has
+to switch notifications on again). New file: push-lib.php. The server needs
+PHP's OpenSSL and cURL, which nearly every host has.
+On an iPhone or iPad, Crafticulum has to be added to the Home Screen first
+(Share, Add to Home Screen) and opened from there. That is Apple's rule.
+Assignment reminders go out the first time anyone opens the site after 7am.
+To send them even on a day nobody signs in, add a scheduled job (cPanel, Cron
+Jobs) that opens the address shown at the bottom of Settings, Notifications
+once a day a little after 7am, for example:
+  5 7 * * * curl -s "PASTE THE ADDRESS HERE" > /dev/null
+The same daily run clears out colleges deleted more than 14 days ago.
+
+DELETED COLLEGES ARE KEPT FOR 14 DAYS (v93)
+Deleting a college no longer destroys it on the spot. Its people can't sign in
+from that moment and its students' pages stop working, but everything is set
+aside in data/_deleted for 14 days. Until then it shows under Deleted colleges
+in the Colleges list, with Put it back and Remove now. After 14 days it is
+removed for good.
+A college whose plan has been cancelled can now be deleted straight away, even
+while the month it has paid for runs out. One that is still paying is refused
+until its plan is cancelled.
+
+FRONT PAGE (v93)
+Questions people ask now runs the full width of the page, and the line about
+who writes the lessons has gone from the footer.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

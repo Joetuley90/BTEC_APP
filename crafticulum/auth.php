@@ -28,6 +28,8 @@ header('Referrer-Policy: same-origin');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 $body = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : 20001); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
+/* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
+if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge()]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
 ccSession();
 
@@ -125,6 +127,7 @@ if ($action === 'contact') {
     if (!ccInboxChange(function ($j) use ($row, $id) { $j[$id] = $row; return $j; })) out(500, ['error' => 'save']);
     $a = ccAccounts(); $to = (string) (ccSite($a)['contact'] ?? ''); $tos = $to !== '' ? [$to] : array_values(array_filter(ccSupers(), fn($e) => (bool) filter_var($e, FILTER_VALIDATE_EMAIL)));
     $label = ['support' => 'Help needed', 'problem' => 'Problem reported', 'feedback' => 'Feedback', 'enquiry' => 'Enquiry'][$kind];
+    foreach (ccSupers() as $t) ccNotify((string) $t, 'people', "$label from $name", 'Sent from the contact page. Open Settings, Site, Messages to read and answer it.');
     if (ccMailReady()) foreach (array_slice($tos, 0, 3) as $t) ccMail($t, "$label from $name", "$label, sent from the contact page.\n\nFrom: $name <$email>" . ($row['org'] !== '' ? "\nCollege or school: {$row['org']}" : '') . ($row['who'] !== '' ? "\nSigned in as: {$row['who']}" : '') . ($row['page'] !== '' ? "\nThey were on: {$row['page']}" : '') . ($row['browser'] !== '' ? "\nUsing: {$row['browser']}" : '') . "\n\n$msg\n\nReply to this email to answer them. Every message is also in Settings, Messages:\n" . ccSiteUrl() . (ccPretty() ? "settings" : "app.html") . "\n", $email);
     out(200, ['ok' => true]);
 }
@@ -425,6 +428,7 @@ if ($action === 'errors' || $action === 'errclear') {
 /* the demo account can look around and save lessons in its own department. It can't touch settings, people, email or sign-in */
 if (!empty($me['demo']) && !in_array($action, ['me', 'team', 'log', 'usage'], true)) out(403, ['error' => 'demo']);
 if ($action === 'me') {
+    register_shutdown_function(function () { try { if (session_status() === PHP_SESSION_ACTIVE) session_write_close(); if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); ccPushDaily(); ccDeletedPurge(); } catch (\Throwable $x) {} });
     $o = ['me' => ccPublic($me) + ['methods' => (array) ($mine['methods'] ?? []), 'hasPass' => !empty($mine['pass']), 'totp' => !empty($mine['totp']['on']), 'recoveryLeft' => count((array) ($mine['totp']['recovery'] ?? [])), 'profile' => (object) (is_array($mine['profile'] ?? null) ? $mine['profile'] : []), 'added' => (int) ($mine['added'] ?? 0), 'lastSeen' => (int) ($mine['last'] ?? 0)],
           'google' => ccGoogleId() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'mail' => ccMailReady(), 'passwordBackup' => ccPasswordAllowed(), 'prefs' => ccDeptPrefs($a, $me['dept']), 'marker' => ccMarker($a, $me['dept']) + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)], 'site' => !empty($me['demo']) || empty($me['inside'] ?? true) ? ccSitePublic($a) : ccSite($a, $me['college']), 'url' => ccSiteUrl(), 'tempHost' => (string) parse_url(ccTempUrl(), PHP_URL_HOST)];
     $pl = ccPlanOf($a, (string) $me['college']); $o['billing'] = ccBillingOn(); $pu = ccPlanUsed((string) $me['college'], ccUsageRead()); $o['plan'] = ['id' => $pl['id'], 'name' => $pl['name'], 'builds' => $pl['builds'], 'checks' => $pl['checks'], 'usedBuilds' => $pu['builds'], 'usedChecks' => $pu['checks']];
@@ -441,6 +445,29 @@ if ($action === 'dept') {
     $_SESSION['dept'] = $id; if ($me['role'] === 'superadmin') $_SESSION['inside'] = 1;
     if (isset($a['users'][$me['email']])) { $a['users'][$me['email']]['dept'] = $id; ccSaveAccounts($a); }
     out(200, ['me' => ccPublic(ccMe())]);
+}
+/* ---------- notifications on this person's own devices ---------- */
+if (in_array($action, ['pushget', 'pushsub', 'pushunsub', 'pushprefs', 'pushtest', 'pushdates'], true)) {
+    if (!empty($me['demo'])) out(403, ['error' => 'demo']);
+    $em = (string) $me['email']; $pj = ccPushRead($em); $v = ccPushOk() ? ccVapid() : null;
+    $info = function (array $pj) use ($v, $me): array { return ['ok' => (bool) $v, 'key' => $v ? $v['pub'] : '', 'prefs' => ccPushPrefs($pj), 'devices' => array_map(fn($s) => ['id' => substr(sha1((string) $s['endpoint']), 0, 12), 'ua' => (string) ($s['ua'] ?? ''), 'added' => (int) ($s['added'] ?? 0)], $pj['subs']), 'dates' => count((array) $pj['dates'])] + ($me['role'] === 'superadmin' ? ['cron' => ccSiteUrl() . 'auth.php?a=pushcron&k=' . substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32)] : []); };
+    if ($action === 'pushget') out(200, $info($pj));
+    if (!$v) out(400, ['error' => 'unsupported']);
+    if ($action === 'pushsub') {
+        $s = (array) ($body['sub'] ?? []); $ep = (string) ($s['endpoint'] ?? ''); $k = (array) ($s['keys'] ?? []); $p = (string) ($k['p256dh'] ?? ''); $au = (string) ($k['auth'] ?? '');
+        if (!ccPushHostOk($ep) || strlen(ccB64ud($p)) !== 65 || strlen(ccB64ud($au)) < 16 || strlen($au) > 64) out(400, ['error' => 'sub']);
+        $pj['subs'] = array_values(array_filter($pj['subs'], fn($x) => ($x['endpoint'] ?? '') !== $ep));
+        $pj['subs'][] = ['endpoint' => $ep, 'p256dh' => $p, 'auth' => $au, 'ua' => mb_substr(cleanName((string) ($body['ua'] ?? '')), 0, 40), 'added' => time()];
+        $pj['subs'] = array_slice($pj['subs'], -8); if (!ccPushSave($em, $pj)) out(500, ['error' => 'save']);
+        out(200, $info($pj) + ['this' => substr(sha1($ep), 0, 12)]);
+    }
+    if ($action === 'pushunsub') { $id = (string) ($body['id'] ?? ''); $ep = (string) ($body['endpoint'] ?? ''); $pj['subs'] = array_values(array_filter($pj['subs'], fn($x) => ($x['endpoint'] ?? '') !== $ep && substr(sha1((string) ($x['endpoint'] ?? '')), 0, 12) !== $id)); ccPushSave($em, $pj); out(200, $info($pj)); }
+    if ($action === 'pushprefs') { foreach (CC_PUSH_KINDS as $k => $def) if (array_key_exists($k, (array) ($body['prefs'] ?? []))) $pj['prefs'][$k] = !empty($body['prefs'][$k]); ccPushSave($em, $pj); out(200, $info($pj)); }
+    if ($action === 'pushdates') {   // this person's assignment dates for the weeks ahead, as their own screen shows them
+        $out = []; foreach (array_slice((array) ($body['items'] ?? []), 0, 300) as $d) { $day = (string) ($d['d'] ?? ''); $k = (string) ($d['k'] ?? ''); if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $day) || !in_array($k, ['out', 'due', 'resub'], true)) continue; $out[] = ['d' => $day, 'k' => $k, 't' => mb_substr(cleanName((string) ($d['t'] ?? '')), 0, 60), 'u' => mb_substr(cleanName((string) ($d['u'] ?? '')), 0, 60)]; }
+        $pj['dates'] = $out; ccPushSave($em, $pj); out(200, ['dates' => count($out)]);
+    }
+    if ($action === 'pushtest') { if (!$pj['subs']) out(400, ['error' => 'none']); $n = ccPushNow($em, 'builds', 'Notifications are working', 'This is what a Crafticulum notification looks like on this device.', ccAppUrl(), true); out(200, ['sent' => $n, 'devices' => count(ccPushRead($em)['subs'])]); }
 }
 /* the super admin steps back out of the college they were working inside */
 if ($action === 'leave') {
@@ -593,7 +620,7 @@ function collegeList(array $a): array { $o = [];
     foreach (ccCollegeIds($a) as $id) { $id = (string) $id; $c = ccCollege($a, $id); $depts = ccCollegeDepts($a, $id);
         $people = array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, ccSupers(), true) && in_array((string) ($u['dept'] ?? ''), $depts, true), ARRAY_FILTER_USE_BOTH);
         $mgr = []; foreach ($people as $e => $u) if (($u['role'] ?? '') === 'owner') $mgr[] = ['email' => (string) $e, 'name' => (string) ($u['name'] ?? '')];
-        $o[] = ['id' => $id, 'name' => $c['name'], 'off' => $c['off'], 'cap' => $c['cap'], 'plain' => $c['plain'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'billStatus' => (string) ($c['bill']['status'] ?? ''), 'self' => !empty($a['colleges'][$id]['self']), 'contact' => $c['contact'], 'created' => $c['created'], 'hasLogo' => $c['logo'] !== '', 'color' => $c['color'],
+        $o[] = ['id' => $id, 'name' => $c['name'], 'off' => $c['off'], 'cap' => $c['cap'], 'plain' => $c['plain'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'billStatus' => (string) ($c['bill']['status'] ?? ''), 'self' => !empty($a['colleges'][$id]['self']), 'contact' => $c['contact'], 'created' => $c['created'], 'hasLogo' => $c['logo'] !== '', 'color' => $c['color'],
                 'depts' => array_map(fn($d) => ['id' => $d, 'name' => (string) $a['depts'][$d]['name']], $depts), 'people' => count($people), 'managers' => $mgr]; }
     return $o; }
 /* ---------- the super admin: everything on the site at a glance ---------- */
@@ -606,7 +633,7 @@ if ($action === 'overview') {
         foreach ($depts as $d) { $dir = !empty($a['depts'][$d]['legacy']) ? ccDataDir() : ccDataDir() . '/d/' . $d; $lessons += count(glob($dir . '/lessons/*.json') ?: []); $calls += (int) ($u['depts'][$d]['calls'] ?? 0);
             foreach (ccLogRead($d, 12) as $l) $log[] = $l + ['college' => $c['name'], 'dept' => (string) $a['depts'][$d]['name']]; }
         $used = ccPlanUsed($id, $u);
-        $rows[] = ['id' => $id, 'name' => $c['name'], 'off' => $c['off'], 'self' => !empty($a['colleges'][$id]['self']), 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'depts' => array_map(fn($d) => ['id' => $d, 'name' => (string) $a['depts'][$d]['name']], $depts),
+        $rows[] = ['id' => $id, 'name' => $c['name'], 'off' => $c['off'], 'self' => !empty($a['colleges'][$id]['self']), 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'depts' => array_map(fn($d) => ['id' => $d, 'name' => (string) $a['depts'][$d]['name']], $depts),
                    'people' => $people, 'pending' => $pend, 'managers' => $mgr, 'lessons' => $lessons, 'calls' => $calls, 'builds' => $used['builds'], 'checks' => $used['checks'], 'last' => $last, 'created' => $c['created']];
         $tot['colleges']++; $tot['depts'] += count($depts); $tot['people'] += $people; $tot['lessons'] += $lessons; $tot['calls'] += $calls; $tot['pending'] += $pend; if (!empty($c['bill']['sub'])) $tot['paying']++; }
     usort($log, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
@@ -627,8 +654,24 @@ if ($action === 'collegeget') {
     usort($people, fn($x, $y) => [$x['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$x['role']] ?? 2, strtolower($x['name'] ?: $x['email'])] <=> [$y['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$y['role']] ?? 2, strtolower($y['name'] ?: $y['email'])]);
     usort($log, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
     $pl = ccPlanOf($a, $id);
-    out(200, ['planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
+    out(200, ['planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
               'self' => !empty($a['colleges'][$id]['self']), 'created' => $c['created'], 'depts' => $depts, 'people' => $people, 'lessons' => $lessons, 'calls' => $calls, 'used' => ccPlanUsed($id, $u), 'log' => array_slice($log, 0, 12), 'billing' => ccBillingOn(), 'mail' => ccMailReady()]);
+}
+/* a deleted college waits here for 14 days, then goes for good. Until then it can be put back */
+if (in_array($action, ['collegerestore', 'collegepurge'], true)) {
+    if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
+    $hid = (string) ($body['hold'] ?? ''); $hold = ccDataDir() . '/_deleted/' . $hid; if (!preg_match('/^[a-z0-9][a-z0-9-]*-\d{9,11}$/', $hid) || !is_file($hold . '/meta.json')) out(404, ['error' => 'not_found']);
+    $meta = json_decode((string) @file_get_contents($hold . '/meta.json'), true); if (!is_array($meta)) out(404, ['error' => 'not_found']);
+    if ($action === 'collegepurge') { ccDeletedRm($hold); ccLog($me['dept'], $me, 'removed a deleted college for good', (string) ($meta['name'] ?? '')); out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList()]); }
+    $cid = (string) ($meta['id'] ?? ''); if ($cid === '' || isset($a['colleges'][$cid])) out(409, ['error' => 'exists']);
+    foreach ((array) ($meta['depts'] ?? []) as $d => $r) if (isset($a['depts'][(string) $d])) out(409, ['error' => 'exists']);
+    foreach ($a['colleges'] as $c) if ((string) ($meta['name'] ?? '') !== '' && strcasecmp((string) ($c['name'] ?? ''), (string) $meta['name']) === 0) out(409, ['error' => 'name']);
+    $a['colleges'][$cid] = (array) $meta['college']; foreach ((array) $meta['depts'] as $d => $r) $a['depts'][(string) $d] = (array) $r;
+    $back = 0; $skipped = []; foreach ((array) ($meta['users'] ?? []) as $e => $u) { if (isset($a['users'][(string) $e])) { $skipped[] = (string) $e; continue; } $a['users'][(string) $e] = (array) $u; $back++; }   // anyone who has since joined somewhere else stays where they are
+    $base = ccDataDir(); foreach ((array) ($meta['moved'] ?? []) as $rel) { $rel = (string) $rel; if ($rel === '' || strpos($rel, '..') !== false || $rel[0] === '/') continue; $from = $hold . '/files/' . $rel; $to = $base . '/' . $rel; if (!file_exists($from) || file_exists($to)) continue; if (!is_dir(dirname($to))) @mkdir(dirname($to), 0700, true); @rename($from, $to); }
+    if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
+    ccDeletedRm($hold); ccLog($me['dept'], $me, 'put a deleted college back', (string) ($meta['name'] ?? ''));
+    out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList(), 'restored' => ['id' => $cid, 'people' => $back, 'skipped' => $skipped]]);
 }
 if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], true)) {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
@@ -670,24 +713,30 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
                 /* gone for good: its people, departments, lessons, planning, results and student pages. Asked for twice, with its name typed */
                 $typed = strtolower(trim((string) preg_replace('/\s+/', ' ', (string) ($body['confirm'] ?? '')))); $want = strtolower(trim((string) preg_replace('/\s+/', ' ', $cname)));
                 if ($typed === '' || $typed !== ($want !== '' ? $want : 'delete')) out(400, ['error' => 'confirm']);
-                $b = (array) ($a['colleges'][$id]['bill'] ?? []); if (!empty($b['sub']) && in_array((string) ($b['status'] ?? ''), ['active', 'trialing', 'past_due', 'unpaid'], true)) out(400, ['error' => 'paying']);
+                $b = (array) ($a['colleges'][$id]['bill'] ?? []); if (!empty($b['sub']) && empty($b['cancelAt']) && in_array((string) ($b['status'] ?? ''), ['active', 'trialing', 'past_due', 'unpaid'], true)) out(400, ['error' => 'paying']);   // a plan that's been cancelled doesn't stand in the way
                 $supers = ccSupers(); $other = ''; foreach ($a['depts'] as $k => $d0) if (!in_array((string) $k, $depts, true)) { $other = (string) $k; break; }
-                $gone = ['people' => 0, 'depts' => count($depts), 'files' => 0]; $hashes = [];
+                $gone = ['people' => 0, 'depts' => count($depts), 'files' => 0]; $base = ccDataDir(); $hid = $id . '-' . time(); $hold = $base . '/_deleted/' . $hid;
+                if (!@mkdir($hold . '/files', 0700, true) && !is_dir($hold . '/files')) out(500, ['error' => 'save']);
+                $meta = ['id' => $id, 'name' => $cname, 'at' => time(), 'by' => (string) $me['email'], 'college' => $a['colleges'][$id], 'depts' => [], 'users' => [], 'moved' => []];
                 foreach ($a['users'] as $e => $u) { if (!in_array((string) ($u['dept'] ?? ($u['wantDept'] ?? '')), $depts, true) && !in_array((string) ($u['wantDept'] ?? ''), $depts, true)) continue;
                     if (in_array((string) $e, $supers, true)) { $a['users'][$e]['dept'] = $other; continue; }
-                    $hashes[] = sha1((string) $e); unset($a['users'][$e]); $gone['people']++; }
-                $base = ccDataDir(); $rm = function (string $p) use (&$rm, &$gone, $base): void { if ($p === '' || strpos($p, $base . '/') !== 0 || is_link($p)) return;
-                    if (is_dir($p)) { foreach (array_diff((array) @scandir($p), ['.', '..']) as $x) $rm($p . '/' . $x); @rmdir($p); } elseif (is_file($p)) { if (@unlink($p)) $gone['files']++; } };
-                foreach ($depts as $d) { $d = (string) $d; if (!preg_match('/^[a-z0-9][a-z0-9-]*$/', $d)) continue;
-                    if (!empty($a['depts'][$d]['legacy'])) { foreach (array_diff((array) @scandir($base), ['.', '..']) as $x) { if ($x[0] === '_' || $x[0] === '.' || in_array($x, ['d', 'u', 'share', 'backups', 'index.html'], true)) continue; $rm($base . '/' . $x); } }   // the first college's library sits beside the site's own files
-                    else $rm($base . '/d/' . $d);
-                    foreach ((array) glob($base . '/u/*/' . $d, GLOB_ONLYDIR) as $p) $rm((string) $p);
-                    foreach ((array) glob($base . '/_marker/' . $d . '{.json,-*.json}', GLOB_BRACE) as $p) $rm((string) $p);
-                    $rm($base . '/_log/' . $d . '.jsonl'); $rm($base . '/share/discord-' . $d . '.json'); }
+                    $meta['users'][(string) $e] = $u; unset($a['users'][$e]); $gone['people']++; }
+                /* set aside, not destroyed: each thing keeps its place under files/, so it can go straight back */
+                $mv = function (string $p) use (&$meta, &$gone, $base, $hold): void { if ($p === '' || strpos($p, $base . '/') !== 0 || is_link($p) || !file_exists($p)) return;
+                    $rel = substr($p, strlen($base) + 1); $to = $hold . '/files/' . $rel; if (!is_dir(dirname($to))) @mkdir(dirname($to), 0700, true);
+                    if (@rename($p, $to)) { $meta['moved'][] = $rel; $gone['files']++; } };
+                foreach ($depts as $d) { $d = (string) $d; $meta['depts'][$d] = $a['depts'][$d]; if (!preg_match('/^[a-z0-9][a-z0-9-]*$/', $d)) continue;
+                    if (!empty($a['depts'][$d]['legacy'])) { foreach (array_diff((array) @scandir($base), ['.', '..']) as $x) { if ($x[0] === '_' || $x[0] === '.' || in_array($x, ['d', 'u', 'share', 'backups', 'index.html'], true)) continue; $mv($base . '/' . $x); } }   // the first college's library sits beside the site's own files
+                    else $mv($base . '/d/' . $d);
+                    foreach ((array) glob($base . '/u/*/' . $d, GLOB_ONLYDIR) as $p) $mv((string) $p);
+                    foreach ((array) glob($base . '/_marker/' . $d . '{.json,-*.json}', GLOB_BRACE) as $p) $mv((string) $p);
+                    $mv($base . '/_log/' . $d . '.jsonl'); $mv($base . '/share/discord-' . $d . '.json'); }
                 foreach ((array) glob($base . '/share/*.json') as $p) { $p = (string) $p; if (substr($p, -13) === '.results.json') continue; $j = json_decode((string) @file_get_contents($p), true);
-                    if (is_array($j) && in_array((string) ($j['dept'] ?? ''), $depts, true)) { $rm(substr($p, 0, -5) . '.results.json'); $rm($p); } }   // the pages its students were given stop working
+                    if (is_array($j) && in_array((string) ($j['dept'] ?? ''), $depts, true)) { $mv(substr($p, 0, -5) . '.results.json'); $mv($p); } }   // the pages its students were given stop working straight away
+                foreach (array_keys($meta['users']) as $e) $mv(ccPushFile((string) $e));
+                $meta['gone'] = $gone; if (@file_put_contents($hold . '/meta.json', json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false) out(500, ['error' => 'save']);
                 foreach ($depts as $d) unset($a['depts'][$d]);
-                unset($a['colleges'][$id]); ccLog($me['dept'], $me, 'deleted the college and everything in it', $cname . ' (' . $gone['people'] . ' people, ' . $gone['depts'] . ' departments)'); $extra['gone'] = $gone;
+                unset($a['colleges'][$id]); ccLog($me['dept'], $me, 'deleted the college', $cname . ' (' . $gone['people'] . ' people, ' . $gone['depts'] . ' departments). Kept for ' . CC_DELETED_DAYS . ' days'); $extra['gone'] = $gone + ['days' => CC_DELETED_DAYS];
             } else {
             foreach ($a['users'] as $e => $u) if (in_array((string) ($u['dept'] ?? ''), $depts, true) && ccActive($u) && !in_array((string) $e, ccSupers(), true)) out(400, ['error' => 'has_staff']);
             foreach ($depts as $d) unset($a['depts'][$d]);     // the departments' files stay in data/d/ in case they're wanted back
@@ -696,7 +745,7 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
         }
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
     }
-    out(200, ['colleges' => collegeList($a), 'depts' => deptList($a)] + $extra);
+    out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList()] + $extra);
 }
 /* ---------- staff and departments ---------- */
 if (!$me['canTeam']) out(403, ['error' => 'noperm']);
