@@ -30,7 +30,9 @@ if ($action === 'logout') { $_SESSION = []; session_destroy(); out(200, ['ok' =>
 
 $me = ccMe();
 if (!$me) out(401, ['error' => 'login']);
-if (!$me['canGen']) out(403, ['error' => 'noperm']);
+/* AI Tools and the assistant can be open to every member of staff (a department setting, on to begin with). Building lessons stays with the people given that permission */
+$tool = is_string($body['tool'] ?? null) && preg_match('/^[a-z]{1,20}$/', $body['tool']) ? $body['tool'] : ''; $toolMins = $tool !== '' ? max(0, min(240, (int) ($body['mins'] ?? 0))) : 0;
+if (!$me['canGen'] && !($tool !== '' && ccDeptPrefs(ccAccounts(), (string) $me['dept'])['tools'])) out(403, ['error' => 'noperm']);
 if ($action !== 'ask') out(404, ['error' => 'Unknown action.']);
 
 // Rate limit per signed-in session
@@ -90,5 +92,5 @@ if ($code !== 200 || !is_array($j)) {
 
 $text = '';
 foreach (($j['content'] ?? []) as $block) { if (($block['type'] ?? '') === 'text') $text .= $block['text']; }
-ccUsageAdd($me, (int) ($j['usage']['input_tokens'] ?? 0) + (int) ($j['usage']['cache_creation_input_tokens'] ?? 0) + (int) ($j['usage']['cache_read_input_tokens'] ?? 0), (int) ($j['usage']['output_tokens'] ?? 0), $model);
+ccUsageAdd($me, (int) ($j['usage']['input_tokens'] ?? 0) + (int) ($j['usage']['cache_creation_input_tokens'] ?? 0) + (int) ($j['usage']['cache_read_input_tokens'] ?? 0), (int) ($j['usage']['output_tokens'] ?? 0), $model, $tool !== '' ? 'tool' : '', $toolMins);
 out(200, ['text' => $text]);

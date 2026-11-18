@@ -29,7 +29,7 @@ function out(int $code, array $data): void { http_response_code($code); echo jso
 $body = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : 20001); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
 /* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
-if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge()]); }
+if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge()]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
 ccSession();
 
@@ -428,7 +428,7 @@ if ($action === 'errors' || $action === 'errclear') {
 /* the demo account can look around and save lessons in its own department. It can't touch settings, people, email or sign-in */
 if (!empty($me['demo']) && !in_array($action, ['me', 'team', 'log', 'usage'], true)) out(403, ['error' => 'demo']);
 if ($action === 'me') {
-    register_shutdown_function(function () { try { if (session_status() === PHP_SESSION_ACTIVE) session_write_close(); if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); ccPushDaily(); ccDeletedPurge(); } catch (\Throwable $x) {} });
+    register_shutdown_function(function () { try { if (session_status() === PHP_SESSION_ACTIVE) session_write_close(); if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); ccPushDaily(); ccDeletedPurge(); ccHandinPurge(); } catch (\Throwable $x) {} });
     $o = ['me' => ccPublic($me) + ['methods' => (array) ($mine['methods'] ?? []), 'hasPass' => !empty($mine['pass']), 'totp' => !empty($mine['totp']['on']), 'recoveryLeft' => count((array) ($mine['totp']['recovery'] ?? [])), 'profile' => (object) (is_array($mine['profile'] ?? null) ? $mine['profile'] : []), 'added' => (int) ($mine['added'] ?? 0), 'lastSeen' => (int) ($mine['last'] ?? 0)],
           'google' => ccGoogleId() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'mail' => ccMailReady(), 'passwordBackup' => ccPasswordAllowed(), 'prefs' => ccDeptPrefs($a, $me['dept']), 'marker' => ccMarker($a, $me['dept']) + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)], 'site' => !empty($me['demo']) || empty($me['inside'] ?? true) ? ccSitePublic($a) : ccSite($a, $me['college']), 'url' => ccSiteUrl(), 'tempHost' => (string) parse_url(ccTempUrl(), PHP_URL_HOST)];
     $pl = ccPlanOf($a, (string) $me['college']); $o['billing'] = ccBillingOn(); $pu = ccPlanUsed((string) $me['college'], ccUsageRead()); $o['plan'] = ['id' => $pl['id'], 'name' => $pl['name'], 'builds' => $pl['builds'], 'checks' => $pl['checks'], 'usedBuilds' => $pu['builds'], 'usedChecks' => $pu['checks']];
@@ -489,6 +489,8 @@ if ($action === 'deptprefs') {
     if (!$me['isLead']) out(403, ['error' => 'noperm']);
     $d = $me['dept'];
     if (array_key_exists('signoff', $body)) { $a['depts'][$d]['signoff'] = !empty($body['signoff']); ccLog($d, $me, !empty($body['signoff']) ? 'turned on sign-off for teachers\' changes' : 'turned off sign-off'); }
+    if (array_key_exists('handin', $body)) { $a['depts'][$d]['handin'] = !empty($body['handin']); ccLog($d, $me, !empty($body['handin']) ? 'switched on hand-in links (handed-in work is kept for ' . CC_HANDIN_DAYS . ' days)' : 'switched off hand-in links'); }
+    if (array_key_exists('tools', $body)) { $a['depts'][$d]['tools'] = !empty($body['tools']); ccLog($d, $me, !empty($body['tools']) ? 'opened AI Tools to all staff' : 'kept AI Tools to people who can build lessons'); }
     if (array_key_exists('pics', $body)) { $a['depts'][$d]['pics'] = !empty($body['pics']); ccLog($d, $me, !empty($body['pics']) ? 'turned on pictures in lessons' : 'turned off pictures in lessons'); }
     if (array_key_exists('base', $body)) { $a['depts'][$d]['base'] = !empty($body['base']); ccLog($d, $me, !empty($body['base']) ? 'turned on starting from the team\'s lessons' : 'turned off starting from the team\'s lessons'); }
     if (array_key_exists('delPassword', $body)) { $p = (string) $body['delPassword'];
@@ -654,7 +656,7 @@ if ($action === 'collegeget') {
     usort($people, fn($x, $y) => [$x['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$x['role']] ?? 2, strtolower($x['name'] ?: $x['email'])] <=> [$y['pending'] ? 1 : 0, ['owner' => 0, 'hod' => 1][$y['role']] ?? 2, strtolower($y['name'] ?: $y['email'])]);
     usort($log, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
     $pl = ccPlanOf($a, $id);
-    out(200, ['planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
+    out(200, ['saved' => ccSaved($id), 'planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
               'self' => !empty($a['colleges'][$id]['self']), 'created' => $c['created'], 'depts' => $depts, 'people' => $people, 'lessons' => $lessons, 'calls' => $calls, 'used' => ccPlanUsed($id, $u), 'log' => array_slice($log, 0, 12), 'billing' => ccBillingOn(), 'mail' => ccMailReady()]);
 }
 /* a deleted college waits here for 14 days, then goes for good. Until then it can be put back */
