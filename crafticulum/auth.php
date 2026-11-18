@@ -483,7 +483,7 @@ if ($action === 'markerset') {
     ccLog($d, $me, $now['on'] && !$was['on'] ? 'switched on Second Marker' : (!$now['on'] && $was['on'] ? 'switched off Second Marker' : 'changed the Second Marker settings'));
     out(200, ['marker' => $now + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)]]);
 }
-/* ---------- the site: the college's name, logo and colour, and the sign-in, email and Claude settings (super admin) ---------- */
+/* ---------- the site: the college's name, logo and colour, and the sign-in, email and Crafticulum AI settings (super admin) ---------- */
 if ($action === 'siteget' || $action === 'siteset') {
     /* the college's own profile (name, logo, colour, contact) belongs to the college the person is working in: its manager or the super admin can change it.
        Everything else here is about the whole site, and only the super admin sees or changes it. */

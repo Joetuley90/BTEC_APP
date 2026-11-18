@@ -870,5 +870,20 @@ sheet and feedback in cards with numbered headings, criteria codes as pills,
 and green, red and amber for Y, N and R. Only the look changed. Highlighting,
 comments, QuickMarks, focus mode and the keyboard shortcuts work as before.
 
+"CRAFTICULUM AI" (v92)
+Everything people read now calls the AI "Crafticulum AI": the app, the front
+page, terms, cookies, the emails and the error messages. Mentions of Claude
+and "made by Anthropic" have gone. Three places still name Anthropic, on
+purpose:
+  - Settings, Site setup, where the super admin pastes the key and reads
+    error details. Only the super admin sees these.
+  - This file and config.example.php, which only you read.
+  - One row of the privacy page's list of who handles data. The law expects
+    the companies that process people's data to be named, so that row now
+    reads "Anthropic, which provides the AI models behind Crafticulum AI".
+Teachers no longer see the AI service's own error text. They get a plain
+"tell whoever looks after the site", and the detail goes to the super admin.
+In Second Marker the model choices are now Most capable, Balanced and Fastest.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

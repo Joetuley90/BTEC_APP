@@ -2,11 +2,11 @@
 /*
  * Second Marker inside Crafticulum.
  *
- *   ?a=ask     passes a marking request to Claude using the site's API key, so the key never reaches the browser
+ *   ?a=ask     passes a marking request to Crafticulum AI using the site's API key, so the key never reaches the browser
  *   ?a=result  keeps which criteria were met for one finished learner. No names, IDs or work are kept, only the unit and the Y or N for each criterion
  *   ?a=stats   the criteria most often not met, for the department's leaders
  *
- * Learner work is not stored on this server. It is passed to Claude and forgotten.
+ * Learner work is not stored on this server. It is passed to Crafticulum AI and forgotten.
  * Only staff whose department has Second Marker switched on can use any of this.
  */
 declare(strict_types=1);
@@ -14,7 +14,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
-/* the marking page reads an error the way Claude sends one */
+/* the marking page reads an error the way Crafticulum AI sends one */
 function fail(int $code, string $msg): void { out($code, ['error' => ['message' => $msg]]); }
 if (!is_file(__DIR__ . '/../config.php')) fail(500, 'Crafticulum isn\'t set up yet.');
 require __DIR__ . '/../config.php';
@@ -143,12 +143,12 @@ if ($action !== 'ask') fail(404, 'Unknown action.');
 // the same hourly limit as the rest of Crafticulum, for each signed-in person
 $now = time();
 $_SESSION['hits'] = array_values(array_filter($_SESSION['hits'] ?? [], fn($t) => $t > $now - 3600));
-if (count($_SESSION['hits']) >= ((int) ccConf('MAX_REQUESTS_PER_HOUR') ?: 60)) fail(429, 'You\'ve reached this hour\'s limit for requests to Claude. Try again in a little while.');
+if (count($_SESSION['hits']) >= ((int) ccConf('MAX_REQUESTS_PER_HOUR') ?: 60)) fail(429, 'You\'ve reached this hour\'s limit for requests to Crafticulum AI. Try again in a little while.');
 $_SESSION['hits'][] = $now;
 session_write_close();
 if (($why = ccUsageBlocked($me, 'marker')) !== '') out(402, ['error' => ['message' => $why]] + (array) ($GLOBALS['ccBlock'] ?? []));
 $key = (string) ccConf('ANTHROPIC_API_KEY');
-if (in_array($key, ['sk-ant-REPLACE-ME', ''], true)) fail(500, 'Claude isn\'t set up yet. The site admin adds the API key in Settings, Site setup.');
+if (in_array($key, ['sk-ant-REPLACE-ME', ''], true)) fail(500, 'Crafticulum AI isn\'t set up yet. The site admin adds the API key in Settings, Site setup.');
 $messages = $body['messages'] ?? null; if (!is_array($messages) || !$messages || count($messages) > 6) fail(400, 'Nothing to check.');
 $model = $set['model'] !== '' ? $set['model'] : (in_array($body['model'] ?? '', CC_MARKER_MODELS, true) ? (string) $body['model'] : ((string) ccConf('CLAUDE_MODEL') ?: 'claude-sonnet-5-5'));
 $system = mb_substr((string) ($body['system'] ?? ''), 0, 60000);
@@ -162,17 +162,17 @@ $ch = curl_init(defined('ANTHROPIC_URL') ? ANTHROPIC_URL : 'https://api.anthropi
 curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 290, CURLOPT_CONNECTTIMEOUT => 15,
     CURLOPT_HTTPHEADER => ['content-type: application/json', 'x-api-key: ' . $key, 'anthropic-version: 2023-06-01'], CURLOPT_POSTFIELDS => $send]);
 $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); $err = curl_error($ch); curl_close($ch);
-if ($res === false) fail(502, stripos($err, 'timed out') !== false ? 'Claude took too long to answer. Try again in a minute.' : 'The server could not reach Claude (' . $err . ').');
+if ($res === false) fail(502, stripos($err, 'timed out') !== false ? 'Crafticulum AI took too long to answer. Try again in a minute.' : 'The server could not reach Crafticulum AI (' . $err . ').');
 $j = json_decode((string) $res, true);
 if ($code !== 200 || !is_array($j)) {
     $said = is_array($j) ? trim((string) ($j['error']['message'] ?? '')) : ''; $low = strtolower($said);
-    if ($code === 401) $why = 'Claude did not accept the site\'s API key. Tell your site admin.';
-    elseif (strpos($low, 'credit balance') !== false || strpos($low, 'billing') !== false) $why = 'The site\'s Claude account has run out of credit. Tell your site admin.';
-    elseif ($code === 429 || $code === 529 || $code === 503 || strpos($low, 'overloaded') !== false) $why = 'Claude is very busy right now. Try again in a minute.';
-    elseif ($code === 413 || strpos($low, 'too long') !== false || strpos($low, 'too large') !== false) $why = 'That was too much for Claude in one go. Try a shorter file.';
-    elseif ($code === 404 || strpos($low, 'model') !== false) $why = 'Claude does not know the model "' . $model . '". Your head of department can pick another in Settings, Second Marker.';
-    else $why = 'Claude returned an error (' . $code . ').';
-    fail(502, $why . ($said !== '' ? ' Claude said: ' . mb_substr($said, 0, 240) : ''));
+    if ($code === 401) $why = 'Crafticulum AI did not accept the site\'s API key. Tell your site admin.';
+    elseif (strpos($low, 'credit balance') !== false || strpos($low, 'billing') !== false) $why = 'The site\'s Crafticulum AI account has run out of credit. Tell your site admin.';
+    elseif ($code === 429 || $code === 529 || $code === 503 || strpos($low, 'overloaded') !== false) $why = 'Crafticulum AI is very busy right now. Try again in a minute.';
+    elseif ($code === 413 || strpos($low, 'too long') !== false || strpos($low, 'too large') !== false) $why = 'That was too much for Crafticulum AI in one go. Try a shorter file.';
+    elseif ($code === 404 || strpos($low, 'model') !== false) $why = 'Crafticulum AI can\'t use the model that\'s chosen. Your head of department can pick another in Settings, Second Marker.';
+    else $why = 'Crafticulum AI returned an error (' . $code . ').';
+    fail(502, $why . ($said !== '' && ($me['role'] ?? '') === 'superadmin' ? ' The AI service said: ' . mb_substr($said, 0, 240) : ''));
 }
 ccUsageAdd($me, (int) ($j['usage']['input_tokens'] ?? 0) + (int) ($j['usage']['cache_creation_input_tokens'] ?? 0) + (int) ($j['usage']['cache_read_input_tokens'] ?? 0), (int) ($j['usage']['output_tokens'] ?? 0), $model, 'marker');
 out(200, ['content' => $j['content'] ?? [], 'model' => $model, 'stop_reason' => $j['stop_reason'] ?? null]);

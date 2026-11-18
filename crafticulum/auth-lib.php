@@ -5,8 +5,8 @@
  *
  * Roles
  *   superadmin  everything, in every department (emails listed in SUPER_ADMINS in config.php)
- *   hod         head of department: adds staff, sets their options, builds lessons with Claude
- *   teacher     uses the department's lessons and units; can't build with Claude;
+ *   hod         head of department: adds staff, sets their options, builds lessons with Crafticulum AI
+ *   teacher     uses the department's lessons and units; can't build with Crafticulum AI;
  *               can edit lessons by hand only if their head of department allows it
  *
  * Accounts live in data/_accounts.json, which the .htaccess in data/ blocks from the web.
@@ -122,7 +122,7 @@ function ccSite(?array $a = null, ?string $college = null): array { $a = $a ?? c
             'front' => array_key_exists('front', $s) ? !empty($s['front']) : $home, 'publicBrand' => !empty($s['publicBrand']) && count($ids) < 2, 'org' => $org, 'college' => $one, 'colleges' => count($ids)]; }
 /* what people who aren't signed in are shown: the college's name, logo and colour only if the site has chosen to show them before sign-in */
 function ccSitePublic(?array $a = null): array { $s = ccSite($a); if (!$s['publicBrand']) { $s['name'] = ''; $s['logo'] = ''; $s['color'] = ''; } return $s; }   // 'org' stays: the terms and privacy pages must still say who runs the site
-/* ---------- usage: how much each department and person asks of Claude, month by month ---------- */
+/* ---------- usage: how much each department and person asks of Crafticulum AI, month by month ---------- */
 function ccUsageSet(?array $a = null): array { $u = (array) ((($a ?? ccAccounts())['site'] ?? [])['usage'] ?? []);
     return ['in' => (float) ($u['in'] ?? 0), 'out' => (float) ($u['out'] ?? 0), 'cur' => (string) ($u['cur'] ?? '£'), 'capCost' => (float) ($u['capCost'] ?? 0), 'capCalls' => (int) ($u['capCalls'] ?? 0), 'capDept' => (int) ($u['capDept'] ?? 0)]; }
 function ccUsageFile(string $ym): string { return ccDataDir() . '/_usage/' . (preg_match('/^\d{4}-\d{2}$/', $ym) ? $ym : date('Y-m')) . '.json'; }
@@ -150,7 +150,7 @@ function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $ki
     fclose($fh);
     if (!empty($note)) { try { ccPlanNudge($note[0], $note[1], $note[2]); } catch (\Throwable $e) {} }
 }
-/* the most that every Free account together may ask of Claude in a month. 0 is no limit */
+/* the most that every Free account together may ask of Crafticulum AI in a month. 0 is no limit */
 function ccFreeCap(?array $a = null): int { $s = (array) (($a ?? ccAccounts())['site'] ?? []); return array_key_exists('freeCap', $s) ? max(0, (int) $s['freeCap']) : 1000; }
 /* the next plan up that would lift a limit, for the offer on screen */
 function ccUpsell(array $a, string $college, string $k): array { $cur = ccPlanOf($a, $college); $n = ccCollegePeople($a, $college);
@@ -166,30 +166,30 @@ function ccCollegeMail(array $a, string $college, string $subject, string $text)
 /* nearly at a plan's monthly limit, or at it: tell the manager once, by email */
 function ccPlanNudge(string $college, string $k, int $n): void {
     if (!ccBillingOn()) return; $a = ccAccounts(); $pl = ccPlanOf($a, $college); $max = (int) $pl[$k]; if ($max <= 0) return;
-    $warn = (int) ceil($max * 0.8); $what = $k === 'checks' ? 'Second Marker checks' : 'builds with Claude'; $where = "Settings, Plan and billing:\n" . ccAppUrl();
+    $warn = (int) ceil($max * 0.8); $what = $k === 'checks' ? 'Second Marker checks' : 'builds with Crafticulum AI'; $where = "Settings, Plan and billing:\n" . ccAppUrl();
     if ($n === $max) ccCollegeMail($a, $college, "You've used this month's $what", "All $max $what on the {$pl['name']} plan have been used this month. They start again on the 1st.\n\nIf you need more before then, you can move to a bigger plan in $where");
     elseif ($n === $warn && $max >= 10 && $warn < $max) ccCollegeMail($a, $college, "You've used most of this month's $what", "$n of this month's $max $what on the {$pl['name']} plan have been used. They start again on the 1st.\n\nIf you think you'll need more, you can move to a bigger plan in $where");
 }
-/* why Claude can't be used right now, if a monthly limit has been reached ('' when it can) */
+/* why Crafticulum AI can't be used right now, if a monthly limit has been reached ('' when it can) */
 function ccUsageBlocked(array $me, string $kind = ''): string {
     $s = ccUsageSet(); $u = ccUsageRead(); $t = $u['total'];
     $sup = ($me['role'] ?? '') === 'superadmin';
     $GLOBALS['ccBlock'] = [];   // what the screen needs to offer the right way out, beside the sentence itself
     if (ccBillingOn() && empty($me['demo']) && !$sup) { $acc0 = ccAccounts(); $c0 = (string) ($me['college'] ?? ccCollegeOf($acc0, (string) ($me['dept'] ?? ''))); $pl = ccPlanOf($acc0, $c0); $used = ccPlanUsed($c0, $u); $k = $kind === 'marker' ? 'checks' : 'builds';
         $adm = !empty($me['admin']); $self = !empty($acc0['colleges'][$c0]['self']);
-        /* someone who signed up on their own confirms their email before Claude does anything for them */
+        /* someone who signed up on their own confirms their email before Crafticulum AI does anything for them */
         if ($self && ccMailReady() && empty($acc0['users'][(string) ($me['email'] ?? '')]['verified'])) { $GLOBALS['ccBlock'] = ['code' => 'verify', 'email' => (string) ($me['email'] ?? '')]; return 'Confirm your email address first. We sent a link to ' . ($me['email'] ?? 'you') . ' when you signed up. Open it, then come back and try again.'; }
         /* everyone on Free shares one monthly allowance, so free accounts can never cost more than the site has agreed to */
         $fc = ccFreeCap($acc0); if ($pl['id'] === 'free' && $fc > 0 && (int) ($u['free']['calls'] ?? 0) >= $fc) { $GLOBALS['ccBlock'] = ['code' => 'freecap', 'admin' => $adm] + ccUpsell($acc0, $c0, $k);
             return 'Free accounts have used everything set aside for them this month. It starts again on the 1st. ' . ($adm ? 'To carry on now, move to a paid plan in Settings, Plan and billing.' : 'Ask whoever manages your account about a paid plan.'); }
         if ($pl[$k] > 0 && $used[$k] >= $pl[$k]) { $GLOBALS['ccBlock'] = ['code' => 'plan', 'kind' => $k, 'max' => (int) $pl[$k], 'plan' => $pl['name'], 'admin' => $adm] + ccUpsell($acc0, $c0, $k); }
-        if ($pl[$k] > 0 && $used[$k] >= $pl[$k]) return ($k === 'checks' ? 'This month\'s ' . $pl[$k] . ' Second Marker checks on the ' . $pl['name'] . ' plan have been used.' : 'This month\'s ' . $pl[$k] . ' builds with Claude on the ' . $pl['name'] . ' plan have been used.') . ' They start again on the 1st. ' . (!empty($me['admin']) ? 'Upgrade in Settings, Plan and billing.' : 'Ask whoever manages your account to upgrade the plan.'); }
-    if ($s['capCalls'] && ($t['calls'] ?? 0) >= $s['capCalls']) return 'This month\'s limit for building with Claude has been reached (' . $s['capCalls'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
-    if ($s['capCost'] && ($s['in'] || $s['out']) && ccUsageCost($t, $s) >= $s['capCost']) return 'This month\'s spending limit for Claude has been reached. It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+        if ($pl[$k] > 0 && $used[$k] >= $pl[$k]) return ($k === 'checks' ? 'This month\'s ' . $pl[$k] . ' Second Marker checks on the ' . $pl['name'] . ' plan have been used.' : 'This month\'s ' . $pl[$k] . ' builds with Crafticulum AI on the ' . $pl['name'] . ' plan have been used.') . ' They start again on the 1st. ' . (!empty($me['admin']) ? 'Upgrade in Settings, Plan and billing.' : 'Ask whoever manages your account to upgrade the plan.'); }
+    if ($s['capCalls'] && ($t['calls'] ?? 0) >= $s['capCalls']) return 'This month\'s limit for building with Crafticulum AI has been reached (' . $s['capCalls'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+    if ($s['capCost'] && ($s['in'] || $s['out']) && ccUsageCost($t, $s) >= $s['capCost']) return 'This month\'s spending limit for Crafticulum AI has been reached. It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
     $acc = ccAccounts(); $cid = (string) ($me['college'] ?? ccCollegeOf($acc, (string) ($me['dept'] ?? ''))); $cap = $cid !== '' ? ccCollege($acc, $cid)['cap'] : 0;
     if ($sup) return '';   // the limits below are a college's and a department's own
-    if ($cap) { $n = 0; foreach (ccCollegeDepts($acc, $cid) as $d) $n += (int) ($u['depts'][$d]['calls'] ?? 0); if ($n >= $cap) return 'Your college has reached this month\'s limit for building with Claude (' . $cap . ' requests). It starts again on the 1st. Ask whoever looks after the site to raise it.'; }
-    if ($s['capDept'] && (($u['depts'][(string) ($me['dept'] ?? '')]['calls'] ?? 0) >= $s['capDept'])) return 'Your department has reached this month\'s limit for building with Claude (' . $s['capDept'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+    if ($cap) { $n = 0; foreach (ccCollegeDepts($acc, $cid) as $d) $n += (int) ($u['depts'][$d]['calls'] ?? 0); if ($n >= $cap) return 'Your college has reached this month\'s limit for building with Crafticulum AI (' . $cap . ' requests). It starts again on the 1st. Ask whoever looks after the site to raise it.'; }
+    if ($s['capDept'] && (($u['depts'][(string) ($me['dept'] ?? '')]['calls'] ?? 0) >= $s['capDept'])) return 'Your department has reached this month\'s limit for building with Crafticulum AI (' . $s['capDept'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
     return '';
 }
 function ccAccounts(): array {

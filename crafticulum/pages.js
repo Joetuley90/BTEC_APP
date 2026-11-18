@@ -26,7 +26,7 @@
     each("[data-if-plans]", function(el){ el.hidden = false; }); each("[data-no-plans]", function(el){ el.hidden = true; });
     var box = document.getElementById("plans"); if(!box) return; var app = document.querySelector('a[href="app"]') ? "app" : "app.html", contact = document.querySelector('a[href="contact"]') ? "contact" : "contact.html";
     box.innerHTML = j.plans.map(function(p){ var paid = p.price > 0, lines = [p.people > 0 ? (p.people === 1 ? "Just you" : "Up to " + p.people + " people") : "As many people as you need", p.depts > 0 ? (p.depts === 1 ? "One department" : p.depts + " departments") : "As many departments as you need",
-        p.builds > 0 ? p.builds + " builds with Claude a month" : "No monthly limit on builds", p.checks > 0 ? p.checks + " Second Marker checks a month" : "No monthly limit on Second Marker"];
+        p.builds > 0 ? p.builds + " builds with Crafticulum AI a month" : "No monthly limit on builds", p.checks > 0 ? p.checks + " Second Marker checks a month" : "No monthly limit on Second Marker"];
       var go = p.price < 0 ? '<a class="btn btn-o" href="' + contact + '?about=enquiry">Ask for a quote</a>' : '<a class="btn ' + (p.id === "pro" ? "btn-p" : "btn-o") + '" href="' + app + "?start=" + p.id + '">' + (paid ? "Choose " + esc(p.name) : "Start free") + "</a>";
       return '<div class="plan' + (p.id === "pro" ? " hot" : "") + '"><h3>' + esc(p.name) + '</h3><p class="plan-for">' + esc(p["for"]) + '</p><p class="plan-price">' + (p.price < 0 ? "Custom quote" : esc(p.priceText) + (paid ? "<small> a month</small>" : "")) + "</p><ul>" + lines.map(function(l){ return "<li>" + l + "</li>"; }).join("") + "</ul>" + go + "</div>"; }).join("");
   }).catch(function(){});
