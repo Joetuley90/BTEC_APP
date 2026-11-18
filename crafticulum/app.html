@@ -1294,6 +1294,43 @@ body.sa-out #stSite,body.sa-out #stPlan,body.sa-out #stLog,body.sa-out #stDepts,
 .col-gone{padding:14px 16px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:12px}.col-gone li{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--cc-line)}.col-gone li:first-child{border-top:0;padding-top:4px}.col-gone .flex-none{flex:none}
 .push-dev li{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--cc-line)}
 
+/* ===== AI Tools ===== */
+.tk-wrap{max-width:1240px;margin:0 auto;padding:4px 0 40px}
+.tk-head{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}.tk-head p{max-width:62ch}
+.tk-stat{display:grid;text-align:right;font-size:.82rem;color:var(--bs-secondary-color);padding:10px 14px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}.tk-stat b{font-size:1.35rem;line-height:1;color:var(--cc-primary-text);font-weight:800}.tk-stat b::after{content:" "}
+.tk-tabs{display:flex;gap:4px;border-bottom:1px solid var(--cc-line);margin-bottom:16px}.tk-tabs button{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--bs-secondary-color);border-bottom:2px solid transparent;margin-bottom:-1px}.tk-tabs button.on{color:var(--cc-primary-text);border-bottom-color:var(--cc-primary)}.tk-tabs button span{font-weight:500;font-size:.78rem;background:var(--bs-tertiary-bg);border-radius:99px;padding:1px 8px;margin-left:4px}
+.tk-find{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}.tk-find .form-control{max-width:340px}
+.tk-chips{display:flex;flex-wrap:wrap;gap:6px}.tk-chips button{border:1px solid var(--cc-line);background:var(--bs-body-bg);color:var(--bs-body-color);border-radius:99px;padding:.3rem .85rem;font-size:.84rem;font-weight:600}.tk-chips button.on{background:var(--cc-primary);border-color:var(--cc-primary);color:#fff}
+.tk-cat{margin-bottom:26px}.tk-cat-h{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:10px}.tk-cat-h span{font-size:.74rem;font-weight:600;color:var(--bs-secondary-color);background:var(--bs-tertiary-bg);border-radius:99px;padding:1px 8px}
+.tk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tk-tool{display:grid;gap:4px;align-content:start;text-align:left;padding:14px 16px;border:1px solid var(--cc-line);border-radius:.9rem;background:var(--bs-body-bg);color:inherit;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:border-color .12s,box-shadow .12s,transform .12s}
+.tk-tool:hover,.tk-tool:focus-visible{border-color:var(--cc-primary);box-shadow:0 6px 18px -8px rgba(var(--cc-primary-rgb),.45);transform:translateY(-1px)}
+.tk-tool-n{font-weight:700;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.tk-tool-n .badge{font-size:.66rem}.tk-tool-d{font-size:.84rem;color:var(--bs-secondary-color);line-height:1.4}
+.tk-two{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}@media (min-width:1100px){.tk-two{grid-template-columns:minmax(320px,400px) minmax(0,1fr);align-items:start}.tk-side{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto}}
+.tk-card{padding:18px;background:var(--bs-body-bg);border:1px solid var(--cc-line);border-radius:.9rem;box-shadow:0 1px 3px rgba(15,23,42,.06)}.tk-kicker{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--cc-primary-text);margin-bottom:4px}
+.tk-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tk-form .tk-wide{grid-column:1/-1}.tk-form .form-label{font-size:.82rem;font-weight:600;margin-bottom:4px}.tk-form .form-text{font-size:.76rem}
+@media (max-width:480px){.tk-form{grid-template-columns:minmax(0,1fr)}}
+.tk-priv{font-size:.8rem;line-height:1.45;padding:10px 12px;border-radius:.7rem;background:var(--cc-primary-soft);color:var(--bs-body-color)}
+.tk-tones{padding:12px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:.7rem}.tk-tone{display:flex;gap:12px;justify-content:space-between;align-items:baseline;font-size:.84rem;padding:4px 0}
+.tk-empty{display:grid;justify-items:center;text-align:center;gap:4px;padding:56px 20px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:.9rem;color:var(--bs-body-color)}.tk-empty-i{width:44px;height:44px;color:var(--cc-primary);margin-bottom:6px}.tk-empty-i svg{width:100%;height:100%}
+.tk-doc{background:var(--bs-body-bg);border:1px solid var(--cc-line);border-radius:.9rem;padding:18px 22px 22px;box-shadow:0 1px 3px rgba(15,23,42,.06)}
+.tk-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--cc-line)}.tk-bar-l,.tk-bar-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tk-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin:0 0 6px}
+.tk-sec{padding:14px 0 4px;border-top:1px solid var(--cc-line)}.tk-sec:first-of-type{border-top:0}.tk-sec.busy .tk-body{opacity:.45}
+.tk-sec-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px}.tk-h{font-size:1.02rem;font-weight:700;margin:0;color:var(--cc-primary-text);flex:1 1 200px;min-width:0}
+.tk-acts{position:relative;flex:none}.tk-acts .dropdown{position:relative}
+.tk-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:30;min-width:240px;display:grid;padding:6px;background:var(--bs-body-bg);border:1px solid var(--cc-line);border-radius:.7rem;box-shadow:0 12px 32px -10px rgba(15,23,42,.35)}.tk-menu[hidden]{display:none}
+.tk-menu>button{border:0;background:none;text-align:left;padding:7px 10px;border-radius:.45rem;font-size:.88rem;color:inherit}.tk-menu>button:hover,.tk-menu>button:focus-visible{background:var(--bs-tertiary-bg)}
+.tk-own{display:flex;gap:6px;padding:8px 6px;margin:4px 0;border-top:1px solid var(--cc-line);border-bottom:1px solid var(--cc-line)}
+[contenteditable].tk-title,[contenteditable].tk-h,[contenteditable].tk-body{outline:0;border-radius:.4rem;transition:box-shadow .12s,background .12s}
+[contenteditable].tk-title:hover,[contenteditable].tk-h:hover,[contenteditable].tk-body:hover{background:var(--bs-tertiary-bg)}
+[contenteditable].tk-title:focus,[contenteditable].tk-h:focus,[contenteditable].tk-body:focus{background:transparent;box-shadow:0 0 0 2px rgba(var(--cc-primary-rgb),.35)}
+.tk-body{font-size:.95rem;line-height:1.6;padding:4px 6px;margin:0 -6px;overflow-wrap:anywhere}.tk-body p{margin:0 0 .6rem}.tk-body ul,.tk-body ol{margin:0 0 .6rem;padding-left:1.4rem}.tk-body li{margin-bottom:.2rem}.tk-body h4{font-size:.95rem;font-weight:700;margin:.6rem 0 .3rem}
+.tk-body table{width:100%;border-collapse:collapse;margin:.3rem 0 .8rem;font-size:.9rem;display:block;overflow-x:auto}.tk-body th,.tk-body td{border:1px solid var(--cc-line-strong,#d4d8e3);padding:6px 9px;text-align:left;vertical-align:top;min-width:90px}.tk-body th{background:var(--cc-primary-soft);font-weight:700}
+.tk-lib{display:grid;gap:8px}.tk-lib-i{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 14px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}.tk-lib-open{flex:1 1 260px;min-width:0;display:grid;gap:2px;text-align:left;border:0;background:none;color:inherit;padding:0}.tk-lib-open:hover .fw-semibold{color:var(--cc-primary-text)}
+body.sa-out #sideTools{display:none!important}
+.home-tools{display:flex;justify-content:center;margin-top:14px}.home-tools button{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--cc-line);background:var(--bs-body-bg);color:inherit;border-radius:99px;padding:.45rem 1rem;font-size:.88rem;font-weight:600}.home-tools button svg{width:16px;height:16px;color:var(--cc-primary)}.home-tools button:hover{border-color:var(--cc-primary)}
+
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
 .st-sec{scroll-margin-top:calc(var(--stick-top,58px) + 70px)!important}
@@ -9330,7 +9367,7 @@ setInterval(() => { if(markerSM && !mkN.timer && view === "marker") mkNativeStar
 /* ===== round 21: clean addresses. Each page of the app has its own address (/planning, /second-marker and so on),
    the back button moves between pages, and student links are short (/s/CODE). The server's .htaccess makes them work.
    If the host can't do that, none of this switches on and the old addresses carry on. ===== */
-const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", settings: "settings"};
+const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", tools: "ai-tools", settings: "settings"};
 const ccSlugNow = () => { const m = location.pathname.match(/\/([a-z-]+)$/); return m && (m[1] === "signin" || Object.values(CC_ROUTES).includes(m[1])) ? m[1] : ""; };
 /* the folder the site lives in. The app's own pages (/app, /planning ...) all sit directly in it */
 const ccRoot = () => { const s = ccSlugNow(); return s ? location.pathname.slice(0, -s.length) : location.pathname.replace(/[^/]*$/, ""); };
@@ -10325,6 +10362,473 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
 document.addEventListener("change", async e => { const t = e.target; if(!t || !t.dataset || !t.dataset.pushk) return; try{ pushInfo = await authCall("pushprefs", {prefs: {[t.dataset.pushk]: t.checked}}); }catch{ t.checked = !t.checked; pushSay("Couldn't save that. Try again.", true); } });
 /* know whether this device is on soon after sign-in, so finished builds can be announced without opening Settings first */
 setTimeout(() => { try{ if(!window.claude && typeof me !== "undefined" && me && !me.demo && !pushInfo && pushCan() && Notification.permission === "granted") pushLoad(); }catch{} }, 6000);
+
+/* ===== round 36: AI Tools. One engine, one screen and one editor for every tool: pick a tool, fill in a few boxes, get something you can edit,
+   improve a part at a time, save and download. Each tool is a few lines of description below, not a screen of its own.
+   Anything about a named learner is written with [Name] in place of the name: the name stays on this device and is put back after. ===== */
+const TK_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>`;
+const TK_CATS = [["plan", "Planning"], ["res", "Resources"], ["comms", "Communication and admin"], ["send", "SEND and inclusion"], ["lead", "Leadership"]];
+const TK_LEVELS = ["Entry level", "Level 1", "Level 2 / GCSE", "Level 3 / A level", "Level 4 and above"];
+const F = {
+  topic: {k: "topic", label: "Topic", type: "text", ph: "e.g. Network topologies", req: true},
+  mins: (d) => ({k: "mins", label: "How long (minutes)", type: "num", def: d, min: 5, max: 240}),
+  n: (label, d, max) => ({k: "n", label, type: "num", def: d, min: 1, max: max || 30}),
+  notes: {k: "notes", label: "Anything else it should know", type: "area", ph: "Optional", rows: 2},
+  name: {k: "name", label: "Learner's first name", type: "name", ph: "Stays on this device"},
+  pron: {k: "pron", label: "Pronouns", type: "select", opts: ["they / them", "she / her", "he / him"]},
+  text: (label, ph) => ({k: "text", label, type: "area", ph: ph || "Paste it here", rows: 7, req: true})
+};
+/* ctx: 2 = works best tied to a subject and unit, 1 = can be, 0 = not relevant. needs: build in the group's learner needs. tone: offer a writing tone.
+   personal: about one learner, so it is never shared with the department and the name is never sent or saved. mins: rough time it saves. */
+const TK_TOOLS = [
+  // ----- planning
+  {id: "lesson", cat: "plan", name: "Lesson planner", desc: "A full lesson from one sentence: timed plan, teaching content, tasks, exit quiz and slides.", go: "home"},
+  {id: "scheme", cat: "plan", name: "Scheme of learning", desc: "A unit mapped week by week against its criteria, ready to build lessons from.", go: "seq"},
+  {id: "curric", cat: "plan", name: "Curriculum planner", desc: "The whole year for a course: every unit in order, with term dates and assignment windows.", go: "seq"},
+  {id: "starter", cat: "plan", name: "Starters and plenaries", desc: "Quick ways to open and close a lesson on a topic, each with timings and what you need.", ctx: 2, needs: 1, mins: 15,
+    fields: [F.topic, {k: "kind", label: "What you need", type: "select", opts: ["Starters and plenaries", "Starters only", "Plenaries only"]}, F.n("How many of each", 3, 6), F.mins(10), F.notes],
+    ask: v => `Write ${v.n} ${v.kind.toLowerCase()} for a lesson on "${v.topic}". Each one takes about ${v.mins} minutes. Make them different kinds of activity (for example retrieval, discussion, a problem, a sort, a prediction), and make each one check or wake up knowledge of this topic, not general fun.`,
+    shape: `One section for starters and one for plenaries (only the kind asked for). In each, a numbered list. Each item: a short bold name, then what the teacher does, what learners do, what you need, and how you'll know it worked.`},
+  {id: "homework", cat: "plan", name: "Homework", desc: "A homework task with clear instructions, success criteria and how it will be checked.", ctx: 2, needs: 1, mins: 20,
+    fields: [F.topic, F.mins(40), {k: "kind", label: "Kind of task", type: "select", opts: ["Practice what was taught", "Retrieval of earlier work", "Research and find out", "Prepare for next lesson", "Extended writing", "Revision for an assessment"]}, F.notes],
+    ask: v => `Write a homework task on "${v.topic}" that should take a learner about ${v.mins} minutes. Kind of task: ${v.kind}. It must be doable without a teacher and without paid software.`,
+    shape: `Sections: "The task" (written to the learner, numbered steps), "What a good one looks like" (3 to 5 success criteria), "If you get stuck" (hints), "For the teacher" (how to check it in under five minutes, and a model answer or mark points).`},
+  {id: "assess", cat: "plan", name: "Assessment activity", desc: "A formative check for a topic: questions or a short task, with a mark scheme.", ctx: 2, needs: 1, mins: 30,
+    fields: [F.topic, {k: "kind", label: "Kind of check", type: "select", opts: ["Short-answer questions", "Hinge questions (multiple choice)", "A practical task", "Exit ticket", "Peer assessment with a checklist", "Extended response"]}, F.mins(20), F.notes],
+    ask: v => `Write a formative assessment activity on "${v.topic}". Kind: ${v.kind}. It should take about ${v.mins} minutes. It is for checking understanding in class, not a summative assignment, so do not write an assignment brief and do not claim it meets any assessment criterion.`,
+    shape: `Sections: "For learners" (the questions or task, numbered), "Mark scheme" (answers or what earns credit, with common mistakes to look for), "What to do with the results" (how to respond if most, some or few get it).`},
+  // ----- resources
+  {id: "slides", cat: "res", name: "Editable PowerPoint", desc: "Every lesson you build comes with slides you can edit in PowerPoint. Build a lesson to get them.", go: "home"},
+  {id: "worksheet", cat: "res", name: "Worksheet", desc: "A worksheet that builds from easy to hard, with an answer sheet.", ctx: 2, needs: 1, mins: 30,
+    fields: [F.topic, F.n("How many questions", 10, 25), {k: "kind", label: "Mostly", type: "select", opts: ["A mix of question types", "Short answers", "Fill the gaps and matching", "Worked example then practice", "Applying it to a scenario"]}, F.notes],
+    ask: v => `Write a worksheet on "${v.topic}" with ${v.n} questions. Style: ${v.kind}. Order the questions from recall to application so everyone can start and the last ones stretch.`,
+    shape: `Sections: "What you need to know" (a short recap box, 4 to 6 lines), "Questions" (numbered, grouped under bold sub-headings by difficulty, with space cues such as "(2 lines)"), "Challenge" (one harder task), "Answers" (numbered to match).`},
+  {id: "quiz", cat: "res", name: "Quiz", desc: "Multiple-choice questions with the answer and the reason for each.", ctx: 2, needs: 1, mins: 20,
+    fields: [F.topic, F.n("How many questions", 10, 30), {k: "hard", label: "Difficulty", type: "select", opts: ["A spread from easy to hard", "Mostly recall", "Mostly applying it"]}, F.notes],
+    ask: v => `Write a ${v.n}-question multiple-choice quiz on "${v.topic}". Difficulty: ${v.hard}. Four options each, one correct. The wrong options must be things a learner might really think, never jokes.`,
+    shape: `Sections: "Questions" (numbered; each with options A to D on their own lines), "Answers" (a table with columns: Question, Answer, Why).`},
+  {id: "flash", cat: "res", name: "Flashcards", desc: "Term and definition pairs for a topic, ready to print or copy into any flashcard app.", ctx: 2, needs: 1, mins: 20,
+    fields: [F.topic, F.n("How many cards", 20, 50), F.notes],
+    ask: v => `Write ${v.n} flashcards on "${v.topic}". Front: a term or a short question. Back: an answer a learner can say in one breath. One idea per card.`,
+    shape: `One section "Cards" containing a table with columns: Front, Back. Then a section "How to use them" with three short ways to revise with them.`},
+  {id: "revision", cat: "res", name: "Revision guide", desc: "What to know, the terms, the usual mistakes and questions to test yourself.", ctx: 2, needs: 1, mins: 45,
+    fields: [F.topic, {k: "len", label: "Length", type: "select", opts: ["One page", "Two pages", "A full guide"]}, F.notes],
+    ask: v => `Write a revision guide for learners on "${v.topic}". Length: ${v.len}. Write to the learner.`,
+    shape: `Sections: "The big ideas" (short paragraphs or bullets), "Key terms" (a table: Term, What it means), "Worked example" (one, step by step), "Mistakes people make" (bullets, each with the fix), "Test yourself" (questions), "Answers".`},
+  {id: "activity", cat: "res", name: "Classroom activity", desc: "A practical or discussion activity with roles, timings and what to prepare.", ctx: 2, needs: 1, mins: 25,
+    fields: [F.topic, F.mins(25), {k: "kind", label: "Kind", type: "select", opts: ["Surprise me", "Group task", "Paired discussion", "Role play or scenario", "Card sort", "Practical at the computer", "Debate", "Stations around the room"]}, {k: "size", label: "Class size", type: "num", def: 18, min: 1, max: 60}, F.notes],
+    ask: v => `Design a classroom activity on "${v.topic}" for about ${v.size} learners, taking ${v.mins} minutes. Kind: ${v.kind}. Everyone must have something to do the whole time.`,
+    shape: `Sections: "What it's for" (the point in one or two lines), "Before the lesson" (what to prepare), "How it runs" (numbered steps with minutes), "Any cards or prompts" (the actual content to print, as a table or list), "Checking what they learned".`},
+  {id: "organiser", cat: "res", name: "Knowledge organiser", desc: "One page with the facts, terms, diagrams to draw and links to other topics.", ctx: 2, needs: 1, mins: 40,
+    fields: [F.topic, F.notes],
+    ask: v => `Write a one-page knowledge organiser on "${v.topic}". Dense but readable: facts a learner should be able to recall, not explanations.`,
+    shape: `Sections: "Key facts" (bullets), "Vocabulary" (a table: Term, Meaning), "Steps or process" (numbered, if the topic has one), "Diagram to draw" (describe one simple diagram to sketch from memory), "Links" (how it connects to other topics), "Five quick questions".`},
+  // ----- communication and admin
+  {id: "report", cat: "comms", name: "Student report", desc: "A report comment from your notes. The name never leaves this device.", ctx: 1, tone: 1, personal: 1, mins: 10,
+    fields: [F.name, F.pron, {k: "strong", label: "What's going well", type: "area", rows: 2, req: true, ph: "e.g. strong practical work, contributes in discussion"}, {k: "work", label: "What to work on", type: "area", rows: 2, ph: "e.g. meeting deadlines, more detail in written evaluations"},
+      {k: "att", label: "Attendance and attitude", type: "text", ph: "Optional"}, {k: "len", label: "Length", type: "select", opts: ["About 80 words", "About 150 words", "About 250 words"]}],
+    ask: v => `Write a report comment for a learner. Use only what the teacher has noted below; do not add achievements, grades or events that are not in the notes.\nGoing well: ${v.strong}\nTo work on: ${v.work || "nothing noted"}\nAttendance and attitude: ${v.att || "nothing noted"}\nLength: ${v.len}.`,
+    shape: `Sections: "Report comment" (one or two paragraphs, addressed about the learner in the third person), "Targets" (2 or 3 specific next steps as bullets).`},
+  {id: "parent", cat: "comms", name: "Parent email or letter", desc: "A clear message home: praise, a concern, a trip, a meeting or a reminder.", tone: 1, personal: 1, mins: 15,
+    fields: [{k: "kind", label: "What it's about", type: "select", opts: ["Praise", "A concern about progress", "A concern about behaviour", "Attendance", "Inviting them to a meeting", "A trip or event", "A deadline or reminder", "Something else"]}, F.name, F.pron,
+      {k: "facts", label: "What you need to say", type: "area", rows: 4, req: true, ph: "The facts, dates and what you'd like to happen next"}, {k: "form", label: "As", type: "select", opts: ["An email", "A letter"]}],
+    ask: v => `Write ${v.form.toLowerCase()} to a parent or carer. Subject: ${v.kind}.\nWhat the teacher needs to say: ${v.facts}\nState facts plainly, without blame or labels. Say what happens next and how to reply. Do not add facts, dates or sanctions that are not given.`,
+    shape: `Sections: "Subject line", "Message" (the full text with greeting "Dear parent or carer of [Name]," and a sign-off line left for the teacher's name).`},
+  {id: "meeting", cat: "comms", name: "Agenda and minutes", desc: "An agenda before a meeting, or tidy minutes and actions from your rough notes after it.", tone: 0, mins: 20,
+    fields: [{k: "kind", label: "What you need", type: "select", opts: ["An agenda", "Minutes from my notes"]}, {k: "what", label: "Meeting", type: "text", req: true, ph: "e.g. Department meeting, standardisation, course team"}, {k: "text", label: "Topics to cover, or your rough notes", type: "area", rows: 6, req: true}, F.mins(60)],
+    ask: v => v.kind === "An agenda" ? `Write an agenda for this meeting: ${v.what}. It lasts ${v.mins} minutes. Topics to cover:\n${v.text}\nGive each item a time, a purpose (decide, discuss or inform) and who leads it if the notes say.`
+      : `Turn these rough notes into minutes for this meeting: ${v.what}.\nNotes:\n${v.text}\nRecord only what the notes say. Where something is unclear, write "to confirm" instead of guessing. Refer to people the way the notes do.`,
+    shape: `For an agenda: sections "Agenda" (a table: Time, Item, Purpose, Lead) and "Before the meeting" (what to bring or read). For minutes: sections "Summary", "Decisions" (bullets), "Actions" (a table: Action, Who, By when), "Carried forward".`},
+  {id: "feedback", cat: "comms", name: "Student feedback", desc: "Feedback on a piece of work from your notes: what works, what to improve and how.", ctx: 1, tone: 1, personal: 1, mins: 10,
+    fields: [F.name, {k: "task", label: "The piece of work", type: "text", req: true, ph: "e.g. Tournament plan presentation"}, {k: "strong", label: "What they did well", type: "area", rows: 2, req: true}, {k: "work", label: "What would make it better", type: "area", rows: 2, req: true},
+      {k: "len", label: "Length", type: "select", opts: ["Short", "Medium", "Detailed"]}],
+    ask: v => `Write feedback to a learner on this piece of work: ${v.task}.\nWhat they did well: ${v.strong}\nWhat would make it better: ${v.work}\nLength: ${v.len}. Speak to the learner directly ("you"). Be specific and kind. Do not give a grade, do not say which criteria were met, and do not tell them what to write.`,
+    shape: `Sections: "What works", "To improve" (each point with a way to do it), "Your next step" (one thing to do first).`},
+  {id: "behaviour", cat: "comms", name: "Behaviour support plan", desc: "A simple plan from what you've seen: triggers, what helps, agreed steps and review.", tone: 0, personal: 1, mins: 30,
+    fields: [F.name, F.pron, {k: "seen", label: "What you've seen", type: "area", rows: 3, req: true, ph: "What happens, when, and how often. Facts, not labels."}, {k: "tried", label: "What's been tried", type: "area", rows: 2}, {k: "goal", label: "What you'd like to see instead", type: "text"}],
+    ask: v => `Draft a behaviour support plan for a learner, from the teacher's observations.\nSeen: ${v.seen}\nAlready tried: ${v.tried || "nothing noted"}\nGoal: ${v.goal || "not given"}\nDescribe behaviour, never the person. Do not diagnose or suggest any condition. Suggest supportive strategies before sanctions. This is a draft for staff to discuss with the learner and, where right, their parents or carers and the SENCO or pastoral lead.`,
+    shape: `Sections: "What we've seen", "What might be behind it" (possibilities to explore, worded as questions), "What will help" (a table: Strategy, Who, When), "If it happens" (calm, graded steps), "How we'll know it's working", "Review" (when and with whom).`},
+  {id: "email", cat: "comms", name: "Professional email", desc: "A clear email to a colleague, employer or outside body from a few notes.", tone: 1, mins: 10,
+    fields: [{k: "to", label: "Who it's to", type: "text", req: true, ph: "e.g. my line manager, an employer, the exams office"}, {k: "facts", label: "What you need to say or ask", type: "area", rows: 4, req: true}, {k: "len", label: "Length", type: "select", opts: ["As short as it can be", "Normal", "Detailed"]}],
+    ask: v => `Write an email to: ${v.to}.\nWhat it needs to say or ask: ${v.facts}\nLength: ${v.len}. Put the request or the main point in the first two lines. Do not add facts that are not given.`,
+    shape: `Sections: "Subject line", "Email" (the full text, with a sign-off line left for the sender's name).`},
+  // ----- SEND and inclusion
+  {id: "differ", cat: "send", name: "Differentiate a resource", desc: "Paste a task or text and get three versions: with support, core, and stretch.", ctx: 1, needs: 1, mins: 30,
+    fields: [F.text("The task or text to adapt"), F.notes],
+    ask: v => `Here is a task or text a teacher uses:\n"""\n${v.text}\n"""\nRewrite it in three versions that all teach the same thing and reach the same learning goal: one with more support, the core version, and one that stretches. Do not make the supported version babyish or shorter in ambition; change the scaffolding, not the goal.`,
+    shape: `Sections: "With support" (the task plus sentence starters, a worked first step or a word bank), "Core", "Stretch", "For the teacher" (how to hand them out without labelling anyone).`},
+  {id: "reading", cat: "send", name: "Reading-level adapter", desc: "Paste any text and get it rewritten for a chosen reading age, keeping the facts.", mins: 15,
+    fields: [F.text("The text to rewrite"), {k: "age", label: "Reading age to aim for", type: "select", opts: ["7 to 8", "9 to 10", "11 to 12", "13 to 14", "15 to 16"], def: "11 to 12"}, {k: "keep", label: "Subject words to keep", type: "text", ph: "Optional, e.g. latency, bandwidth"}],
+    ask: v => `Rewrite this text for a reading age of ${v.age}, for a learner who is older than that; keep it respectful and never childish.\n"""\n${v.text}\n"""\nKeep every fact. Use short sentences, common words and the active voice. ${v.keep ? `Keep these subject words and explain each the first time: ${v.keep}.` : "Keep the essential subject words and explain each the first time."}`,
+    shape: `Sections: "Rewritten text", "Words explained" (a table: Word, Meaning in plain words), "What changed" (two or three lines for the teacher).`},
+  {id: "eal", cat: "send", name: "EAL support pack", desc: "Key words, sentence frames and a simple summary to help learners with English as an additional language.", ctx: 2, mins: 30,
+    fields: [F.topic, {k: "text", label: "Lesson text or notes (optional)", type: "area", rows: 4}, {k: "lang", label: "Home language for a glossary (optional)", type: "text", ph: "e.g. Polish, Arabic, Ukrainian"}, {k: "stage", label: "English level", type: "select", opts: ["New to English", "Early acquisition", "Developing competence", "Competent, needs subject vocabulary"]}],
+    ask: v => `Make a support pack for a learner with English as an additional language, for a lesson on "${v.topic}". Their English: ${v.stage}.${v.text ? `\nLesson text:\n"""\n${v.text}\n"""` : ""}${v.lang ? `\nInclude a glossary into ${v.lang}. Mark the translations as "check with a speaker", because they have not been checked.` : ""}`,
+    shape: `Sections: "The lesson in simple English" (short sentences), "Key words" (a table: Word, Simple meaning, Example sentence, and a translation column only if a language was given), "Sentence frames" (for speaking and for writing), "Ways to show what you know without long writing", "For the teacher" (three things to do in the room).`},
+  {id: "ehcp", cat: "send", name: "EHCP planning support", desc: "Turn the outcomes and provision in a plan into day-to-day classroom strategies.", personal: 1, mins: 40,
+    fields: [F.name, {k: "outs", label: "Outcomes and provision from the plan", type: "area", rows: 5, req: true, ph: "Type or paste the relevant outcomes and provision. Leave out names, dates of birth and addresses."}, {k: "where", label: "Where you teach them", type: "text", ph: "e.g. practical IT lab, 3 hours a week"}],
+    ask: v => `A teacher is planning how to deliver what a learner's Education, Health and Care Plan sets out. Outcomes and provision from the plan:\n"""\n${v.outs}\n"""\nSetting: ${v.where || "not given"}.\nSuggest practical classroom strategies that deliver this provision. Do not change, add to or reinterpret the outcomes or the provision; they are legal entitlements set by the plan. Do not diagnose or name any condition that is not in the text. This supports the teacher's planning and must be agreed with the SENCO.`,
+    shape: `Sections: "In every lesson" (a table: From the plan, What I will do, How I'll know), "Adjustments to tasks and assessment", "Working with support staff", "Questions for the SENCO", "Review points".`},
+  {id: "access", cat: "send", name: "Accessible worksheet", desc: "Paste a worksheet and get it reworked to be easier to read and follow for everyone.", needs: 1, mins: 20,
+    fields: [F.text("The worksheet text"), {k: "for", label: "Make it work better for", type: "select", opts: ["Everyone (general good practice)", "Dyslexia", "Visual stress or low vision", "ADHD and attention", "Autism", "Processing and memory"]}],
+    ask: v => `Rework this worksheet so it is easier to read and follow. Focus: ${v.for}.\n"""\n${v.text}\n"""\nKeep the same learning and the same questions in substance. One instruction per line, numbered steps, plain words, no walls of text, no idioms, consistent layout.`,
+    shape: `Sections: "Reworked worksheet", "Layout to use when you print it" (font, size, spacing, paper colour, as bullets), "What changed and why".`},
+  {id: "scaffold", cat: "send", name: "Scaffold and stretch", desc: "For a topic: supports for learners who are stuck, and challenges for those who are flying.", ctx: 2, needs: 1, mins: 20,
+    fields: [F.topic, F.notes],
+    ask: v => `For a lesson on "${v.topic}", write scaffolds for learners who are stuck and stretch activities for learners who finish early. Both must stay on this topic.`,
+    shape: `Sections: "Scaffolds" (a table: When a learner is stuck on, Give them this), "Stretch" (4 to 6 tasks that deepen, not just more of the same), "Questions to ask" (from simple to demanding).`},
+  // ----- leadership
+  {id: "dip", cat: "lead", name: "Department improvement plan", desc: "Priorities, actions, owners, dates and how you'll measure them, from where you are now.", mins: 90,
+    fields: [{k: "now", label: "Where the department is now", type: "area", rows: 4, req: true, ph: "Strengths, weaknesses, results, anything from the last review"}, {k: "want", label: "Priorities for the year", type: "area", rows: 3}, {k: "span", label: "Covers", type: "select", opts: ["This term", "This academic year", "Two years"]}],
+    ask: v => `Draft a department improvement plan covering ${v.span.toLowerCase()}.\nWhere the department is now: ${v.now}\nPriorities: ${v.want || "choose the three that the description above most supports, and say why"}\nUse only the evidence given. Where a figure or baseline is needed and not given, write "[add figure]".`,
+    shape: `Sections: "Summary", "Priorities" (for each: why it matters, what success looks like), "Action plan" (a table: Action, Owner, By when, Resources, How we'll measure it), "Milestones" (termly checks), "Risks".`},
+  {id: "sar", cat: "lead", name: "Self-evaluation report", desc: "A self-assessment in the areas inspectors look at, from your own evidence.", mins: 120,
+    fields: [{k: "ev", label: "Your evidence and judgements", type: "area", rows: 6, req: true, ph: "Results, retention, attendance, observations, learner voice, what you think is strong and weak"}, {k: "frame", label: "Set out under", type: "select", opts: ["Quality of education, behaviour and attitudes, personal development, leadership", "Strengths, areas for improvement, actions", "Intent, implementation, impact"]}],
+    ask: v => `Draft a self-evaluation report from this evidence:\n"""\n${v.ev}\n"""\nSet it out under: ${v.frame}. Every judgement must point to evidence given above. Do not invent data, grades or inspection judgements. Where evidence is missing, say "evidence needed" and what would show it.`,
+    shape: `One section per heading in the chosen framework, each with "What we do well" and "What we need to improve" as bullets with the evidence in brackets. Then "Evidence still needed" and "Top actions".`},
+  {id: "qa", cat: "lead", name: "Quality assurance document", desc: "A learning walk form, work scrutiny record, sampling plan or standardisation record.", ctx: 1, mins: 45,
+    fields: [{k: "kind", label: "Which document", type: "select", opts: ["Learning walk record", "Work scrutiny record", "Internal verification sampling plan", "Standardisation meeting record", "Learner voice questions", "Course review"]}, {k: "focus", label: "Focus", type: "text", ph: "e.g. feedback quality, stretch, use of the criteria"}, F.notes],
+    ask: v => `Create a ${v.kind.toLowerCase()} a department can fill in. Focus: ${v.focus || "general"}. It is a blank template with clear prompts, not a filled-in example.`,
+    shape: `Sections: "Purpose and how to use it", "The form" (a table with prompts and empty columns to complete), "What good looks like" (short descriptors), "Follow-up" (a table: Action, Who, By when).`},
+  {id: "policy", cat: "lead", name: "Policy draft", desc: "A first draft of a department policy or procedure to take to your managers.", tone: 0, mins: 90,
+    fields: [{k: "what", label: "Policy or procedure", type: "text", req: true, ph: "e.g. Late submission of coursework"}, {k: "pts", label: "What it must cover", type: "area", rows: 4, ph: "Key rules, who is responsible, anything set by the awarding body or the college"}],
+    ask: v => `Write a first draft of this department policy or procedure: ${v.what}.\nIt must cover: ${v.pts || "the points a policy like this usually covers"}\nWrite it as a draft for managers to review. Do not state what the law or an awarding body requires unless it is in the notes; where a rule from them is likely to apply, write "[check against awarding body / college policy]".`,
+    shape: `Sections: "Purpose", "Who it applies to", "What we do" (numbered), "Responsibilities" (a table: Role, Responsible for), "When things go wrong", "Review" (date and owner left to fill), "To check before this is used".`},
+  {id: "observe", cat: "lead", name: "Observation template", desc: "A lesson observation or peer review form, focused on what you want to look at.", mins: 30,
+    fields: [{k: "kind", label: "Kind", type: "select", opts: ["Developmental (no grade)", "Peer observation", "Drop-in (10 minutes)", "New teacher support"]}, {k: "focus", label: "Focus", type: "text", ph: "e.g. questioning, checking understanding, stretch"}],
+    ask: v => `Create a lesson observation form. Kind: ${v.kind}. Focus: ${v.focus || "general teaching and learning"}. It is developmental: no grades and no judgement of the teacher as a person. Blank template with prompts.`,
+    shape: `Sections: "Before the lesson" (what the teacher wants looked at), "During" (a table: What to look for, What I saw, with empty second column), "Feedback conversation" (questions that start from what went well), "Agreed next steps" (a table: Step, Support, By when).`},
+  {id: "cpd", cat: "lead", name: "CPD plan", desc: "A training plan for a team: sessions, who leads, and how you'll know it changed practice.", mins: 60,
+    fields: [{k: "need", label: "What the team needs to get better at", type: "area", rows: 3, req: true}, {k: "time", label: "Time you have", type: "text", ph: "e.g. three 1-hour sessions and one training day"}, {k: "span", label: "Over", type: "select", opts: ["One term", "One academic year"]}],
+    ask: v => `Plan continuing professional development for a teaching team over ${v.span.toLowerCase()}.\nWhat they need to get better at: ${v.need}\nTime available: ${v.time || "not given, suggest a realistic amount"}\nFavour practice, coaching and trying things in real lessons over lectures.`,
+    shape: `Sections: "Aims" (what will be different in classrooms), "Programme" (a table: When, Session, Led by, What staff do afterwards), "Between sessions", "How we'll know it worked", "Cost and cover".`}
+];
+const TK_BY = Object.fromEntries(TK_TOOLS.map(t => [t.id, t]));
+const TK_TONES = [["", "Your usual professional voice"], ["warm", "Warm and encouraging"], ["formal", "Formal"], ["direct", "Plain and direct"], ["brief", "As brief as possible"]];
+const TK_TONE_HOW = {warm: "Warm, encouraging and human, without gushing.", formal: "Formal and measured, as in official college correspondence.", direct: "Plain and direct. Short sentences. No softening phrases.", brief: "As brief as it can be while staying polite."};
+
+let tkOpen = "", tkQ = "", tkCat = "", tkTab = "tools", tkVals = {}, tkDoc = null, tkBusy = false, tkErr = "", tkAbort = null, tkSecBusy = -1, tkDirty = false, tkSay = "", tkLibQ = "", tkTonesOpen = false, tkDelArm = "";
+let tkPrefs = {tones: [], made: 0, mins: 0, recent: []}, tkMine = [], tkShared = [], tkSubbed = false, tkWait = 0, tkTries = 0;
+const tkCan = () => !acct() || !!me.canGen;
+const tkLocal = () => { try{ return JSON.parse(lsGet("lb_tk") || "{}") || {}; }catch{ return {}; } };
+function tkLoad(){
+  const l = tkLocal(); if(l.prefs) tkPrefs = {...tkPrefs, ...l.prefs}; if(Array.isArray(l.docs)) tkMine = l.docs;
+  if(tkSubbed) return;
+  if(!db || !myId){ if(!tkWait && tkTries < 40){ tkTries++; tkWait = setTimeout(() => { tkWait = 0; if(view === "tools") tkLoad(); }, 600); } return; }   // the library is still loading: look again shortly
+  tkSubbed = true;
+  try{
+    db.doc("data/users/" + myId + "/settings/tools").get().then(sn => { if(sn && sn.exists){ try{ const p = JSON.parse(sn.data().json || "{}"); tkPrefs = {...tkPrefs, ...p}; if(view === "tools") tkDraw(); }catch{} } }).catch(() => {});
+    db.collection("data/users/" + myId + "/resources").onSnapshot(s => { tkMine = s.docs.map(d => tkFromStore(d.data())).filter(Boolean); if(view === "tools" && !tkOpen) tkDraw(); });
+    db.collection("resources").onSnapshot(s => { tkShared = s.docs.map(d => tkFromStore(d.data())).filter(Boolean); if(view === "tools" && !tkOpen) tkDraw(); });
+  }catch(e){ console.error(e); }
+}
+const tkFromStore = d => { try{ const x = JSON.parse((d && d.json) || "null"); return x && x.id && Array.isArray(x.sections) ? x : null; }catch{ return null; } };
+function tkSavePrefs(){ const l = tkLocal(); l.prefs = tkPrefs; if(!db || !myId) l.docs = tkMine; lsSet("lb_tk", JSON.stringify(l)); if(db && myId) db.doc("data/users/" + myId + "/settings/tools").set({json: JSON.stringify(tkPrefs), updatedAt: Date.now()}).catch(() => {}); }
+
+/* ----- only simple, safe formatting is ever kept: headings, paragraphs, lists, tables, bold and italic. Everything else is dropped, whoever wrote it ----- */
+const TK_TAGS = {P: 1, H3: 1, H4: 1, UL: 1, OL: 1, LI: 1, STRONG: 1, B: 1, EM: 1, I: 1, TABLE: 1, THEAD: 1, TBODY: 1, TR: 1, TH: 1, TD: 1, BR: 1};
+function tkClean(html){
+  const doc = new DOMParser().parseFromString("<div>" + String(html || "") + "</div>", "text/html"), root = doc.body.firstChild;
+  const walk = n => { [...n.childNodes].forEach(c => {
+    if(c.nodeType === 3) return; if(c.nodeType !== 1){ c.remove(); return; }
+    if(/^(SCRIPT|STYLE|IFRAME|OBJECT|EMBED|LINK|META|SVG|MATH|FORM|INPUT|BUTTON|TEXTAREA|SELECT)$/i.test(c.nodeName)){ c.remove(); return; }
+    walk(c);
+    if(c.nodeName === "DIV"){ const p = doc.createElement("p"); while(c.firstChild) p.appendChild(c.firstChild); c.replaceWith(p); return; }
+    if(!TK_TAGS[c.nodeName]){ while(c.firstChild) c.parentNode.insertBefore(c.firstChild, c); c.remove(); return; }
+    [...c.attributes].forEach(a => c.removeAttribute(a.name)); }); };
+  walk(root); return root.innerHTML;
+}
+const tkInline = s => esc(s).replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,;:!?]|$)/g, "$1<em>$2</em>").replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,;:!?]|$)/g, "$1<em>$2</em>");
+function tkMd(md){
+  const lines = String(md || "").replace(/\r/g, "").split("\n"); let out = "", i = 0;
+  const cells = l => l.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+  while(i < lines.length){
+    const l = lines[i];
+    if(!l.trim()){ i++; continue; }
+    if(/^\s*\|.*\|\s*$/.test(l)){ const rows = []; while(i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])){ rows.push(lines[i]); i++; }
+      const sep = rows.length > 1 && /^\s*\|[\s:|-]+\|\s*$/.test(rows[1]), head = sep ? cells(rows[0]) : null, body = rows.slice(sep ? 2 : 0).map(cells);
+      out += `<table>${head ? `<thead><tr>${head.map(c => `<th>${tkInline(c)}</th>`).join("")}</tr></thead>` : ""}<tbody>${body.map(r => `<tr>${r.map(c => `<td>${tkInline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`; continue; }
+    if(/^#{1,6}\s+/.test(l)){ out += `<h4>${tkInline(l.replace(/^#{1,6}\s+/, ""))}</h4>`; i++; continue; }
+    if(/^\s*[-*•]\s+/.test(l)){ out += "<ul>"; while(i < lines.length && /^\s*[-*•]\s+/.test(lines[i])){ out += `<li>${tkInline(lines[i].replace(/^\s*[-*•]\s+/, ""))}</li>`; i++; } out += "</ul>"; continue; }
+    if(/^\s*\d+[.)]\s+/.test(l)){ const items = [];
+      while(i < lines.length){ const x = lines[i];
+        if(/^\s*\d+[.)]\s+/.test(x)){ items.push([tkInline(x.replace(/^\s*\d+[.)]\s+/, ""))]); i++; continue; }
+        if(/^\s{2,}\S/.test(x) && items.length){ items[items.length - 1].push(tkInline(x.trim().replace(/^[-*•]\s+/, "• "))); i++; continue; }
+        if(!x.trim() && i + 1 < lines.length && (/^\s*\d+[.)]\s+/.test(lines[i + 1]) || /^\s{2,}\S/.test(lines[i + 1]))){ i++; continue; }
+        break; }
+      out += `<ol>${items.map(it => `<li>${it.join("<br>")}</li>`).join("")}</ol>`; continue; }
+    const para = []; while(i < lines.length && lines[i].trim() && !/^\s*\|.*\|\s*$/.test(lines[i]) && !/^#{1,6}\s+/.test(lines[i]) && !/^\s*[-*•]\s+/.test(lines[i]) && !/^\s*\d+[.)]\s+/.test(lines[i])){ para.push(tkInline(lines[i].trim())); i++; }
+    out += `<p>${para.join("<br>")}</p>`;
+  }
+  return out;
+}
+/* the plain words of a section, for sending back when one part is being improved */
+function tkText(html){ const d = document.createElement("div"); d.innerHTML = tkClean(html);
+  d.querySelectorAll("tr").forEach(r => { r.insertAdjacentText("afterend", "\n"); [...r.children].forEach((c, i) => { if(i) c.insertAdjacentText("beforebegin", " | "); }); });
+  d.querySelectorAll("li").forEach(li => { const ol = li.parentNode.nodeName === "OL"; li.insertAdjacentText("afterbegin", ol ? ([...li.parentNode.children].indexOf(li) + 1) + ". " : "- "); li.insertAdjacentText("beforeend", "\n"); });
+  d.querySelectorAll("p,h3,h4").forEach(p => p.insertAdjacentText("beforeend", "\n\n")); d.querySelectorAll("br").forEach(b => b.replaceWith("\n"));
+  return d.textContent.replace(/\n{3,}/g, "\n\n").trim(); }
+
+/* ----- what is sent: details that could identify someone are taken out first ----- */
+function tkScrub(s, name){
+  let t = String(s || "");
+  if(name && name.trim().length > 1) t = t.replace(new RegExp("\\b" + name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:'s|’s)?\\b", "gi"), m => /s$/i.test(m) && /['’]s$/i.test(m) ? "[Name]'s" : "[Name]");
+  return t.replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]").replace(/(?:\+44\s?7\d{3}|\b07\d{3})\s?\d{3}\s?\d{3}\b/g, "[phone]").replace(/\b0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}\b/g, "[phone]").replace(/\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b/g, "[postcode]");
+}
+const tkPut = (html, name) => name && name.trim() ? html.replace(/\[Name\]/g, esc(name.trim())) : html;
+const tkTakeText = (t, name) => name && name.trim().length > 1 ? String(t).replace(new RegExp("\\b" + name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"), "[Name]") : String(t);
+const tkTake = (html, name) => name && name.trim().length > 1 ? html.replace(new RegExp("\\b" + esc(name.trim()).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "g"), "[Name]") : html;
+function tkCtxText(t, v){
+  let s = "";
+  if(t.ctx && v._unit !== undefined && v._unit !== ""){ const [li, ui] = String(v._unit).split(":").map(Number), L = UNITS[li], u = L && L.u[ui];
+    if(u){ s += `\nSubject and level: ${L.s}, ${L.l}.\nUnit: ${u.t}.`; const aims = Object.entries(u.a || {}).map(([k, x]) => `${k}: ${x}`).join("; "); if(aims) s += `\nLearning aims: ${aims}.`;
+      const crit = (u.c || []).slice(0, 40).map(c => `${c[0]} ${c[1]}`).join("\n"); if(crit) s += `\nThe unit's criteria, for context only (do not say any are met):\n${crit}`; } }
+  else if(t.ctx && v._subj) s += `\nSubject: ${tkScrub(v._subj)}.`;
+  if(v._level) s += `\nLevel: ${v._level}.`;
+  if(t.needs && v._needs && typeof needsBlock === "function"){ const n = needsBlock(); if(n) s += "\n" + n.trim().replace("Build the support into the starter, every task and the worksheets, for the whole class, without singling anyone out", "Build the support in for the whole class, without singling anyone out"); }
+  return s;
+}
+function tkToneText(v){ const id = v._tone || ""; if(!id) return ""; if(TK_TONE_HOW[id]) return `\nTone: ${TK_TONE_HOW[id]}`; const c = (tkPrefs.tones || []).find(x => x.id === id); return c ? `\nTone: write in this voice. ${c.how}` : ""; }
+const TK_RULES = `Rules:
+- British English, the way UK teachers write. Plain words. No filler, no praise for the request, no closing remarks.
+- Do not use em dashes.
+- Never invent facts about a person, a college, results, dates, policies or what an awarding body requires. If something needed is missing, write a short placeholder in square brackets for the teacher to fill.
+- If a learner is involved they are called [Name]. Keep that placeholder exactly. Never guess a name, and never add personal details that were not given.
+- This is a draft for a teacher to check and change. Do not say it has been checked or approved.`;
+function tkPrompt(t, v){
+  const safe = {}; Object.keys(v).forEach(k => { if(k[0] !== "_" && k !== "name") safe[k] = typeof v[k] === "string" ? tkScrub(v[k], v.name) : v[k]; });
+  if(safe.pron) safe.pron = String(safe.pron);
+  return `You are helping a teacher in a UK school or college. Tool: ${t.name}.
+${t.ask(safe)}${t.personal ? `\nThe learner is called [Name].${safe.pron ? " Pronouns: " + safe.pron + "." : ""}` : ""}${safe.notes ? `\nThe teacher adds: ${safe.notes}` : ""}${tkCtxText(t, v)}${tkToneText(v)}
+
+${TK_RULES}
+
+Layout wanted: ${t.shape}
+
+Reply with JSON only, no code fence, in this shape:
+{"title": "a short, specific title", "sections": [{"h": "section heading", "body": "the content as simple Markdown"}]}
+In "body" use only: paragraphs, "- " bullets, "1. " numbered lists, **bold**, and tables written as | a | b | rows with a |---|---| line under the header. No headings inside a body and no HTML.`;
+}
+function tkSecPrompt(t, doc, i, how){
+  const s = doc.sections[i], v = doc.vals || {};
+  return `You are helping a teacher in a UK school or college improve one part of a document they made with the tool "${t ? t.name : "AI Tools"}".
+Document title: ${tkScrub(doc.title, v.name)}
+Its sections: ${doc.sections.map(x => x.h).join("; ")}${t ? tkCtxText(t, v) : ""}${tkToneText(v)}
+
+The part to rewrite is "${s.h}". At the moment it says:
+"""
+${tkScrub(tkText(tkTake(s.html, v.name)), v.name)}
+"""
+What the teacher wants: ${how}
+
+${TK_RULES}
+
+Reply with JSON only, no code fence: {"h": "the heading (keep it unless it no longer fits)", "body": "the rewritten part as simple Markdown"}
+In "body" use only: paragraphs, "- " bullets, "1. " numbered lists, **bold**, and tables written as | a | b | rows with a |---|---| line under the header.`;
+}
+const TK_HOW = {again: "Write a different version of this part, with the same purpose and about the same length.", simpler: "Make it easier to read: shorter sentences and more common words, for a lower reading age. Keep every fact and the subject words.", harder: "Make it more demanding: more depth, more precise subject language, more thinking asked of the learner.", shorter: "Cut it to about half the length, keeping what matters most.", longer: "Add more detail and one more example, about half as long again."};
+
+async function tkRun(){
+  const t = TK_BY[tkOpen]; if(!t || tkBusy) return; const v = tkRead(); tkVals[t.id] = v;
+  const miss = (t.fields || []).filter(f => f.req && !String(v[f.k] || "").trim()); if(miss.length){ tkErr = `Fill in: ${miss.map(f => f.label).join(", ")}.`; return tkDraw(); }
+  if(!sampleFn){ tkErr = "Crafticulum AI isn't available just now. Try again in a moment."; return tkDraw(); }
+  tkBusy = true; tkErr = ""; tkAbort = new AbortController(); tkDraw();
+  try{
+    const r = await sampleFn.json(tkPrompt(t, v), {signal: tkAbort.signal, cache: false});
+    if(!r || !Array.isArray(r.sections) || !r.sections.length) throw {code: "invalid_json"};
+    tkDoc = {id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), tool: t.id, title: (v.name && String(v.name).trim() ? String(r.title || t.name).replace(/\[Name\]/g, String(v.name).trim()) : String(r.title || t.name)).slice(0, 140), vals: v, personal: !!t.personal,
+      sections: r.sections.filter(s => s && (s.h || s.body)).slice(0, 14).map(s => ({h: String(s.h || "").slice(0, 120), html: tkPut(tkClean(tkMd(s.body)), v.name)})), createdAt: Date.now(), updatedAt: Date.now(), saved: false};
+    tkDirty = true; tkPrefs.made = (tkPrefs.made || 0) + 1; tkPrefs.mins = (tkPrefs.mins || 0) + (t.mins || 15); tkPrefs.recent = [t.id, ...(tkPrefs.recent || []).filter(x => x !== t.id)].slice(0, 6); tkSavePrefs();
+  }catch(e){ if(!(e && (e.name === "AbortError" || e.code === "aborted"))) tkErr = tkWhy(e); }
+  finally{ tkBusy = false; tkAbort = null; if(view === "tools") tkDraw(); }
+}
+const tkWhy = e => (e && e.code === "invalid_json") ? "That didn't come back in a form that could be used. Try again." : (e && e.code === "server" && e.message) ? e.message : (e && e.status === 402) || (e && e.code === "limit") ? "This month's limit has been reached." : "That didn't work. Check your connection and try again.";
+async function tkSecRun(i, how){
+  if(!tkDoc || tkSecBusy >= 0 || tkBusy || !how) return; tkSync(); tkSecBusy = i; tkErr = ""; tkDraw();
+  try{ const r = await sampleFn.json(tkSecPrompt(TK_BY[tkDoc.tool], tkDoc, i, how), {cache: false}); if(!r || !r.body) throw {code: "invalid_json"};
+    tkDoc.sections[i] = {h: String(r.h || tkDoc.sections[i].h).slice(0, 120), html: tkPut(tkClean(tkMd(r.body)), (tkDoc.vals || {}).name)}; tkDoc.updatedAt = Date.now(); tkDirty = true;
+  }catch(e){ tkErr = tkWhy(e); }
+  finally{ tkSecBusy = -1; if(view === "tools") tkDraw(); }
+}
+/* read the boxes, and the edited page, back into memory */
+function tkRead(){ const t = TK_BY[tkOpen], v = {...(tkVals[tkOpen] || {})}; if(!t) return v;
+  document.querySelectorAll("#tkForm [data-tkf]").forEach(el => { v[el.dataset.tkf] = el.type === "checkbox" ? el.checked : el.type === "number" ? Math.max(+el.min || 0, Math.min(+el.max || 999, +el.value || +el.min || 0)) : el.value; }); return v; }
+function tkSync(){ if(!tkDoc) return; const tt = $("#tkTitle"); if(tt){ const n = tt.textContent.trim().slice(0, 140); if(n && n !== tkDoc.title){ tkDoc.title = n; tkDirty = true; } }
+  document.querySelectorAll("#tkDoc .tk-sec").forEach(el => { const i = +el.dataset.i, s = tkDoc.sections[i]; if(!s) return; const h = el.querySelector(".tk-h").textContent.trim().slice(0, 120), html = tkClean(el.querySelector(".tk-body").innerHTML);
+    if(h !== s.h || html !== s.html){ s.h = h; s.html = html; tkDoc.updatedAt = Date.now(); tkDirty = true; } }); }
+
+/* ----- saving: your own library, or the department's. Anything about one learner stays yours, with the name left out ----- */
+async function tkSave(shared){
+  if(!tkDoc) return; tkSync(); const t = TK_BY[tkDoc.tool], name = (tkDoc.vals || {}).name;
+  if(shared && tkDoc.personal) return tkNote("Anything about one learner stays in your own library.", true);
+  if(shared && acct() && !me.canEdit) return tkNote("You need permission to edit lessons before you can share with the department.", true);
+  let prev = [...tkMine, ...tkShared].find(d => d.id === tkDoc.id), copied = false; const vals = {};
+  if(!shared && prev && prev.shared){ tkDoc.id = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); tkDoc.createdAt = Date.now(); prev = null; copied = true; }   // the department's one stays as it is: you get your own copy Object.keys(tkDoc.vals || {}).forEach(k => { const f = ((t && t.fields) || []).find(x => x.k === k); if(k === "name") return; if(tkDoc.personal && !(k === "_tone" || (f && (f.type === "select" || f.type === "num")))) return; vals[k] = tkDoc.vals[k]; });
+  const secs = tkDoc.sections.map(s => ({h: s.h, html: tkDoc.personal ? tkTake(s.html, name) : s.html}));
+  const vers = prev && JSON.stringify(prev.sections) !== JSON.stringify(secs) ? [{at: prev.updatedAt || Date.now(), sections: prev.sections}, ...(prev.vers || [])].slice(0, 5) : (prev && prev.vers) || [];
+  const rec = {id: tkDoc.id, tool: tkDoc.tool, cat: t ? t.cat : "", title: tkDoc.personal ? tkTakeText(tkDoc.title, name) : tkDoc.title, sections: secs, vals, personal: !!tkDoc.personal, shared: !!shared, vers,
+    by: acct() ? {name: me.name || me.email, email: me.email} : null, createdAt: tkDoc.createdAt || Date.now(), updatedAt: Date.now()};
+  try{
+    if(db && (shared || myId)){ const was = prev && !!prev.shared !== !!shared; await db.doc((shared ? "resources/" : "data/users/" + myId + "/resources/") + rec.id).set({json: JSON.stringify(rec), title: rec.title, updatedAt: rec.updatedAt});
+      if(was) await db.doc((prev.shared ? "resources/" : "data/users/" + myId + "/resources/") + rec.id).delete().catch(() => {}); }
+    else { tkMine = [rec, ...tkMine.filter(d => d.id !== rec.id)]; tkSavePrefs(); }
+    tkDoc.saved = true; tkDoc.shared = !!shared; tkDirty = false; tkNote(shared ? "Saved to the department's library." : tkDoc.personal ? "Saved to your library, with the name left out." : copied ? "Saved as your own copy. The department's one is unchanged." : "Saved to your library.");
+  }catch(e){ tkNote("Couldn't save that. Try again.", true); }
+}
+async function tkDelete(id){ const d = [...tkMine, ...tkShared].find(x => x.id === id); if(!d) return;
+  try{ if(db && (d.shared || myId)) await db.doc((d.shared ? "resources/" : "data/users/" + myId + "/resources/") + id).delete(); else { tkMine = tkMine.filter(x => x.id !== id); tkSavePrefs(); tkDraw(); } tkNote("Deleted."); }catch{ tkNote("Couldn't delete that.", true); } }
+function tkOpenDoc(id){ const d = [...tkMine, ...tkShared].find(x => x.id === id); if(!d) return; tkDoc = JSON.parse(JSON.stringify(d)); tkDoc.sections = tkDoc.sections.map(s => ({h: String(s.h || ""), html: tkClean(s.html)})); tkDoc.saved = true; tkDirty = false; tkOpen = d.tool && TK_BY[d.tool] ? d.tool : "_doc"; tkVals[tkOpen] = {...(d.vals || {})}; tkErr = ""; tkDraw(); window.scrollTo({top: 0}); }
+function tkNote(t, bad){ tkSay = t; try{ toast(t, bad ? {bad: true} : {}); }catch{} }
+
+/* ----- taking it away: Word, print or PDF, and copy ----- */
+const tkFile = s => String(s || "resource").replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 80) || "resource";
+function tkDocx(doc){
+  const R = (t, o = {}) => `<w:r><w:rPr>${o.b ? "<w:b/>" : ""}${o.i ? "<w:i/>" : ""}<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/><w:sz w:val="${o.sz || 22}"/>${o.color ? `<w:color w:val="${o.color}"/>` : ""}</w:rPr><w:t xml:space="preserve">${xEsc(t)}</w:t></w:r>`;
+  const runs = (n, o = {}) => [...n.childNodes].map(c => c.nodeType === 3 ? (c.textContent ? R(c.textContent, o) : "") : c.nodeName === "BR" ? "<w:r><w:br/></w:r>" : /^(STRONG|B)$/.test(c.nodeName) ? runs(c, {...o, b: 1}) : /^(EM|I)$/.test(c.nodeName) ? runs(c, {...o, i: 1}) : runs(c, o)).join("");
+  const P = (inner, o = {}) => `<w:p><w:pPr><w:spacing w:before="${o.before || 0}" w:after="${o.after == null ? 120 : o.after}"/>${o.ind ? `<w:ind w:left="${o.ind}" w:hanging="${o.hang || 0}"/>` : ""}${o.keep ? "<w:keepNext/>" : ""}</w:pPr>${inner}</w:p>`;
+  const block = n => { const k = n.nodeName;
+    if(k === "UL" || k === "OL") return [...n.children].map((li, i) => P(R(k === "OL" ? (i + 1) + ".\t" : "•\t") + runs(li), {ind: 425, hang: 425, after: 60})).join("");
+    if(k === "TABLE"){ const rows = [...n.querySelectorAll("tr")], cols = Math.max(1, ...rows.map(r => r.children.length)), w = Math.floor(9600 / cols), bd = s => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="BFC5D2"/>`;
+      return `<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(bd).join("")}</w:tblBorders><w:tblCellMar><w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${`<w:gridCol w:w="${w}"/>`.repeat(cols)}</w:tblGrid>${rows.map(r => `<w:tr>${[...r.children].map(c => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${c.nodeName === "TH" ? `<w:shd w:val="clear" w:color="auto" w:fill="EEF0FF"/>` : ""}</w:tcPr>${P(runs(c, c.nodeName === "TH" ? {b: 1} : {}) || R(""), {after: 40, before: 40})}</w:tc>`).join("") + (r.children.length < cols ? `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr><w:p/></w:tc>`.repeat(cols - r.children.length) : "")}</w:tr>`).join("")}</w:tbl>${P("", {after: 80})}`; }
+    if(k === "H3" || k === "H4") return P(runs(n, {b: 1, sz: 24}), {before: 120, keep: 1});
+    return P(runs(n)); };
+  const d = document.createElement("div"); let body = (siteNow && siteNow.name ? P(R(siteNow.name, {sz: 18, color: "64748B"}), {after: 40}) : "") + P(R(doc.title, {b: 1, sz: 36}), {after: 200});
+  doc.sections.forEach(s => { body += P(R(s.h, {b: 1, sz: 26, color: "312E81"}), {before: 200, after: 100, keep: 1}); d.innerHTML = tkClean(s.html); [...d.childNodes].forEach(n => { body += n.nodeType === 1 ? block(n) : n.textContent.trim() ? P(R(n.textContent)) : ""; }); });
+  return miniDocx(body);
+}
+async function tkWord(){ tkSync(); try{ const blob = await tkDocx(tkDoc); (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: tkFile(tkDoc.title) + ".docx", data: blob}); }catch(e){ console.error(e); tkNote("Couldn't make the Word file.", true); } }
+function tkPrintHtml(doc){ const c = (siteNow && siteNow.color) || "#4f46e5";
+  return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>${esc(doc.title)}</title><style>@page{margin:18mm}body{font:11.5pt/1.5 Calibri,"Segoe UI",Arial,sans-serif;color:#111;margin:0}header{display:flex;align-items:center;gap:10px;font-size:9.5pt;color:#555;border-bottom:2px solid ${esc(c)};padding-bottom:6px;margin-bottom:14px}header img{height:28px}h1{font-size:20pt;margin:0 0 12px;line-height:1.2}h2{font-size:13pt;margin:18px 0 6px;color:${esc(c)};break-after:avoid}h4{font-size:11.5pt;margin:10px 0 4px}p{margin:0 0 8px}ul,ol{margin:0 0 8px;padding-left:22px}li{margin:0 0 3px}table{border-collapse:collapse;width:100%;margin:6px 0 12px;break-inside:auto}th,td{border:1px solid #bfc5d2;padding:5px 8px;text-align:left;vertical-align:top}th{background:#eef0ff}tr{break-inside:avoid}</style></head><body><header>${siteNow && siteNow.logo ? `<img src="${esc(siteNow.logo)}" alt="">` : ""}<span>${esc((siteNow && siteNow.name) || "")}</span></header><h1>${esc(doc.title)}</h1>${doc.sections.map(s => `<h2>${esc(s.h)}</h2>${tkClean(s.html)}`).join("")}</body></html>`; }
+function tkPrint(){ tkSync(); const f = document.createElement("iframe"); f.setAttribute("aria-hidden", "true"); f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0"; document.body.appendChild(f); f.srcdoc = tkPrintHtml(tkDoc);
+  f.onload = () => { try{ f.contentWindow.focus(); f.contentWindow.print(); }catch{ tkNote("Couldn't open the print window.", true); } setTimeout(() => f.remove(), 60000); }; }
+async function tkCopy(){ tkSync(); const html = `<h1>${esc(tkDoc.title)}</h1>` + tkDoc.sections.map(s => `<h2>${esc(s.h)}</h2>${tkClean(s.html)}`).join(""), text = tkDoc.title + "\n\n" + tkDoc.sections.map(s => s.h.toUpperCase() + "\n" + tkText(s.html)).join("\n\n");
+  try{ if(window.ClipboardItem && navigator.clipboard.write) await navigator.clipboard.write([new ClipboardItem({"text/html": new Blob([html], {type: "text/html"}), "text/plain": new Blob([text], {type: "text/plain"})})]); else await navigator.clipboard.writeText(text); tkNote("Copied. Paste it into Word, Google Docs or an email."); }
+  catch{ try{ await navigator.clipboard.writeText(text); tkNote("Copied as plain text."); }catch{ tkNote("Couldn't copy. Select the text and copy it yourself.", true); } } }
+
+/* ----- the screen ----- */
+function tkField(f, v){ const val = v[f.k] != null ? v[f.k] : (f.def != null ? f.def : ""), id = "tkf-" + f.k, lab = `<label class="form-label" for="${id}">${esc(f.label)}</label>`;
+  if(f.type === "area") return `<div class="tk-f tk-wide">${lab}<textarea class="form-control" id="${id}" data-tkf="${f.k}" rows="${f.rows || 3}" placeholder="${esc(f.ph || "")}" ${f.req ? "required" : ""}>${esc(val)}</textarea></div>`;
+  if(f.type === "select") return `<div class="tk-f">${lab}<select class="form-select" id="${id}" data-tkf="${f.k}">${f.opts.map(o => `<option ${String(val || f.def || f.opts[0]) === o ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></div>`;
+  if(f.type === "num") return `<div class="tk-f tk-num">${lab}<input type="number" class="form-control" id="${id}" data-tkf="${f.k}" value="${esc(val)}" min="${f.min || 1}" max="${f.max || 99}" inputmode="numeric"></div>`;
+  if(f.type === "name") return `<div class="tk-f">${lab}<input class="form-control" id="${id}" data-tkf="${f.k}" value="${esc(val)}" placeholder="${esc(f.ph || "")}" autocomplete="off" maxlength="40"><div class="form-text">Never sent or saved. It's written as [Name] and put back here on your screen.</div></div>`;
+  return `<div class="tk-f ${f.k === "topic" ? "tk-wide" : ""}">${lab}<input class="form-control" id="${id}" data-tkf="${f.k}" value="${esc(val)}" placeholder="${esc(f.ph || "")}" ${f.req ? "required" : ""} maxlength="200"></div>`; }
+function tkFormHtml(t){ const v = tkVals[t.id] || {};
+  let unitDef = v._unit; if(unitDef === undefined && t.ctx === 2){ try{ const li = UNITS.indexOf(curLevel()), ui = +$("#unit").value || 0; unitDef = li >= 0 ? li + ":" + ui : ""; }catch{ unitDef = ""; } }
+  const unitSel = t.ctx ? `<div class="tk-f tk-wide"><label class="form-label" for="tkf-_unit">Subject and unit</label><select class="form-select" id="tkf-_unit" data-tkf="_unit"><option value="">Not tied to a unit</option>${UNITS.map((L, li) => `<optgroup label="${esc(L.s + ", " + L.l)}">${(L.u || []).map((u, ui) => `<option value="${li}:${ui}" ${String(unitDef) === li + ":" + ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</optgroup>`).join("")}</select></div>
+    <div class="tk-f" id="tkSubjRow" ${unitDef ? "hidden" : ""}><label class="form-label" for="tkf-_subj">Subject</label><input class="form-control" id="tkf-_subj" data-tkf="_subj" value="${esc(v._subj || "")}" placeholder="e.g. Business" maxlength="60"></div>
+    <div class="tk-f" id="tkLevelRow" ${unitDef ? "hidden" : ""}><label class="form-label" for="tkf-_level">Level</label><select class="form-select" id="tkf-_level" data-tkf="_level"><option value="">Any</option>${TK_LEVELS.map(l => `<option ${v._level === l ? "selected" : ""}>${l}</option>`).join("")}</select></div>` : "";
+  const hasNeeds = t.needs && typeof needsOf === "function" && needsOf(curGroup);
+  return `<form id="tkForm" class="tk-form" novalidate>
+    ${unitSel}${(t.fields || []).map(f => tkField(f, v)).join("")}
+    ${t.tone ? `<div class="tk-f"><label class="form-label" for="tkf-_tone">Tone</label><select class="form-select" id="tkf-_tone" data-tkf="_tone">${TK_TONES.map(([id, n]) => `<option value="${id}" ${(v._tone || "") === id ? "selected" : ""}>${n}</option>`).join("")}${(tkPrefs.tones || []).length ? `<optgroup label="Your own">${tkPrefs.tones.map(x => `<option value="${esc(x.id)}" ${v._tone === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</optgroup>` : ""}</select><button type="button" class="btn btn-link btn-sm p-0 mt-1" data-tk="tones">${tkTonesOpen ? "Close" : "Add or change your own tones"}</button></div>` : ""}
+    ${hasNeeds ? `<div class="tk-f tk-wide"><div class="form-check"><input class="form-check-input" type="checkbox" id="tkf-_needs" data-tkf="_needs" ${v._needs === false ? "" : "checked"}><label class="form-check-label" for="tkf-_needs">Build in the learner needs for ${esc(curGroup || "this group")}</label></div></div>` : ""}
+    ${t.tone && tkTonesOpen ? tkTonesHtml() : ""}
+    ${t.personal ? `<div class="tk-wide tk-priv"><b>About one learner.</b> Their name stays on this device, and emails, phone numbers and postcodes are taken out of your notes before anything is sent. Don't type surnames, dates of birth or addresses. You check and send it, not Crafticulum.</div>` : ""}
+    ${tkErr ? `<div class="tk-wide alert alert-danger small mb-0" role="alert">${esc(tkErr)}</div>` : ""}
+    <div class="tk-wide d-flex flex-wrap gap-2 align-items-center"><button type="submit" class="btn btn-primary" ${tkBusy || !tkCan() ? "disabled" : ""}>${tkBusy ? `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Writing...` : tkDoc && tkDoc.tool === t.id ? "Write it again" : "Write it"}</button>${tkBusy ? `<button type="button" class="btn btn-outline-secondary" data-tk="stop">Stop</button>` : ""}${!tkCan() ? `<span class="small text-body-secondary">You don't have permission to build with Crafticulum AI. Ask your head of department.</span>` : ""}</div>
+  </form>`; }
+function tkTonesHtml(){ return `<div class="tk-wide tk-tones"><div class="fw-semibold small mb-1">Your own tones</div><p class="small text-body-secondary mb-2">Describe how you write, or paste a paragraph you've written and it will match it. Saved for you on every tool that has a tone.</p>
+    ${(tkPrefs.tones || []).map(x => `<div class="tk-tone"><span><b>${esc(x.name)}</b> <span class="text-body-secondary">${esc(x.how.slice(0, 90))}${x.how.length > 90 ? "..." : ""}</span></span><button type="button" class="btn btn-link btn-sm text-danger p-0" data-tk="tonedel" data-id="${esc(x.id)}">Remove</button></div>`).join("")}
+    <div class="row g-2 mt-1"><div class="col-sm-4"><input class="form-control form-control-sm" id="tkToneName" placeholder="Name, e.g. My emails" maxlength="30" aria-label="Name for the tone"></div><div class="col-sm-8"><textarea class="form-control form-control-sm" id="tkToneHow" rows="2" maxlength="1200" placeholder="e.g. Friendly but brief, first names, no jargon. Or paste a paragraph you wrote." aria-label="How it should sound"></textarea></div></div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-tk="toneadd">Save tone</button></div>`; }
+function tkDocHtml(){ const d = tkDoc, t = TK_BY[d.tool];
+  return `<article class="tk-doc" id="tkDoc" aria-label="What was written">
+    <div class="tk-bar"><div class="tk-bar-l"><span class="badge ${d.saved && !tkDirty ? "text-bg-success" : "text-bg-secondary"} fw-normal">${d.saved && !tkDirty ? (d.shared ? "Saved for the department" : "Saved") : d.saved ? "Changed since saving" : "Not saved yet"}</span><span class="small text-body-secondary">Click any text to change it.</span>${d.personal && d.sections.some(s => s.html.includes("[Name]")) ? `<button type="button" class="btn btn-sm btn-link p-0" data-tk="putname">Put the name in</button>` : ""}</div>
+      <div class="tk-bar-r"><div class="btn-group"><button type="button" class="btn btn-sm btn-primary" data-tk="save">Save to my library</button>${d.personal ? "" : `<button type="button" class="btn btn-sm btn-outline-primary" data-tk="share" ${acct() && !me.canEdit ? "disabled" : ""}>Save for the department</button>`}</div>
+      <button type="button" class="btn btn-sm btn-outline-secondary" data-tk="word">Word</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="print">Print or PDF</button><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="copy">Copy</button></div></div>
+    <h2 class="tk-title" id="tkTitle" contenteditable="true" spellcheck="true" role="textbox" aria-label="Title">${esc(d.title)}</h2>
+    ${d.sections.map((s, i) => `<section class="tk-sec ${tkSecBusy === i ? "busy" : ""}" data-i="${i}">
+      <div class="tk-sec-h"><h3 class="tk-h" contenteditable="true" spellcheck="true" role="textbox" aria-label="Heading">${esc(s.h)}</h3>
+        <div class="tk-acts">${tkSecBusy === i ? `<span class="small text-body-secondary"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Rewriting...</span>` : `<div class="dropdown"><button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-tk="menu" aria-expanded="false" ${tkSecBusy >= 0 || !tkCan() ? "disabled" : ""}>Improve this part</button>
+          <div class="tk-menu" hidden><button type="button" data-tk="sec" data-how="again">Write it again</button><button type="button" data-tk="sec" data-how="simpler">Easier to read</button><button type="button" data-tk="sec" data-how="harder">More demanding</button><button type="button" data-tk="sec" data-how="shorter">Shorter</button><button type="button" data-tk="sec" data-how="longer">More detail</button>
+            <div class="tk-own"><input class="form-control form-control-sm" placeholder="Or say what to change" maxlength="200" aria-label="Say what to change"><button type="button" class="btn btn-sm btn-primary" data-tk="sec" data-how="own">Go</button></div>
+            <button type="button" class="text-danger" data-tk="secdel">Remove this part</button></div></div>`}</div></div>
+      <div class="tk-body" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="${esc(s.h)}">${tkClean(s.html)}</div></section>`).join("")}
+    ${(d.vers || []).length ? `<details class="conf-g mt-3"><summary>Earlier versions (${d.vers.length})</summary><ul class="list-unstyled small mb-0">${d.vers.map((v, i) => `<li class="d-flex gap-3 align-items-center py-1"><span>${new Date(v.at).toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"})}</span><button type="button" class="btn btn-link btn-sm p-0" data-tk="ver" data-i="${i}">Bring this version back</button></li>`).join("")}</ul></details>` : ""}
+    <p class="small text-body-secondary mt-3 mb-0">Written by Crafticulum AI as a draft. Read it through before you use it${d.personal ? ", and check every fact about the learner" : ""}.</p>
+  </article>`; }
+function tkToolHtml(){ const t = TK_BY[tkOpen];
+  if(!t) return `<div class="tk-wrap"><button type="button" class="btn btn-link p-0 mb-3" data-tk="back">&larr; All tools</button>${tkDoc ? tkDocHtml() : ""}</div>`;
+  return `<div class="tk-wrap"><button type="button" class="btn btn-link p-0 mb-3" data-tk="back">&larr; All tools</button>
+    <div class="tk-two ${tkDoc ? "has-doc" : ""}"><div class="tk-side"><div class="card-like tk-card"><div class="tk-kicker">${esc((TK_CATS.find(c => c[0] === t.cat) || [])[1] || "")}</div><h1 class="h4 mb-1">${esc(t.name)}</h1><p class="text-body-secondary small mb-3">${esc(t.desc)}</p>${tkFormHtml(t)}</div></div>
+    <div class="tk-main">${tkDoc ? tkDocHtml() : `<div class="tk-empty">${tkBusy ? `<div class="spinner-border text-primary mb-3" role="status"><span class="visually-hidden">Writing</span></div><div class="fw-semibold">Writing your ${esc(t.name.toLowerCase())}...</div><div class="small text-body-secondary">Usually under a minute.</div>` : `<div class="tk-empty-i">${TK_ICO}</div><div class="fw-semibold">It will appear here</div><div class="small text-body-secondary">You can then change any of it, improve one part at a time, save it and download it.</div>`}</div>`}</div></div></div>`; }
+function tkCardHtml(t){ return `<button type="button" class="tk-tool" data-tk="open" data-id="${t.id}"><span class="tk-tool-n">${esc(t.name)}${t.go ? ` <span class="badge text-bg-light fw-normal border">Already in Crafticulum</span>` : ""}</span><span class="tk-tool-d">${esc(t.desc)}</span></button>`; }
+function tkListHtml(){
+  const q = tkQ.trim().toLowerCase(), hit = t => !q || (t.name + " " + t.desc + " " + (TK_CATS.find(c => c[0] === t.cat) || [])[1]).toLowerCase().includes(q), recent = (tkPrefs.recent || []).map(id => TK_BY[id]).filter(Boolean);
+  const cats = TK_CATS.filter(c => !tkCat || tkCat === c[0]).map(([id, name]) => { const ts = TK_TOOLS.filter(t => t.cat === id && hit(t)); return ts.length ? `<section class="tk-cat" aria-labelledby="tkc-${id}"><h2 class="h6 tk-cat-h" id="tkc-${id}">${name} <span>${ts.length}</span></h2><div class="tk-grid">${ts.map(tkCardHtml).join("")}</div></section>` : ""; }).join("");
+  const hrs = Math.round((tkPrefs.mins || 0) / 6) / 10;
+  return `<div class="tk-wrap">
+    <div class="tk-head"><div><h1 class="h3 mb-1">AI Tools</h1><p class="text-body-secondary mb-0">Pick a tool, fill in a few boxes, and change what comes back until it's right. Everything uses your subjects, units and learner needs.</p></div>
+      ${tkPrefs.made ? `<div class="tk-stat" title="A rough estimate, from how long each kind of resource usually takes to write by hand"><b>${tkPrefs.made}</b> made<span>about ${hrs >= 1 ? hrs + " hours" : (tkPrefs.mins || 0) + " minutes"} saved</span></div>` : ""}</div>
+    <div class="tk-tabs" role="tablist"><button type="button" role="tab" aria-selected="${tkTab === "tools"}" class="${tkTab === "tools" ? "on" : ""}" data-tk="tab" data-t="tools">Tools</button><button type="button" role="tab" aria-selected="${tkTab === "lib"}" class="${tkTab === "lib" ? "on" : ""}" data-tk="tab" data-t="lib">Saved resources <span>${tkMine.length + tkShared.length}</span></button></div>
+    ${tkTab === "lib" ? tkLibHtml() : `<div class="tk-find"><input type="search" class="form-control" id="tkQ" placeholder="Search ${TK_TOOLS.length} tools" value="${esc(tkQ)}" aria-label="Search the tools"><div class="tk-chips" role="group" aria-label="Kind of tool"><button type="button" class="${!tkCat ? "on" : ""}" data-tk="cat" data-c="">All</button>${TK_CATS.map(([id, n]) => `<button type="button" class="${tkCat === id ? "on" : ""}" data-tk="cat" data-c="${id}">${n}</button>`).join("")}</div></div>
+    ${!q && !tkCat && recent.length ? `<section class="tk-cat"><h2 class="h6 tk-cat-h">You used recently</h2><div class="tk-grid">${recent.slice(0, 3).map(tkCardHtml).join("")}</div></section>` : ""}
+    ${cats || `<p class="text-body-secondary">No tool matches "${esc(tkQ)}". Try a different word, or describe what you need in Lessons.</p>`}`}
+  </div>`; }
+function tkLibHtml(){ const q = tkLibQ.trim().toLowerCase(), all = [...tkMine.map(d => ({...d, shared: false})), ...tkShared.map(d => ({...d, shared: true}))].filter(d => !q || (d.title + " " + ((TK_BY[d.tool] || {}).name || "")).toLowerCase().includes(q)).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  const row = d => `<li class="tk-lib-i"><button type="button" class="tk-lib-open" data-tk="doc" data-id="${esc(d.id)}"><span class="fw-semibold">${esc(d.title)}</span><span class="small text-body-secondary">${esc((TK_BY[d.tool] || {}).name || "Resource")} · ${new Date(d.updatedAt || d.createdAt || Date.now()).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"})}${d.shared && d.by ? " · " + esc(d.by.name) : ""}</span></button>
+    <span class="badge ${d.shared ? "text-bg-primary" : "text-bg-light border"} fw-normal">${d.shared ? "Department" : "Only you"}</span>${!d.shared || !acct() || me.canEdit ? `<button type="button" class="btn btn-link btn-sm text-danger p-0" data-tk="del" data-id="${esc(d.id)}">${tkDelArm === d.id ? "Delete it?" : "Delete"}</button>` : ""}</li>`;
+  return `<div class="tk-find"><input type="search" class="form-control" id="tkLibQ" placeholder="Search saved resources" value="${esc(tkLibQ)}" aria-label="Search saved resources"></div>
+    ${all.length ? `<ul class="list-unstyled tk-lib">${all.map(row).join("")}</ul>` : `<div class="tk-empty"><div class="fw-semibold">${q ? "Nothing matches" : "Nothing saved yet"}</div><div class="small text-body-secondary">${q ? "Try a different word." : "Make something with a tool and press Save. Yours are private. Ones saved for the department are here for everyone in it."}</div></div>`}`; }
+function tkDraw(){ const o = $("#out"); if(!o || view !== "tools") return; tkLoad(); const act = document.activeElement, keep = act && act.id && /^tk(Q|LibQ)$/.test(act.id) ? [act.id, act.selectionStart] : null;
+  o.innerHTML = tkOpen ? tkToolHtml() : tkListHtml();
+  // once it's on the page, remember each part the way the browser holds it, so only real edits count as changes
+  if(tkOpen && tkDoc) document.querySelectorAll("#tkDoc .tk-sec").forEach(el => { const x = tkDoc.sections[+el.dataset.i]; if(x){ x.html = tkClean(el.querySelector(".tk-body").innerHTML); x.h = el.querySelector(".tk-h").textContent.trim().slice(0, 120); } });
+  if(keep){ const el = document.getElementById(keep[0]); if(el){ el.focus({preventScroll: true}); try{ el.setSelectionRange(keep[1], keep[1]); }catch{} } } }
+
+/* ----- wiring it into the app ----- */
+function tkNav(){ const nav = document.querySelector(".side .side-nav"); if(!nav || $("#sideTools")) return; const after = nav.querySelector('[data-nav="create"]'); if(!after) return;
+  after.insertAdjacentHTML("afterend", `<button type="button" class="side-link" id="sideTools" data-tk-nav aria-label="AI Tools">${TK_ICO}<span class="lbl">AI Tools</span></button>`); }
+const _render39 = render;
+render = function(){ if(view === "tools" && !(typeof saOut === "function" && saOut())){ tkNav(); tkLoad(); if(typeof markerShow === "function") try{ markerShow(false); }catch{} tkDraw(); syncShell(); try{ ccUrlSync(); }catch{} return; } return _render39.apply(this, arguments); };
+const _syncShell39 = syncShell;
+syncShell = function(){ const r = _syncShell39.apply(this, arguments);
+  try{ tkNav(); const on = view === "tools", b = $("#sideTools"); if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
+    if(on){ document.querySelectorAll(".side-link[data-nav].active,.bnav [data-nav].active").forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = "AI Tools"; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = tkOpen && TK_BY[tkOpen] ? "AI Tools · " + TK_BY[tkOpen].name : "AI Tools"; document.title = "AI Tools · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } } }catch(e){ console.error(e); }
+  return r; };
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-tk-nav]")){ e.preventDefault(); return setView("tools"); }
+  if(e.target.closest("[data-tk-go]")){ e.preventDefault(); return setView("tools"); }
+  const b = e.target.closest("[data-tk]"); if(!b){ document.querySelectorAll(".tk-menu:not([hidden])").forEach(m => { if(!m.contains(e.target)) m.hidden = true; }); return; }
+  const k = b.dataset.tk;
+  if(k !== "menu" && k !== "sec" && !b.closest(".tk-menu")) document.querySelectorAll(".tk-menu:not([hidden])").forEach(m => m.hidden = true);
+  if(k === "open"){ const t = TK_BY[b.dataset.id]; if(!t) return; if(t.go){ if(t.go === "seq") return setView("seq"); return setView("home"); } tkOpen = t.id; tkDoc = null; tkDirty = false; tkErr = ""; tkTonesOpen = false; tkDraw(); syncShell(); window.scrollTo({top: 0}); const f = document.querySelector("#tkForm input:not([type=checkbox]),#tkForm textarea"); if(f && matchMedia("(min-width: 992px)").matches) f.focus({preventScroll: true}); return; }
+  if(k === "back"){ tkSync(); if(tkDoc && tkDirty && !b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Leave without saving? Press again"; return; } if(tkAbort) try{ tkAbort.abort(); }catch{} tkOpen = ""; tkDoc = null; tkDirty = false; tkErr = ""; tkDraw(); syncShell(); return; }
+  if(k === "tab"){ tkTab = b.dataset.t; return tkDraw(); }
+  if(k === "cat"){ tkCat = b.dataset.c; return tkDraw(); }
+  if(k === "doc") return tkOpenDoc(b.dataset.id);
+  if(k === "del"){ if(tkDelArm !== b.dataset.id){ tkDelArm = b.dataset.id; tkDraw(); setTimeout(() => { if(tkDelArm === b.dataset.id){ tkDelArm = ""; if(view === "tools" && !tkOpen) tkDraw(); } }, 5000); return; } tkDelArm = ""; return tkDelete(b.dataset.id); }
+  if(k === "stop"){ if(tkAbort) try{ tkAbort.abort(); }catch{} tkBusy = false; return tkDraw(); }
+  if(k === "tones"){ tkVals[tkOpen] = tkRead(); tkTonesOpen = !tkTonesOpen; return tkDraw(); }
+  if(k === "toneadd"){ const n = ($("#tkToneName").value || "").trim(), h = ($("#tkToneHow").value || "").trim(); if(!n || h.length < 8) return tkNote("Give the tone a name and say how it should sound.", true); tkVals[tkOpen] = tkRead(); const id = "t" + Date.now().toString(36); tkPrefs.tones = [...(tkPrefs.tones || []), {id, name: n.slice(0, 30), how: tkScrub(h).slice(0, 1200)}].slice(-8); tkVals[tkOpen]._tone = id; tkSavePrefs(); return tkDraw(); }
+  if(k === "tonedel"){ tkVals[tkOpen] = tkRead(); tkPrefs.tones = (tkPrefs.tones || []).filter(x => x.id !== b.dataset.id); tkSavePrefs(); return tkDraw(); }
+  if(k === "menu"){ const m = b.parentNode.querySelector(".tk-menu"), was = !m.hidden; document.querySelectorAll(".tk-menu").forEach(x => x.hidden = true); m.hidden = was; b.setAttribute("aria-expanded", String(!was)); return; }
+  if(k === "sec"){ const sec = b.closest(".tk-sec"), i = +sec.dataset.i, how = b.dataset.how === "own" ? (b.parentNode.querySelector("input").value || "").trim() : TK_HOW[b.dataset.how]; if(!how) return; return tkSecRun(i, b.dataset.how === "own" ? tkScrub(how, (tkDoc.vals || {}).name) : how); }
+  if(k === "secdel"){ tkSync(); const i = +b.closest(".tk-sec").dataset.i; if(tkDoc.sections.length < 2) return tkNote("That's the only part left.", true); tkDoc.sections.splice(i, 1); tkDirty = true; return tkDraw(); }
+  if(k === "ver"){ const v = (tkDoc.vers || [])[+b.dataset.i]; if(!v) return; tkSync(); tkDoc.sections = v.sections.map(s => ({h: s.h, html: tkPut(tkClean(s.html), (tkDoc.vals || {}).name)})); tkDirty = true; tkNote("That version is back on screen. Save to keep it."); return tkDraw(); }
+  if(k === "putname"){ tkSync(); const n = (($("#tkf-name") || {}).value || "").trim(); if(!n){ const f = $("#tkf-name"); if(f) f.focus(); return tkNote("Type the learner's first name in the box first.", true); } tkDoc.vals = {...(tkDoc.vals || {}), name: n}; tkDoc.sections.forEach(s => { s.html = tkPut(s.html, n); }); tkDoc.title = tkDoc.title.replace(/\[Name\]/g, n); return tkDraw(); }
+  if(k === "save") return tkSave(false).then(() => tkDraw());
+  if(k === "share") return tkSave(true).then(() => tkDraw());
+  if(k === "word") return tkWord();
+  if(k === "print") return tkPrint();
+  if(k === "copy") return tkCopy();
+});
+document.addEventListener("submit", e => { if(e.target && e.target.id === "tkForm"){ e.preventDefault(); tkRun(); } });
+document.addEventListener("input", e => { const t = e.target; if(!t) return;
+  if(t.id === "tkQ"){ tkQ = t.value; return tkDraw(); } if(t.id === "tkLibQ"){ tkLibQ = t.value; return tkDraw(); }
+  if(t.closest && t.closest("#tkDoc") && t.isContentEditable !== false && !t.matches("input")){ tkDirty = true; const bd = document.querySelector("#tkDoc .tk-bar .badge"); if(bd && tkDoc && bd.textContent !== "Not saved yet" && tkDoc.saved){ bd.className = "badge text-bg-secondary fw-normal"; bd.textContent = "Changed since saving"; } } });
+document.addEventListener("change", e => { const t = e.target; if(t && t.id === "tkf-_unit"){ const off = !!t.value; ["tkSubjRow", "tkLevelRow"].forEach(id => { const r = document.getElementById(id); if(r) r.hidden = off; }); } });
+/* pasting into the page keeps the words and simple formatting, and drops everything else */
+document.addEventListener("paste", e => { const t = e.target && e.target.closest && e.target.closest("#tkDoc [contenteditable]"); if(!t) return; e.preventDefault(); const cd = e.clipboardData, html = cd.getData("text/html"), text = cd.getData("text/plain");
+  const ins = t.classList.contains("tk-body") && html ? tkClean(html) : esc(text).replace(/\n/g, t.classList.contains("tk-body") ? "<br>" : " "); try{ document.execCommand("insertHTML", false, ins); }catch{} tkDirty = true; });
+document.addEventListener("keydown", e => { const t = e.target; if(t && t.isContentEditable && (t.classList.contains("tk-h") || t.id === "tkTitle") && e.key === "Enter"){ e.preventDefault(); t.blur(); } if(e.key === "Escape") document.querySelectorAll(".tk-menu:not([hidden])").forEach(m => m.hidden = true); });
+addEventListener("beforeunload", e => { if(view === "tools" && tkDoc && tkDirty){ e.preventDefault(); e.returnValue = ""; } });
+setTimeout(() => { try{ tkNav(); }catch{} }, 1500);
+const _applyRole39 = applyRole;
+applyRole = function(){ const r = _applyRole39.apply(this, arguments); try{ tkNav(); }catch{} return r; };
+try{ ACCOUNT_KEYS.push("lb_tk"); }catch{}
+const _renderHome39 = renderHome;
+renderHome = function(){ const r = _renderHome39.apply(this, arguments); try{ const c = document.querySelector("#out .composer"); if(c && !document.querySelector("#out .home-tools") && tkCan()) c.insertAdjacentHTML("afterend", `<div class="home-tools"><button type="button" data-tk-go>${TK_ICO}<span>Or pick an AI tool: worksheets, quizzes, reports, emails and more</span></button></div>`); }catch(e){ console.error(e); } return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

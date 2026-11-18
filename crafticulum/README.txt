@@ -922,5 +922,28 @@ FRONT PAGE (v93)
 Questions people ask now runs the full width of the page, and the line about
 who writes the lessons has gone from the footer.
 
+AI TOOLS (v94)
+A new page in the menu, at /ai-tools. 27 new tools in five groups (Planning,
+Resources, Communication and admin, SEND and inclusion, Leadership), plus the
+four Crafticulum already had (lesson planner, scheme of learning, curriculum
+planner, editable PowerPoint), which open their existing screens.
+Every tool works the same way: fill in a few boxes, press Write it, then
+change any of the text on the page. "Improve this part" rewrites one part at a
+time (again, easier to read, more demanding, shorter, more detail, or say what
+to change). Save to your own library or for the department, download as Word,
+print or save as PDF, or copy. The last five saved versions are kept.
+Tools use the subject, unit and criteria you pick, and the learner needs of
+the group you're on. Tools with a tone can use your own saved tones.
+Tools about one learner (report, parent letter, feedback, behaviour plan, EHCP
+support): the learner's first name is never sent or saved. It is written as
+[Name] and put back on your screen. Emails, phone numbers and postcodes are
+taken out of your notes before anything is sent, and these can't be shared
+with the department.
+Who can run them: the same people who can build lessons (heads of department
+with that permission, college managers). Teachers can open, change, download
+and keep their own copy of anything shared with the department.
+Each run counts as one build against the month's allowance.
+Upload .htaccess with this update: it carries the new /ai-tools address.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.
