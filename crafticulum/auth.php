@@ -469,6 +469,24 @@ if (in_array($action, ['pushget', 'pushsub', 'pushunsub', 'pushprefs', 'pushtest
     }
     if ($action === 'pushtest') { if (!$pj['subs']) out(400, ['error' => 'none']); $n = ccPushNow($em, 'builds', 'Notifications are working', 'This is what a Crafticulum notification looks like on this device.', ccAppUrl(), true); out(200, ['sent' => $n, 'devices' => count(ccPushRead($em)['subs'])]); }
 }
+/* ---------- rooms: who can use which part of the app ---------- */
+if ($action === 'roomsget' || $action === 'roomsset') {
+    $sup = $me['role'] === 'superadmin'; $own = $me['role'] === 'owner'; if (!$sup && !$own) out(403, ['error' => 'noperm']);
+    $cid = $sup ? (string) ($body['college'] ?? (!empty($me['inside'] ?? true) ? $me['college'] : '')) : (string) $me['college']; if ($cid !== '' && !isset($a['colleges'][$cid])) out(404, ['error' => 'not_found']);
+    if ($action === 'roomsset') {
+        $room = (string) ($body['room'] ?? ''); if (!isset(CC_ROOMS[$room])) out(400, ['error' => 'room']); $on = !empty($body['on']); $scope = (string) ($body['scope'] ?? '');
+        $flip = function (array $off) use ($room, $on): array { $off = array_values(array_filter($off, fn($x) => $x !== $room && isset(CC_ROOMS[$x]))); if (!$on) $off[] = $room; return $off; };
+        if ($scope === 'site') { if (!$sup) out(403, ['error' => 'noperm']); $a['rooms']['off'] = $flip((array) (($a['rooms'] ?? [])['off'] ?? [])); ccLog($me['dept'], $me, ($on ? 'opened ' : 'closed ') . CC_ROOMS[$room][0] . ' for the whole site'); }
+        elseif ($scope === 'college') { if (!$sup || $cid === '') out(403, ['error' => 'noperm']); $a['colleges'][$cid]['roomsOff'] = $flip((array) ($a['colleges'][$cid]['roomsOff'] ?? [])); ccLog($me['dept'], $me, ($on ? 'opened ' : 'closed ') . CC_ROOMS[$room][0] . ' for', ccCollege($a, $cid)['name']); }
+        elseif ($scope === 'role') { $r = (string) ($body['role'] ?? ''); if (!in_array($r, ['hod', 'teacher'], true) || $cid === '') out(400, ['error' => 'role']);
+            $a['colleges'][$cid]['rooms'][$room][$r] = $on; ccLog($me['dept'], $me, ($on ? 'opened ' : 'closed ') . CC_ROOMS[$room][0] . ' for ' . ($r === 'hod' ? 'heads of department' : 'teachers')); }
+        else out(400, ['error' => 'scope']);
+        if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
+    }
+    $roles = []; if ($cid !== '') { $saved = (array) ($a['colleges'][$cid]['rooms'] ?? []); foreach (CC_ROOMS as $k => $_) $roles[$k] = ['hod' => !(isset($saved[$k]['hod']) && empty($saved[$k]['hod'])), 'teacher' => !(isset($saved[$k]['teacher']) && empty($saved[$k]['teacher']))]; }
+    out(200, ['rooms' => array_map(fn($k) => ['id' => $k, 'name' => CC_ROOMS[$k][0], 'about' => CC_ROOMS[$k][1]], array_keys(CC_ROOMS)), 'super' => $sup, 'college' => $cid, 'collegeName' => $cid !== '' ? ccCollege($a, $cid)['name'] : '',
+        'siteOff' => array_values((array) (($a['rooms'] ?? [])['off'] ?? [])), 'collegeOff' => $cid !== '' ? array_values((array) ($a['colleges'][$cid]['roomsOff'] ?? [])) : [], 'roles' => (object) $roles, 'me' => ccRooms($a, ccMe() ?: $me)]);
+}
 /* the super admin steps back out of the college they were working inside */
 if ($action === 'leave') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);

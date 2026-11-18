@@ -19,7 +19,7 @@ function hiFile(string $code): ?string { if (!preg_match('/^[a-z0-9]{12}$/', $co
 function hiRead(string $f): ?array { $j = json_decode((string) @file_get_contents($f), true); return is_array($j) && !empty($j['code']) ? $j : null; }
 function hiSave(string $f, array $j): bool { $tmp = $f . '.' . bin2hex(random_bytes(4)) . '.tmp'; if (@file_put_contents($tmp, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false || !@rename($tmp, $f)) { @unlink($tmp); return false; } return true; }
 function hiOpen(array $j): bool { return empty($j['closed']) && (empty($j['closes']) || time() <= (int) $j['closes']); }
-function hiOn(string $dept): bool { return !empty(ccDeptPrefs(ccAccounts(), $dept)['handin']); }
+function hiOn(string $dept): bool { $a = ccAccounts(); return !empty(ccDeptPrefs($a, $dept)['handin']) && !empty(ccRoomsCollege($a, ccCollegeOf($a, $dept))['handin']); }   // the department has switched it on, and the room hasn't been closed above it
 const HI_EXT = ['pdf', 'docx', 'doc', 'pptx', 'xlsx', 'txt', 'rtf', 'odt', 'png', 'jpg', 'jpeg', 'zip'];
 const HI_MAX = 20 * 1024 * 1024;
 /* the host's own upload limit can be lower than ours, so students are told the real one */
@@ -61,7 +61,7 @@ if ($action === 'send') {
 ccSession();
 $me = ccMe(); if (!$me) out(401, ['error' => 'login']);
 if (!empty($me['demo'])) out(403, ['error' => 'demo']);
-$dept = (string) $me['dept']; if (!hiOn($dept)) out(403, ['error' => 'off']);
+$dept = (string) $me['dept']; if (!hiOn($dept) || !ccRoom(ccAccounts(), $me, 'handin')) out(403, ['error' => 'off']);
 if (!preg_match('/^[a-z0-9][a-z0-9-]*$/', $dept)) out(400, ['error' => 'dept']);
 $ddir = ccHandinDir() . '/' . $dept;
 $mine = function (array $j) use ($me): bool { return !empty($me['isLead']) || ($j['by'] ?? '') === $me['email']; };   // leaders see every link in the department; a teacher sees their own

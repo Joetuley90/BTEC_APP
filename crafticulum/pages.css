@@ -136,3 +136,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}footer
 .say-p{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;white-space:nowrap}
 .say-p b{font-weight:800;color:#f0abfc}
 .say-d{font-style:italic}
+
+/* the AI section, and Crafti */
+.meet{display:flex;flex-wrap:wrap;gap:20px 28px;align-items:center;margin:0 0 22px;padding:22px 26px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(79,70,229,.06) 60%,rgba(219,39,119,.06))}
+.meet .crafti{width:124px;height:124px;flex:none;animation:crBob 3.2s ease-in-out infinite}.meet>div{flex:1 1 300px;min-width:0}
+.meet h3{margin:0 0 6px;font-family:"Lexend","Plus Jakarta Sans",sans-serif;font-size:1.5rem;letter-spacing:-.03em;background:linear-gradient(90deg,#4f46e5,#7c3aed 55%,#db2777);-webkit-background-clip:text;background-clip:text;color:transparent}
+.meet p{margin:0;color:var(--mut);font-size:1.02rem;max-width:64ch}
+@keyframes crBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}@media (prefers-reduced-motion:reduce){.meet .crafti{animation:none}}
+.ai-note{margin:22px 0 0;color:var(--mut);font-size:.95rem}
