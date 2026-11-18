@@ -1,0 +1,479 @@
+<?php
+/*
+ * Crafticulum: who is signed in, and what they're allowed to do.
+ * Used by auth.php, ai.php, store.php, share.php and backup.php.
+ *
+ * Roles
+ *   superadmin  everything, in every department (emails listed in SUPER_ADMINS in config.php)
+ *   hod         head of department: adds staff, sets their options, builds lessons with Claude
+ *   teacher     uses the department's lessons and units; can't build with Claude;
+ *               can edit lessons by hand only if their head of department allows it
+ *
+ * Accounts live in data/_accounts.json, which the .htaccess in data/ blocks from the web.
+ */
+declare(strict_types=1);
+
+function ccDataDir(): string { return __DIR__ . '/data'; }
+function ccEnsureData(): void {
+    $d = ccDataDir();
+    if (!is_dir($d)) @mkdir($d, 0700, true);
+    if (!is_file($d . '/.htaccess')) {
+        @file_put_contents($d . '/.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n");
+        @file_put_contents($d . '/index.html', '');
+    }
+}
+/* How long someone stays signed in on a device they use regularly: 30 days unless Settings, Site setup says otherwise. */
+function ccSessionDays(): int {
+    $d = 0; $f = ccDataDir() . '/_accounts.json';
+    if (is_file($f)) { $j = json_decode((string) @file_get_contents($f), true); $d = (int) ($j['site']['conf']['SESSION_DAYS'] ?? 0); }
+    if ($d < 1 && defined('SESSION_DAYS')) $d = (int) SESSION_DAYS;
+    return $d >= 1 ? min(365, $d) : 30;
+}
+function ccHttps(): bool { return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https' || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443'; }
+function ccSession(): void {
+    if (session_status() === PHP_SESSION_ACTIVE) return;
+    $life = ccSessionDays() * 86400;
+    // Sessions are kept in this site's own folder with its own cookie name. On shared hosting the default folder is shared and
+    // cleared after about 24 minutes, and the default cookie can clash with another PHP site on the same address: both sign people out.
+    ccEnsureData(); $dir = ccDataDir() . '/_sessions';
+    if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    if (is_dir($dir) && is_writable($dir)) { @ini_set('session.save_handler', 'files'); @session_save_path($dir); @ini_set('session.gc_probability', '1'); @ini_set('session.gc_divisor', '200'); }
+    @ini_set('session.gc_maxlifetime', (string) $life);
+    session_name('ccsid');
+    $opts = ['cookie_lifetime' => $life, 'cookie_path' => '/', 'cookie_httponly' => true, 'cookie_samesite' => 'Lax', 'cookie_secure' => ccHttps(), 'use_only_cookies' => 1];
+    @session_start($opts);
+    if (session_status() !== PHP_SESSION_ACTIVE) { @session_save_path(sys_get_temp_dir()); @session_start($opts); }
+    // every day it's used, the cookie is pushed on another full stretch, so regular users aren't signed out
+    if (!empty($_SESSION['uid']) && (int) ($_SESSION['fresh'] ?? 0) < time() - 43200 && !headers_sent()) {
+        $_SESSION['fresh'] = time();
+        setcookie(session_name(), (string) session_id(), ['expires' => time() + $life, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax', 'secure' => ccHttps()]);
+    }
+}
+function ccSupers(): array { return defined('SUPER_ADMINS') ? array_values(array_filter(array_map(fn($e) => strtolower(trim((string) $e)), (array) SUPER_ADMINS))) : []; }
+function ccMsId(): string { return (ccConf('MS_CLIENT_ID') !== '') && preg_match('/^[0-9a-f-]{36}$/i', (string) ccConf('MS_CLIENT_ID')) && (ccConf('MS_CLIENT_SECRET') !== '') && ccConf('MS_CLIENT_SECRET') ? (string) ccConf('MS_CLIENT_ID') : ''; }
+function ccMsTenant(): string { return (ccConf('MS_TENANT') !== '') && preg_match('/^[A-Za-z0-9.-]{3,80}$/', (string) ccConf('MS_TENANT')) ? (string) ccConf('MS_TENANT') : 'common'; }
+/* any OpenID Connect provider (Okta, Auth0, Keycloak, OneLogin, college single sign-on) */
+function ccOidcOn(): bool { return (ccConf('OIDC_ISSUER') !== '') && preg_match('#^https?://#', (string) ccConf('OIDC_ISSUER')) && (ccConf('OIDC_CLIENT_ID') !== '') && ccConf('OIDC_CLIENT_ID') !== '' && (ccConf('OIDC_CLIENT_SECRET') !== '') && ccConf('OIDC_CLIENT_SECRET') !== ''; }
+function ccOidcName(): string { return (ccConf('OIDC_NAME') !== '') && trim((string) ccConf('OIDC_NAME')) !== '' ? mb_substr(trim((string) ccConf('OIDC_NAME')), 0, 40) : 'single sign-on'; }
+function ccOidcMeta(): ?array {
+    if (!ccOidcOn()) return null;
+    $iss = rtrim((string) ccConf('OIDC_ISSUER'), '/'); $c = ccJson('_oidc.json');
+    if (($c['issuer_cfg'] ?? '') === $iss && ($c['at'] ?? 0) > time() - 86400 && !empty($c['meta']['authorization_endpoint'])) return $c['meta'];
+    $ch = curl_init($iss . '/.well-known/openid-configuration'); curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15, CURLOPT_FOLLOWLOCATION => true]);
+    $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
+    $m = $code === 200 ? json_decode((string) $res, true) : null;
+    if (!is_array($m) || empty($m['authorization_endpoint']) || empty($m['token_endpoint'])) return null;
+    ccSaveJson('_oidc.json', ['issuer_cfg' => $iss, 'at' => time(), 'meta' => $m]); return $m;
+}
+function ccGoogleId(): string { return (ccConf('GOOGLE_CLIENT_ID') !== '') && strpos((string) ccConf('GOOGLE_CLIENT_ID'), '.apps.googleusercontent.com') !== false ? (string) ccConf('GOOGLE_CLIENT_ID') : ''; }
+/* the password still works as a super admin way in until Google sign-in is set up, or if PASSWORD_BACKUP is true */
+function ccPasswordAllowed(): bool {
+    if (!defined('TEACHER_PASSWORD') || TEACHER_PASSWORD === 'change-this-password' || TEACHER_PASSWORD === '') return false;
+    if (defined('PASSWORD_BACKUP') && PASSWORD_BACKUP === true) return true;
+    if (ccGoogleId() !== '' || ccMsId() !== '' || ccOidcOn()) return false;
+    // with only email and password accounts, it switches off once a super admin has their own password
+    foreach (ccAccounts()['users'] as $e => $u) if (in_array($e, ccSupers(), true) && !empty($u['pass']) && ccActive($u)) return false;
+    return true;
+}
+/* Settings the site admin can change on screen (Settings, Site setup). A value saved on screen is used first, then config.php. */
+const CC_CONF_KEYS = ['ANTHROPIC_API_KEY', 'CLAUDE_MODEL', 'MAX_REQUESTS_PER_HOUR', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'MS_CLIENT_ID', 'MS_CLIENT_SECRET', 'MS_TENANT', 'OIDC_ISSUER', 'OIDC_CLIENT_ID', 'OIDC_CLIENT_SECRET', 'OIDC_NAME', 'SITE_URL', 'SITE_URL_TEMP', 'SESSION_DAYS', 'MAIL_FROM', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'SMTP_SECURE', 'BACKUP_URL', 'BACKUP_USER', 'BACKUP_PASS', 'BACKUP_TOKEN', 'DEMO', 'DEMO_BUILDS', 'BILLING', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PUBLISHABLE_KEY'];
+const CC_CONF_SECRET = ['ANTHROPIC_API_KEY', 'GOOGLE_CLIENT_SECRET', 'MS_CLIENT_SECRET', 'OIDC_CLIENT_SECRET', 'SMTP_PASS', 'BACKUP_PASS', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET'];
+function ccConf(string $k) {
+    static $s = null; if ($s === null) $s = (array) (ccAccounts()['site']['conf'] ?? []);
+    $v = $s[$k] ?? ''; if ($v !== '' && $v !== null) return $v;
+    return defined($k) ? constant($k) : '';
+}
+/* the college's name, logo and colour, shown on the sign-in page, in the app and on student pages */
+/* Crafticulum's own support address. Used on the original site until a contact email is set in Settings. A new college's site never uses it: its messages go to its own people */
+const CC_SUPPORT_EMAIL = 'app@crafticulum.co.uk';
+/* ---------- colleges ----------
+   One site can hold several colleges. Each has its own name, logo, colour, contact address, departments and people.
+   The super admin looks after the whole site and every college. A college manager looks after one college. */
+function ccCollegeIds(array $a): array { return array_keys((array) ($a['colleges'] ?? [])); }
+function ccCollegeOf(array $a, string $dept): string { $c = (string) ($a['depts'][$dept]['college'] ?? ''); return isset($a['colleges'][$c]) ? $c : (string) (array_key_first((array) ($a['colleges'] ?? [])) ?? ''); }
+function ccCollege(array $a, string $id): array { $c = (array) ($a['colleges'][$id] ?? []);
+    return ['id' => $id, 'name' => (string) ($c['name'] ?? ''), 'logo' => (string) ($c['logo'] ?? ''), 'color' => (string) ($c['color'] ?? ''), 'contact' => (string) ($c['contact'] ?? ''), 'plain' => !empty($c['plain']),
+            'off' => !empty($c['off']), 'cap' => max(0, (int) ($c['cap'] ?? 0)), 'created' => (int) ($c['created'] ?? 0),
+            'plan' => isset(CC_PLANS[(string) ($c['plan'] ?? '')]) ? (string) $c['plan'] : 'inst', 'bill' => (array) ($c['bill'] ?? [])]; }
+/* ---------- plans ----------
+   Every college is on a plan. A college set up by the super admin is on Institution unless they choose otherwise. Someone who signs up on their own starts on Free.
+   Limits are per month and 0 means no limit. The super admin can change the prices and limits in Settings, Plans and payments. */
+const CC_PLANS = ['free' => ['name' => 'Free', 'price' => 0, 'people' => 1, 'depts' => 1, 'builds' => 10, 'checks' => 2, 'for' => 'Trying it out'],
+                  'pro' => ['name' => 'Teacher', 'price' => 499, 'people' => 1, 'depts' => 1, 'builds' => 100, 'checks' => 40, 'for' => 'Individual lecturers'],
+                  'dept' => ['name' => 'Department', 'price' => 4900, 'people' => 10, 'depts' => 1, 'builds' => 600, 'checks' => 300, 'for' => 'Small teaching teams'],
+                  'inst' => ['name' => 'Institution', 'price' => -1, 'people' => 0, 'depts' => 0, 'builds' => 0, 'checks' => 0, 'for' => 'Colleges and schools']];
+function ccBillingOn(): bool { return in_array(strtolower(trim((string) ccConf('BILLING'))), ['1', 'on', 'yes', 'true'], true); }
+function ccStripeReady(): bool { return strlen(trim((string) ccConf('STRIPE_SECRET_KEY'))) > 10; }
+function ccPlans(?array $a = null): array { $set = (array) ((($a ?? ccAccounts())['site'] ?? [])['plans'] ?? []); $o = [];
+    foreach (CC_PLANS as $k => $p) { $s = (array) ($set[$k] ?? []); foreach (['price', 'people', 'depts', 'builds', 'checks'] as $f) if (isset($s[$f]) && !($k === 'inst' && $f === 'price') && !($k === 'free' && $f === 'price')) $p[$f] = max(0, (int) $s[$f]); $o[$k] = $p; }
+    return $o; }
+function ccPlanOf(array $a, string $college): array { $c = ccCollege($a, $college); return ['id' => $c['plan']] + ccPlans($a)[$c['plan']]; }
+/* how much of this month's allowance a college has used */
+function ccPlanUsed(string $college, ?array $u = null): array { $r = (array) ((($u ?? ccUsageRead())['colleges'] ?? [])[$college] ?? []); return ['builds' => (int) ($r['builds'] ?? 0), 'checks' => (int) ($r['checks'] ?? 0)]; }
+function ccCollegePeople(array $a, string $college): int { $d = ccCollegeDepts($a, $college); $s = ccSupers(); return count(array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, $s, true) && in_array((string) ($u['dept'] ?? ''), $d, true), ARRAY_FILTER_USE_BOTH)); }   // super admins belong to no college, so they never take a place
+function ccCollegeDepts(array $a, string $college): array { return array_values(array_filter(array_keys($a['depts']), fn($d) => $d !== CC_DEMO_DEPT && ccCollegeOf($a, (string) $d) === $college)); }
+/* what a page needs to know about the site. With a college named, that college's name, logo and colour; without one, the site's only college, or none if there are several */
+function ccSite(?array $a = null, ?string $college = null): array { $a = $a ?? ccAccounts(); $s = (array) ($a['site'] ?? []); $ids = ccCollegeIds($a);
+    $one = $college !== null && isset($a['colleges'][$college]) ? $college : (count($ids) === 1 ? (string) $ids[0] : '');
+    $c = $one !== '' ? ccCollege($a, $one) : ['name' => '', 'logo' => '', 'color' => '', 'contact' => '', 'plain' => !empty($s['plain'])];
+    $plain = $c['plain']; $first = $ids ? ccCollege($a, (string) $ids[0]) : $c; $home = !$first['plain'];      // the original site, with the built-in subjects
+    $org = (string) ($s['org'] ?? ''); if ($org === '') $org = count($ids) > 1 ? '' : $c['name'];
+    return ['name' => $c['name'], 'logo' => $c['logo'], 'color' => $c['color'], 'plain' => $plain, 'contact' => (string) ($c['contact'] !== '' ? $c['contact'] : (($s['contact'] ?? '') !== '' ? $s['contact'] : ($home ? CC_SUPPORT_EMAIL : ''))),
+            'front' => array_key_exists('front', $s) ? !empty($s['front']) : $home, 'publicBrand' => !empty($s['publicBrand']) && count($ids) < 2, 'org' => $org, 'college' => $one, 'colleges' => count($ids)]; }
+/* what people who aren't signed in are shown: the college's name, logo and colour only if the site has chosen to show them before sign-in */
+function ccSitePublic(?array $a = null): array { $s = ccSite($a); if (!$s['publicBrand']) { $s['name'] = ''; $s['logo'] = ''; $s['color'] = ''; } return $s; }   // 'org' stays: the terms and privacy pages must still say who runs the site
+/* ---------- usage: how much each department and person asks of Claude, month by month ---------- */
+function ccUsageSet(?array $a = null): array { $u = (array) ((($a ?? ccAccounts())['site'] ?? [])['usage'] ?? []);
+    return ['in' => (float) ($u['in'] ?? 0), 'out' => (float) ($u['out'] ?? 0), 'cur' => (string) ($u['cur'] ?? '£'), 'capCost' => (float) ($u['capCost'] ?? 0), 'capCalls' => (int) ($u['capCalls'] ?? 0), 'capDept' => (int) ($u['capDept'] ?? 0)]; }
+function ccUsageFile(string $ym): string { return ccDataDir() . '/_usage/' . (preg_match('/^\d{4}-\d{2}$/', $ym) ? $ym : date('Y-m')) . '.json'; }
+function ccUsageRead(string $ym = ''): array { $f = ccUsageFile($ym); $j = is_file($f) ? json_decode((string) @file_get_contents($f), true) : null;
+    if (!is_array($j)) $j = []; return $j + ['total' => ['calls' => 0, 'in' => 0, 'out' => 0], 'depts' => [], 'users' => [], 'days' => []]; }
+function ccUsageCost(array $row, array $set): float { return (($row['in'] ?? 0) * $set['in'] + ($row['out'] ?? 0) * $set['out']) / 1000000; }
+function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $kind = ''): void {
+    $dir = ccDataDir() . '/_usage'; if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    $fh = @fopen(ccUsageFile(''), 'c+'); if (!$fh) return;
+    if (flock($fh, LOCK_EX)) {
+        $j = json_decode((string) stream_get_contents($fh), true); if (!is_array($j)) $j = [];
+        $note = null; $freeUse = false; try { if (ccBillingOn() && empty($me['demo']) && ($me['role'] ?? '') !== 'superadmin' && ($me['college'] ?? '') !== '') $freeUse = ccPlanOf(ccAccounts(), (string) $me['college'])['id'] === 'free'; } catch (\Throwable $e) {}
+        $bump = function (&$r) use ($in, $out) { $r['calls'] = (int) ($r['calls'] ?? 0) + 1; $r['in'] = (int) ($r['in'] ?? 0) + $in; $r['out'] = (int) ($r['out'] ?? 0) + $out; };
+        $j['total'] = (array) ($j['total'] ?? []); $bump($j['total']);
+        $sup = ($me['role'] ?? '') === 'superadmin';   // a super admin's own use is the site's, not the college they happen to be looking at
+        $d = (string) ($me['dept'] ?? 'main'); if (!$sup) { $j['depts'][$d] = (array) ($j['depts'][$d] ?? []); $bump($j['depts'][$d]); } else { $j['site'] = (array) ($j['site'] ?? []); $bump($j['site']); }
+        $e = (string) ($me['email'] ?? ''); $j['users'][$e] = (array) ($j['users'][$e] ?? []); $bump($j['users'][$e]); $j['users'][$e]['name'] = (string) ($me['name'] ?? ''); $j['users'][$e]['dept'] = $d;
+        $day = date('d'); $j['days'][$day] = (array) ($j['days'][$day] ?? []); $bump($j['days'][$day]);
+        if ($kind !== '') { $j['kinds'][$kind] = (array) ($j['kinds'][$kind] ?? []); $bump($j['kinds'][$kind]); }
+        $cid = (string) ($me['college'] ?? ''); if ($cid !== '' && empty($me['demo']) && !$sup) { $ck = $kind === 'marker' ? 'checks' : 'builds'; $j['colleges'][$cid][$ck] = (int) ($j['colleges'][$cid][$ck] ?? 0) + 1; $note = [$cid, $ck, $j['colleges'][$cid][$ck]]; }
+        if ($freeUse) { $j['free'] = (array) ($j['free'] ?? []); $bump($j['free']); }
+        if ($model !== '' && $kind === '') $j['model'] = $model;
+        ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($j, JSON_UNESCAPED_UNICODE)); fflush($fh); flock($fh, LOCK_UN);
+    }
+    fclose($fh);
+    if (!empty($note)) { try { ccPlanNudge($note[0], $note[1], $note[2]); } catch (\Throwable $e) {} }
+}
+/* the most that every Free account together may ask of Claude in a month. 0 is no limit */
+function ccFreeCap(?array $a = null): int { $s = (array) (($a ?? ccAccounts())['site'] ?? []); return array_key_exists('freeCap', $s) ? max(0, (int) $s['freeCap']) : 1000; }
+/* the next plan up that would lift a limit, for the offer on screen */
+function ccUpsell(array $a, string $college, string $k): array { $cur = ccPlanOf($a, $college); $n = ccCollegePeople($a, $college);
+    foreach (ccPlans($a) as $id => $p) { if ($p['price'] <= 0 || $id === $cur['id']) continue; if ($p['people'] > 0 && $n > $p['people']) continue; if ($p[$k] > 0 && $cur[$k] > 0 && $p[$k] <= $cur[$k]) continue; if ($cur['price'] > 0 && $p['price'] <= $cur['price']) continue;
+        return ['next' => ['id' => $id, 'name' => $p['name'], 'priceText' => '£' . ($p['price'] % 100 ? number_format($p['price'] / 100, 2) : (string) intdiv($p['price'], 100)), 'builds' => (int) $p['builds'], 'checks' => (int) $p['checks']]]; }
+    return ['next' => null]; }
+/* an email to whoever manages a college */
+function ccCollegeMail(array $a, string $college, string $subject, string $text): int {
+    if (!ccMailReady()) return 0; $d = ccCollegeDepts($a, $college); $n = 0;
+    foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && empty($u['demo']) && in_array((string) ($u['dept'] ?? ''), $d, true) && filter_var((string) $e, FILTER_VALIDATE_EMAIL)) { $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]); if (ccMail((string) $e, $subject, ($hi !== '' ? "Hello $hi,\n\n" : "Hello,\n\n") . $text . "\n\nCrafticulum\n" . ccAppUrl())) $n++; }
+    return $n;
+}
+/* nearly at a plan's monthly limit, or at it: tell the manager once, by email */
+function ccPlanNudge(string $college, string $k, int $n): void {
+    if (!ccBillingOn()) return; $a = ccAccounts(); $pl = ccPlanOf($a, $college); $max = (int) $pl[$k]; if ($max <= 0) return;
+    $warn = (int) ceil($max * 0.8); $what = $k === 'checks' ? 'Second Marker checks' : 'builds with Claude'; $where = "Settings, Plan and billing:\n" . ccAppUrl();
+    if ($n === $max) ccCollegeMail($a, $college, "You've used this month's $what", "All $max $what on the {$pl['name']} plan have been used this month. They start again on the 1st.\n\nIf you need more before then, you can move to a bigger plan in $where");
+    elseif ($n === $warn && $max >= 10 && $warn < $max) ccCollegeMail($a, $college, "You've used most of this month's $what", "$n of this month's $max $what on the {$pl['name']} plan have been used. They start again on the 1st.\n\nIf you think you'll need more, you can move to a bigger plan in $where");
+}
+/* why Claude can't be used right now, if a monthly limit has been reached ('' when it can) */
+function ccUsageBlocked(array $me, string $kind = ''): string {
+    $s = ccUsageSet(); $u = ccUsageRead(); $t = $u['total'];
+    $sup = ($me['role'] ?? '') === 'superadmin';
+    $GLOBALS['ccBlock'] = [];   // what the screen needs to offer the right way out, beside the sentence itself
+    if (ccBillingOn() && empty($me['demo']) && !$sup) { $acc0 = ccAccounts(); $c0 = (string) ($me['college'] ?? ccCollegeOf($acc0, (string) ($me['dept'] ?? ''))); $pl = ccPlanOf($acc0, $c0); $used = ccPlanUsed($c0, $u); $k = $kind === 'marker' ? 'checks' : 'builds';
+        $adm = !empty($me['admin']); $self = !empty($acc0['colleges'][$c0]['self']);
+        /* someone who signed up on their own confirms their email before Claude does anything for them */
+        if ($self && ccMailReady() && empty($acc0['users'][(string) ($me['email'] ?? '')]['verified'])) { $GLOBALS['ccBlock'] = ['code' => 'verify', 'email' => (string) ($me['email'] ?? '')]; return 'Confirm your email address first. We sent a link to ' . ($me['email'] ?? 'you') . ' when you signed up. Open it, then come back and try again.'; }
+        /* everyone on Free shares one monthly allowance, so free accounts can never cost more than the site has agreed to */
+        $fc = ccFreeCap($acc0); if ($pl['id'] === 'free' && $fc > 0 && (int) ($u['free']['calls'] ?? 0) >= $fc) { $GLOBALS['ccBlock'] = ['code' => 'freecap', 'admin' => $adm] + ccUpsell($acc0, $c0, $k);
+            return 'Free accounts have used everything set aside for them this month. It starts again on the 1st. ' . ($adm ? 'To carry on now, move to a paid plan in Settings, Plan and billing.' : 'Ask whoever manages your account about a paid plan.'); }
+        if ($pl[$k] > 0 && $used[$k] >= $pl[$k]) { $GLOBALS['ccBlock'] = ['code' => 'plan', 'kind' => $k, 'max' => (int) $pl[$k], 'plan' => $pl['name'], 'admin' => $adm] + ccUpsell($acc0, $c0, $k); }
+        if ($pl[$k] > 0 && $used[$k] >= $pl[$k]) return ($k === 'checks' ? 'This month\'s ' . $pl[$k] . ' Second Marker checks on the ' . $pl['name'] . ' plan have been used.' : 'This month\'s ' . $pl[$k] . ' builds with Claude on the ' . $pl['name'] . ' plan have been used.') . ' They start again on the 1st. ' . (!empty($me['admin']) ? 'Upgrade in Settings, Plan and billing.' : 'Ask whoever manages your account to upgrade the plan.'); }
+    if ($s['capCalls'] && ($t['calls'] ?? 0) >= $s['capCalls']) return 'This month\'s limit for building with Claude has been reached (' . $s['capCalls'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+    if ($s['capCost'] && ($s['in'] || $s['out']) && ccUsageCost($t, $s) >= $s['capCost']) return 'This month\'s spending limit for Claude has been reached. It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+    $acc = ccAccounts(); $cid = (string) ($me['college'] ?? ccCollegeOf($acc, (string) ($me['dept'] ?? ''))); $cap = $cid !== '' ? ccCollege($acc, $cid)['cap'] : 0;
+    if ($sup) return '';   // the limits below are a college's and a department's own
+    if ($cap) { $n = 0; foreach (ccCollegeDepts($acc, $cid) as $d) $n += (int) ($u['depts'][$d]['calls'] ?? 0); if ($n >= $cap) return 'Your college has reached this month\'s limit for building with Claude (' . $cap . ' requests). It starts again on the 1st. Ask whoever looks after the site to raise it.'; }
+    if ($s['capDept'] && (($u['depts'][(string) ($me['dept'] ?? '')]['calls'] ?? 0) >= $s['capDept'])) return 'Your department has reached this month\'s limit for building with Claude (' . $s['capDept'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
+    return '';
+}
+function ccAccounts(): array {
+    $f = ccDataDir() . '/_accounts.json';
+    $j = is_file($f) ? json_decode((string) @file_get_contents($f), true) : null;
+    if (!is_array($j)) $j = [];
+    if (empty($j['depts']) || !is_array($j['depts'])) $j['depts'] = ['main' => ['name' => 'Main department', 'legacy' => true, 'created' => time()]];
+    // the first department used to be named after the two subjects it started with
+    if (isset($j['depts']['main']['name']) && $j['depts']['main']['name'] === 'Esports & IT') $j['depts']['main']['name'] = 'Main department';
+    if (empty($j['users']) || !is_array($j['users'])) $j['users'] = [];
+    /* colleges. A site from before colleges existed becomes one college holding every department, with the name, logo and colour it already had.
+       Nothing is written here: it is the same answer every time until something is saved. */
+    if (empty($j['colleges']) || !is_array($j['colleges'])) { $s = (array) ($j['site'] ?? []);
+        $j['colleges'] = ['main' => ['name' => (string) ($s['name'] ?? ''), 'logo' => (string) ($s['logo'] ?? ''), 'color' => (string) ($s['color'] ?? ''), 'contact' => (string) ($s['contact'] ?? ''), 'plain' => !empty($s['plain']), 'created' => (int) ($j['depts'][array_key_first($j['depts'])]['created'] ?? time())]]; }
+    $firstC = (string) array_key_first($j['colleges']);
+    foreach ($j['depts'] as $k => $d) if (!isset($j['colleges'][(string) ($d['college'] ?? '')])) $j['depts'][$k]['college'] = $firstC;
+    return $j;
+}
+function ccSaveAccounts(array $a): bool {
+    ccEnsureData();
+    $f = ccDataDir() . '/_accounts.json'; $tmp = $f . '.' . bin2hex(random_bytes(4)) . '.tmp';
+    // the first save after colleges arrived: keep a copy of the accounts file exactly as it was
+    $keep = ccDataDir() . '/_accounts.before-colleges.json';
+    if (!is_file($keep) && is_file($f) && !empty($a['colleges'])) { $was = json_decode((string) @file_get_contents($f), true); if (is_array($was) && empty($was['colleges'])) @copy($f, $keep); }
+    $ok = @file_put_contents($tmp, json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT), LOCK_EX);
+    if ($ok === false || !@rename($tmp, $f)) { @unlink($tmp); return false; }
+    return true;
+}
+/* the signed-in person, read fresh every request so changes by a head of department apply straight away */
+function ccMe(): ?array {
+    $uid = (string) ($_SESSION['uid'] ?? '');
+    if ($uid === '') return null;
+    $a = ccAccounts();
+    if ($uid === 'admin@password') {
+        if (!ccPasswordAllowed()) return null;
+        $u = ['name' => 'Admin (password)', 'role' => 'superadmin'];
+    } elseif (in_array($uid, ccSupers(), true)) {
+        $u = ($a['users'][$uid] ?? []); $u['role'] = 'superadmin';
+    } else {
+        $u = $a['users'][$uid] ?? null;
+        if (!$u || ($u['role'] ?? '') === 'superadmin' || !ccActive($u)) return null;
+    }
+    $u['email'] = $uid;
+    if ($u['role'] === 'superadmin') {
+        $d = (string) ($_SESSION['dept'] ?? ($u['dept'] ?? ''));
+        if (!isset($a['depts'][$d])) $d = (string) array_key_first($a['depts']);
+        $u['dept'] = $d;
+    } elseif (!isset($a['depts'][$u['dept'] ?? ''])) return null;
+    elseif ($u['role'] === 'owner') {   // a college manager can work in any department of their own college
+        $home = ccCollegeOf($a, (string) $u['dept']); $d = (string) ($_SESSION['dept'] ?? '');
+        if ($d !== '' && isset($a['depts'][$d]) && $d !== CC_DEMO_DEPT && ccCollegeOf($a, $d) === $home) $u['dept'] = $d;
+    }
+    $u['college'] = ccCollegeOf($a, (string) $u['dept']);
+    if ($u['role'] !== 'superadmin' && $uid !== CC_DEMO_USER && ccCollege($a, $u['college'])['off']) return null;   // the college has been switched off
+    $p = ccPerms($u);
+    $u['canGen'] = $p['gen']; $u['canTeam'] = $p['team']; $u['canSubjects'] = $p['subjects']; $u['canDates'] = $p['dates'];
+    $u['canEdit'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true) || !empty($u['canEdit']);
+    $u['deptName'] = (string) ($a['depts'][$u['dept']]['name'] ?? '');
+    $u['collegeName'] = ccCollege($a, $u['college'])['name'];
+    $u['isLead'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true);
+    $u['admin'] = in_array($u['role'], ['owner', 'superadmin'], true);   // runs a college: its departments, people and profile
+    $u['demo'] = $uid === CC_DEMO_USER;
+    if ($u['demo'] && !ccDemoOn()) return null;
+    return $u;
+}
+/* a department's own settings: whether teachers' changes need signing off, and whether deleting a lesson needs the department's password */
+function ccDeptPrefs(array $a, string $dept): array { $d = $a['depts'][$dept] ?? []; return ['signoff' => !empty($d['signoff']), 'delPass' => !empty($d['delHash']), 'base' => !array_key_exists('base', $d) || !empty($d['base']), 'pics' => !array_key_exists('pics', $d) || !empty($d['pics'])]; }
+/* ---------- Second Marker: checking learner work against the criteria. Each department's leader switches it on and sets how it works ---------- */
+const CC_MARKER_MODELS = ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5'];
+function ccMarker(array $a, string $dept): array {
+    $m = (array) (($a['depts'][$dept] ?? [])['marker'] ?? []);
+    return ['on' => !empty($m['on']), 'who' => ($m['who'] ?? 'leads') === 'all' ? 'all' : 'leads', 'model' => in_array($m['model'] ?? '', CC_MARKER_MODELS, true) ? (string) $m['model'] : '',
+            'batch' => !array_key_exists('batch', $m) || !empty($m['batch']), 'iv' => !array_key_exists('iv', $m) || !empty($m['iv']), 'anon' => !empty($m['anon']),
+            'pdfText' => !array_key_exists('pdfText', $m) || !empty($m['pdfText']), 'feedback' => !array_key_exists('feedback', $m) || !empty($m['feedback']),
+            'emailDomain' => (string) ($m['emailDomain'] ?? ''), 'guide' => (string) ($m['guide'] ?? ''), 'ivTarget' => max(0, min(100, (int) ($m['ivTarget'] ?? 0)))];
+}
+function ccMarkerCan(array $me, array $a): bool { $m = ccMarker($a, (string) $me['dept']); return $m['on'] && (!empty($me['isLead']) || $m['who'] === 'all'); }
+/* ---------- the error log: things that went wrong, for the super admin to read in Settings. No learner work and no passwords go in it ---------- */
+function ccErr(string $kind, string $msg, array $extra = []): void {
+    try {
+        $dir = ccDataDir(); if (!is_dir($dir)) return; $f = $dir . '/_errors.jsonl';
+        $clean = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x1F\x7F]+/u', ' ', (string) $s)), 0, $n);
+        $msg = preg_replace('/sk-ant-[A-Za-z0-9_-]+/', 'sk-ant-…', $clean($msg, 500));
+        $row = ['at' => time(), 'kind' => $clean($kind, 20), 'msg' => $msg];
+        foreach (['where', 'page', 'role', 'dept', 'browser'] as $k) if (isset($extra[$k]) && $extra[$k] !== '') $row[$k] = $clean($extra[$k], 160);
+        if (is_file($f) && filesize($f) > 400000) { $l = @file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []; @file_put_contents($f, implode("\n", array_slice($l, -500)) . "\n", LOCK_EX); }
+        @file_put_contents($f, json_encode($row, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+    } catch (Throwable $e) {}
+}
+function ccErrRead(int $n = 200): array { $f = ccDataDir() . '/_errors.jsonl'; if (!is_file($f)) return [];
+    $o = []; foreach (array_slice(@file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [], -$n) as $l) { $j = json_decode($l, true); if (is_array($j)) $o[] = $j; } return array_reverse($o); }
+/* anything PHP itself trips over on any page is written down too */
+set_exception_handler(function (Throwable $e) { ccErr('server', get_class($e) . ': ' . $e->getMessage(), ['where' => basename($e->getFile()) . ':' . $e->getLine()]); if (!headers_sent()) { http_response_code(500); header('Content-Type: application/json; charset=utf-8'); } echo json_encode(['error' => 'server']); });
+register_shutdown_function(function () { $e = error_get_last(); if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) ccErr('server', (string) $e['message'], ['where' => basename((string) $e['file']) . ':' . $e['line']]); });
+
+/* ---------- messages from the contact page: kept for the super admin to read in Settings, and emailed on ---------- */
+function ccInboxFile(): string { return ccDataDir() . '/_inbox.json'; }
+function ccInbox(): array { $j = json_decode((string) @file_get_contents(ccInboxFile()), true); return is_array($j) ? $j : []; }
+function ccInboxChange(callable $fn): bool {
+    ccEnsureData(); $fh = @fopen(ccInboxFile(), 'c+'); if (!$fh) return false; $ok = false;
+    if (flock($fh, LOCK_EX)) { $j = json_decode((string) stream_get_contents($fh), true); if (!is_array($j)) $j = []; $j = $fn($j);
+        if (count($j) > 500) { uasort($j, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0)); $j = array_slice($j, 0, 500, true); }
+        ftruncate($fh, 0); rewind($fh); $ok = fwrite($fh, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) !== false; fflush($fh); flock($fh, LOCK_UN); }
+    fclose($fh); return $ok;
+}
+function ccInboxOpen(): int { return count(array_filter(ccInbox(), fn($m) => empty($m['done']))); }
+/* no more than a handful from one place in an hour, and a ceiling for the whole site in a day */
+function ccContactAllowed(): bool {
+    $f = ccDataDir() . '/_inbox-rate.json'; $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j)) $j = [];
+    $now = time(); $ip = substr(sha1((string) ($_SERVER['REMOTE_ADDR'] ?? '') . '|' . ccSiteId()), 0, 16);
+    $j = array_filter(array_map(fn($l) => array_values(array_filter((array) $l, fn($t) => $t > $now - 86400)), $j));
+    $mine = array_filter((array) ($j[$ip] ?? []), fn($t) => $t > $now - 3600); $all = array_sum(array_map('count', $j));
+    if (count($mine) >= 5 || $all >= 200) return false;
+    $j[$ip][] = $now; @file_put_contents($f, json_encode($j), LOCK_EX); return true;
+}
+
+/* ---------- the demo: a sample department anyone can try from the front page, emptied every night ---------- */
+const CC_DEMO_USER = 'demo@crafticulum.invalid';
+const CC_DEMO_DEPT = 'demo';
+function ccDemoOn(): bool { return in_array(strtolower(trim((string) ccConf('DEMO'))), ['1', 'on', 'yes', 'true'], true); }
+function ccRmTree(string $d): void { if (!is_dir($d)) return; foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($d, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $f) { $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname()); } @rmdir($d); }
+function ccDemoState(): array { $j = json_decode((string) @file_get_contents(ccDataDir() . '/_demo.json'), true); return is_array($j) ? $j : []; }
+/* make sure the demo department and its one shared account exist, and empty them if this is the first visit today */
+function ccDemoEnter(): bool {
+    if (!ccDemoOn()) return false; ccEnsureData(); $a = ccAccounts(); $ch = false;
+    if (!isset($a['depts'][CC_DEMO_DEPT])) { $a['depts'][CC_DEMO_DEPT] = ['name' => 'Demo department', 'demo' => true]; $ch = true; }
+    $u = $a['users'][CC_DEMO_USER] ?? null;
+    if (!$u || ($u['role'] ?? '') !== 'hod' || ($u['dept'] ?? '') !== CC_DEMO_DEPT || !ccActive($u)) { $a['users'][CC_DEMO_USER] = ['name' => 'Demo visitor', 'role' => 'hod', 'dept' => CC_DEMO_DEPT, 'status' => 'active', 'added' => time(), 'methods' => [], 'demo' => true, 'perms' => ['gen' => true, 'team' => false, 'subjects' => false, 'dates' => true]]; $ch = true; }
+    if ($ch && !ccSaveAccounts($a)) return false;
+    $st = ccDemoState(); $day = date('Y-m-d');
+    if (($st['day'] ?? '') !== $day) {
+        $b = ccDataDir(); ccRmTree($b . '/d/' . CC_DEMO_DEPT); ccRmTree($b . '/u/' . sha1(CC_DEMO_USER));
+        foreach (glob($b . '/_marker/' . CC_DEMO_DEPT . '*.json') ?: [] as $f) @unlink($f); @unlink($b . '/_log/' . CC_DEMO_DEPT . '.jsonl');
+        @file_put_contents($b . '/_demo.json', json_encode(['day' => $day, 'builds' => 0, 'visits' => 0]), LOCK_EX);
+    }
+    $st = ccDemoState(); $st['visits'] = (int) ($st['visits'] ?? 0) + 1; @file_put_contents(ccDataDir() . '/_demo.json', json_encode($st), LOCK_EX);
+    return true;
+}
+/* how many lessons the demo may still build today. 0 means building is off in the demo */
+function ccDemoBuildsLeft(): int { $st = ccDemoState(); $used = ($st['day'] ?? '') === date('Y-m-d') ? (int) ($st['builds'] ?? 0) : 0; return max(0, (int) ccConf('DEMO_BUILDS') - $used); }
+function ccDemoBuilt(): void { $st = ccDemoState(); if (($st['day'] ?? '') !== date('Y-m-d')) $st = ['day' => date('Y-m-d'), 'builds' => 0, 'visits' => 0]; $st['builds'] = (int) ($st['builds'] ?? 0) + 1; @file_put_contents(ccDataDir() . '/_demo.json', json_encode($st), LOCK_EX); }
+
+/* the activity log: one line for each thing that changes what the department shares */
+function ccLog(string $dept, array $who, string $act, string $what = ''): void {
+    $dir = ccDataDir() . '/_log'; if (!is_dir($dir)) @mkdir($dir, 0700, true);
+    $f = $dir . '/' . (preg_replace('/[^a-z0-9-]/', '', $dept) ?: 'main') . '.jsonl';
+    if (is_file($f) && filesize($f) > 600000) { $l = file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []; @file_put_contents($f, implode("\n", array_slice($l, -1500)) . "\n", LOCK_EX); }
+    @file_put_contents($f, json_encode(['at' => time(), 'by' => (string) (($who['name'] ?? '') ?: ($who['email'] ?? '')), 'email' => (string) ($who['email'] ?? ''), 'act' => $act, 'what' => mb_substr($what, 0, 160)], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+}
+function ccLogRead(string $dept, int $n = 300): array {
+    $f = ccDataDir() . '/_log/' . (preg_replace('/[^a-z0-9-]/', '', $dept) ?: 'main') . '.jsonl'; if (!is_file($f)) return [];
+    $out = []; foreach (array_reverse(array_slice(file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [], -$n)) as $l) { $j = json_decode($l, true); if (is_array($j)) $out[] = $j; }
+    return $out;
+}
+/* What a person may do. The super admin can do everything. A head of department or subject leader has the
+   permissions the super admin gave them (all of them unless some were switched off). Teachers have none of these. */
+const CC_PERMS = ['gen', 'team', 'subjects', 'dates'];
+function ccPerms(array $u): array {
+    $r = (string) ($u['role'] ?? 'teacher'); $o = [];
+    foreach (CC_PERMS as $k) $o[$k] = $r === 'superadmin' || $r === 'owner' || ($r === 'hod' && (!isset($u['perms']) || !is_array($u['perms']) || !empty($u['perms'][$k])));
+    return $o;
+}
+/* with a client secret, Google sign-in goes to Google and comes back (the same round trip as Microsoft). Without one it uses Google's pop-up button. */
+function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) ccConf('GOOGLE_CLIENT_SECRET')) : ''; }
+function ccPublic(array $u): array {
+    return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => (string) ($u['picture'] ?? ''), 'role' => $u['role'], 'dept' => $u['dept'],
+            'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
+            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin'])];
+}
+
+/* ---------- accounts that are waiting for approval ---------- */
+function ccActive(array $u): bool { return ($u['status'] ?? 'active') === 'active'; }
+
+/* ---------- small JSON stores: one-time links and failed sign-in counts ---------- */
+function ccJson(string $name): array { $f = ccDataDir() . '/' . $name; $j = is_file($f) ? json_decode((string) @file_get_contents($f), true) : null; return is_array($j) ? $j : []; }
+function ccSaveJson(string $name, array $data): void { ccEnsureData(); $f = ccDataDir() . '/' . $name; $tmp = $f . '.' . bin2hex(random_bytes(4)) . '.tmp'; if (@file_put_contents($tmp, json_encode($data, JSON_UNESCAPED_SLASHES), LOCK_EX) !== false) @rename($tmp, $f); }
+/* one-time links for setting or resetting a password and confirming an email; only a hash is kept */
+function ccToken(string $email, string $type, float $hours): string {
+    $t = bin2hex(random_bytes(24)); $all = ccJson('_tokens.json'); $now = time();
+    foreach ($all as $k => $v) if (($v['exp'] ?? 0) < $now || (($v['email'] ?? '') === $email && ($v['type'] ?? '') === $type)) unset($all[$k]);
+    $all[hash('sha256', $t)] = ['email' => $email, 'type' => $type, 'exp' => $now + (int) round($hours * 3600)];
+    ccSaveJson('_tokens.json', $all); return $t;
+}
+function ccUseToken(string $t, array $types, bool $consume = true): ?array {
+    if (!preg_match('/^[a-f0-9]{48}$/', $t)) return null;
+    $all = ccJson('_tokens.json'); $k = hash('sha256', $t); $v = $all[$k] ?? null;
+    if (!$v || ($v['exp'] ?? 0) < time() || !in_array($v['type'] ?? '', $types, true)) return null;
+    if ($consume) { unset($all[$k]); ccSaveJson('_tokens.json', $all); }
+    return $v;
+}
+/* slow down guessing: 8 wrong tries for an email or from one address locks them for 15 minutes */
+function ccThrottleKey(string $email): array { return ['e:' . $email, 'i:' . ($_SERVER['REMOTE_ADDR'] ?? '')]; }
+function ccLocked(string $email): bool { $all = ccJson('_throttle.json'); $now = time(); foreach (ccThrottleKey($email) as $k) { $v = $all[$k] ?? null; if ($v && $v['n'] >= 8 && $now - $v['t'] < 900) return true; } return false; }
+function ccFail(string $email): void { $all = ccJson('_throttle.json'); $now = time(); foreach ($all as $k => $v) if ($now - ($v['t'] ?? 0) > 900) unset($all[$k]); foreach (ccThrottleKey($email) as $k) { $v = $all[$k] ?? ['n' => 0]; $all[$k] = ['n' => $v['n'] + 1, 't' => $now]; } ccSaveJson('_throttle.json', $all); usleep(600000); }
+function ccPassed(string $email): void { $all = ccJson('_throttle.json'); unset($all['e:' . $email]); ccSaveJson('_throttle.json', $all); }
+
+/* ---------- two-step codes (authenticator apps, RFC 6238) ---------- */
+function ccB32(string $bin): string { $a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ''; foreach (str_split($bin) as $c) $bits .= str_pad(decbin(ord($c)), 8, '0', STR_PAD_LEFT); $out = ''; foreach (str_split($bits, 5) as $ch) $out .= $a[bindec(str_pad($ch, 5, '0'))]; return $out; }
+function ccB32d(string $s): string { $a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ''; foreach (str_split(strtoupper(preg_replace('/[^A-Za-z2-7]/', '', $s))) as $c) $bits .= str_pad(decbin(strpos($a, $c)), 5, '0', STR_PAD_LEFT); $out = ''; foreach (str_split($bits, 8) as $b) if (strlen($b) === 8) $out .= chr(bindec($b)); return $out; }
+function ccTotpAt(string $secret, int $step): string { $h = hash_hmac('sha1', pack('N*', 0, $step), ccB32d($secret), true); $o = ord($h[19]) & 0xf; $n = ((ord($h[$o]) & 0x7f) << 24 | ord($h[$o + 1]) << 16 | ord($h[$o + 2]) << 8 | ord($h[$o + 3])) % 1000000; return str_pad((string) $n, 6, '0', STR_PAD_LEFT); }
+function ccTotpOk(string $secret, string $code): bool { $code = preg_replace('/\D/', '', $code); if (strlen($code) !== 6) return false; $s = intdiv(time(), 30); for ($i = -1; $i <= 1; $i++) if (hash_equals(ccTotpAt($secret, $s + $i), $code)) return true; return false; }
+
+/* ---------- email: SMTP if it's set up in config.php, otherwise the host's mail(), otherwise nothing ---------- */
+/* The site's addresses. The main address is where it lives for good. The temporary address is where it also answers for now.
+   Links in emails and links given to students use the main address as soon as this same site answers there, and the address
+   being used until then. Signing in always comes back to the address the person is on. */
+const CC_MAIN_URL = 'https://crafticulum.co.uk/';
+const CC_TEMP_URL = 'https://hopeful-lime-horse.185-199-220-70.cpanel.site/';
+function ccUrlOk($u): string { $u = trim((string) $u); return preg_match('#^https?://[A-Za-z0-9.-]+(:\d+)?(/[^\s?\#]*)?$#', $u) ? rtrim($u, '/') . '/' : ''; }
+function ccMainUrl(): string { return ccUrlOk(ccConf('SITE_URL')) ?: CC_MAIN_URL; }
+function ccTempUrl(): string { return ccUrlOk(ccConf('SITE_URL_TEMP')) ?: CC_TEMP_URL; }
+function ccHereUrl(): string {
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    return ($https ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/';
+}
+function ccSiteId(): string { $f = ccDataDir() . '/_siteid'; $id = is_file($f) ? trim((string) @file_get_contents($f)) : ''; if ($id === '') { ccEnsureData(); $id = bin2hex(random_bytes(16)); @file_put_contents($f, $id, LOCK_EX); } return $id; }
+/* is this same site answering at the main address? checked every 10 minutes, and every 5 minutes while it isn't */
+function ccMainLive(bool $fresh = false): bool {
+    $main = ccMainUrl(); $here = ccHereUrl();
+    if (parse_url($main, PHP_URL_HOST) === parse_url($here, PHP_URL_HOST) && parse_url($main, PHP_URL_PORT) === parse_url($here, PHP_URL_PORT)) return true;
+    $f = ccDataDir() . '/_mainlive.json'; $c = json_decode((string) @file_get_contents($f), true);
+    if (!$fresh && is_array($c) && ($c['url'] ?? '') === $main && (int) ($c['at'] ?? 0) > time() - (!empty($c['ok']) ? 600 : 300)) return !empty($c['ok']);
+    $ok = false;
+    if (function_exists('curl_init')) { $ch = curl_init($main . 'auth.php?a=ping'); curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 3, CURLOPT_CONNECTTIMEOUT => 2, CURLOPT_FOLLOWLOCATION => false]);
+        $r = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch); $j = $code === 200 ? json_decode((string) $r, true) : null;
+        $ok = is_array($j) && hash_equals(hash('sha256', ccSiteId()), (string) ($j['site'] ?? '')); }
+    ccEnsureData(); @file_put_contents($f, json_encode(['url' => $main, 'ok' => $ok, 'at' => time()]), LOCK_EX);
+    return $ok;
+}
+function ccSiteUrl(): string { return ccMainLive() ? ccMainUrl() : ccHereUrl(); }
+/* the app has its own address: /app where the server can do clean addresses, app.html everywhere else. The site's own address is the front page */
+function ccPretty(): bool { return is_file(ccDataDir() . '/_pretty'); }
+function ccAppUrl(bool $here = false): string { return ($here ? ccHereUrl() : ccSiteUrl()) . (ccPretty() ? 'app' : 'app.html'); }
+function ccMailReady(): bool { return ((ccConf('SMTP_HOST') !== '') && ccConf('SMTP_HOST')) || ((ccConf('MAIL_FROM') !== '') && ccConf('MAIL_FROM') && function_exists('mail')); }
+function ccMail(string $to, string $subject, string $text, string $replyTo = ''): bool {
+    $rt = $replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n<>]/', $replyTo) ? "Reply-To: <$replyTo>\r\n" : '';
+    $GLOBALS['ccMailErr'] = '';
+    $fail = function (string $why): bool { $GLOBALS['ccMailErr'] = $why; ccErr('email', $why); return false; };
+    if (!ccMailReady()) return $fail('Email isn\'t set up yet. Add the mail server and Send from address.');
+    if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return $fail('That isn\'t an email address.');
+    $from = ccConf('MAIL_FROM') ? (string) ccConf('MAIL_FROM') : (string) ccConf('SMTP_USER');
+    if (!filter_var($from, FILTER_VALIDATE_EMAIL)) return $fail('The Send from address isn\'t an email address. Use the mailbox\'s own address.');
+    $subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    $body = str_replace(["\r\n", "\r"], "\n", $text); $body = str_replace("\n", "\r\n", $body);
+    if (!ccConf('SMTP_HOST')) return @mail($to, $subj, $body, "From: Crafticulum <$from>\r\n{$rt}MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8") ?: $fail('The web host\'s own mail() refused it. Add a mail server instead.');
+    $host = trim((string) ccConf('SMTP_HOST')); $port = (int) ccConf('SMTP_PORT') ?: 587; $secure = strtolower(trim((string) ccConf('SMTP_SECURE')));
+    // the port decides the security when they disagree: 465 is always SSL from the first byte, 587 and 25 start plain and upgrade
+    if ($port === 465) $secure = 'ssl'; elseif ($secure === 'ssl' && in_array($port, [587, 25, 2525], true)) $secure = 'tls'; elseif (!in_array($secure, ['ssl', 'tls', 'none'], true)) $secure = 'tls';
+    // a mail server on this same machine often has a certificate in the machine's name, not the domain's. That is safe to accept, because nothing leaves the machine.
+    $ip = @gethostbyname($host); $local = $ip === '127.0.0.1' || ($ip !== $host && in_array($ip, array_filter([$_SERVER['SERVER_ADDR'] ?? '', @gethostbyname((string) gethostname())]), true));
+    if ($ip === $host && !filter_var($host, FILTER_VALIDATE_IP)) return $fail("The mail server name \"$host\" can't be found. If the domain isn't pointed at the server yet, use the server's own name from your web host for now.");
+    $open = function (bool $strict) use ($host, $port, $secure, &$errno, &$err) {
+        $ctx = stream_context_create(['ssl' => ['verify_peer' => $strict, 'verify_peer_name' => $strict, 'allow_self_signed' => !$strict, 'SNI_enabled' => true, 'peer_name' => $host]]);
+        return @stream_socket_client(($secure === 'ssl' ? 'ssl://' : 'tcp://') . $host . ':' . $port, $errno, $err, 12, STREAM_CLIENT_CONNECT, $ctx);
+    };
+    $strict = true; $fp = $open(true);
+    if (!$fp && $secure === 'ssl' && $local) { $strict = false; $fp = $open(false); }
+    if (!$fp) return $fail($secure === 'ssl' && !$errno ? "Connected to $host, but its security certificate doesn't match that name. Use the server's own name from your web host as the mail server." : "Couldn't connect to $host on port $port" . ($err ? " ($err)" : '') . '. Check the server name and port, and ask your web host whether the site is allowed to send mail on that port.');
+    stream_set_timeout($fp, 15);
+    $last = '';
+    $read = function () use ($fp, &$last) { $r = ''; while (($l = fgets($fp, 1000)) !== false) { $r .= $l; if (strlen($l) < 4 || $l[3] === ' ') break; } $last = trim($r); return $r; };
+    $cmd = function (string $c, array $ok) use ($fp, $read) { if ($c !== '') fwrite($fp, $c . "\r\n"); $r = $read(); return in_array((int) substr($r, 0, 3), $ok, true); };
+    $bye = function (string $why) use ($fp, $fail, &$last): bool { @fwrite($fp, "QUIT\r\n"); @fclose($fp); return $fail($why . ($last !== '' ? ' The mail server said: ' . mb_substr($last, 0, 200) : '')); };
+    $me = preg_replace('/[^A-Za-z0-9.-]/', '', explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0]) ?: 'localhost';
+    if (!$cmd('', [220])) return $bye("$host answered, but not like a mail server. Check the port and the security setting.");
+    if (!$cmd("EHLO $me", [250])) return $bye('The mail server refused to start.');
+    if ($secure === 'tls') {
+        if (!$cmd('STARTTLS', [220])) return $bye('The mail server doesn\'t offer a secure connection on this port. Try port 465.');
+        stream_context_set_option($fp, 'ssl', 'peer_name', $host);
+        $up = @stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+        if (!$up && $local) { stream_context_set_option($fp, 'ssl', 'verify_peer', false); stream_context_set_option($fp, 'ssl', 'verify_peer_name', false); $up = @stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT); }
+        if (!$up) return $bye("The secure connection to $host failed. Its security certificate may not match that name. Try port 465, or the server's own name.");
+        if (!$cmd("EHLO $me", [250])) return $bye('The mail server refused to carry on after securing the connection.');
+    }
+    $user = (string) ccConf('SMTP_USER');
+    if ($user !== '') {
+        if (!$cmd('AUTH LOGIN', [334])) return $bye('The mail server won\'t take a user name and password this way.');
+        if (!$cmd(base64_encode($user), [334]) || !$cmd(base64_encode((string) ccConf('SMTP_PASS')), [235])) return $bye('The mail server didn\'t accept the user name and password. The user name is the whole email address, and the password is the mailbox\'s own.');
+    }
+    if (!$cmd("MAIL FROM:<$from>", [250])) return $bye("The mail server won't send from $from. Send from has to be the mailbox's own address.");
+    if (!$cmd("RCPT TO:<$to>", [250, 251])) return $bye("The mail server won't send to $to.");
+    if (!$cmd('DATA', [354])) return $bye('The mail server refused the message.');
+    $msg = "From: Crafticulum <$from>\r\n{$rt}To: <$to>\r\nSubject: $subj\r\nDate: " . date('r') . "\r\nMessage-ID: <" . bin2hex(random_bytes(8)) . "@$me>\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n" . preg_replace('/^\./m', '..', $body);
+    if (!$cmd($msg . "\r\n.", [250])) return $bye('The mail server refused the message.');
+    @fwrite($fp, "QUIT\r\n"); fclose($fp);
+    return true;
+}
