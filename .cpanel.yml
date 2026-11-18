@@ -1,0 +1,7 @@
+---
+# cPanel, Git Version Control: "Deploy HEAD Commit" copies the release onto the live site.
+# It never touches config.php or the data folder, because neither is in the release.
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/crafticu/public_html/
+    - /bin/cp -R crafticulum/. $DEPLOYPATH
