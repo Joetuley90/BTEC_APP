@@ -1289,6 +1289,11 @@ body.sa-out #stSite,body.sa-out #stPlan,body.sa-out #stLog,body.sa-out #stDepts,
 .ov-t b small{font-size:.8rem;font-weight:500;color:var(--bs-secondary-color)}
 .mc-plan{border:1px solid var(--cc-line);border-radius:.7rem;padding:12px 14px}.mc-m{margin-top:8px}.mc-m .progress{height:8px;margin-top:4px}
 
+/* ===== notifications ===== */
+.push-kinds{display:grid;gap:10px}.push-k{padding-left:2.9em}.push-k .form-check-input{margin-left:-2.9em;width:2.2em;height:1.2em;margin-top:.2em}
+.col-gone{padding:14px 16px;border:1px dashed var(--cc-line-strong,#d4d8e3);border-radius:12px}.col-gone li{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--cc-line)}.col-gone li:first-child{border-top:0;padding-top:4px}.col-gone .flex-none{flex:none}
+.push-dev li{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--cc-line)}
+
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
 .st-sec{scroll-margin-top:calc(var(--stick-top,58px) + 70px)!important}
@@ -9955,7 +9960,20 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-stta
 /* ===== round 29: the super admin's colleges. A list of every college; open one to see and change everything in it ===== */
 let colOpen = "", colInfo = null, colInfoBusy = false, colInfoStale = false, colDeptArm = "", colWipe = 0, colWipeBusy = false;
 const _colCall33 = colCall;
-colCall = async function(){ const j = await _colCall33.apply(this, arguments); colInfoStale = true; return j; };
+let colDeleted = null, colDelBusy = false, colPurgeArm = "";
+colCall = async function(){ const j = await _colCall33.apply(this, arguments); colInfoStale = true; if(j && j.deleted) colDeleted = j.deleted; return j; };
+function colDeletedHtml(){
+  if(colDeleted === null){ if(!colDelBusy){ colDelBusy = true; colCall("colleges").catch(() => { colDeleted = []; }).finally(() => { colDelBusy = false; if(colDeleted === null) colDeleted = []; if(view === "settings" && colDeleted.length) renderSettings(); }); } return ""; }
+  if(!colDeleted.length) return "";
+  return `<div class="col-gone mt-4"><h3 class="h6 mb-1">Deleted colleges</h3><p class="small text-body-secondary mb-2">Kept out of sight for 14 days after deleting, then removed for good. Nobody in them can sign in. Put one back if it was a mistake.</p>
+    <ul class="list-unstyled small mb-0">${colDeleted.map(d => `<li data-hold="${esc(d.hold)}"><span class="min-w-0"><span class="fw-semibold">${esc(d.name || "College with no name")}</span> <span class="text-body-secondary">· ${d.people} ${d.people === 1 ? "person" : "people"}, ${d.depts} ${d.depts === 1 ? "department" : "departments"} · deleted ${ovwAgo(d.at).toLowerCase()}${d.by ? " by " + esc(d.by) : ""}</span><br><span class="${d.daysLeft <= 3 ? "text-danger" : "text-body-secondary"}">${d.daysLeft > 0 ? `Removed for good in ${d.daysLeft} ${d.daysLeft === 1 ? "day" : "days"}` : "Removed for good today"}</span></span>
+      <span class="d-flex gap-2 flex-none"><button type="button" class="btn btn-sm btn-outline-primary" data-colh="back">Put it back</button><button type="button" class="btn btn-sm btn-link text-danger p-0" data-colh="purge">${colPurgeArm === d.hold ? "Remove it now for good?" : "Remove now"}</button></span></li>`).join("")}</ul></div>`; }
+document.addEventListener("click", async e => { const b = e.target.closest("[data-colh]"); if(!b) return; const li = b.closest("[data-hold]"), hold = li ? li.dataset.hold : ""; if(!hold) return;
+  try{
+    if(b.dataset.colh === "purge"){ if(colPurgeArm !== hold){ colPurgeArm = hold; renderSettings(); setTimeout(() => { if(colPurgeArm === hold){ colPurgeArm = ""; if(view === "settings") renderSettings(); } }, 6000); return; } colPurgeArm = ""; await colCall("collegepurge", {hold}); return colSay("Removed for good."); }
+    b.disabled = true; const j = await colCall("collegerestore", {hold}); ovw = null; team = null; const sk = (j.restored && j.restored.skipped) || [];
+    colSay(`It's back, with ${j.restored ? j.restored.people : 0} ${j.restored && j.restored.people === 1 ? "person" : "people"}.${sk.length ? " " + sk.join(", ") + (sk.length === 1 ? " has" : " have") + " joined somewhere else since, so " + (sk.length === 1 ? "was" : "were") + " left where they are." : ""}`);
+  }catch(err){ colSay({exists: "A college with the same address has been added since, so this one can't be put back.", name: "A college with the same name has been added since. Rename that one first, then put this one back.", not_found: "That one has already gone."}[err && err.code] || colErr(err), true); if(err && err.code === "not_found"){ colDeleted = null; renderSettings(); } } });
 function colInfoLoad(){ if(colInfoBusy || !colOpen) return; colInfoBusy = true; const id = colOpen;
   authCall("collegeget", {id}).then(j => { if(colOpen === id){ colInfo = j; colInfoStale = false; } }).catch(e => { colInfoStale = false; if(e && e.code === "not_found"){ colOpen = ""; colInfo = null; } else if(!colInfo) colInfo = {failed: true, id}; }).finally(() => { colInfoBusy = false; if(view === "settings") renderSettings(); }); }
 async function colView(id){ if(id && typeof teamCol !== "undefined") teamCol = id;   /* the team list below follows the college that's open */ if(id && !colList().some(c => c.id === id)){ try{ await _colCall33("colleges"); }catch{} }   // a college added somewhere else since this page loaded
@@ -9968,6 +9986,7 @@ function colListHtml(){ const list = colList();
     ${list.map(c => `<tr class="col-r${c.off ? " text-body-secondary" : ""}" data-col="${esc(c.id)}"><th scope="row"><button type="button" class="btn btn-link p-0 fw-semibold text-start col-open" data-colview="${esc(c.id)}">${c.color ? `<span class="col-dot me-1" style="background:${esc(c.color)}"></span>` : ""}${esc(colNameOf(c))}</button> ${colBadges(c)}</th>
       <td>${c.managers.length ? esc(c.managers.map(m => m.name || m.email).join(", ")) : `<span class="text-warning-emphasis">None yet</span>`}</td><td>${c.depts.length}</td><td>${c.people}</td>${meInfo.billing ? `<td>${esc(PLAN_NAMES[c.plan] || c.plan)}</td>` : ""}
       <td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" data-colview="${esc(c.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>
+    ${colDeletedHtml()}
     <details class="conf-g mt-3" ${list.length < 2 ? "open" : ""}><summary>Add a college</summary>
       <div class="row g-2 align-items-end">
         <div class="col-md-6"><label class="form-label small mb-1" for="colNew">College or school name</label><input class="form-control form-control-sm" id="colNew" maxlength="60" placeholder="e.g. Riverside College"></div>
@@ -10014,11 +10033,11 @@ function colDetailHtml(c){ const d = colInfo && colInfo.id === c.id && !colInfo.
     <div class="d-flex flex-wrap gap-3 align-items-center">${here ? `<span class="small text-body-secondary">You're working inside this college, so it can't be switched off or removed. Work inside another one first.</span>` : `<div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" role="switch" id="colOn_${esc(c.id)}" data-colon="${esc(c.id)}" ${c.off ? "" : "checked"}><label class="form-check-label small" for="colOn_${esc(c.id)}">Staff can sign in</label></div>
       ${many && !c.people ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-colact="del">${colArm === c.id ? "Remove this college?" : "Remove this college"}</button>` : ""}
       ${many && !colWipe ? `<button type="button" class="btn btn-sm btn-outline-danger" data-cold="wipe1">Delete this college and everything in it</button>` : ""}`}</div>
-    ${many && !here && colWipe ? `<div class="col-wipe mt-3" role="group" aria-labelledby="cwH"><div class="fw-semibold text-danger mb-1" id="cwH">Delete ${esc(colNameOf(c))} for good?</div>
-      <p class="small mb-2">This removes ${d.people.length} ${d.people.length === 1 ? "person" : "people"} and their accounts, ${d.depts.length} ${d.depts.length === 1 ? "department" : "departments"}, ${d.lessons} shared ${d.lessons === 1 ? "lesson" : "lessons"}, everyone's own lessons and planning, marking results, and the pages given to students. It can't be undone from here. If you might want any of it back, make a backup first in Data and backups.</p>
-      ${c.paid ? `<p class="small text-danger mb-2">This college pays by card. Cancel its plan first (work inside it, then Plan and billing), or it will keep being charged.</p>` : ""}
+    ${many && !here && colWipe ? `<div class="col-wipe mt-3" role="group" aria-labelledby="cwH"><div class="fw-semibold text-danger mb-1" id="cwH">Delete ${esc(colNameOf(c))}?</div>
+      <p class="small mb-2">This removes ${d.people.length} ${d.people.length === 1 ? "person" : "people"} and their accounts, ${d.depts.length} ${d.depts.length === 1 ? "department" : "departments"}, ${d.lessons} shared ${d.lessons === 1 ? "lesson" : "lessons"}, everyone's own lessons and planning, marking results, and the pages given to students. Nobody in it can sign in from that moment. Everything is kept out of sight for 14 days in case it was a mistake, and you can put it back from the Colleges list. After 14 days it's removed for good.</p>
+      ${c.paid && !c.cancelled ? `<p class="small text-danger mb-2">This college is still paying by card. Cancel its plan first (work inside it, then Plan and billing). Once the plan is cancelled you can delete it straight away.</p>` : c.cancelled ? `<p class="small mb-2">Its plan has been cancelled, so it can be deleted now.</p>` : ""}
       <label class="form-label small fw-semibold mb-1" for="cwName">Type ${c.name ? `the college's name, <b>${esc(c.name)}</b>,` : `the word <b>delete</b>`} to confirm</label>
-      <div class="d-flex flex-wrap gap-2 align-items-center"><input class="form-control form-control-sm" style="max-width:300px" id="cwName" autocomplete="off" spellcheck="false"><button type="button" class="btn btn-sm btn-danger" data-cold="wipe2" ${colWipeBusy ? "disabled" : ""}>${colWipeBusy ? "Deleting..." : colWipe === 2 ? "Yes, delete it all for good" : "Delete for good"}</button><button type="button" class="btn btn-sm btn-link" data-cold="wipe0">Keep it</button></div></div>` : ""}`}
+      <div class="d-flex flex-wrap gap-2 align-items-center"><input class="form-control form-control-sm" style="max-width:300px" id="cwName" autocomplete="off" spellcheck="false"><button type="button" class="btn btn-sm btn-danger" data-cold="wipe2" ${colWipeBusy ? "disabled" : ""}>${colWipeBusy ? "Deleting..." : colWipe === 2 ? "Yes, delete it" : "Delete this college"}</button><button type="button" class="btn btn-sm btn-link" data-cold="wipe0">Keep it</button></div></div>` : ""}`}
     <span class="idea-msg d-block mt-2" id="colMsg" role="status">${esc(colMsg)}</span></div>`; }
 collegesSection = function(sec){
   if(window.claude || !(typeof me !== "undefined" && me && me.role === "superadmin")) return "";
@@ -10039,8 +10058,8 @@ document.addEventListener("click", async e => {
       if(typed.replace(/\s+/g, " ").toLowerCase() !== want.replace(/\s+/g, " ").toLowerCase()){ colWipe = 1; colSay(c && c.name ? "That doesn't match the college's name. Type it exactly." : "Type the word delete to confirm.", true); keep(); const i = $("#cwName"); if(i) i.focus(); return; }
       if(colWipe < 2){ colWipe = 2; renderSettings(); keep(); const b2 = $('[data-cold="wipe2"]'); if(b2) b2.focus(); setTimeout(() => { if(colWipe === 2 && !colWipeBusy){ colWipe = 1; if(view === "settings"){ const t = ($("#cwName") || {}).value || ""; renderSettings(); const i = $("#cwName"); if(i) i.value = t; } } }, 8000); return; }
       colWipeBusy = true; renderSettings(); keep();
-      try{ const j = await colCall("collegedel", {id, force: true, confirm: typed}); colWipeBusy = false; colWipe = 0; colOpen = ""; colInfo = null; ovw = null; team = null; try{ const r = await authCall("me"); me = r.me; meInfo = r; }catch{} return colSay(`${want === "delete" ? "The college" : want} has been deleted, with ${j.gone ? j.gone.people : 0} ${j.gone && j.gone.people === 1 ? "person" : "people"} and everything in it.`); }
-      catch(err){ colWipeBusy = false; colWipe = 1; colSay({confirm: "That doesn't match the college's name. Type it exactly.", paying: "This college pays by card. Cancel its plan first, then delete it.", own: "You're working inside this college. Work inside another one first.", last: "This is the only college, so it can't be deleted."}[err && err.code] || colErr(err), true); keep(); return; } }
+      try{ const j = await colCall("collegedel", {id, force: true, confirm: typed}); colWipeBusy = false; colWipe = 0; colOpen = ""; colInfo = null; ovw = null; team = null; try{ const r = await authCall("me"); me = r.me; meInfo = r; }catch{} return colSay(`${want === "delete" ? "The college" : want} has been deleted. It's kept for 14 days, then removed for good. You can put it back from the list below until then.`); }
+      catch(err){ colWipeBusy = false; colWipe = 1; colSay({confirm: "That doesn't match the college's name. Type it exactly.", paying: "This college is still paying by card. Cancel its plan first, then you can delete it straight away.", own: "You're working inside this college. Work inside another one first.", last: "This is the only college, so it can't be deleted."}[err && err.code] || colErr(err), true); keep(); return; } }
     if(k === "nocolor"){ await colCall("collegeset", {id, color: ""}); await colBrand(id); return colSay("Back to Crafticulum's own colour."); }
     if(k === "nologo"){ await colCall("collegeset", {id, logo: ""}); await colBrand(id); return colSay("Logo removed."); }
     if(k === "deptadd"){ const name = $("#cdDeptNew").value.trim(); if(!name) return colSay("Give the department a name.", true); await authCall("deptadd", {name, college: id}); await colRefresh(); await colCall("colleges"); return colSay(`Added ${name}.`); }
@@ -10227,6 +10246,85 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-myco
 /* anything that changes people or departments makes the overview fetch again next time it's shown */
 const _teamLoad37 = typeof teamLoad === "function" ? teamLoad : null;
 if(_teamLoad37) teamLoad = function(){ myCol = null; return _teamLoad37.apply(this, arguments); };
+
+/* ===== round 35: notifications on your own devices. The server sends the ones that come from other people; this page raises the ones about its own work when you're looking elsewhere ===== */
+let pushInfo = null, pushBusy = false, pushHere = null, pushMsg = "", pushErr = false;
+const pushCan = () => !window.claude && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const pushIos = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const pushKey = k => { const s = atob(k.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - k.length % 4) % 4)); return Uint8Array.from(s, c => c.charCodeAt(0)); };
+const pushDevice = () => { const u = navigator.userAgent, os = /iPhone/.test(u) ? "iPhone" : /iPad/.test(u) || pushIos() ? "iPad" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /Mac OS X/.test(u) ? "Mac" : /CrOS/.test(u) ? "Chromebook" : /Linux/.test(u) ? "Linux" : "Device", br = /Edg\//.test(u) ? "Edge" : /Firefox\//.test(u) ? "Firefox" : /Chrome\//.test(u) ? "Chrome" : /Safari\//.test(u) ? "Safari" : "browser"; return os + ", " + br; };
+const pushId = async ep => { try{ const h = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(ep)); return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 12); }catch{ return ""; } };
+async function pushLoad(){ if(pushBusy) return; pushBusy = true;
+  try{ pushInfo = await authCall("pushget"); pushHere = null;
+    if(pushCan()){ const reg = await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(() => r(null), 2500))]); const sub = reg && await reg.pushManager.getSubscription(); if(sub){ const id = await pushId(sub.endpoint); pushHere = pushInfo.devices.some(d => d.id === id) ? id : null; } } }
+  catch{ pushInfo = pushInfo || {failed: true}; }
+  finally{ pushBusy = false; if(view === "settings") renderSettings(); if(pushHere) pushDatesSync(); } }
+const pushSay = (t, bad) => { pushMsg = t; pushErr = !!bad; if(view === "settings") renderSettings(); setTimeout(() => { if(pushMsg === t){ pushMsg = ""; if(view === "settings") renderSettings(); } }, 7000); };
+async function pushOn(){
+  try{ if(!pushInfo || !pushInfo.key) return pushSay("This site can't send notifications yet.", true);
+    const perm = await Notification.requestPermission(); if(perm !== "granted") return pushSay(perm === "denied" ? "Notifications are blocked for this site in your browser. Allow them in the browser's site settings, then try again." : "Notifications weren't allowed, so nothing was switched on.", true);
+    const reg = await navigator.serviceWorker.ready; let sub = await reg.pushManager.getSubscription();
+    if(sub){ const k = sub.options && sub.options.applicationServerKey ? btoa(String.fromCharCode(...new Uint8Array(sub.options.applicationServerKey))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "") : ""; if(k && k !== pushInfo.key){ await sub.unsubscribe(); sub = null; } }
+    if(!sub) sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: pushKey(pushInfo.key)});
+    const j = await authCall("pushsub", {sub: sub.toJSON(), ua: pushDevice()}); pushInfo = j; pushHere = j.this || null; pushSay("Notifications are on for this device."); pushDatesSync(true);
+  }catch(e){ console.error(e); pushSay("Couldn't switch notifications on here. Try again.", true); } }
+async function pushOff(id){
+  try{ let ep = ""; if(id === pushHere && pushCan()){ const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription(); if(sub){ ep = sub.endpoint; await sub.unsubscribe().catch(() => {}); } }
+    pushInfo = await authCall("pushunsub", {id, endpoint: ep}); if(id === pushHere) pushHere = null; pushSay(id ? "Switched off for that device." : "Switched off.");
+  }catch{ pushSay("Couldn't switch that off. Try again.", true); } }
+/* assignment dates for the next ten weeks, as this person's own planning shows them, so the server can remind on the right days */
+function pushDatesList(){ const out = [], seen = new Set(), from = todayIso(), to = addDays(from, 70);
+  try{ UNITS.forEach(L => (L.u || []).forEach(u => unitDues(L.s, L, u).forEach(x => { [["out", x.out], ["due", x.due], ["resub", x.resub]].forEach(([k, d]) => { if(!d || d < from || d > to) return; const id = x.b.id + "|" + k + "|" + d; if(seen.has(id)) return; seen.add(id); out.push({d, k, t: x.b.a, u: String(u.t || "").replace(/:.*/, "")}); }); }))); }catch(e){ console.error(e); }
+  return out.sort((a, b) => a.d < b.d ? -1 : 1).slice(0, 300); }
+let pushDatesT = 0;
+function pushDatesSync(force){ if(!pushHere || window.claude) return; clearTimeout(pushDatesT); pushDatesT = setTimeout(() => { try{ const items = pushDatesList(), sig = JSON.stringify(items) + "|" + todayIso(); if(!force && lsGet("cc_push_dates") === sig) return; authCall("pushdates", {items}).then(() => lsSet("cc_push_dates", sig)).catch(() => {}); }catch{} }, force ? 300 : 4000); }
+const _saveAsg38 = saveAsg;
+saveAsg = function(){ const r = _saveAsg38.apply(this, arguments); try{ pushDatesSync(); }catch{} return r; };
+/* work this page finished while you were looking at something else */
+async function localNotify(kind, title, body){
+  try{ if(window.claude || !pushHere || !pushInfo || !pushInfo.prefs || !pushInfo.prefs[kind] || !document.hidden || Notification.permission !== "granted") return false;
+    const reg = await navigator.serviceWorker.ready; await reg.showNotification(title, {body: body || "", icon: "icon-192.png", badge: "favicon-32.png", tag: "local-" + kind, data: {url: ""}}); return true; }catch{ return false; } }
+const _buildLesson38 = buildLesson;
+buildLesson = async function(){ const r = await _buildLesson38.apply(this, arguments); try{ if(!batch.running) localNotify("builds", "Your lesson is ready", (r && r.title) || ""); }catch{} return r; };
+let batchWas = false;
+const _drawBatch38 = drawBatch;
+drawBatch = function(){ const r = _drawBatch38.apply(this, arguments); try{ if(batchWas && !batch.running && batch.total) localNotify("builds", batch.done === 1 ? "1 lesson built" : batch.done + " lessons built", batch.failed ? batch.failed + " couldn't be built. Open Planning to try them again." : "The whole set is ready in Planning."); batchWas = batch.running; }catch{} return r; };
+let mkWas = "";
+setInterval(() => { try{ if(typeof markerSM === "undefined" || !markerSM || !markerSM.run) return; const s = markerSM.run("aiState"); if(mkWas === "running" && s === "done") localNotify("builds", "Second Marker has finished", "The check is ready for you to go through."); if(mkWas === "running" && s === "error") localNotify("builds", "Second Marker couldn't finish", "Open it to see what went wrong."); mkWas = s; }catch{} }, 2000);
+try{ ST_GROUPS.find(g => g[0] === "you")[2].push("stNotify"); }catch{}
+const PUSH_KINDS = [["builds", "When something finishes", "A lesson, a set of lessons or a Second Marker check that finishes while you're on another tab or app.", () => true],
+  ["dates", "Assignment dates", "The day before and on the day an assignment is handed out, is due in, or has resubmissions due.", () => true],
+  ["review", "Comments and sign-off", "A comment on your lesson, a change waiting for your sign-off, or your change being signed off.", () => true],
+  ["people", "People and messages", "Someone waiting for you to approve their account, and messages from the contact page.", () => !!me.canTeam || me.role === "superadmin"],
+  ["plan", "Plan and payments", "Nearly at this month's limit, at it, or a payment that didn't go through.", () => me.role === "owner" && !!(meInfo && meInfo.billing)]];
+function notifySection(sec){
+  if(window.claude || !me || me.demo) return "";
+  if(!pushInfo){ pushLoad(); return sec("stNotify", "Notifications", "", `<p class="small text-body-secondary mb-0">Loading...</p>`); }
+  const can = pushCan(), ok = !pushInfo.failed && pushInfo.ok, others = (pushInfo.devices || []).filter(d => d.id !== pushHere), blocked = can && Notification.permission === "denied";
+  const state = pushInfo.failed ? `<p class="small mb-2">Couldn't load your notification settings just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-push="retry">Try again</button>`
+    : !ok ? `<div class="alert alert-secondary small mb-0">This server can't send notifications yet. It needs PHP's OpenSSL and cURL switched on, which your web host can do.</div>`
+    : !can ? `<div class="alert alert-info small mb-0">${pushIos() ? "On an iPhone or iPad, add Crafticulum to your Home Screen first: press Share, then Add to Home Screen. Open it from there and come back to this page to switch notifications on." : "This browser can't show notifications from websites. Try Chrome, Edge, Firefox or Safari, on a page that starts https."}</div>`
+    : pushHere ? `<div class="d-flex flex-wrap gap-2 align-items-center"><span class="badge text-bg-success">On for this device</span><span class="small text-body-secondary">${esc(pushDevice())}</span><button type="button" class="btn btn-sm btn-outline-primary ms-auto" data-push="test">Send a test</button><button type="button" class="btn btn-sm btn-outline-secondary" data-push="off" data-id="${esc(pushHere)}">Turn off here</button></div>`
+    : `<div class="d-flex flex-wrap gap-3 align-items-center"><button type="button" class="btn btn-primary" data-push="on" ${blocked ? "disabled" : ""}>Turn on notifications on this device</button><span class="small text-body-secondary">${blocked ? "Notifications are blocked for this site in your browser. Allow them in the browser's site settings first." : "Your browser will ask you to allow them."}</span></div>`;
+  return sec("stNotify", "Notifications", "A nudge on this phone, tablet or computer when something needs you or has finished. Each device is switched on separately, and a notification never contains learner work.", `
+    ${state}
+    ${pushMsg ? `<div class="idea-msg mt-2${pushErr ? " err" : ""}" role="status">${esc(pushMsg)}</div>` : ""}
+    ${ok ? `<h3 class="h6 mt-4 mb-2">What to tell you about</h3><div class="push-kinds">${PUSH_KINDS.filter(k => k[3]()).map(([k, t, d]) => `<div class="form-check form-switch push-k"><input class="form-check-input" type="checkbox" role="switch" id="pk-${k}" data-pushk="${k}" ${pushInfo.prefs[k] ? "checked" : ""}><label class="form-check-label" for="pk-${k}"><span class="fw-semibold">${t}</span><span class="d-block small text-body-secondary">${d}</span></label></div>`).join("")}</div>
+    <div class="form-text">Assignment reminders use the dates in your planning${pushInfo.dates ? `: ${pushInfo.dates} coming up in the next ten weeks` : ""}. They are sent after 7 in the morning.</div>` : ""}
+    ${others.length ? `<h3 class="h6 mt-4 mb-2">Your other devices</h3><ul class="list-unstyled small mb-0 push-dev">${others.map(d => `<li><span>${esc(d.ua || "A device")} <span class="text-body-secondary">· switched on ${d.added ? new Date(d.added * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"}) : ""}</span></span><button type="button" class="btn btn-sm btn-link text-danger p-0" data-push="off" data-id="${esc(d.id)}">Turn off</button></li>`).join("")}</ul>` : ""}
+    ${pushInfo.cron ? `<details class="conf-g mt-3"><summary>Make the morning reminders reliable (super admin)</summary><p class="small text-body-secondary mb-2">Assignment reminders go out the first time anyone opens the site after 7am. To send them even on a day nobody signs in, ask your web host's scheduled jobs (cron) to open this address once a day, a little after 7am:</p><div class="input-group input-group-sm"><input class="form-control" id="pushCron" readonly value="${esc(pushInfo.cron)}" aria-label="Address for the scheduled job"><button type="button" class="btn btn-outline-secondary" data-push="copycron">Copy</button></div></details>` : ""}`);
+}
+const _accountSections38 = accountSections;
+accountSections = function(sec){ return _accountSections38.apply(this, arguments) + notifySection(sec); };
+document.addEventListener("click", async e => { const b = e.target.closest("[data-push]"); if(!b) return; const k = b.dataset.push;
+  if(k === "retry"){ pushInfo = null; return renderSettings(); }
+  if(k === "on"){ b.disabled = true; return pushOn(); }
+  if(k === "off") return pushOff(b.dataset.id);
+  if(k === "copycron"){ try{ await navigator.clipboard.writeText($("#pushCron").value); pushSay("Copied."); }catch{ $("#pushCron").select(); } return; }
+  if(k === "test"){ b.disabled = true; try{ const j = await authCall("pushtest"); pushSay(j.sent ? "Sent. It should appear in a moment." : "The test couldn't be delivered to this device. Turn notifications off here and on again.", !j.sent); if(!j.sent) pushLoad(); }catch{ pushSay("Couldn't send the test. Try again.", true); } } });
+document.addEventListener("change", async e => { const t = e.target; if(!t || !t.dataset || !t.dataset.pushk) return; try{ pushInfo = await authCall("pushprefs", {prefs: {[t.dataset.pushk]: t.checked}}); }catch{ t.checked = !t.checked; pushSay("Couldn't save that. Try again.", true); } });
+/* know whether this device is on soon after sign-in, so finished builds can be announced without opening Settings first */
+setTimeout(() => { try{ if(!window.claude && typeof me !== "undefined" && me && !me.demo && !pushInfo && pushCan() && Notification.permission === "granted") pushLoad(); }catch{} }, 6000);
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

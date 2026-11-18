@@ -13,6 +13,7 @@
  */
 declare(strict_types=1);
 
+require_once __DIR__ . '/push-lib.php';
 function ccDataDir(): string { return __DIR__ . '/data'; }
 function ccEnsureData(): void {
     $d = ccDataDir();
@@ -159,8 +160,10 @@ function ccUpsell(array $a, string $college, string $k): array { $cur = ccPlanOf
     return ['next' => null]; }
 /* an email to whoever manages a college */
 function ccCollegeMail(array $a, string $college, string $subject, string $text): int {
-    if (!ccMailReady()) return 0; $d = ccCollegeDepts($a, $college); $n = 0;
-    foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && empty($u['demo']) && in_array((string) ($u['dept'] ?? ''), $d, true) && filter_var((string) $e, FILTER_VALIDATE_EMAIL)) { $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]); if (ccMail((string) $e, $subject, ($hi !== '' ? "Hello $hi,\n\n" : "Hello,\n\n") . $text . "\n\nCrafticulum\n" . ccAppUrl())) $n++; }
+    $d = ccCollegeDepts($a, $college); $n = 0; $ready = ccMailReady();
+    foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && empty($u['demo']) && in_array((string) ($u['dept'] ?? ''), $d, true) && filter_var((string) $e, FILTER_VALIDATE_EMAIL)) { $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]);
+        ccNotify((string) $e, 'plan', $subject, (string) strtok(trim($text), "\n"), ccAppUrl());
+        if ($ready && ccMail((string) $e, $subject, ($hi !== '' ? "Hello $hi,\n\n" : "Hello,\n\n") . $text . "\n\nCrafticulum\n" . ccAppUrl())) $n++; }
     return $n;
 }
 /* nearly at a plan's monthly limit, or at it: tell the manager once, by email */
@@ -363,6 +366,15 @@ function ccPublic(array $u): array {
             'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
 
+/* ---------- deleted colleges: kept out of sight for a while, then removed ---------- */
+const CC_DELETED_DAYS = 14;
+function ccDeletedRm(string $p): void { $base = ccDataDir() . '/_deleted/'; if (strpos($p, $base) !== 0 || strlen($p) <= strlen($base) || is_link($p)) return;
+    if (is_dir($p)) { foreach (array_diff((array) @scandir($p), ['.', '..']) as $x) ccDeletedRm($p . '/' . $x); @rmdir($p); } elseif (is_file($p)) @unlink($p); }
+function ccDeletedList(): array { $o = []; foreach ((array) glob(ccDataDir() . '/_deleted/*/meta.json') as $f) { $m = json_decode((string) @file_get_contents((string) $f), true); if (!is_array($m)) continue; $at = (int) ($m['at'] ?? 0);
+        $o[] = ['hold' => basename(dirname((string) $f)), 'name' => (string) ($m['name'] ?? ''), 'at' => $at, 'by' => (string) ($m['by'] ?? ''), 'people' => count((array) ($m['users'] ?? [])), 'depts' => count((array) ($m['depts'] ?? [])), 'daysLeft' => max(0, (int) ceil(($at + CC_DELETED_DAYS * 86400 - time()) / 86400))]; }
+    usort($o, fn($x, $y) => $y['at'] <=> $x['at']); return $o; }
+function ccDeletedPurge(): int { $n = 0; foreach ((array) glob(ccDataDir() . '/_deleted/*', GLOB_ONLYDIR) as $d) { $d = (string) $d; $m = json_decode((string) @file_get_contents($d . '/meta.json'), true); $at = is_array($m) ? (int) ($m['at'] ?? 0) : (int) @filemtime($d);
+        if ($at > 0 && time() - $at >= CC_DELETED_DAYS * 86400) { ccDeletedRm($d); $n++; } } return $n; }
 /* ---------- accounts that are waiting for approval ---------- */
 function ccActive(array $u): bool { return ($u['status'] ?? 'active') === 'active'; }
 
@@ -492,6 +504,7 @@ function ccMailParts(string $subject, string $text): array {
 function ccMail(string $to, string $subject, string $text, string $replyTo = ''): bool {
     $rt = $replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n<>]/', $replyTo) ? "Reply-To: <$replyTo>\r\n" : '';
     $GLOBALS['ccMailErr'] = '';
+    try { ccPushForMail($to, $subject, $text); } catch (\Throwable $x) {}
     $fail = function (string $why): bool { $GLOBALS['ccMailErr'] = $why; ccErr('email', $why); return false; };
     if (!ccMailReady()) return $fail('Email isn\'t set up yet. Add the mail server and Send from address.');
     if (!filter_var($to, FILTER_VALIDATE_EMAIL)) return $fail('That isn\'t an email address.');
