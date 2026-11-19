@@ -1665,4 +1665,25 @@ FIVE AI TOOLS TO START WITH (v114)
   - Only words people read have changed. Nothing stored has been renamed,
     so no data needs moving.
 
+WHAT'S NEW IN v115
+
+THE ROADMAP, REDESIGNED (v115)
+  - A banner at the top with how many things are planned, how many are out
+    and how many votes you've given.
+  - "Most wanted right now": the top five by votes, with a bar for each.
+  - Filters for Everything, AI tools, Features, AI and Works with, each
+    with a count.
+  - A timeline across the page from Now to June 2028. Press a quarter to
+    jump to it.
+  - Each quarter has its own marker down the side, and each item a colour
+    for its kind (indigo AI tools, purple AI, blue Works with, amber
+    Features). Things you've voted for are tinted.
+  - "Most wanted" ranks everything, numbered.
+  - Works on a phone (the timeline scrolls sideways) and in dark mode.
+
+THE LAST OF "COLLEGE" IN THE SUPER ADMIN PAGES (v115)
+  The site overview's tiles and columns, "paying institutions", "Deleted
+  institutions", "This is the only institution", "Institution with no name
+  yet" and a few more messages now say institution too.
+
 NO CHANGES TO config.php

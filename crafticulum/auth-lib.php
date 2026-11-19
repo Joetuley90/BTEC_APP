@@ -114,7 +114,7 @@ function ccPlanUsed(string $college, ?array $u = null): array { $r = (array) (((
 function ccSaved(string $college = '', ?array $u = null): array { $s = (array) (($u ?? ccUsageRead())['saved'] ?? []); $r = (array) ($college === '' ? ($s['total'] ?? []) : (($s['colleges'] ?? [])[$college] ?? [])); return ['n' => (int) ($r['n'] ?? 0), 'mins' => (int) ($r['mins'] ?? 0)]; }
 function ccCollegePeople(array $a, string $college): int { $d = ccCollegeDepts($a, $college); $s = ccSupers(); return count(array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, $s, true) && in_array((string) ($u['dept'] ?? ''), $d, true), ARRAY_FILTER_USE_BOTH)); }   // super admins belong to no institution, so they never take a place
 function ccCollegeDepts(array $a, string $college): array { return array_values(array_filter(array_keys($a['depts']), fn($d) => $d !== CC_DEMO_DEPT && ccCollegeOf($a, (string) $d) === $college)); }
-/* what a page needs to know about the site. With an institution named, that institution's name, logo and colour; without one, the site's only college, or none if there are several */
+/* what a page needs to know about the site. With an institution named, that institution's name, logo and colour; without one, the site's only institution, or none if there are several */
 function ccSite(?array $a = null, ?string $college = null): array { $a = $a ?? ccAccounts(); $s = (array) ($a['site'] ?? []); $ids = ccCollegeIds($a);
     $one = $college !== null && isset($a['colleges'][$college]) ? $college : (count($ids) === 1 ? (string) $ids[0] : '');
     $c = $one !== '' ? ccCollege($a, $one) : ['name' => '', 'logo' => '', 'color' => '', 'contact' => '', 'plain' => !empty($s['plain'])];
@@ -411,7 +411,7 @@ function ccHandinPurge(): int { $n = 0; $cut = time() - CC_HANDIN_DAYS * 86400;
         if (!$keep && (int) ($j['created'] ?? 0) < $cut - 30 * 86400) { foreach ((array) glob($dir . '/*.bin') as $p) @unlink((string) $p); @rmdir($dir); @unlink($f); @unlink($f . '.lock'); continue; }   // an old, empty link goes too
         if ($ch) { $j['files'] = $keep; @file_put_contents($f, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX); } }
     return $n; }
-/* ---------- deleted colleges: kept out of sight for a while, then removed ---------- */
+/* ---------- deleted institutions: kept out of sight for a while, then removed ---------- */
 const CC_DELETED_DAYS = 14;
 function ccDeletedRm(string $p): void { $base = ccDataDir() . '/_deleted/'; if (strpos($p, $base) !== 0 || strlen($p) <= strlen($base) || is_link($p)) return;
     if (is_dir($p)) { foreach (array_diff((array) @scandir($p), ['.', '..']) as $x) ccDeletedRm($p . '/' . $x); @rmdir($p); } elseif (is_file($p)) @unlink($p); }

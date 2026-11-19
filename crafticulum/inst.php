@@ -18,7 +18,7 @@ $r = explode(':', (string) @file_get_contents($rf)); $n = ((int) ($r[0] ?? 0) ==
 if ($n > 240) { http_response_code(429); header('Retry-After: 30'); echo '{"error":"slow"}'; exit; }
 if (random_int(1, 200) === 1) foreach ((array) glob($dir . '/*.txt') as $f) if (@filemtime((string) $f) < time() - 3600) @unlink((string) $f);
 $res = ccInstSuggest($q);
-/* which of them already have a workspace here: only colleges whose manager has said "this is us" */
+/* which of them already have a workspace here: only institutions whose manager has said "this is us" */
 $linked = []; foreach ((array) (ccAccounts()['colleges'] ?? []) as $cid => $c) if (!empty($c['inst']) && empty($c['off'])) foreach ((array) $c['inst'] as $li) $linked[] = [(string) $cid, $li];
 foreach ($res as $i => $x) { $res[$i]['cols'] = []; foreach ($linked as [$cid, $li]) if (ccInstSame($li, $x)) $res[$i]['cols'][] = $cid; }
 header('Cache-Control: ' . (!$res ? 'no-store' : ($linked ? 'private, max-age=300' : 'public, max-age=3600')));   // an empty answer is never kept: the list may be read in a minute later
