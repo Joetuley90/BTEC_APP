@@ -55,6 +55,7 @@ function ccInstImport(array $def, string $by): array {
     else { fclose($out); if ($n < 1) { @unlink($outF . '.tmp'); return ['error' => 'norows']; } if (!@rename($outF . '.tmp', $outF)) return ['error' => 'save']; }
     $log = ccInstLog(); $log['sources'][$id] = ['id' => $id, 'label' => mb_substr((string) ($def['label'] ?? $id), 0, 80), 'nation' => $nation, 'url' => (string) ($def['url'] ?? ''), 'file' => !empty($def['file']) ? basename((string) $def['file']) : '', 'map' => $map, 'rows' => $n, 'closed' => $closed, 'at' => time(), 'by' => $by, 'auto' => !empty($def['auto']) && empty($def['file'])];
     array_unshift($log['runs'], ['id' => $id, 'from' => $from, 'rows' => $n, 'closed' => $closed, 'at' => time(), 'by' => $by]); ccInstLogSave($log);
+    ccInstCacheClear();
     return ['rows' => $n, 'closed' => $closed, 'id' => $id, 'used' => $used, 'from' => $from]; }
 /* lists set to refresh themselves are read again once a week, from the daily scheduled job */
 function ccInstAuto(): int { $n = 0; $l0 = ccInstLog();
@@ -143,3 +144,21 @@ function ccProfileSet(string $user, array $in): array { $p = ccProfileClean($in)
 function ccMemberStatus(string $user, array $inst, string $status, string $college, string $by = ''): void { $db = ccInstDb(); if (!$db) return; try { $db->prepare('UPDATE institution_memberships SET status = ?, college = ?, ' . ($status === 'requested' ? 'requested_at' : 'decided_at') . ' = ?, decided_by = ? WHERE user = ? AND ((ref <> \'\' AND ref = ?) OR (lower(name) = lower(?) AND postcode = ?))')->execute([$status, $college, time(), $by, $user, (string) ($inst['ref'] ?? ''), (string) ($inst['name'] ?? ''), (string) ($inst['postcode'] ?? '')]); } catch (Throwable $e) {} }
 function ccInstSame(array $a, array $b): bool { $ra = trim((string) ($a['ref'] ?? '')); $rb = trim((string) ($b['ref'] ?? '')); if ($ra !== '' && $rb !== '') return $ra === $rb && (string) ($a['source'] ?? '') === (string) ($b['source'] ?? '') || $ra === $rb && (($a['source'] ?? '') === '' || ($b['source'] ?? '') === '');
     return strtolower(trim((string) ($a['name'] ?? ''))) === strtolower(trim((string) ($b['name'] ?? ''))) && strtoupper(str_replace(' ', '', (string) ($a['postcode'] ?? ''))) === strtoupper(str_replace(' ', '', (string) ($b['postcode'] ?? ''))) && trim((string) ($a['postcode'] ?? '')) !== ''; }
+
+/* ---------- as-you-type suggestions for the sign-up pages: open institutions only, names that start with what was typed first.
+   Short searches are kept on disk until the next import, so the common ones cost nothing ---------- */
+function ccInstCacheClear(): void { foreach ((array) glob(ccInstDir() . '/cache/*.json') as $f) @unlink((string) $f); }
+function ccInstSuggest(string $q, int $max = 8): array {
+    $q = trim((string) preg_replace('/\s+/', ' ', mb_strtolower($q))); if (mb_strlen($q) < 2 || mb_strlen($q) > 60) return [];
+    $cdir = ccInstDir() . '/cache'; $cf = $cdir . '/' . sha1($q . '|' . $max) . '.json'; $short = mb_strlen($q) <= 8;
+    if ($short && is_file($cf)) { $j = json_decode((string) @file_get_contents($cf), true); if (is_array($j)) return $j; }
+    $words = explode(' ', $q); $pcq = str_replace(' ', '', $q); $out = [];
+    if ($db = ccInstDb()) { $w = []; $args = []; $esc = fn(string $x): string => addcslashes($x, '%_\\');
+        foreach (array_slice($words, 0, 6) as $x) { $w[] = "search LIKE ? ESCAPE '\\'"; $args[] = '%' . $esc($x) . '%'; } $sql = '(' . implode(' AND ', $w) . ')'; if (strlen($pcq) >= 5) { $sql = '(' . $sql . ' OR pc_key = ?)'; $args[] = $pcq; }
+        $st = $db->prepare("SELECT ref, name, town, postcode, type, nation, source FROM institutions WHERE closed = 0 AND $sql ORDER BY (lower(name) LIKE ? ESCAPE '\\') DESC, (search LIKE ? ESCAPE '\\') DESC, length(name), name LIMIT " . ($max * 3));
+        $st->execute(array_merge($args, [$esc($q) . '%', '% ' . $esc($words[0]) . '%'])); $seen = [];
+        foreach ($st as $r) { $k = strtolower($r['name'] . '|' . $r['postcode']); if (isset($seen[$k])) continue; $seen[$k] = 1; $out[] = array_map('strval', $r); if (count($out) >= $max) break; } }
+    else { $all = array_values(array_filter(ccInstSearch($q, '', $max * 4), fn($r) => empty($r['closed']))); $rank = fn(array $r): int => (strpos(mb_strtolower($r['name']), $q) === 0 ? 0 : (preg_match('/\b' . preg_quote($words[0], '/') . '/iu', $r['name']) ? 1 : 2)) * 1000 + mb_strlen($r['name']);
+        usort($all, fn($a, $b) => $rank($a) <=> $rank($b)); foreach (array_slice($all, 0, $max) as $r) { unset($r['closed']); $out[] = $r; } }
+    if ($short) { if (!is_dir($cdir)) @mkdir($cdir, 0700, true); @file_put_contents($cf, json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX); }
+    return $out; }
