@@ -774,12 +774,12 @@ if ($action === 'collegeget') {
     out(200, ['saved' => ccSaved($id), 'planName' => $pl['name'], 'limits' => ['builds' => $pl['builds'], 'checks' => $pl['checks'], 'people' => $pl['people'], 'depts' => $pl['depts']], 'id' => $id, 'name' => $c['name'], 'contact' => $c['contact'], 'color' => $c['color'], 'logo' => $c['logo'], 'plain' => $c['plain'], 'off' => $c['off'], 'cap' => $c['cap'], 'plan' => $c['plan'], 'paid' => !empty($c['bill']['sub']), 'cancelled' => !empty($c['bill']['sub']) && !empty($c['bill']['cancelAt']), 'billStatus' => (string) ($c['bill']['status'] ?? ''),
               'self' => !empty($a['colleges'][$id]['self']), 'created' => $c['created'], 'depts' => $depts, 'people' => $people, 'lessons' => $lessons, 'calls' => $calls, 'used' => ccPlanUsed($id, $u), 'log' => array_slice($log, 0, 12), 'billing' => ccBillingOn(), 'mail' => ccMailReady()]);
 }
-/* a deleted college waits here for 14 days, then goes for good. Until then it can be put back */
+/* a deleted institution waits here for 14 days, then goes for good. Until then it can be put back */
 if (in_array($action, ['collegerestore', 'collegepurge'], true)) {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
     $hid = (string) ($body['hold'] ?? ''); $hold = ccDataDir() . '/_deleted/' . $hid; if (!preg_match('/^[a-z0-9][a-z0-9-]*-\d{9,11}$/', $hid) || !is_file($hold . '/meta.json')) out(404, ['error' => 'not_found']);
     $meta = json_decode((string) @file_get_contents($hold . '/meta.json'), true); if (!is_array($meta)) out(404, ['error' => 'not_found']);
-    if ($action === 'collegepurge') { ccDeletedRm($hold); ccLog($me['dept'], $me, 'removed a deleted college for good', (string) ($meta['name'] ?? '')); out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList()]); }
+    if ($action === 'collegepurge') { ccDeletedRm($hold); ccLog($me['dept'], $me, 'removed a deleted institution for good', (string) ($meta['name'] ?? '')); out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList()]); }
     $cid = (string) ($meta['id'] ?? ''); if ($cid === '' || isset($a['colleges'][$cid])) out(409, ['error' => 'exists']);
     foreach ((array) ($meta['depts'] ?? []) as $d => $r) if (isset($a['depts'][(string) $d])) out(409, ['error' => 'exists']);
     foreach ($a['colleges'] as $c) if ((string) ($meta['name'] ?? '') !== '' && strcasecmp((string) ($c['name'] ?? ''), (string) $meta['name']) === 0) out(409, ['error' => 'name']);
@@ -787,7 +787,7 @@ if (in_array($action, ['collegerestore', 'collegepurge'], true)) {
     $back = 0; $skipped = []; foreach ((array) ($meta['users'] ?? []) as $e => $u) { if (isset($a['users'][(string) $e])) { $skipped[] = (string) $e; continue; } $a['users'][(string) $e] = (array) $u; $back++; }   // anyone who has since joined somewhere else stays where they are
     $base = ccDataDir(); foreach ((array) ($meta['moved'] ?? []) as $rel) { $rel = (string) $rel; if ($rel === '' || strpos($rel, '..') !== false || $rel[0] === '/') continue; $from = $hold . '/files/' . $rel; $to = $base . '/' . $rel; if (!file_exists($from) || file_exists($to)) continue; if (!is_dir(dirname($to))) @mkdir(dirname($to), 0700, true); @rename($from, $to); }
     if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-    ccDeletedRm($hold); ccLog($me['dept'], $me, 'put a deleted college back', (string) ($meta['name'] ?? ''));
+    ccDeletedRm($hold); ccLog($me['dept'], $me, 'put a deleted institution back', (string) ($meta['name'] ?? ''));
     out(200, ['colleges' => collegeList($a), 'depts' => deptList($a), 'deleted' => ccDeletedList(), 'restored' => ['id' => $cid, 'people' => $back, 'skipped' => $skipped]]);
 }
 if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], true)) {
@@ -876,7 +876,7 @@ function canManage(array $u, array $me, ?array $a = null): bool {
     if ($me['role'] === 'owner') {
         if (($u['role'] ?? '') === 'owner' && ccActive($u)) return false;
         $d = (string) (ccActive($u) ? ($u['dept'] ?? '') : ($u['wantDept'] ?? ''));
-        if ($d === '') return !ccActive($u) && $one;                 // someone who didn't say which department: only when this is the site's only college
+        if ($d === '') return !ccActive($u) && $one;                 // someone who didn't say which department: only when this is the site's only institution
         return isset($a['depts'][$d]) && $d !== CC_DEMO_DEPT && ccCollegeOf($a, $d) === $me['college'];
     }
     if (ccActive($u)) return ($u['role'] ?? 'teacher') === 'teacher' && ($u['dept'] ?? '') === $me['dept'];
