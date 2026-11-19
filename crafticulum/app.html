@@ -1412,11 +1412,11 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 
 /* ===== v98: register lookup, education profile ===== */
 .demo-start{max-width:640px;margin:0 auto 18px;text-align:left}.demo-start .fs-ico{width:44px;height:44px;border-radius:5px;display:grid;place-items:center;background:var(--cc-primary-soft);color:var(--cc-primary);margin-bottom:12px}.demo-start .fs-ico svg{width:24px;height:24px}
-html.auth-embed,html.auth-embed body{background:#fff!important;overflow:hidden!important}
+html.auth-embed,html.auth-embed body{background:var(--cc-surface)!important;overflow:hidden!important}
 html.auth-embed body>*:not(#authLanding):not(#loginModal):not(script):not(style){visibility:hidden}
-html.auth-embed #authLanding{position:static!important;display:block!important;inset:auto;overflow:visible;background:#fff}
+html.auth-embed #authLanding{position:static!important;display:block!important;inset:auto;overflow:visible;background:var(--cc-surface)}
 html.auth-embed .al-hero{display:none!important}
-html.auth-embed .al-side{padding:0 22px 14px!important;justify-content:flex-start;background:#fff;gap:14px}
+html.auth-embed .al-side{padding:0 22px 14px!important;justify-content:flex-start;background:var(--cc-surface);gap:14px}
 html.auth-embed .al-card,html.auth-embed .al-foot{width:100%}
 .sp-back{position:fixed;inset:0;z-index:1080;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,4vh,48px) 12px;overflow-y:auto}body.sp-open{overflow:hidden}
 .sp-card{width:min(860px,100%);background:var(--cc-surface);border:1px solid var(--cc-line);border-radius:5px;padding:22px 24px 26px;box-shadow:var(--cc-shadow-lg)}
@@ -12780,7 +12780,7 @@ if(AUTH_EMBED){ (() => {
   document.documentElement.classList.add("auth-embed"); const base = document.createElement("base"); base.target = "_top"; document.head.appendChild(base);   // anything that leaves this page (Microsoft, the college sign-in, Terms) takes the whole window with it
   let done = false, last = 0;
   const tick = () => { if(done) return; if(typeof me !== "undefined" && me && me.email && !authGate){ done = true; return say("done"); }
-    const side = document.querySelector("#authLanding .al-side"); if(side && !$("#authLanding").hidden){ const h = Math.ceil(side.scrollHeight); if(h && h !== last){ last = h; say("size", {h}); } } };
+    const side = document.querySelector("#authLanding .al-side"); if(side && !$("#authLanding").hidden){ const h = Math.ceil(side.scrollHeight); const cs = getComputedStyle(side), key = h + cs.backgroundColor; if(h && key !== last){ last = key; say("size", {h, bg: cs.backgroundColor, fg: cs.color}); } } };   // the colours go too, so the frame around the form matches it in light and dark
   setInterval(tick, 200); addEventListener("load", tick);
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !e.defaultPrevented && !document.querySelector(".ep-hits li")) say("close"); });
 })(); }

@@ -50,7 +50,7 @@
   document.addEventListener("click", function(e){ if(e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; var a = e.target.closest ? e.target.closest("a[href]") : null; if(!a || !isApp(a) || a.target === "_blank") return; e.preventDefault(); open(a); });
   document.addEventListener("keydown", function(e){ if(back && e.key === "Escape") close(); });
   addEventListener("message", function(e){ if(e.origin !== location.origin || !frame || e.source !== frame.contentWindow) return; var d = e.data || {}; if(d.cc !== "auth") return;
-    if(d.type === "size"){ ready = true; back.classList.add("ready"); frame.style.height = Math.max(260, Math.ceil(d.h)) + "px"; }
+    if(d.type === "size"){ ready = true; back.classList.add("ready"); frame.style.height = Math.max(260, Math.ceil(d.h)) + "px"; var card = back.querySelector(".am-card"), ok = /^rgba?\([\d\s.,%\/]+\)$/; if(ok.test(d.bg || "")){ card.style.background = d.bg; frame.style.background = d.bg; } if(ok.test(d.fg || "")) card.style.color = d.fg; }
     else if(d.type === "done"){ var to = (from && from.getAttribute("href")) || "app"; clearTimeout(timer); location.href = to; }
     else if(d.type === "close") close(); });
   /* start fetching the app as soon as someone reaches for the button, so the pop-up opens quickly */
