@@ -151,15 +151,3 @@ section.blue::before{content:"";position:absolute;inset:0;background:radial-grad
 section.blue .wrap{position:relative}section.blue h2{color:#fff}section.blue .sub,section.blue .ai-note{color:#dbe1ff}section.blue .kick.dark{color:#c7d2fe}
 section.blue .card{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}section.blue .card h3{color:#fff}section.blue .card p{color:#dbe1ff}
 section.blue .meet{background:#fff;border-color:transparent;box-shadow:0 24px 60px -28px rgba(15,23,42,.7)}section.blue .meet p{color:#475569}
-
-/* ===== v109 look: flat colour, no glows, no gradient text, nothing tilted ===== */
-.hero{background:color-mix(in srgb,var(--p) 58%,#0b1020)}
-.hero::before,section.blue::before{display:none}
-.hero h1 em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#c7d2fe;-webkit-text-fill-color:currentColor}
-.demo .les{transform:none;animation:none;box-shadow:0 1px 0 rgba(0,0,0,.25)}
-.get{background:color-mix(in srgb,var(--p) 58%,#0b1020)}
-section.blue{background:color-mix(in srgb,var(--p) 58%,#0b1020)}
-.meet{background:var(--soft,#f4f5fa);box-shadow:none;border-color:var(--line)}
-section.blue .meet{background:#fff;border-color:transparent;box-shadow:none}
-.meet h3{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:inherit;-webkit-text-fill-color:currentColor}
-a.btn,.btn,button{box-shadow:none}

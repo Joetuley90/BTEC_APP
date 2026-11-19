@@ -1686,32 +1686,14 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
   .st-sec .card-body{padding:18px}
 }
 
-/* ===== v109 look. Sits last, on purpose. Square-ish corners, solid colour, hairlines instead of glows. ===== */
-:root,[data-bs-theme=light]{--bs-border-radius:5px;--bs-border-radius-sm:4px;--bs-border-radius-lg:6px;--bs-border-radius-xl:8px;--bs-border-radius-xxl:8px;--bs-border-radius-pill:6px;--cc-grad:linear-gradient(var(--cc-primary),var(--cc-primary));--cc-shadow-sm:none;--cc-shadow:0 1px 2px rgba(15,23,42,.07);--cc-shadow-lg:0 14px 34px -16px rgba(15,23,42,.32),0 1px 3px rgba(15,23,42,.08)}
-[data-bs-theme=dark]{--cc-shadow-sm:none;--cc-shadow:0 1px 2px rgba(0,0,0,.5);--cc-shadow-lg:0 16px 40px -16px rgba(0,0,0,.8)}
+/* ===== v110 look. Sits last, on purpose. Squarer corners only: the colours, gradients and glows are as they were. ===== */
+:root,[data-bs-theme=light]{--bs-border-radius:5px;--bs-border-radius-sm:4px;--bs-border-radius-lg:6px;--bs-border-radius-xl:8px;--bs-border-radius-xxl:8px;--bs-border-radius-pill:6px}
 .rounded-pill{border-radius:6px!important}.badge{border-radius:4px}
-.btn{--bs-btn-border-radius:6px;box-shadow:none!important;letter-spacing:0}
+.btn{--bs-btn-border-radius:6px}
 .btn-sm{--bs-btn-border-radius:5px}.btn-lg{--bs-btn-border-radius:6px}
 .btn:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
-.btn:not(.btn-link):active:not(:disabled){transform:translateY(1px)}
-.btn-outline-secondary{--bs-btn-border-color:var(--cc-line-strong)}
-.btn-build,.fab,.send,.btn.as-send{box-shadow:none!important}
-.send{border-radius:6px;background-color:var(--cc-primary)}.send:hover{background-image:none;background-color:var(--cc-primary-hover)}
-.form-control,.form-select{box-shadow:none}
-.form-control:focus,.form-select:focus{border-color:var(--cc-primary);box-shadow:0 0 0 3px rgba(var(--cc-primary-rgb),.16)}
+.send{border-radius:6px}
 .form-check-input:not([role=switch]):not([type=radio]){border-radius:3px}
-.side-tip{background:var(--cc-surface-2)}
-.workspace .av{background:var(--cc-primary)}
-.hero{background-image:none}
-.tk-hero{background:var(--cc-surface);border-color:var(--cc-line)}
-.as-hi{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--bs-body-color);-webkit-text-fill-color:currentColor}
-.as-log{background:var(--bs-body-bg)}
-.as-a .as-b{background:var(--cc-surface-2);border:1px solid var(--cc-line)}
-.as-u .as-b,.btn.as-send{background-image:none!important;background-color:var(--cc-primary)!important}
-.al-hero{background:color-mix(in srgb,var(--cc-primary) 58%,#0b1020)}
-.al-hero::before{display:none}
-.al-hero h1 em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#c7d2fe;-webkit-text-fill-color:currentColor}
-.al-lesson{transform:none!important;animation:none!important;box-shadow:0 1px 0 rgba(0,0,0,.2)}
 .mnav-btn{border-radius:6px}
 body:not(.mnav-open) .side .side-link[data-search]{border-radius:6px!important}
 </style>
@@ -8350,7 +8332,7 @@ function siteApply(s){
   let st = document.getElementById("siteStyle"); if(!st){ st = document.createElement("style"); st.id = "siteStyle"; document.head.appendChild(st); }
   const c = siteNow.color;
   st.textContent = c ? `:root,[data-bs-theme=light],[data-bs-theme=dark]{--cc-primary:${c};--cc-primary-hover:color-mix(in srgb,${c} 86%,#000);--cc-primary-press:color-mix(in srgb,${c} 74%,#000);--cc-primary-soft:color-mix(in srgb,${c} 12%,transparent);--cc-primary-soft-2:color-mix(in srgb,${c} 22%,transparent);--cc-primary-text:color-mix(in srgb,${c} 78%,var(--bs-body-color));--cc-fold:color-mix(in srgb,${c} 45%,#fff);--cc-grad:linear-gradient(135deg,${c} 0%,color-mix(in srgb,${c} 62%,#a855f7) 100%)}
-.al-hero{background:color-mix(in srgb,${c} 58%,#0b1020)!important}` : "";
+.al-hero{background:radial-gradient(700px 500px at 100% 0%,color-mix(in srgb,${c} 55%,#fff) ,transparent 60%),linear-gradient(150deg,color-mix(in srgb,${c} 55%,#000) 0%,${c} 55%,color-mix(in srgb,${c} 70%,#7c3aed) 100%)!important}` : "";
   const img = siteNow.logo ? `<img class="site-logo" src="${esc(siteNow.logo)}" alt="">` : "";
   document.querySelectorAll(".brand, .al-brand").forEach(b => { const old = b.querySelector(".site-logo"); if(old) old.remove(); const svg = b.querySelector("svg"); if(svg) svg.style.display = img ? "none" : ""; if(img) b.insertAdjacentHTML("afterbegin", img); });
   const sm = document.querySelector(".brand small"); if(sm && siteNow.name) sm.textContent = siteNow.name;
