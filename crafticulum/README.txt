@@ -1554,4 +1554,44 @@ THE GUIDE (v111)
   learner, your staff profile and, for the super admin, All users, Colleges
   set up twice and Updates.
 
+WHAT'S NEW IN v112
+
+SIGN IN AND REGISTER IN A POP-UP (v112)
+  On the front page and the other public pages, Sign in (and "Sign in or
+  register", and the plan buttons) used to send people to a separate sign-in
+  page. Now they open a pop-up over the page they're on.
+  - It's the same sign-in and the same journey: Sign in and Register tabs,
+    Google, Microsoft, the college sign-in, email and password, the emailed
+    link, forgotten password, pick-your-college, and the "Where do you
+    work?" step. Nothing was rebuilt, so nothing behaves differently.
+  - Close it with the cross, Escape or a click outside, and you're back on
+    the page exactly where you were.
+  - Once signed in, you go straight into the app.
+  - On a phone the pop-up fills the screen.
+  - Microsoft and the college sign-in have to leave for their own page, as
+    they always did. They come back into the app.
+  - If the pop-up can't load, or scripts are off, the button goes to the
+    sign-in page as before. Links in emails still open the sign-in page.
+
+THE DEMO STARTS EMPTY AND FOLLOWS THE VISITOR (v112)
+  "Try the demo" used to open with the site's own subjects in it (on the
+  original site that meant Esports and IT, with their units and criteria)
+  and an example lesson.
+  - Now it comes with nothing built in: no subjects, units, criteria,
+    plans, forms or example lesson, and an empty library.
+  - The first thing a visitor sees is "Start with what you teach". The
+    profile steps open, they give their subject, stage and setting, and the
+    demo is then about that: the subjects in the lesson box, the suggested
+    lessons, the wording under the box, planning, results and what the AI
+    writes for.
+  - Each subject gets one open topic, "Any topic", with no criteria, so a
+    lesson is built from what they type.
+  - The Lessons page says "No lessons yet" until they build one. (The quick
+    guide still shows its sample lesson while it's running.)
+  - What a visitor fills in stays in their own browser. The demo is one
+    shared space, so their profile and subjects are never saved to the
+    server, and the next visitor starts empty. Lessons built in the demo
+    are still shared until it's emptied each night, as before.
+  - New workspaces already started empty. This brings the demo in line.
+
 NO CHANGES TO config.php
