@@ -1411,6 +1411,29 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+.ep-strip{display:none!important}
+.mnav-btn{display:none}
+@media (max-width:991.98px){
+.side .brand{flex:1 1 auto;min-width:0;order:0}.side .brand b{white-space:nowrap}
+.mnav-btn{order:3;flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px 0 10px;border:1px solid var(--cc-line);border-radius:99px;background:var(--bs-body-bg);color:var(--bs-body-color);font:600 .86rem/1 var(--bs-body-font-family);cursor:pointer}
+.mnav-btn svg{width:18px;height:18px}.mnav-btn .mnav-i2{display:none}.mnav-btn:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+body:not(.mnav-open) .side .side-link:not([data-search]){display:none!important}
+body:not(.mnav-open) .side .side-link[data-search]{order:2;display:inline-flex!important;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1px solid var(--cc-line);border-radius:50%;background:var(--bs-body-bg)}
+body.mnav-open{overflow:hidden}
+body.mnav-open .side{position:fixed!important;inset:0;z-index:1046;height:100dvh;flex-wrap:wrap;align-content:flex-start;align-items:center;overflow-y:auto;overscroll-behavior:contain;background:var(--cc-surface);-webkit-backdrop-filter:none;backdrop-filter:none;border-bottom:0;padding:10px max(14px,env(safe-area-inset-left,0px)) calc(28px + env(safe-area-inset-bottom,0px))!important;padding-top:calc(10px + env(safe-area-inset-top,0px))!important}
+body.mnav-open .side .brand{order:-2;position:sticky;top:calc(-10px - env(safe-area-inset-top,0px));z-index:2;background:var(--cc-surface);margin:-10px -8px 0 0;padding:10px 8px 8px 0;align-self:stretch}body.mnav-open .mnav-btn{order:-1;position:sticky;top:0;z-index:2;box-shadow:0 0 0 8px var(--cc-surface)}
+body.mnav-open .mnav-btn .mnav-i1{display:none}body.mnav-open .mnav-btn .mnav-i2{display:block}
+body.mnav-open .side .side-sec{display:block;flex:0 0 100%;margin-top:4px}
+body.mnav-open .side .side-nav{display:flex;flex-direction:column;gap:2px}
+body.mnav-open .side .side-link:not([hidden]):not(.side-toggle):not([data-nav="board"]){display:flex!important;align-items:center;gap:14px;width:100%;min-height:48px;padding:10px 12px;border-radius:.8rem;font-size:1.02rem;text-align:left}
+body.mnav-open .side .side-link .lbl{display:inline!important;opacity:1!important;width:auto!important}
+body.mnav-open .side .side-link svg{width:21px;height:21px;flex:none}
+body.mnav-open .side .side-link .count{position:static;margin-left:auto}
+body.mnav-open .side .side-cap:not([hidden]){display:block!important;padding:16px 12px 4px}
+body.mnav-open .side .side-foot{display:block;flex:0 0 100%;margin-top:14px;padding-top:12px;border-top:1px solid var(--cc-line)}
+body.mnav-open .bnav,body.mnav-open #fabBoard{display:none!important}
+}
+@media (max-width:991.98px) and (prefers-reduced-motion:no-preference){body.mnav-open .side .side-sec{animation:mnavIn .18s ease-out both}@keyframes mnavIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}}
 .ep-free{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid var(--cc-line)}.ep-hits .ep-free button{display:inline;width:auto;border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--cc-primary);text-decoration:underline;cursor:pointer}
 .au-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.au-bar input{flex:1 1 240px;max-width:420px}
 .au-list{margin:10px 0 0;border:1px solid var(--cc-line);border-radius:.9rem;overflow:hidden}.au-u{border-top:1px solid var(--cc-line)}.au-u:first-child{border-top:0}.au-u.open{background:var(--bs-tertiary-bg)}
@@ -12291,6 +12314,24 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
     else if(k === "del" || k === "decline"){ await authCall(k === "del" ? "userdel" : "decline", {email}); auInfo = await authCall("allusers"); auOpen = ""; auMsg = k === "del" ? `${who}'s account has been removed.` : `${who}'s request has been declined.`; if(typeof team !== "undefined") team = null; }
   }catch(err){ const c = err && (err.code || err.error); auBad = true; auMsg = c === "manager" ? "They manage a college that has other staff or a paid plan, so they can't be moved out of it. Hand it over or close it first." : c === "seats" ? "That college's plan has no free place." : c === "self" ? "You can't remove yourself." : c === "is_super" ? "Super admins are set in config.php." : "That didn't work. " + ((err && err.message) || "Try again."); }
   auBusy = false; renderSettings(); });
+
+/* ===== round 53: the menu on a phone or small tablet. The top bar is the logo, Search and a Menu button. Menu opens the whole menu, full screen, with every section named, the same as on a computer. ===== */
+const MNAV_ICO = `<svg class="mnav-i1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="mnav-i2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+const mnavOn = () => document.body.classList.contains("mnav-open");
+function mnavInit(){ const side = document.querySelector("aside.side"); if(!side || $("#mnavBtn")) return; if(!side.id) side.id = "sideMenu";
+  const brand = side.querySelector(".brand"); (brand || side.firstElementChild).insertAdjacentHTML("afterend", `<button type="button" class="mnav-btn" id="mnavBtn" aria-expanded="false" aria-controls="${side.id}" aria-label="Menu">${MNAV_ICO}<span>Menu</span></button>`); }
+function mnavSet(on){ const side = document.querySelector("aside.side"), b = $("#mnavBtn"); if(!side || !b) return; const was = mnavOn(); if(was === !!on) return;
+  document.body.classList.toggle("mnav-open", !!on); b.setAttribute("aria-expanded", on ? "true" : "false"); b.setAttribute("aria-label", on ? "Close menu" : "Menu"); b.querySelector("span").textContent = on ? "Close" : "Menu";
+  if(on){ try{ syncShell(); }catch{} side.scrollTop = 0; const cur = side.querySelector(".side-link.active") || side.querySelector(".side-link"); if(cur) setTimeout(() => { try{ cur.focus({preventScroll: true}); cur.scrollIntoView({block: "nearest"}); }catch{} }, 30); } else b.focus({preventScroll: true}); }
+document.addEventListener("click", e => { if(e.target.closest("#mnavBtn")) return mnavSet(!mnavOn()); if(!mnavOn()) return;
+  if(e.target.closest("aside.side .side-link, aside.side .brand, aside.side .side-foot button, aside.side .side-foot a")) setTimeout(() => { document.body.classList.remove("mnav-open"); const b = $("#mnavBtn"); if(b){ b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-label", "Menu"); b.querySelector("span").textContent = "Menu"; } }, 0); });   // choosing somewhere to go closes the menu
+document.addEventListener("keydown", e => { if(!mnavOn()) return; if(e.key === "Escape"){ e.preventDefault(); return mnavSet(false); }
+  if(e.key !== "Tab") return; const f = [...document.querySelectorAll("aside.side button, aside.side a[href]")].filter(x => x.offsetParent !== null && !x.disabled); if(!f.length) return; const first = f[0], last = f[f.length - 1];   // while it's open, Tab stays inside it
+  if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); } else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); } });
+try{ matchMedia("(min-width: 992px)").addEventListener("change", m => { if(m.matches && mnavOn()){ document.body.classList.remove("mnav-open"); const b = $("#mnavBtn"); if(b) b.setAttribute("aria-expanded", "false"); } }); }catch{}
+const _syncShell53 = syncShell;
+syncShell = function(){ const r = _syncShell53.apply(this, arguments); try{ mnavInit(); }catch{} return r; };
+try{ mnavInit(); }catch{}
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
