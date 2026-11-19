@@ -1294,5 +1294,26 @@ WHAT EACH PERSON CAN USE, ON THE TEAM PAGE (v104)
     department as well.
   - College managers always have everything in their college.
 
+WHAT'S NEW IN v106
+
+CLASS LISTS FROM A CSV FILE (v106)
+  Learners, Add learners: "Or bring in a class list as a CSV file".
+  - Three columns: First Name, Last Name, Student Ref/ID No. A template can be
+    downloaded from the same place.
+  - Files from other systems work too: headings like Forename, Surname,
+    Student ID or ULN are recognised in any order, commas or semicolons, and
+    other columns (email and so on) are ignored. With no headings, the columns
+    are taken as first name, last name, reference.
+  - The first rows are shown to check before anything is added.
+  - Someone already in the group (same reference, or same name) is brought up
+    to date, not added twice. A group holds up to 80.
+  - Each learner keeps all three details. The reference shows beside the name
+    in the grid and is in the download.
+  - They are kept in the teacher's own space with the class list, can be seen
+    by the leaders of the department, and are never sent to the AI.
+  - Anonymous learners: where the college has that switched on, only the
+    reference number is kept. The server removes first and last names
+    whoever sends them, and a row with no usable reference is left out.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

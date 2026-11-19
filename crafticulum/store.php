@@ -55,7 +55,9 @@ $isOwner = $legacy && ($dinfo['legacyOwner'] ?? '') === $me['email'];
 $anon = ccAnon($acc, ccCollegeOf($acc, (string) $dept));
 function anonDoc(string $p, $data) { if (!is_array($data)) return $data;
     if (preg_match('#^data/users/[^/]+/learners/#', $p)) { $s = json_decode((string) ($data['json'] ?? ''), true); if (!is_array($s) || !is_array($s['learners'] ?? null)) return $data;
-        $s['learners'] = array_values(array_filter($s['learners'], 'is_array')); $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $s['learners'])); foreach ($s['learners'] as $i => $l) $s['learners'][$i]['name'] = $n[$i];
+        $s['learners'] = array_values(array_filter($s['learners'], 'is_array'));
+        foreach ($s['learners'] as $i => $l) { unset($s['learners'][$i]['first'], $s['learners'][$i]['last']); $rf = trim((string) ($l['ref'] ?? '')); if ($rf !== '' && ccAnonOk($rf)) $s['learners'][$i]['name'] = $rf; else unset($s['learners'][$i]['ref']); }   // names from an imported list go too; a reference number stands in for the name
+        $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $s['learners'])); foreach ($s['learners'] as $i => $l) $s['learners'][$i]['name'] = $n[$i];
         $data['json'] = json_encode($s, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); return $data; }
     if (preg_match('#^data/users/[^/]+/classes/#', $p) && is_array($data['names'] ?? null)) $data['names'] = ccAnonNames(array_values($data['names']));
     return $data; }

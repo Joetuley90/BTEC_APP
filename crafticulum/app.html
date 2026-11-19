@@ -1411,6 +1411,8 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+.b-golive{border:0;border-radius:99px;background:#dc2626;color:#fff;font:700 .78rem var(--bs-body-font-family);padding:.35rem .9rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;box-shadow:0 0 0 0 rgba(220,38,38,.5)}.b-golive::before{content:"";width:8px;height:8px;border-radius:50%;border:2px solid #fff}.b-golive:hover,.b-golive:focus-visible{background:#b91c1c}.b-golive[disabled]{opacity:.7;cursor:progress}
+.ln-ref{font-size:.74rem;font-weight:500;color:var(--bs-secondary-color);font-variant-numeric:tabular-nums;margin-left:4px}.ln-csv{margin-top:16px;padding-top:14px;border-top:1px dashed var(--cc-line)}.ln-csv-p{margin-top:10px;padding:10px 12px;border:1px solid var(--cc-line);border-radius:.7rem;background:var(--bs-body-bg)}.ln-csv-p th{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--bs-secondary-color)}
 #tourSkip{background-color:#15803d!important;border-color:#15803d!important;color:#fff!important;font-weight:600}#tourSkip:hover,#tourSkip:focus-visible{background-color:#166534!important;border-color:#166534!important}
 .tm-rooms{display:grid;grid-template-columns:repeat(2,max-content);gap:1px 18px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--cc-line)}.tm-rooms-h{grid-column:1 / -1;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--bs-secondary-color);margin-bottom:2px}@media (max-width:767.98px){.tm-rooms{grid-template-columns:minmax(0,1fr)}}
 .inst-cron{margin-top:12px;padding:10px 12px;border-radius:.7rem;background:var(--bs-tertiary-bg);font-size:.84rem;display:grid;gap:6px}.inst-cronl{display:block;padding:8px 10px;border-radius:.5rem;background:var(--bs-body-bg);border:1px solid var(--cc-line);font-size:.78rem;word-break:break-all;user-select:all}
@@ -1959,6 +1961,7 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
     </div>
     <div class="b-acts">
       <span class="b-helpw"><button type="button" class="b-help" id="bHelp" hidden aria-haspopup="true">Help (0)</button><div class="b-helplist" id="bHelpList" hidden></div></span>
+      <button type="button" class="b-golive" id="bGoLive" title="Students' pages follow your board, the task and the timer" aria-label="Go live for students">Go live</button>
       <button type="button" class="b-live" id="bLive" hidden title="Live: students' pages are following the board. Click to stop." aria-label="Live lesson is on. Stop live">Live</button>
       <span class="b-msg" id="bMsg" role="status"></span>
       <button type="button" class="b-btn shot" id="bCopy" title="Copy this slide as an image">Copy</button>
@@ -11209,10 +11212,10 @@ function lnHtml(){ const s = lnSet(), U = lnU(), groups = [...new Set([...(typeo
       <div class="d-flex gap-2 align-items-end"><button type="button" class="btn btn-outline-primary" data-ln="add">${lnAdding ? "Close" : "Add learners"}</button>${s.learners.length && U ? `<button type="button" class="btn btn-outline-secondary" data-ln="csv">Download</button>` : ""}</div></div>
     ${lnAdding ? `<div class="ln-add"><label class="form-label" for="lnNames">Names, one on each line</label><textarea class="form-control" id="lnNames" rows="5" placeholder="First name and initial is enough, e.g.&#10;Aisha K&#10;Ben T"></textarea><div class="form-text">Keep to what you need to tell learners apart. Names are stored in your own space and are never sent to the AI.</div><button type="button" class="btn btn-primary mt-2" data-ln="addgo">Add to ${esc(s.name)}</button></div>` : ""}
     ${!s.learners.length ? `<div class="tk-empty"><div class="tk-empty-i">${LN_ICO}</div><div class="fw-semibold">No learners in ${esc(s.name)} yet</div><div class="small text-body-secondary">Press Add learners and paste your class list.</div></div>`
-      : !U ? `<div class="tk-empty"><div class="fw-semibold">${s.learners.length} ${s.learners.length === 1 ? "learner" : "learners"} in ${esc(s.name)}</div><div class="small text-body-secondary">Choose a unit to see and mark its criteria.</div><div class="ln-names">${s.learners.map(l => `<span class="ln-name">${esc(l.name)}<button type="button" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></span>`).join("")}</div></div>`
+      : !U ? `<div class="tk-empty"><div class="fw-semibold">${s.learners.length} ${s.learners.length === 1 ? "learner" : "learners"} in ${esc(s.name)}</div><div class="small text-body-secondary">Choose a unit to see and mark its criteria.</div><div class="ln-names">${s.learners.map(l => `<span class="ln-name">${esc(l.name)}${l.ref && l.ref !== l.name ? ` <span class="ln-ref">${esc(l.ref)}</span>` : ""}<button type="button" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></span>`).join("")}</div></div>`
       : `<div class="ln-key">${LN_STATES.slice(1).map(x => `<span><b class="ln-c ln-${x[0]}">${x[2]}</b> ${x[1]}</span>`).join("")}<span class="text-body-secondary">Press a box to change it.</span></div>
       <div class="table-responsive ln-tw"><table class="table table-sm align-middle ln-t"><thead><tr><th scope="col">Learner</th>${crit.map(c => `<th scope="col" title="${esc(c[1])}">${esc(c[0])}</th>`).join("")}<th scope="col">Achieved</th></tr></thead>
-        <tbody>${s.learners.map(l => `<tr><th scope="row">${esc(l.name)} <button type="button" class="ln-rm" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></th>${crit.map(c => cell(l, c)).join("")}<td class="text-nowrap">${done(l)} of ${crit.length}</td></tr>`).join("")}</tbody>
+        <tbody>${s.learners.map(l => `<tr><th scope="row">${esc(l.name)}${l.ref && l.ref !== l.name ? ` <span class="ln-ref">${esc(l.ref)}</span>` : ""} <button type="button" class="ln-rm" data-ln="rm" data-l="${esc(l.id)}" aria-label="Remove ${esc(l.name)}">${lnArm === l.id ? "Sure?" : "&times;"}</button></th>${crit.map(c => cell(l, c)).join("")}<td class="text-nowrap">${done(l)} of ${crit.length}</td></tr>`).join("")}</tbody>
         <tfoot><tr><th scope="row">Achieved</th>${crit.map(c => `<td>${colDone(c)}</td>`).join("")}<td></td></tr></tfoot></table></div>
       ${behind.length ? `<div class="ln-help"><div><div class="fw-semibold">Where the group needs help</div><ul class="small mb-0">${behind.map(([c, n, w]) => `<li><b>${esc(c[0])}</b> ${esc(c[1])} <span class="text-body-secondary">(${n ? n + " not yet or resubmitting" : ""}${n && w - n > 0 ? ", " : ""}${w - n > 0 ? (w - n) + " working towards" : ""})</span></li>`).join("")}</ul></div><button type="button" class="btn btn-primary flex-none" data-ln="interv">Plan an intervention session</button></div>` : ""}`}
     ${handOn ? lnHandHtml() : ""}</div>`; }
@@ -11241,7 +11244,7 @@ document.addEventListener("click", async e => { const b = e.target.closest("[dat
   if(k === "mark" && U){ const m = s.marks[U.key] || (s.marks[U.key] = {}), row = m[b.dataset.l] || (m[b.dataset.l] = {}), i = LN_STATES.findIndex(x => x[0] === (row[b.dataset.c] || "")), nx = LN_STATES[(i + 1) % LN_STATES.length];
     if(nx[0]) row[b.dataset.c] = nx[0]; else delete row[b.dataset.c]; lnSave(); const y = window.scrollY, tw = document.querySelector(".ln-tw"), x = tw ? tw.scrollLeft : 0; lnDraw(); const t2 = document.querySelector(".ln-tw"); if(t2) t2.scrollLeft = x; window.scrollTo({top: y}); const again = document.querySelector(`[data-ln="mark"][data-l="${CSS.escape(b.dataset.l)}"][data-c="${CSS.escape(b.dataset.c)}"]`); if(again) again.focus({preventScroll: true}); return; }
   if(k === "csv" && U){ const crit = U.u.c || [], m = s.marks[U.key] || {}, q = x => `"${String(x).replace(/"/g, '""')}"`, word = v => (LN_STATES.find(x => x[0] === v) || LN_STATES[0])[1];
-    const csv = [["Learner", ...crit.map(c => c[0])].map(q).join(","), ...s.learners.map(l => [l.name, ...crit.map(c => word((m[l.id] || {})[c[0]] || ""))].map(q).join(","))].join("\r\n");
+    const refs = s.learners.some(l => l.ref || l.first || l.last), csv = [["Learner", ...(refs ? ["First Name", "Last Name", "Student Ref/ID No"] : []), ...crit.map(c => c[0])].map(q).join(","), ...s.learners.map(l => [l.name, ...(refs ? [l.first || "", l.last || "", l.ref || ""] : []), ...crit.map(c => word((m[l.id] || {})[c[0]] || ""))].map(q).join(","))].join("\r\n");
     return (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: tkFile(s.name + " " + U.u.t) + ".csv", data: new Blob(["﻿" + csv], {type: "text/csv"})}); }
   if(k === "interv" && U){ const crit = U.u.c || [], m = s.marks[U.key] || {}, cnt = c => s.learners.filter(l => ["n", "r", "w"].includes((m[l.id] || {})[c[0]])).length, gaps = crit.map(c => [c, cnt(c)]).filter(x => x[1]).sort((a, b2) => b2[1] - a[1]).slice(0, 4);
     tkVals.interv = {_unit: lnUnit, gaps: "Criteria the group hasn't secured yet:\n" + gaps.map(([c, n]) => `- ${c[0]} ${c[1]} (${n} of ${s.learners.length} learners)`).join("\n"), who: gaps.some(g => g[1] > s.learners.length / 2) ? "The whole class" : "A small group", mins: 30};   // counts only: no names are sent
@@ -12079,6 +12082,55 @@ document.addEventListener("change", async e => { const t = e.target; if(!t || t.
     instInfo = await regCall("inststate"); instPick = name; instMsg = `${f.name} is on the server. Give the list a name, pick its country and press Read it in.`; }
   catch{ instBad = true; instMsg = "The file couldn't be sent. Check your connection and try again."; }
   instBusy = false; renderSettings(); const d = document.querySelector("#stInst details"); if(d) d.open = true; }, true);
+/* ===== round 46: a class list can be brought in as a CSV file: First Name, Last Name, Student Ref/ID No. Each learner keeps all three.
+   Where a college keeps learners anonymous, only the reference number is kept, here and on the server ===== */
+let lnCsvRows = null, lnCsvMsg = "", lnCsvBad = false;
+function lnCsvParse(text){ const rows = []; let row = [], cell = "", q = false; text = text.replace(/^﻿/, "");
+  for(let i = 0; i < text.length; i++){ const c = text[i];
+    if(q){ if(c === '"'){ if(text[i + 1] === '"'){ cell += '"'; i++; } else q = false; } else cell += c; }
+    else if(c === '"') q = true; else if(c === "," || c === ";" || c === "\t"){ row.push(cell); cell = ""; } else if(c === "\n" || c === "\r"){ if(c === "\r" && text[i + 1] === "\n") i++; row.push(cell); cell = ""; if(row.some(x => x.trim())) rows.push(row); row = []; } else cell += c; }
+  row.push(cell); if(row.some(x => x.trim())) rows.push(row); return rows; }
+function lnCsvRead(text){ const rows = lnCsvParse(text); if(!rows.length) return {rows: [], skipped: 0}; const clean = x => String(x == null ? "" : x).replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
+  const h = rows[0].map(x => clean(x).toLowerCase()), find = re => h.findIndex(x => re.test(x));
+  let fi = find(/^(first|fore|given)[ _]?name$|^first$|^forename$/), li = find(/^(last|sur|family)[ _]?name$|^last$|^surname$/), ri = find(/ref|\bid\b|\buln\b|student (no|number)|learner (no|number)|^number$/), ni = find(/^(full )?name$|^learner$|^student$/), body = rows;
+  if(fi >= 0 || li >= 0 || ri >= 0 || ni >= 0) body = rows.slice(1); else { fi = 0; li = 1; ri = 2; }   // no headings: taken as first name, last name, reference, in that order
+  const out = []; let skipped = 0;
+  body.forEach(r => { let first = fi >= 0 ? clean(r[fi]).slice(0, 40) : "", last = li >= 0 ? clean(r[li]).slice(0, 40) : ""; const ref = ri >= 0 ? clean(r[ri]).slice(0, 24) : "";
+    if(!first && !last && ni >= 0){ const full = clean(r[ni]), parts = full.includes(",") ? full.split(",").map(x => x.trim()).reverse() : full.split(" "); first = (parts[0] || "").slice(0, 40); last = parts.slice(1).join(" ").slice(0, 40); }
+    if(!first && !last && !ref){ skipped++; return; } out.push({first, last, ref}); });
+  return {rows: out, skipped}; }
+function lnCsvAdd(){ const s = lnSet(), anon = typeof anonOn === "function" && anonOn(), rows = lnCsvRows || []; let added = 0, updated = 0, left = 0;
+  rows.forEach((r, i) => { const name = anon ? r.ref : [r.first, r.last].filter(Boolean).join(" ") || r.ref; if(!name || (anon && !LN_CODE.test(r.ref))){ left++; return; }
+    const old = s.learners.find(l => (r.ref && l.ref && l.ref.toLowerCase() === r.ref.toLowerCase()) || l.name.toLowerCase() === name.toLowerCase());
+    if(old){ if(!anon){ old.first = r.first; old.last = r.last; old.name = name; } if(r.ref) old.ref = r.ref; updated++; return; }
+    if(s.learners.length >= 80){ left++; return; }
+    s.learners.push(anon ? {id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + i, name, ref: r.ref} : {id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + i, name, first: r.first, last: r.last, ref: r.ref}); added++; });
+  s.learners.sort((a, b) => (a.last || a.name).localeCompare(b.last || b.name, undefined, {numeric: true}) || a.name.localeCompare(b.name)); if(added || updated) lnSave();
+  lnCsvRows = null; lnCsvBad = false; lnCsvMsg = ""; toast(`${added} ${added === 1 ? "learner" : "learners"} added${updated ? `, ${updated} already in the group and brought up to date` : ""}${left ? `. ${left} left out${anon ? " (no usable reference number, or the group is full)" : " (the group is full at 80, or the row was empty)"}` : ""}.`, left && !added ? {bad: true} : undefined);
+  if(added || updated) lnAdding = false; lnDraw(); }
+const _lnHtml49 = lnHtml;
+lnHtml = function(){ let h = _lnHtml49.apply(this, arguments); if(!lnAdding) return h; const anon = typeof anonOn === "function" && anonOn(), at = h.indexOf('<button type="button" class="btn btn-primary mt-2" data-ln="addgo">'); if(at < 0) return h; const R = lnCsvRows;
+  const block = `<div class="ln-csv"><label class="form-label" for="lnCsv">Or bring in a class list as a CSV file</label><input type="file" class="form-control form-control-sm" id="lnCsv" accept=".csv,text/csv,.txt">
+    <div class="form-text">Three columns: <b>First Name</b>, <b>Last Name</b>, <b>Student Ref/ID No</b>. <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-ln-tpl>Download a template</button>. ${anon ? "Your college keeps learners anonymous, so only the reference number is kept." : "They're kept in your own space with the class list and are never sent to the AI."}</div>
+    ${lnCsvMsg ? `<div class="small mt-1 ${lnCsvBad ? "text-danger" : ""}" role="${lnCsvBad ? "alert" : "status"}">${esc(lnCsvMsg)}</div>` : ""}
+    ${R && R.length ? `<div class="ln-csv-p"><div class="table-responsive"><table class="table table-sm mb-2"><thead><tr><th scope="col">First name</th><th scope="col">Last name</th><th scope="col">Student ref</th></tr></thead><tbody>${R.slice(0, 5).map(r => `<tr><td>${anon ? `<span class="text-body-secondary">not kept</span>` : esc(r.first)}</td><td>${anon ? `<span class="text-body-secondary">not kept</span>` : esc(r.last)}</td><td>${esc(r.ref)}</td></tr>`).join("")}</tbody></table></div>${R.length > 5 ? `<div class="small text-body-secondary mb-2">and ${R.length - 5} more</div>` : ""}
+      <div class="d-flex gap-2"><button type="button" class="btn btn-primary btn-sm" data-ln-csvgo>Add ${R.length} to ${esc(lnSet().name)}</button><button type="button" class="btn btn-outline-secondary btn-sm" data-ln-csvno>Cancel</button></div></div>` : ""}</div>`;
+  return h.slice(0, at) + (R && R.length ? "" : "") + h.slice(at).replace(/(<button type="button" class="btn btn-primary mt-2" data-ln="addgo">[\s\S]*?<\/button>)/, "$1" + block); };
+document.addEventListener("change", e => { const t = e.target; if(!t || t.id !== "lnCsv" || !t.files || !t.files[0]) return; const f = t.files[0]; if(f.size > 2 * 1024 * 1024){ lnCsvRows = null; lnCsvBad = true; lnCsvMsg = "That file is too big for a class list."; return lnDraw(); }
+  const rd = new FileReader(); rd.onload = () => { try{ const r = lnCsvRead(String(rd.result || "")); lnCsvRows = r.rows.slice(0, 200); lnCsvBad = !r.rows.length; lnCsvMsg = r.rows.length ? `${r.rows.length} ${r.rows.length === 1 ? "learner" : "learners"} found in ${f.name}${r.skipped ? `, ${r.skipped} empty ${r.skipped === 1 ? "row" : "rows"} ignored` : ""}. Check the first few, then add them.` : "No learners were found in that file. It needs a first name, a last name or a reference on each row."; }catch{ lnCsvRows = null; lnCsvBad = true; lnCsvMsg = "That file couldn't be read. Save it as CSV and try again."; } lnDraw(); };
+  rd.onerror = () => { lnCsvRows = null; lnCsvBad = true; lnCsvMsg = "That file couldn't be read."; lnDraw(); }; rd.readAsText(f); }, true);
+document.addEventListener("click", e => { if(e.target.closest("[data-ln-csvgo]")) return lnCsvAdd(); if(e.target.closest("[data-ln-csvno]")){ lnCsvRows = null; lnCsvMsg = ""; lnCsvBad = false; return lnDraw(); }
+  if(e.target.closest("[data-ln-tpl]")){ const data = new Blob(["﻿First Name,Last Name,Student Ref/ID No\r\n"], {type: "text/csv"}); (downloadsApi || {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); }}).save({filename: "class-list-template.csv", data}); } });
+
+/* ----- the board: a red Go live button at the top. One press and students' pages follow the board; it becomes the Live pill, which stops it ----- */
+const _liveChip49 = liveChip;
+liveChip = function(){ const r = _liveChip49.apply(this, arguments); try{ const g = $("#bGoLive"); if(g){ g.hidden = !!live.on; g.disabled = false; g.textContent = "Go live"; } }catch{} return r; };
+document.addEventListener("click", async e => { const g = e.target.closest("#bGoLive"); if(!g) return;
+  if(current && current.example){ toast("Build or open one of your own lessons first. The example can't go live.", {bad: true}); return; }
+  if(live.on && live.id === current.id) return liveChip(); g.disabled = true; g.textContent = "Going live..."; const was = curSlide;
+  try{ await liveStart(); }catch{} liveChip(); if(live.on){ toast("You're live. Students' pages now follow your board."); } else { showSlide("students"); }   // if it couldn't start, the Students tab says why
+  if(live.on && was && curSlide !== was) showSlide(was); });
+try{ liveChip(); }catch{}
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
