@@ -1042,5 +1042,87 @@ JOINED UP (v96)
     as Word, PDF or PowerPoint. The lesson, its board and its student page are
     not changed, and lessons keep their own edit screen for those.
 
+WHAT'S NEW IN v97
+
+HOUSE RULES FOR THE AI (v97)
+  Settings, Your college, "House rules for the AI". A college's manager (or the
+  super admin working inside the college) writes four short pieces: about the
+  college, tone and wording, policies to follow, and a sign-off for letters.
+  The server puts them in front of every request to the AI from that college:
+  lessons, all the AI Tools and Crafti. Staff can't switch them off. They are
+  not used by Second Marker. Don't write about a named person in them.
+
+ANONYMOUS LEARNERS (v97)
+  Settings, Your college, "Anonymous learners". One switch for the college's
+  manager. While it is on:
+  - class lists in Learners take learner numbers, not names
+  - the server replaces anything that isn't a number or code with
+    "Learner 01", "Learner 02" and so on, when saving and when reading, so a
+    name can't be saved by any route. Names saved before the switch are shown
+    as numbers and written over the next time each list is saved
+  - the name picker's class lists on the board are treated the same way
+  - students handing in work type their learner number, a name is refused, and
+    the file is renamed after the number
+  - the learner-name box in the AI tools is hidden
+  The inside of a handed-in file isn't changed. Ask students to leave their
+  name off the work.
+
+A CHAT BECOMES A FULL LESSON (v97)
+  In Crafti, "Build the full lesson" under the last reply builds a complete
+  lesson from the conversation (plan, teaching content, tasks, quiz, slides)
+  in the unit it belongs to. It needs the build-lessons permission.
+
+ONE EDITOR (v97)
+  "Open in the editor" on a lesson now edits the lesson itself, not a copy.
+  Every part of the lesson is there: objectives, starter, the board, the plan,
+  teaching parts, tasks, the exit quiz, independent study, stretch and
+  support, and the plenary. Rewrite a part with the AI, add a teaching part,
+  press Save lesson, and the board, student page, task sheets and quiz all
+  use the new version. If a part can't be read back (for example a quiz with
+  no answer marked "(correct)") that part is left as it was and you're told.
+  The quick Edit button on the lesson page is still there for typos.
+
+RESUBMISSIONS AND INTERNAL VERIFICATION (v97)
+  Learners, under the criteria grid for a group and unit:
+  - Submissions and resubmissions: the date each learner handed in, the date
+    feedback went back, whether a resubmission was authorised and by whom,
+    when it's due, when it came back and the outcome. Ticking Authorised sets
+    the due date 15 working days after the feedback (weekends not counted,
+    holidays are). Change it to suit your centre or awarding body.
+  - Internal verification: leaders open Learners, Whole department, press
+    Look on a group, choose the learners they sampled and either sign the
+    marking off or send actions to the teacher (who is emailed if email is set
+    up). The teacher sees them under the grid and marks them done. Nobody can
+    verify their own marking. Records are kept in data/d/<dept>/_iv.json and
+    hold no learner names.
+
+AI TOOLS PAGE (v97)
+  Rebuilt: a search box first, popular tools, an icon
+  and colour for each kind of tool, favourites (the star), recent tools, your
+  latest saved resources, and a way to Crafti when nothing matches. The
+  Lessons menu item has its own icon now.
+
+WHERE YOU TEACH: THE EDUCATION FRAMEWORK (v97)
+  Settings, Subjects.
+  - "Where you teach": country (England, Wales, Scotland, Northern Ireland),
+    setting (early years to professional training), stage, framework level,
+    qualification type and awarding organisation. Each box only offers what
+    fits the ones above it, every box has "Something else", and changing a
+    box clears only what no longer fits below it. Set once per department.
+  - Lessons, the AI Tools and Crafti are then told who is teaching and where,
+    and write in that system's terms. Pass, Merit and Distinction wording is
+    only used where the criteria are graded that way.
+  - "Add a subject by hand" for a curriculum subject, a university module or
+    a course of your own, with no specification and no awarding organisation.
+  - "Details" on each subject: its own context, qualification title and
+    number, specification version, status (current, teach-out, withdrawn) and
+    a record of who checked it against the official register, and when.
+  IMPORTANT: the lists of stages, levels, qualification types and awarding
+  organisations were written by hand on 19 Nov 2026. They are a starting set,
+  not an official register. Nothing is shown as verified until a person has
+  recorded that they checked it. There is no live link to Ofqual,
+  Qualifications Wales or the Scottish qualifications body in this release.
+  Subjects and lessons saved before v97 are untouched and work as before.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

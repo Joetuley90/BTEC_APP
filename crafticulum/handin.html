@@ -34,19 +34,19 @@ button{margin-top:18px;width:100%;font:inherit;font-weight:700;padding:13px;bord
 (() => {
   const $ = s => document.querySelector(s), esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   const code = (new URLSearchParams(location.search).get("c") || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-  const WHY = {name: "Type your name so your teacher knows whose work this is.", file: "Choose the file you want to hand in.", big: "That file is too big.", type: "That kind of file can't be handed in here.", closed: "This hand-in has closed. Speak to your teacher.", full: "This hand-in can't take any more files. Speak to your teacher.", slow: "Too many files from here in the last hour. Try again later.", not_found: "This link doesn't work any more. Ask your teacher for a new one."};
+  const WHY = {number: "Type your learner number, not your name. Ask your teacher if you don't know it.", name: "Type your name so your teacher knows whose work this is.", file: "Choose the file you want to hand in.", big: "That file is too big.", type: "That kind of file can't be handed in here.", closed: "This hand-in has closed. Speak to your teacher.", full: "This hand-in can't take any more files. Speak to your teacher.", slow: "Too many files from here in the last hour. Try again later.", not_found: "This link doesn't work any more. Ask your teacher for a new one."};
   const gone = t => { $("#h").textContent = "This link isn't open"; $("#sub").textContent = t; $("#body").innerHTML = ""; };
   if(code.length !== 12) return gone(WHY.not_found);
   fetch("handin.php?a=info&c=" + code).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(i => {
     $("#h").textContent = i.title; $("#sub").textContent = [i.college, i.group].filter(Boolean).join(" · ");
     if(!i.open) return gone(WHY.closed);
     document.title = "Hand in: " + i.title;
-    $("#body").innerHTML = `<form id="f" novalidate><label for="n">Your name</label><input type="text" id="n" maxlength="60" autocomplete="name" required>
+    $("#body").innerHTML = `<form id="f" novalidate><label for="n">${i.anon ? "Your learner number" : "Your name"}</label><input type="text" id="n" maxlength="${i.anon ? 16 : 60}" autocomplete="${i.anon ? "off" : "name"}" ${i.anon ? 'inputmode="text" placeholder="e.g. 204518 or Learner 07"' : ""} required>${i.anon ? `<p class="hint">Your college keeps learners anonymous. Use your number, and leave your name off the file if you can.</p>` : ""}
       <label for="file">Your file</label><input type="file" id="file" required accept="${i.types.map(t => "." + t).join(",")}"><p class="hint">Up to ${i.max} MB. ${esc(i.types.join(", "))}.</p>
       <button type="submit" id="go">Hand in</button><div id="m" role="status" aria-live="polite"></div></form>`;
     $("#foot").textContent = `Your file goes to your teacher. It is kept for ${i.days} days and then deleted.${i.closes ? " This hand-in closes on " + new Date(i.closes * 1000).toLocaleDateString("en-GB", {weekday: "long", day: "numeric", month: "long"}) + "." : ""}`;
     $("#f").addEventListener("submit", async e => { e.preventDefault(); const say = (t, good) => { $("#m").className = "msg " + (good ? "good" : "bad"); $("#m").textContent = t; };
-      const name = $("#n").value.trim(), file = $("#file").files[0]; if(name.length < 2) return say(WHY.name); if(!file) return say(WHY.file); if(file.size > i.max * 1048576) return say(WHY.big + " The most is " + i.max + " MB.");
+      const name = $("#n").value.trim(), file = $("#file").files[0]; if(name.length < 2) return say(i.anon ? WHY.number : WHY.name); if(!file) return say(WHY.file); if(file.size > i.max * 1048576) return say(WHY.big + " The most is " + i.max + " MB.");
       const fd = new FormData(); fd.append("c", code); fd.append("name", name); fd.append("file", file); $("#go").disabled = true; $("#go").textContent = "Sending...";
       try{ const r = await fetch("handin.php?a=send", {method: "POST", body: fd}); let j = {}; try{ j = await r.json(); }catch{}
         if(!r.ok) throw j.error || "x";

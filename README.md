@@ -5,7 +5,7 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v96, 18 Nov 2026: rooms that can be switched on and off per site, college and role; Crafti; AI features on the front page; one-press checking of handed-in work; department view of learners; lessons in the shared editor). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v96.zip` and `crafticulum-release.zip`: the same files as one zip (1,736,185 bytes).
+- `crafticulum/`: every file of the current release (v97, 19 Nov 2026: where you teach, for every stage and all four UK nations; house rules for the AI; anonymous learners; a chat becomes a full lesson; lessons edited in the shared editor; resubmissions and internal verification; the AI Tools page rebuilt). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v97.zip` and `crafticulum-release.zip`: the same files as one zip (1,770,814 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.

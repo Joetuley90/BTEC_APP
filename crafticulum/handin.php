@@ -32,7 +32,7 @@ $action = (string) ($_GET['a'] ?? '');
 if ($action === 'info') {
     $f = hiFile((string) ($_GET['c'] ?? '')); $j = $f ? hiRead($f) : null; if (!$j || !hiOn((string) $j['dept'])) out(404, ['error' => 'not_found']);
     $a = ccAccounts(); $col = ccCollege($a, ccCollegeOf($a, (string) $j['dept']));
-    out(200, ['title' => (string) $j['title'], 'group' => (string) ($j['group'] ?? ''), 'college' => (string) ($col['name'] ?? ''), 'open' => hiOpen($j), 'closes' => (int) ($j['closes'] ?? 0), 'days' => CC_HANDIN_DAYS, 'max' => max(1, (int) floor(hiLimit() / 1048576)), 'types' => HI_EXT]);
+    out(200, ['title' => (string) $j['title'], 'group' => (string) ($j['group'] ?? ''), 'college' => (string) ($col['name'] ?? ''), 'open' => hiOpen($j), 'closes' => (int) ($j['closes'] ?? 0), 'days' => CC_HANDIN_DAYS, 'max' => max(1, (int) floor(hiLimit() / 1048576)), 'types' => HI_EXT, 'anon' => ccAnon($a, ccCollegeOf($a, (string) $j['dept']))]);
 }
 if ($action === 'send') {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['error' => 'post']);
@@ -45,6 +45,7 @@ if ($action === 'send') {
     $fh = @fopen($f . '.lock', 'c'); if (!$fh || !flock($fh, LOCK_EX)) out(500, ['error' => 'busy']);
     $j = hiRead($f); if (!$j || !hiOn((string) $j['dept'])) { flock($fh, LOCK_UN); out(404, ['error' => 'not_found']); }
     if (!hiOpen($j)) { flock($fh, LOCK_UN); out(403, ['error' => 'closed']); }
+    $ac = ccAccounts(); if (ccAnon($ac, ccCollegeOf($ac, (string) $j['dept']))) { if (!ccAnonOk($name)) { flock($fh, LOCK_UN); out(400, ['error' => 'number']); } $orig = preg_replace('/[^A-Za-z0-9]+/', '', $name) . '.' . $ext; }   // anonymous learners: a number, and the file is renamed after it
     $j['files'] = (array) ($j['files'] ?? []); if (count($j['files']) >= 120) { flock($fh, LOCK_UN); out(429, ['error' => 'full']); }
     $ip = substr(hash('sha256', ccSiteId() . '|' . ($_SERVER['REMOTE_ADDR'] ?? '')), 0, 16); $recent = count(array_filter($j['files'], fn($x) => ($x['ip'] ?? '') === $ip && time() - (int) ($x['at'] ?? 0) < 3600));
     if ($recent >= 8) { flock($fh, LOCK_UN); out(429, ['error' => 'slow']); }
@@ -64,8 +65,9 @@ if (!empty($me['demo'])) out(403, ['error' => 'demo']);
 $dept = (string) $me['dept']; if (!hiOn($dept) || !ccRoom(ccAccounts(), $me, 'handin')) out(403, ['error' => 'off']);
 if (!preg_match('/^[a-z0-9][a-z0-9-]*$/', $dept)) out(400, ['error' => 'dept']);
 $ddir = ccHandinDir() . '/' . $dept;
+$hiAnon = ccAnon(ccAccounts(), ccCollegeOf(ccAccounts(), $dept));
 $mine = function (array $j) use ($me): bool { return !empty($me['isLead']) || ($j['by'] ?? '') === $me['email']; };   // leaders see every link in the department; a teacher sees their own
-$view = function (array $j): array { return ['code' => $j['code'], 'title' => $j['title'], 'group' => (string) ($j['group'] ?? ''), 'by' => (string) ($j['byName'] ?? ''), 'created' => (int) $j['created'], 'closes' => (int) ($j['closes'] ?? 0), 'open' => hiOpen($j),
+$view = function (array $j) use ($hiAnon): array { if ($hiAnon) foreach ((array) ($j['files'] ?? []) as $i => $x) if (!ccAnonOk((string) $x['name'])) { $j['files'][$i]['name'] = 'Learner'; $j['files'][$i]['orig'] = 'work.' . $x['ext']; } return ['code' => $j['code'], 'title' => $j['title'], 'group' => (string) ($j['group'] ?? ''), 'by' => (string) ($j['byName'] ?? ''), 'created' => (int) $j['created'], 'closes' => (int) ($j['closes'] ?? 0), 'open' => hiOpen($j),
     'files' => array_map(fn($x) => ['id' => $x['id'], 'name' => $x['name'], 'orig' => $x['orig'], 'size' => (int) $x['size'], 'at' => (int) $x['at'], 'left' => max(0, (int) ceil(((int) $x['at'] + CC_HANDIN_DAYS * 86400 - time()) / 86400))], (array) ($j['files'] ?? []))]; };
 if ($action === 'get') {   // one handed-in file, as a download
     $f = hiFile((string) ($_GET['c'] ?? '')); $j = $f ? hiRead($f) : null; if (!$j || $j['dept'] !== $dept || !$mine($j)) out(404, ['error' => 'not_found']);

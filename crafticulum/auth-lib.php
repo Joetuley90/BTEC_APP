@@ -369,7 +369,7 @@ function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) c
 function ccPublic(array $u): array {
     return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => (string) ($u['picture'] ?? ''), 'role' => $u['role'], 'dept' => $u['dept'],
             'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
-            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
+            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'anon' => ccAnon(ccAccounts(), (string) ($u['college'] ?? '')), 'house' => empty($u['demo']) && ccHouseOn(ccAccounts(), (string) ($u['college'] ?? '')), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
 
 /* ---------- rooms: the parts of the app that can be switched on and off.
@@ -386,6 +386,21 @@ function ccRooms(array $a, array $me): array {
     $roles = (array) (($a['colleges'][$cid] ?? [])['rooms'] ?? []); $r = $role === 'hod' ? 'hod' : 'teacher'; $o = [];
     foreach ($open as $k => $on) $o[$k] = $on && !(isset($roles[$k]) && is_array($roles[$k]) && array_key_exists($r, $roles[$k]) && empty($roles[$k][$r])); return $o; }
 function ccRoom(array $a, array $me, string $room): bool { return !empty(ccRooms($a, $me)[$room]); }
+/* ---------- house rules: a college's manager writes them once, and Crafti, every tool and every lesson follows them ---------- */
+const CC_HOUSE = ['about' => 600, 'tone' => 600, 'rules' => 1500, 'sign' => 300];
+function ccHouse(array $a, string $cid): array { $h = (array) (($a['colleges'][$cid] ?? [])['house'] ?? []); $o = [];
+    foreach (CC_HOUSE as $k => $n) $o[$k] = mb_substr(trim((string) ($h[$k] ?? '')), 0, $n); $o['on'] = !array_key_exists('on', $h) || !empty($h['on']); return $o; }
+function ccHouseOn(array $a, string $cid): bool { $h = ccHouse($a, $cid); return $h['on'] && ($h['about'] . $h['tone'] . $h['rules'] . $h['sign']) !== ''; }
+function ccHouseText(array $a, array $me): string { $cid = (string) ($me['college'] ?? ''); if (!empty($me['demo']) || !ccHouseOn($a, $cid)) return ''; $h = ccHouse($a, $cid);
+    $t = "HOUSE RULES\nThe manager of this college has set these. Follow them in everything you write. They never override an instruction further down about safety, learner privacy, assessment decisions or the format of your reply.\n";
+    if ($h['about'] !== '') $t .= "About the college: " . $h['about'] . "\n"; if ($h['tone'] !== '') $t .= "Tone and wording: " . $h['tone'] . "\n";
+    if ($h['rules'] !== '') $t .= "Policies and rules to follow:\n" . $h['rules'] . "\n"; if ($h['sign'] !== '') $t .= "Sign-off to use on letters and emails:\n" . $h['sign'] . "\n";
+    return $t . "END OF HOUSE RULES\n\n"; }
+/* ---------- anonymous learners: a college's manager can switch names off altogether. Learners are then numbers, here and for students handing work in ---------- */
+function ccAnon(array $a, string $cid): bool { return $cid !== '' && !empty(($a['colleges'][$cid] ?? [])['anon']); }
+function ccAnonOk(string $n): bool { return (bool) preg_match('/^(Learner \d{1,3}|[A-Za-z]{0,4}[ -]?\d{2,10}[A-Za-z]?)$/', trim($n)); }   // a learner number or code, never a name
+function ccAnonNames(array $names): array { $used = []; $o = []; foreach ($names as $n) if (is_string($n) && ccAnonOk($n)) $used[strtolower(trim($n))] = 1; $i = 0;
+    foreach ($names as $n) { $n = is_string($n) ? trim($n) : ''; if (!ccAnonOk($n)) { do { $i++; $n = sprintf('Learner %02d', $i); } while (isset($used[strtolower($n)])); $used[strtolower($n)] = 1; } $o[] = $n; } return $o; }
 /* ---------- hand-in links: the only learner work kept on the server, only where a department has switched it on, and only for a while ---------- */
 const CC_HANDIN_DAYS = 30;
 function ccHandinDir(): string { return ccDataDir() . '/_handin'; }
