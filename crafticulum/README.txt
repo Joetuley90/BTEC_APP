@@ -1234,5 +1234,34 @@ THE PROFILE SETS WHERE YOU START (v99)
   subject and level in your profile, if your department teaches it. The
   Resource library opens narrowed to it. Change either and your choice stays.
 
+WHAT'S NEW IN v100
+
+YOUR COLLEGE OR SCHOOL, AS YOU TYPE (v100)
+  Once a list has been read into the institution directory, both sign-up
+  forms search it as people type. Two letters is enough: "MID" brings up
+  MidKent College. Names that start with what was typed come first, closed
+  institutions are left out, and the arrow keys and Enter work.
+  - "Your college, school or team" (starting your own account): pick from the
+    list or type anything. If the one you pick already has a workspace here,
+    you're offered "Ask to join it instead".
+  - "Register for an account": a new "Your college or school" box. Pick a
+    college that uses Crafticulum and the request goes to that college's
+    manager, who approves it under Team. Heads of department can't approve
+    those. The department list narrows to that college.
+  - Typing something that isn't picked from the list works as before: the
+    request goes to the head of department.
+  - Whatever is picked is saved to the person's own education profile.
+    Starting your own account with a school picked does NOT make your
+    workspace that school's: only a manager can link a college, in Settings.
+  - "Uses Crafticulum" only appears for colleges whose manager has linked
+    them (Settings, Your college, "Your institution and requests to join").
+  Speed: the search is its own small file (inst.php) that starts no session.
+  Short searches are kept on the server until the next import, the browser
+  keeps answers too, and a longer word is narrowed from the last answer
+  without asking the server again. Each address is limited to 240 searches a
+  minute.
+  Until a list has been read in, the forms look exactly as they did.
+  New file: inst.php.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

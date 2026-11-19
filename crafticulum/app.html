@@ -1411,6 +1411,7 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+.ep-hits button.on{background:var(--cc-primary-soft)}.ep-hits mark{background:none;color:var(--cc-primary-text);padding:0;font-weight:800}.su-inst-say b{color:var(--bs-body-color)}#lpModal .ep-hits{max-height:220px}
 .ep-join{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-top:14px;padding:12px 14px;border-radius:.8rem;background:var(--cc-primary-soft);border:1px solid rgba(var(--cc-primary-rgb),.2);font-size:.88rem}.ep-join>div:first-child{flex:1 1 300px}.ep-joinl{text-align:center;font-size:.82rem;margin-top:6px;color:var(--bs-secondary-color)}#stInstLink .ep-insts li{flex-wrap:wrap}
 .edu-reg{padding:12px 14px;border-radius:.8rem;background:var(--cc-primary-soft);border:1px solid rgba(var(--cc-primary-rgb),.2)}.edu-reg .form-label{font-size:.82rem;font-weight:700;margin-bottom:4px}
 .edu-reg-l{display:grid;gap:6px;margin:10px 0 4px;max-height:340px;overflow:auto}.edu-reg-l li{display:flex;gap:10px;align-items:center;background:var(--bs-body-bg);border:1px solid var(--cc-line);border-radius:.6rem;padding:8px 10px;font-size:.86rem}.edu-reg-l li>div{flex:1 1 auto}
@@ -1832,7 +1833,8 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
         <div><label class="form-label small fw-semibold mb-1" for="suName">Your name</label><input class="form-control" id="suName" autocomplete="name" maxlength="60" required></div>
         <div><label class="form-label small fw-semibold mb-1" for="suEmail">Email</label><input class="form-control" id="suEmail" type="email" autocomplete="email" required></div>
         <div><label class="form-label small fw-semibold mb-1" for="suPass" id="suPassLab">Choose a password</label><input class="form-control" id="suPass" type="password" autocomplete="new-password" minlength="10"><div class="form-text" id="suPassHelp">At least 10 characters. A short sentence is easy to remember.</div></div>
-        <div id="suSpaceRow" hidden><label class="form-label small fw-semibold mb-1" for="suSpace">Your college, school or team</label><input class="form-control" id="suSpace" maxlength="60" autocomplete="organization" placeholder="Optional"><div class="form-text">It's the name on your lessons. You can change it later.</div></div>
+        <div id="suSpaceRow" hidden><label class="form-label small fw-semibold mb-1" for="suSpace">Your college, school or team</label><div class="ep-search"><input class="form-control" id="suSpace" maxlength="60" autocomplete="off" placeholder="Optional" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suSpaceHits"><ul class="list-unstyled ep-hits" id="suSpaceHits" role="listbox"></ul></div><div class="form-text su-inst-say" id="suSpaceSay" hidden></div><div class="form-text">It's the name on your lessons. You can change it later.</div></div>
+        <div id="suInstRow" hidden><label class="form-label small fw-semibold mb-1" for="suInst">Your college or school</label><div class="ep-search"><input class="form-control" id="suInst" maxlength="100" autocomplete="off" placeholder="Start typing its name, town or postcode" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suInstHits"><ul class="list-unstyled ep-hits" id="suInstHits" role="listbox"></ul></div><div class="form-text su-inst-say" id="suInstSay">Pick it from the list and your request goes to its manager.</div></div>
         <div id="suRoleRow"><label class="form-label small fw-semibold mb-1" for="suRole">I'm a</label><select class="form-select" id="suRole"><option value="teacher">Teacher</option><option value="hod">Head of department or subject leader</option></select><div class="form-text" id="suRoleHelp">Your head of department or subject leader approves your account.</div></div>
         <div id="suDeptRow"><label class="form-label small fw-semibold mb-1" for="suDept">Department</label><select class="form-select" id="suDept"></select></div>
         <button type="submit" class="btn btn-primary mt-1" id="suGo">Ask for an account</button>
@@ -12203,20 +12205,44 @@ $("#tsForm").onsubmit = async e => {
 let suNew = false;
 function suPaint(){ const bill = !!(authCfg && authCfg.billing), mail = !!(authCfg && authCfg.mail);
   $("#suLead").textContent = suNew ? "Start free. You get your own space on the Free plan straight away, with no card needed, and you can move to a bigger plan whenever you like." : "Ask for an account. Teachers are approved by their head of department or subject leader. Heads of department and subject leaders are approved by the site admin.";
-  $("#suSpaceRow").hidden = !suNew; $("#suRoleRow").hidden = suNew; $("#suDeptRow").hidden = suNew || (authCfg.depts || []).length < 2;
+  $("#suSpaceRow").hidden = !suNew; $("#suRoleRow").hidden = suNew; $("#suInstRow").hidden = suNew || !authCfg.dir; suDepts();
   $("#suGo").textContent = suNew ? "Create my account" : "Ask for an account";
   $("#suSwitch").hidden = !bill || !(authCfg.depts || []).length; $("#suSwitch").textContent = suNew ? "My college already uses Crafticulum" : "Start my own free account instead";
   $("#suPassLab").textContent = mail && !suNew ? "Choose a password (optional)" : "Choose a password";
   $("#suPassHelp").textContent = mail && !suNew ? "At least 10 characters. Or leave it blank and sign in with a link we email you each time." : "At least 10 characters. A short sentence is easy to remember."; }
 $("#suSwitch").onclick = () => { suNew = !suNew; suPaint(); loginSay(""); };
+/* ----- your college or school, found as you type. Answers are remembered, and a longer word is narrowed from the last answer without asking the server again ----- */
+const instMem = new Map(); let instSeq = 0;
+async function instFind(q){ q = q.trim().toLowerCase().replace(/\s+/g, " "); if(q.length < 2) return [];
+  if(instMem.has(q)) return instMem.get(q);
+  for(let n = q.length - 1; n >= 2; n--){ const p = instMem.get(q.slice(0, n)); if(p && p.length < 8){ const w = q.split(" "), r = p.filter(x => w.every(k => (x.name + " " + x.town + " " + x.postcode + " " + x.postcode.replace(/ /g, "") + " " + x.ref + " " + x.type).toLowerCase().includes(k))); instMem.set(q, r); return r; } }   // fewer than a full page came back for the shorter word, so everything that could match is already here
+  const r = await fetch("inst.php?q=" + encodeURIComponent(q), {credentials: "omit"}); const j = r.ok ? await r.json() : {results: []}; const out = j.results || []; if(r.ok) instMem.set(q, out); return out; }
+function instAuto(input, list, onPick){ let hits = [], at = -1, t = 0;
+  const hl = (s, q) => { const i = s.toLowerCase().indexOf(q.toLowerCase()); return i < 0 ? esc(s) : esc(s.slice(0, i)) + "<mark>" + esc(s.slice(i, i + q.length)) + "</mark>" + esc(s.slice(i + q.length)); };
+  const draw = () => { const q = input.value.trim().split(/\s+/)[0] || ""; list.innerHTML = hits.map((h, i) => `<li role="option" id="${list.id}-${i}" aria-selected="${i === at}"><button type="button" tabindex="-1" data-i="${i}" class="${i === at ? "on" : ""}"><span class="fw-semibold">${hl(h.name, q)}</span>${h.cols && h.cols.length ? ` <span class="badge text-bg-success fw-normal">Uses Crafticulum</span>` : ""}<small>${esc([h.town, h.postcode].filter(Boolean).join(" "))}${h.type ? " · " + esc(h.type) : ""}</small></button></li>`).join(""); input.setAttribute("aria-expanded", String(hits.length > 0)); if(at >= 0) input.setAttribute("aria-activedescendant", list.id + "-" + at); else input.removeAttribute("aria-activedescendant"); };
+  const close = () => { hits = []; at = -1; draw(); }, pick = i => { const h = hits[i]; if(!h) return; input.value = h.name; close(); onPick(h); };
+  input.addEventListener("input", () => { onPick(null); clearTimeout(t); const q = input.value, mine = ++instSeq; if(q.trim().length < 2) return close(); const go = async () => { try{ const r = await instFind(q); if(mine !== instSeq) return; hits = r; at = -1; draw(); }catch{} }; if(instMem.has(q.trim().toLowerCase().replace(/\s+/g, " "))) go(); else t = setTimeout(go, 110); });
+  input.addEventListener("keydown", e => { if(!hits.length) return; if(e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); at = (at + (e.key === "ArrowDown" ? 1 : -1) + hits.length + (at < 0 && e.key === "ArrowUp" ? 1 : 0)) % hits.length; draw(); } else if(e.key === "Enter" && at >= 0){ e.preventDefault(); pick(at); } else if(e.key === "Escape"){ e.stopPropagation(); close(); } });
+  list.addEventListener("mousedown", e => { const b = e.target.closest("button"); if(b){ e.preventDefault(); pick(+b.dataset.i); } });
+  input.addEventListener("blur", () => setTimeout(close, 150)); }
+let suPick = null, suStartPick = null;
+function suDepts(){ const all = authCfg.depts || [], cols = suPick && suPick.cols && suPick.cols.length ? suPick.cols : null, list = cols ? all.filter(d => cols.includes(d.college)) : all, was = $("#suDept").value;
+  $("#suDept").innerHTML = list.map(d => `<option value="${esc(d.id)}">${esc((d.collegeName && !cols ? d.collegeName + ": " : "") + d.name)}</option>`).join(""); if(list.some(d => d.id === was)) $("#suDept").value = was; $("#suDeptRow").hidden = suNew || list.length < 2; }
+function suInstSay(){ const s = $("#suInstSay"), linked = suPick && suPick.cols && suPick.cols.length;
+  s.innerHTML = !suPick ? "Pick it from the list and your request goes to its manager." : linked ? `<b>${esc(suPick.name)} uses Crafticulum.</b> Its manager will approve your account.` : `<b>${esc(suPick.name)} isn't on Crafticulum yet.</b> ${authCfg.billing ? `<button type="button" class="btn btn-link btn-sm p-0 align-baseline" id="suStartIt">Start your own free account</button> and join it later, or choose a department below.` : "Choose a department below and the site's admin will look at your request."}`;
+  $("#suLead").textContent = linked ? "Ask for an account. Your college's manager approves it." : "Ask for an account. Teachers are approved by their head of department or subject leader. Heads of department and subject leaders are approved by the site admin."; suDepts(); }
+instAuto($("#suInst"), $("#suInstHits"), h => { suPick = h; suInstSay(); });
+instAuto($("#suSpace"), $("#suSpaceHits"), h => { suStartPick = h; const s = $("#suSpaceSay"), linked = h && h.cols && h.cols.length && (authCfg.depts || []).length; s.hidden = !linked; s.innerHTML = linked ? `<b>${esc(h.name)} already uses Crafticulum.</b> <button type="button" class="btn btn-link btn-sm p-0 align-baseline" id="suJoinIt">Ask to join it instead</button>` : ""; });
+document.addEventListener("click", e => { if(e.target.id === "suJoinIt" && suStartPick){ suNew = false; suPick = suStartPick; $("#suInst").value = suPick.name; suPaint(); suInstSay(); } if(e.target.id === "suStartIt" && suPick){ suNew = true; suStartPick = suPick; $("#suSpace").value = suPick.name; suPaint(); } });
+const suInstBody = h => h ? {ref: h.ref, name: h.name, town: h.town, postcode: h.postcode, type: h.type, nation: h.nation, source: h.source} : null;
 $("#suForm").onsubmit = async e => {
   e.preventDefault(); busy("#suGo", true);
-  if(suNew){ try{ const r = await authPost("signup", {name: $("#suName").value, email: $("#suEmail").value.trim(), password: $("#suPass").value, space: "new", workspace: $("#suSpace").value.trim()});
+  if(suNew){ try{ const r = await authPost("signup", {name: $("#suName").value, email: $("#suEmail").value.trim(), password: $("#suPass").value, space: "new", workspace: $("#suSpace").value.trim(), inst: suInstBody(suStartPick)});
       if(r.ok && r.j.started){ closeLogin(true); return; }
       loginSay(r.j.error === "exists" ? "That email already has an account. Sign in instead." : PASS_ERR[r.j.error] || "Couldn't do that. Try again.", true);
     }catch{ loginSay("Couldn't reach the server.", true); } finally{ busy("#suGo", false); } return; }
-  try{ const r = await authPost("signup", {name: $("#suName").value, email: $("#suEmail").value.trim(), password: $("#suPass").value, dept: $("#suDept").value, role: $("#suRole").value});
-    if(r.ok){ authView("signin"); loginSay(r.j.verify ? "Thanks. Check your email to confirm it's you. A head of department will approve your account, and we'll email you when they do." : "Thanks. A head of department will approve your account. You can sign in once they have.", false); return; }
+  try{ const r = await authPost("signup", {name: $("#suName").value, email: $("#suEmail").value.trim(), password: $("#suPass").value, dept: $("#suDept").value, role: $("#suRole").value, inst: suInstBody(suPick)});
+    if(r.ok){ const who = suPick && suPick.cols && suPick.cols.length ? "Your college's manager" : "A head of department"; authView("signin"); loginSay(r.j.verify ? `Thanks. Check your email to confirm it's you. ${who} will approve your account, and we'll email you when they do.` : `Thanks. ${who} will approve your account. You can sign in once they have.`, false); return; }
     loginSay(PASS_ERR[r.j.error] || "Couldn't send that. Try again.", true);
   }catch{ loginSay("Couldn't reach the server.", true); } finally{ busy("#suGo", false); }
 };
