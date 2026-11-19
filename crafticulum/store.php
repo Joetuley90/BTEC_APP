@@ -51,6 +51,14 @@ if ($legacy && $me['role'] === 'superadmin' && (empty($dinfo['legacyOwner']) || 
     $acc['depts'][$dept]['legacyOwner'] = $me['email']; ccSaveAccounts($acc); $dinfo = $acc['depts'][$dept];
 }
 $isOwner = $legacy && ($dinfo['legacyOwner'] ?? '') === $me['email'];
+/* where the college keeps learners anonymous, names never reach the disk and never leave it: class lists hold numbers */
+$anon = ccAnon($acc, ccCollegeOf($acc, (string) $dept));
+function anonDoc(string $p, $data) { if (!is_array($data)) return $data;
+    if (preg_match('#^data/users/[^/]+/learners/#', $p)) { $s = json_decode((string) ($data['json'] ?? ''), true); if (!is_array($s) || !is_array($s['learners'] ?? null)) return $data;
+        $s['learners'] = array_values(array_filter($s['learners'], 'is_array')); $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $s['learners'])); foreach ($s['learners'] as $i => $l) $s['learners'][$i]['name'] = $n[$i];
+        $data['json'] = json_encode($s, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); return $data; }
+    if (preg_match('#^data/users/[^/]+/classes/#', $p) && is_array($data['names'] ?? null)) $data['names'] = ccAnonNames(array_values($data['names']));
+    return $data; }
 
 const LESSON_OWN = ['lastResults', 'resultsBy', 'quizOnline', 'shareId', 'quizShareId', 'quizOpen', 'quizShowAnswers', 'coverId', 'liveKey'];
 const LESSON_ANYONE = ['fileKey', 'filesSig'];
@@ -99,7 +107,7 @@ if ($action === 'all') {
         $j = json_decode((string) @file_get_contents($f), true);
         if (!is_array($j) || !isset($j['path']) || !is_string($j['path']) || !array_key_exists('data', $j)) continue;
         $p = $j['path']; $k = kindOf($p); $data = $j['data'];
-        if ($k === 'own') { if ($isOwner) $docs[$p] = $data; continue; }
+        if ($k === 'own') { if ($isOwner) $docs[$p] = $anon ? anonDoc($p, $data) : $data; continue; }
         if ($k === 'lesson' && is_array($data) && !empty($data['pending'])) {
             // the person whose change is waiting keeps seeing their own version. Leaders see that one is waiting. Nobody else sees anything.
             if ((string) ($data['pending']['email'] ?? '') === $me['email']) { $pf = pendRead($ddir, $p); if ($pf) { $data = $pf['data']; $data['pendingMine'] = true; } unset($data['pending']); }
@@ -123,7 +131,7 @@ if ($action === 'all') {
     }
     foreach (glob($udir . '/*.json') ?: [] as $f) {
         $j = json_decode((string) @file_get_contents($f), true);
-        if (is_array($j) && isset($j['path']) && array_key_exists('data', $j) && kindOf((string) $j['path']) === 'own') $docs[$j['path']] = $j['data'];
+        if (is_array($j) && isset($j['path']) && array_key_exists('data', $j) && kindOf((string) $j['path']) === 'own') $docs[$j['path']] = $anon ? anonDoc((string) $j['path'], $j['data']) : $j['data'];
     }
     out(200, ['docs' => (object) $docs]);
 }
@@ -135,9 +143,42 @@ if ($action === 'deptlearners') {
     foreach ($who as $e => $u) { foreach (glob($base . '/u/' . sha1((string) $e) . '/' . $dept . '/*.json') ?: [] as $f) {
         $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue;
         $s = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($s) || empty($s['learners']) || !is_array($s['learners'])) continue;
-        $sets[] = ['by' => (string) ((($u['name'] ?? '') ?: $e)), 'mine' => (string) $e === $me['email'], 'set' => ['name' => (string) ($s['name'] ?? ''), 'learners' => array_slice($s['learners'], 0, 80), 'marks' => (array) ($s['marks'] ?? [])]]; } }
+        $ls = array_slice(array_values(array_filter($s['learners'], 'is_array')), 0, 80); if ($anon) { $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $ls)); foreach ($ls as $i => $l) $ls[$i]['name'] = $n[$i]; }
+        $sets[] = ['by' => (string) ((($u['name'] ?? '') ?: $e)), 'mine' => (string) $e === $me['email'], 'o' => sha1((string) $e), 'set' => ['id' => (string) ($s['id'] ?? ''), 'name' => (string) ($s['name'] ?? ''), 'learners' => $ls, 'marks' => (array) ($s['marks'] ?? []), 'subs' => (array) ($s['subs'] ?? [])]]; } }
     usort($sets, fn($x, $y) => strcasecmp($x['set']['name'] . $x['by'], $y['set']['name'] . $y['by']));
     out(200, ['sets' => $sets]);
+}
+
+/* internal verification: a leader samples a teacher's marking for one group and unit, and signs it off or sets actions. Nobody can verify their own marking.
+   The record holds which learners were sampled by their id in the teacher's list, never their names */
+if (in_array($action, ['ivlist', 'ivsave', 'ivdone', 'ivdel'], true)) {
+    if (!ccRoom($acc, $me, 'learners')) out(403, ['error' => 'noperm']);
+    if (!is_dir($ddir) && !@mkdir($ddir, 0700, true)) out(500, ['error' => 'save']);
+    $ivf = $ddir . '/_iv.json'; $fh = @fopen($ivf . '.lock', 'c'); if (!$fh || !flock($fh, LOCK_EX)) out(500, ['error' => 'busy']);
+    $all = json_decode((string) @file_get_contents($ivf), true); if (!is_array($all)) $all = []; $isLead = !empty($me['isLead']);
+    $txt = fn($v, int $n): string => mb_substr(trim(str_replace("\0", '', (string) $v)), 0, $n);
+    $keep = function () use (&$all, $ivf): void { $tmp = $ivf . '.' . bin2hex(random_bytes(4)) . '.tmp'; if (@file_put_contents($tmp, json_encode(array_values($all), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false || !@rename($tmp, $ivf)) { @unlink($tmp); out(500, ['error' => 'save']); } };
+    if ($action === 'ivsave') {
+        if (!$isLead) out(403, ['error' => 'noperm']);
+        $o = (string) ($body['o'] ?? ''); $owner = ''; foreach (array_merge(array_keys($acc['users']), ccSupers()) as $e) if (sha1((string) $e) === $o) $owner = (string) $e;
+        if ($owner === '') out(404, ['error' => 'not_found']); if ($owner === $me['email']) out(400, ['error' => 'own']);
+        $dec = ($body['decision'] ?? '') === 'action' ? 'action' : 'agreed'; $unit = $txt($body['unit'] ?? '', 160); $gid = preg_replace('/[^a-z0-9-]/', '', (string) ($body['gid'] ?? '')); if ($unit === '' || $gid === '') out(400, ['error' => 'unit']);
+        $sam = array_slice(array_values(array_filter((array) ($body['sampled'] ?? []), fn($x) => is_string($x) && preg_match('/^[a-z0-9]{1,40}$/', $x))), 0, 40); if (!$sam) out(400, ['error' => 'sample']);
+        $actions = $txt($body['actions'] ?? '', 1500); if ($dec === 'action' && $actions === '') out(400, ['error' => 'actions']);
+        $rec = ['id' => bin2hex(random_bytes(6)), 'o' => $o, 'owner' => $owner, 'ownerName' => (string) (($acc['users'][$owner]['name'] ?? '') ?: $owner), 'gid' => $gid, 'group' => $txt($body['group'] ?? '', 60), 'unit' => $unit, 'unitName' => $txt($body['unitName'] ?? '', 160),
+            'sampled' => $sam, 'of' => max(0, min(200, (int) ($body['of'] ?? 0))), 'decision' => $dec, 'notes' => $txt($body['notes'] ?? '', 1500), 'actions' => $dec === 'action' ? $actions : '', 'by' => $me['email'], 'byName' => (string) (($me['name'] ?? '') ?: $me['email']), 'at' => time(), 'done' => $dec === 'agreed', 'reply' => ''];
+        array_unshift($all, $rec); $all = array_slice($all, 0, 800); $keep(); ccLog($dept, $me, $dec === 'agreed' ? 'verified the marking for' : 'set verification actions for', $rec['group'] . ', ' . $rec['unitName']);
+        if ($dec === 'action') ccMail($owner, 'Internal verification: actions for you', "Hello,\n\n" . $rec['byName'] . " has sampled your marking for " . $rec['group'] . " (" . $rec['unitName'] . ") and set some actions. Open Learners, choose the group and unit, and look under Verification.\n\n" . ccAppUrl() . "\n");
+    }
+    if ($action === 'ivdone' || $action === 'ivdel') { $id = (string) ($body['id'] ?? ''); $hit = false;
+        foreach ($all as $i => $r) { if (($r['id'] ?? '') !== $id) continue;
+            if ($action === 'ivdone') { if (($r['owner'] ?? '') !== $me['email']) out(403, ['error' => 'noperm']); $all[$i]['done'] = true; $all[$i]['doneAt'] = time(); $all[$i]['reply'] = $txt($body['reply'] ?? '', 600); }
+            else { if (($r['by'] ?? '') !== $me['email'] && $me['role'] !== 'superadmin') out(403, ['error' => 'noperm']); unset($all[$i]); }
+            $hit = true; break; }
+        if (!$hit) out(404, ['error' => 'not_found']); $keep(); }
+    flock($fh, LOCK_UN);
+    $o = []; foreach ($all as $r) { if (!$isLead && ($r['owner'] ?? '') !== $me['email']) continue; $mineR = ($r['owner'] ?? '') === $me['email']; $byMe = ($r['by'] ?? '') === $me['email']; unset($r['owner'], $r['by']); $o[] = $r + ['mine' => $mineR, 'byMe' => $byMe]; }
+    out(200, ['iv' => $o]);
 }
 
 $lead = !empty($me['isLead']);
@@ -272,7 +313,7 @@ if (in_array($action, ['pending', 'accept', 'reject'], true)) {
 if ($action === 'set') {
     if (!isset($body['data']) || !is_array($body['data'])) out(400, ['error' => 'Nothing to save.']);
     $data = $body['data'];
-    if ($kind === 'own') { writeDoc($udir, $path, ['data' => $data]); out(200, ['ok' => true]); }
+    if ($kind === 'own') { if ($anon) $data = anonDoc($path, $data); writeDoc($udir, $path, ['data' => $data]); out(200, ['ok' => true]); }
     if ($kind === 'dates' || $kind === 'subjects') { if (!$me[$kind === 'dates' ? 'canDates' : 'canSubjects']) out(403, ['error' => 'noperm']); writeDoc($ddir, $path, ['data' => $data]); out(200, ['ok' => true]); }
     if ($kind === 'edit') { if (!$me['canEdit']) out(403, ['error' => 'noperm']); writeDoc($ddir, $path, ['data' => $data]); out(200, ['ok' => true]); }
     $obj = inner($data, $kind);

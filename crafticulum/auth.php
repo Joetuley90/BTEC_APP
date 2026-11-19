@@ -487,6 +487,18 @@ if ($action === 'roomsget' || $action === 'roomsset') {
     out(200, ['rooms' => array_map(fn($k) => ['id' => $k, 'name' => CC_ROOMS[$k][0], 'about' => CC_ROOMS[$k][1]], array_keys(CC_ROOMS)), 'super' => $sup, 'college' => $cid, 'collegeName' => $cid !== '' ? ccCollege($a, $cid)['name'] : '',
         'siteOff' => array_values((array) (($a['rooms'] ?? [])['off'] ?? [])), 'collegeOff' => $cid !== '' ? array_values((array) ($a['colleges'][$cid]['roomsOff'] ?? [])) : [], 'roles' => (object) $roles, 'me' => ccRooms($a, ccMe() ?: $me)]);
 }
+/* a college's own settings: its house rules for the AI, and whether its learners are kept anonymous. For its manager, or the super admin working inside it */
+if ($action === 'houseget' || $action === 'houseset') {
+    $sup = $me['role'] === 'superadmin'; $own = $me['role'] === 'owner'; if (!$sup && !$own) out(403, ['error' => 'noperm']);
+    $cid = (string) $me['college']; if ($cid === '' || !isset($a['colleges'][$cid])) out(404, ['error' => 'not_found']);
+    if ($action === 'houseset') {
+        if (is_array($body['house'] ?? null)) { $h = []; foreach (CC_HOUSE as $k => $n) $h[$k] = mb_substr(trim(str_replace(["\r", "\0"], '', (string) ($body['house'][$k] ?? ''))), 0, $n); $h['on'] = !empty($body['house']['on']);
+            $a['colleges'][$cid]['house'] = $h; ccLog($me['dept'], $me, 'changed the house rules for the AI'); }
+        if (array_key_exists('anon', $body)) { $on = !empty($body['anon']); if ($on !== ccAnon($a, $cid)) { $a['colleges'][$cid]['anon'] = $on; ccLog($me['dept'], $me, $on ? 'switched on anonymous learners' : 'switched off anonymous learners'); } }
+        if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
+    }
+    out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
+}
 /* the super admin steps back out of the college they were working inside */
 if ($action === 'leave') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);

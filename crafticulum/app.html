@@ -1382,6 +1382,67 @@ button.ln-c:hover{border-color:var(--cc-primary)}.ln-rm{border:0;background:none
 @media print{.les-res{display:none!important}}
 .tk-chips button small{font-weight:500;opacity:.75;margin-left:2px}
 
+/* ===== v97: resubmissions, verification, anonymous learners ===== */
+.ln-x{border:1px solid var(--cc-line);border-radius:.9rem;background:var(--bs-body-bg);margin-top:16px;padding:0 16px}.ln-x[open]{padding-bottom:14px}
+.ln-x>summary{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;padding:13px 0;cursor:pointer;list-style:none}.ln-x>summary::-webkit-details-marker{display:none}
+.ln-x>summary::before{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);margin-right:2px;opacity:.55;transition:transform .12s}.ln-x[open]>summary::before{transform:rotate(45deg)}
+.ln-x>summary>span:first-of-type{flex:1 1 auto}.ln-x-n{font-size:.82rem;color:var(--bs-secondary-color)}
+.ln-s th,.ln-s td{font-size:.85rem;padding:7px 8px;white-space:nowrap}.ln-s thead th{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--bs-secondary-color)}
+.ln-in{min-width:128px;font-size:.82rem}.ln-s input[type=text].ln-in{min-width:110px}.ln-s select.ln-in{min-width:120px}
+.ln-st{display:inline-block;font-size:.76rem;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap;border:1px solid transparent}
+.ln-st-ok{background:var(--bs-success-bg-subtle);color:var(--bs-success-text-emphasis);border-color:var(--bs-success-border-subtle)}.ln-st-off{background:var(--bs-tertiary-bg);color:var(--bs-secondary-color)}
+.ln-st-do{background:var(--cc-primary-soft);color:var(--cc-primary-text)}.ln-st-warn{background:#fef3c7;color:#92400e;border-color:#fcd34d}.ln-st-bad{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+[data-bs-theme=dark] .ln-st-warn{background:rgba(245,158,11,.16);color:#fcd34d;border-color:rgba(245,158,11,.4)}[data-bs-theme=dark] .ln-st-bad{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.ln-ivs{display:grid;gap:8px;margin:0 0 10px}.ln-iv{border:1px solid var(--cc-line);border-radius:.7rem;padding:10px 12px;background:var(--bs-body-bg)}.ln-iv.open{border-color:#f59e0b}
+.ln-iv-re{display:flex;gap:8px;margin-top:8px}.ln-iv-re input{max-width:420px}
+.ln-ivf{margin-top:12px;padding:14px;border:1px solid var(--cc-line);border-radius:.8rem;background:var(--bs-body-bg)}
+.ln-ivp{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-bottom:10px}.ln-ivl{display:inline-flex;gap:6px;align-items:center;font-size:.84rem;border:1px solid var(--cc-line);border-radius:99px;padding:3px 10px 3px 8px;cursor:pointer;margin:0}.ln-ivl:has(input:checked){border-color:var(--cc-primary);background:var(--cc-primary-soft)}.ln-ivl input{margin:0}
+.ln-ivd{margin-bottom:8px}.ln-ivt{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.ln-anon-n{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:.86rem}.ln-anon-n input{width:120px}
+body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{display:none}
+
+/* ===== v97: education framework ===== */
+.edu-card{border:1px solid var(--cc-line);border-radius:.9rem;padding:14px 16px;margin-bottom:14px;background:var(--bs-body-bg)}#eduOne{border-color:rgba(var(--cc-primary-rgb),.45)}
+.edu-grid{display:grid;gap:10px 12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.edu-f .form-label{font-size:.78rem;font-weight:600;margin-bottom:3px}.edu-f .form-text{font-size:.74rem}.edu-wide{grid-column:1 / -1}
+.edu-b{display:inline-flex;flex-wrap:wrap;gap:4px;margin-right:6px}.edu-b .badge{font-size:.66rem}
+.edu-ver{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-top:12px;padding:10px 12px;border-radius:.7rem;font-size:.84rem;background:var(--bs-tertiary-bg);border:1px dashed var(--cc-line-strong,#d4d8e3)}.edu-ver>div:first-child{flex:1 1 280px;min-width:0}
+.edu-ver.ok{background:var(--bs-success-bg-subtle);border:1px solid var(--bs-success-border-subtle)}.edu-ver-go{display:flex;gap:8px;flex:1 1 320px}.edu-ver-go input{min-width:0}
+.edu-strip{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin-top:18px;padding:9px 14px;border-radius:.7rem;background:var(--bs-tertiary-bg);font-size:.8rem}.edu-strip.bad{background:#fee2e2;color:#7f1d1d}.edu-strip.bad .text-body-secondary{color:inherit!important}
+@media print{.edu-strip{display:none!important}}
+/* ===== v97: AI Tools, finished ===== */
+.tk-c-plan{--tkc:#4f46e5}.tk-c-res{--tkc:#0d9488}.tk-c-comms{--tkc:#c2610c}.tk-c-send{--tkc:#be185d}.tk-c-lead{--tkc:#1d4ed8}
+[data-bs-theme=dark] .tk-c-plan{--tkc:#a5b4fc}[data-bs-theme=dark] .tk-c-res{--tkc:#5eead4}[data-bs-theme=dark] .tk-c-comms{--tkc:#fdba74}[data-bs-theme=dark] .tk-c-send{--tkc:#f9a8d4}[data-bs-theme=dark] .tk-c-lead{--tkc:#93c5fd}
+.tk-hero{display:grid;gap:18px 28px;grid-template-columns:minmax(0,1fr);align-items:center;padding:26px 28px;border-radius:1.1rem;margin-bottom:18px;border:1px solid rgba(var(--cc-primary-rgb),.18);
+  background:radial-gradient(900px 260px at 100% 0,rgba(168,85,247,.16),transparent 60%),radial-gradient(700px 240px at 0 100%,rgba(13,148,136,.10),transparent 60%),var(--cc-primary-soft)}
+@media (min-width:992px){.tk-hero{grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr)}}
+.tk-hero-h{font-size:clamp(1.5rem,1.1rem + 1.4vw,2rem);font-weight:800;letter-spacing:-.02em;margin:0 0 4px}.tk-hero-p{color:var(--bs-secondary-color);max-width:60ch;margin:0 0 16px}
+.tk-search{position:relative;max-width:560px}.tk-search svg{position:absolute;left:14px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--bs-secondary-color);pointer-events:none}
+.tk-search .form-control{height:50px;padding-left:42px;padding-right:44px;border-radius:.9rem;font-size:1rem;box-shadow:0 6px 20px -12px rgba(15,23,42,.35)}
+.tk-search kbd{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--bs-tertiary-bg);color:var(--bs-secondary-color);border:1px solid var(--cc-line);border-radius:.4rem;font-size:.72rem;padding:1px 7px}@media (hover:none){.tk-search kbd{display:none}}
+.tk-pop{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px;font-size:.82rem;color:var(--bs-secondary-color)}.tk-pop span{font-weight:700;margin-right:2px}
+.tk-pop button{border:1px solid var(--cc-line);background:var(--bs-body-bg);color:var(--bs-body-color);border-radius:99px;padding:.22rem .75rem;font-size:.8rem;font-weight:600}.tk-pop button:hover,.tk-pop button:focus-visible{border-color:var(--cc-primary);color:var(--cc-primary-text)}
+.tk-hero-r{display:grid;gap:10px;align-content:center}.tk-hero .tk-stat{text-align:left;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}.tk-hero .tk-stat span{flex:1 1 100%}
+.tk-crafti{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--cc-line);background:var(--bs-body-bg);color:inherit;border-radius:.9rem;padding:12px 14px;transition:border-color .12s,transform .12s}.tk-crafti:hover,.tk-crafti:focus-visible{border-color:var(--cc-primary);transform:translateY(-1px)}
+.tk-crafti .cr-av{flex:none;width:44px;height:44px}.tk-crafti b{display:block;font-size:.92rem}.tk-crafti small{display:block;color:var(--bs-secondary-color);font-size:.8rem;line-height:1.35}
+.tk-v2 .tk-find{margin-bottom:20px}.tk-v2 .tk-chips button{display:inline-flex;gap:6px;align-items:center}.tk-v2 .tk-chips button i{width:8px;height:8px;border-radius:50%;background:var(--tkc)}.tk-v2 .tk-chips button.on i{background:#fff}
+.tk-v2 .tk-chips button small{font-weight:600;opacity:.7;margin-left:2px}
+.tk-cat-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}.tk-cat-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:.7rem;color:var(--tkc);background:color-mix(in srgb,var(--tkc) 12%,transparent)}.tk-cat-i svg{width:20px;height:20px}
+.tk-v2 .tk-cat-h{margin:0;font-size:1.02rem}.tk-cat-p{margin:0;font-size:.82rem;color:var(--bs-secondary-color)}.tk-v2 .tk-cat{margin-bottom:30px}
+.tk-row-h{display:flex;align-items:center;gap:6px;font-weight:700;margin-bottom:10px}.tk-row-h svg{width:16px;height:16px;color:#f59e0b}
+.tk-v2 .tk-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tk-tw{position:relative;display:grid}.tk-tw .tk-tool{grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:16px 40px 14px 16px;height:100%}
+.tk-tool-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:.75rem;color:var(--tkc,var(--cc-primary));background:color-mix(in srgb,var(--tkc,var(--cc-primary)) 12%,transparent)}.tk-tool-i svg{width:21px;height:21px}
+.tk-tool-b{display:grid;gap:4px;min-width:0}.tk-tool-m{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:4px;font-size:.74rem;font-weight:600;color:var(--bs-secondary-color)}.tk-tool-m>span:not(.badge)::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--tkc,var(--cc-primary));margin-right:6px;vertical-align:middle}
+.tk-tw .tk-tool:hover,.tk-tw .tk-tool:focus-visible{border-color:var(--tkc,var(--cc-primary));box-shadow:0 10px 24px -14px color-mix(in srgb,var(--tkc,var(--cc-primary)) 70%,transparent)}
+.tk-fav{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:none;color:var(--bs-secondary-color);opacity:.45;transition:opacity .12s,color .12s,background .12s}.tk-fav svg{width:17px;height:17px}
+.tk-tw:hover .tk-fav,.tk-fav:focus-visible,.tk-fav.on{opacity:1}.tk-fav:hover{background:var(--bs-tertiary-bg)}.tk-fav.on{color:#f59e0b}@media (hover:none){.tk-fav{opacity:.8}}
+.tk-cont{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.tk-cont button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--cc-line);background:var(--bs-body-bg);color:inherit;border-radius:.9rem;padding:12px 14px}
+.tk-cont button:hover,.tk-cont button:focus-visible{border-color:var(--cc-primary)}.tk-cont b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tk-cont small{display:block;font-size:.78rem;color:var(--bs-secondary-color)}
+.tk-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative}.tk-card-top .tk-fav{position:static;opacity:.7}.tk-card.tk-c-plan .tk-kicker,.tk-card.tk-c-res .tk-kicker,.tk-card.tk-c-comms .tk-kicker,.tk-card.tk-c-send .tk-kicker,.tk-card.tk-c-lead .tk-kicker{color:var(--tkc)}
+.tk-steps{list-style:none;counter-reset:s;display:grid;gap:10px;text-align:left;max-width:440px;margin:14px auto 10px;padding:0}.tk-steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:10px}
+.tk-steps li::before{content:counter(s);grid-row:1 / span 2;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--cc-primary-soft);color:var(--cc-primary-text);font-weight:800;font-size:.82rem}.tk-steps b{font-size:.9rem}.tk-steps span{font-size:.82rem;color:var(--bs-secondary-color)}
+@media (max-width:575.98px){.tk-hero{padding:18px 16px}.tk-v2 .tk-chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}.tk-v2 .tk-chips button{flex:none}.tk-v2 .tk-grid{grid-template-columns:minmax(0,1fr)}}
+
 /* ===== round 5 ===== */
 .st-sticky{position:sticky;top:calc(var(--stick-top,58px) + 6px);z-index:7;margin:-4px 0 14px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:.8rem;background:color-mix(in srgb,var(--cc-surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--cc-shadow-sm)}
 .st-sec{scroll-margin-top:calc(var(--stick-top,58px) + 70px)!important}
@@ -1554,7 +1615,7 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
         <button type="button" class="side-link" data-search aria-label="Search everything"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg><span class="lbl">Search</span></button>
         <button type="button" class="side-link" data-nav="home" aria-label="Start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5h4.5V15h3v4.5H18V10"/></svg><span class="lbl">Start</span></button>
         <button type="button" class="side-link" data-nav="week" aria-label="This week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="lbl">This week</span></button>
-        <button type="button" class="side-link active" data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 4.5 11 9l4.5 1.5L11 12l-1.5 4.5L8 12l-4.5-1.5L8 9z"/><path d="M17.5 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg><span class="lbl">Lessons</span></button>
+        <button type="button" class="side-link active" data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9.5 12 5l9.500 4.500L12 14z"/><path d="M6.500 11.600V16c1.600 1.400 3.400 2.100 5.500 2.100s3.900-.7 5.500-2.100v-4.400M21.500 9.500v5"/></svg><span class="lbl">Lessons</span></button>
         <button type="button" class="side-link" data-nav="seq" aria-label="Planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v3M16 3v3M7.5 13.5h3M7.5 17h3M13.5 13.5h3"/></svg><span class="lbl">Planning</span></button>
         <button type="button" class="side-link" data-nav="results" aria-label="Results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="6.5" rx="1"/><rect x="10.5" y="6.5" width="3" height="11" rx="1"/><rect x="15.5" y="13.5" width="3" height="4" rx="1"/></svg><span class="lbl">Results</span></button>
         <button type="button" class="side-link" data-canvas="libCanvas" aria-label="My created lessons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H9l2 2h7.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg><span class="lbl">My created lessons</span><span class="count" id="libCount"></span></button>
@@ -1652,7 +1713,7 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
 <nav class="bnav" aria-label="Main sections">
   <button type="button" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9.5h4.5V15h3v4.5H18V10"/></svg><span>Start</span></button>
   <button type="button" data-nav="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>This week</span></button>
-  <button type="button" data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 4.5 11 9l4.5 1.5L11 12l-1.5 4.5L8 12l-4.5-1.5L8 9z"/><path d="M17.5 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg><span>Lessons</span></button>
+  <button type="button" data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9.5 12 5l9.500 4.500L12 14z"/><path d="M6.500 11.600V16c1.600 1.400 3.400 2.100 5.500 2.100s3.900-.7 5.500-2.100v-4.400M21.500 9.500v5"/></svg><span>Lessons</span></button>
   <button type="button" data-nav="seq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9.5h17M8 3v3M16 3v3M7.5 13.5h3M7.5 17h3M13.5 13.5h3"/></svg><span>Planning</span></button>
   <button type="button" data-canvas="libCanvas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H9l2 2h7.5A1.5 1.5 0 0 1 20 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/></svg><span>My lessons</span></button>
 </nav>
@@ -3379,7 +3440,7 @@ function renderTools(B){
       <div class="tool-row"><button type="button" class="chalk-btn big" data-t="saveClass">Save class</button>
         <button type="button" class="chalk-btn" data-t="cancelClass">Cancel</button>
         ${editingExisting ? `<button type="button" class="chalk-btn" data-t="delClass">Delete class</button>` : ""}</div>
-      <div class="pick-meta">Saved to your account only. First names are plenty.</div>`;
+      <div class="pick-meta">${typeof me !== "undefined" && me && me.anon ? "Your college keeps learners anonymous. Use learner numbers: names are replaced with numbers when this is saved." : "Saved to your account only. First names are plenty."}</div>`;
   } else if(toolMode === "picker"){
     const left = names.filter(n=>!pickedSet.has(n));
     body = classPick + `<div class="pick-name" id="pickName">${esc(lastPick || (names.length ? "Who's next?" : "Add a class to start"))}</div>
@@ -3480,7 +3541,7 @@ $("#bBody").addEventListener("change", e=>{
 
 /* ---------- generate ---------- */
 function buildPrompt(f){
-  return `You are an experienced UK Further Education lecturer planning a lesson for a ${f.level} ${f.course} group (programme: ${f.level}).
+  return `${eduWho(f)} planning a lesson for a ${f.level} ${f.course} group (programme: ${f.level}).${eduLine(f)}
 
 Unit: ${f.unit}
 Learning aim: ${f.aim || "(not given)"}
@@ -3494,11 +3555,11 @@ ${briefBlock(f.brief && briefById(f.brief.id), f.brief && f.brief.task)}${seqBlo
 Write a practical, engaging lesson. Rules:
 - UK spelling. Plain, student-friendly language. No em dashes.
 - The starter must take exactly 5 minutes, need little or no prep, and link directly to today's criteria. Include the exact prompt to show students.
-- Objectives: "all" maps to Pass, "most" to Merit, "some" to Distinction. Each one line, max 14 words, starting with a verb, ending with (P), (M) or (D).
+- Objectives: ${eduObj(f)}
 - steps: 3 to 5 numbered task steps for the board, max 12 words each.
 - doneBy: 2 to 4 short checklist items.
 - plan: timed rows whose mins add up to the full lesson length, starting with the 5 minute starter and ending with a plenary. time is elapsed time like "0:05". criteria is a criteria code from the list above, or "All".
-- Keep everything realistic for an FE classroom with PCs${f.course==="Esports"?" and gaming kit":""}.
+- ${eduRoom(f)}
 
 Reply with only this JSON:
 {"title": string (short lesson title),
@@ -3532,7 +3593,7 @@ function lessonContext(d){
       if(rows.length) crit = rows.map(([c,x])=>c+" "+x).join("\n");
     }
   }
-  return `You are an experienced UK Further Education lecturer. Lesson for a ${m.level} ${m.course} group.
+  return `${eduWho({course: m.course, level: m.level})}. Lesson for a ${m.level} ${m.course} group.${eduLine({course: m.course, level: m.level})}
 Unit: ${m.unit}
 Learning aim: ${m.aim || "(not given)"}
 Criteria (use these codes exactly):
@@ -5472,7 +5533,7 @@ const TOUR = [
   {c: 5, last: 1, view: "home", sel: ".composer, #out .home", h: "That's it", t: "You're back at the start. Press Finish and have a go. The guide is always under Settings, Display and help."}
 ];
 let tourI = -1, tourL = [], tourSwap = null;
-const tourOk = st => { const B = document.body.classList, noGen = B.contains("no-gen"), acc = B.contains("acc-on");
+const tourOk = st => { if(st.room && typeof roomOn === "function" && !roomOn(st.room)) return false; const B = document.body.classList, noGen = B.contains("no-gen"), acc = B.contains("acc-on");
   const lead = acc && typeof me !== "undefined" && me && me.isLead; if((st.lead && !lead) || (st.sup && !(lead && me.admin))) return false;
   if(st.mk && !(acc && typeof meInfo !== "undefined" && meInfo && meInfo.marker && meInfo.marker.can && typeof markerBarDraw === "function")) return false;
   if(st.mkiv && !(meInfo.marker.iv)) return false;
@@ -7654,8 +7715,8 @@ coverData = async function(L){
 const BUILTIN_UNITS = UNITS.slice();
 const NO_SUBJECT = {s: "No subject yet", l: "Level", u: [{t: "Add a subject first", a: {}, c: []}], none: true};
 const COURSE_DOC = () => "data/users/" + myId + "/settings/courses";
-let courseCfg = {builtin: true, list: [], briefs: []};
-try{ const c = JSON.parse(localStorage.getItem("lb_courses") || "null"); if(c && Array.isArray(c.list)) courseCfg = {builtin: c.builtin !== false, list: c.list, briefs: Array.isArray(c.briefs) ? c.briefs : []}; }catch{}
+let courseCfg = {builtin: true, list: [], briefs: [], ctx: null};
+try{ const c = JSON.parse(localStorage.getItem("lb_courses") || "null"); if(c && Array.isArray(c.list)) courseCfg = {builtin: c.builtin !== false, list: c.list, briefs: Array.isArray(c.briefs) ? c.briefs : [], ctx: c.ctx || null}; }catch{}
 const courseOk = x => x && typeof x.s === "string" && x.s && typeof x.l === "string" && Array.isArray(x.u) && x.u.length && x.u.every(u => u && typeof u.t === "string" && Array.isArray(u.c));
 function coursesApply(){
   let was = null; try{ was = {course: getCourse(), level: curLevel().l, unit: curUnit().t}; }catch{}
@@ -7682,7 +7743,7 @@ if((courseCfg.list || []).length) try{ coursesApply(); }catch(e){ console.error(
   if(++n > 120) return clearInterval(t); if(!(db && myId)) return; clearInterval(t);
   db.doc(COURSE_DOC()).get().then(sn => {
     let c = null; if(sn.exists) try{ c = JSON.parse(sn.data().json); }catch{}
-    const next = c && Array.isArray(c.list) ? {builtin: c.builtin !== false, list: c.list, briefs: Array.isArray(c.briefs) ? c.briefs : []} : {builtin: true, list: [], briefs: []};
+    const next = c && Array.isArray(c.list) ? {builtin: c.builtin !== false, list: c.list, briefs: Array.isArray(c.briefs) ? c.briefs : [], ctx: c.ctx || null} : {builtin: true, list: [], briefs: [], ctx: null};
     if(JSON.stringify(next) === JSON.stringify(courseCfg)) return;
     courseCfg = next; try{ localStorage.setItem("lb_courses", JSON.stringify(courseCfg)); }catch{}
     coursesApply(); if(view !== "lesson" || !current || current.example) render(current);
@@ -11235,10 +11296,10 @@ function lnDeptHtml(){ const U = lnU();
   const all = rows.reduce((a, r) => ({tot: a.tot + r.tot, ach: a.ach + r.ach, n: a.n + r.n}), {tot: 0, ach: 0, n: 0});
   const colAll = c => rows.reduce((a, r) => a + r.s.set.learners.filter(l => (r.m[l.id] || {})[c[0]] === "a").length, 0);
   return head + pick + `<div class="ov-tiles"><div class="ov-t"><b>${rows.length}</b><span>${rows.length === 1 ? "group" : "groups"}</span></div><div class="ov-t"><b>${all.n}</b><span>learners</span></div><div class="ov-t"><b>${all.tot ? Math.round(all.ach / all.tot * 100) : 0}%</b><span>of criteria achieved across the department</span></div></div>
-    <div class="table-responsive ln-tw mt-3"><table class="table table-sm align-middle ln-d"><thead><tr><th scope="col">Group</th><th scope="col">Teacher</th><th scope="col">Learners</th><th scope="col">Achieved</th><th scope="col">Most missed</th><th scope="col" aria-label="Open"></th></tr></thead><tbody>
-      ${rows.map(r => `<tr><th scope="row">${esc(r.s.set.name || "Group")}</th><td>${esc(r.s.by)}</td><td>${r.n}</td><td><div class="ln-pc"><div class="progress" role="progressbar" aria-label="Achieved" aria-valuenow="${r.pc}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:${r.pc}%"></div></div><span>${r.marked ? r.pc + "%" : "Not marked"}</span></div></td><td>${r.gap ? `<b>${esc(r.gap[0][0])}</b> <span class="text-body-secondary">${r.gap[1]} not yet</span>` : `<span class="text-body-secondary">None</span>`}</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" data-lnd="open" data-i="${r.i}">${lnDeptOpen === String(r.i) ? "Hide" : "Look"}</button></td></tr>
-        ${lnDeptOpen === String(r.i) ? `<tr class="ln-dd"><td colspan="6"><div class="table-responsive"><table class="table table-sm align-middle ln-t mb-0"><thead><tr><th scope="col">Learner</th>${crit.map(c => `<th scope="col" title="${esc(c[1])}">${esc(c[0])}</th>`).join("")}</tr></thead><tbody>${r.s.set.learners.map(l => `<tr><th scope="row">${esc(l.name)}</th>${crit.map(c => { const v = (r.m[l.id] || {})[c[0]] || "", d = LN_STATES.find(x => x[0] === v) || LN_STATES[0]; return `<td><span class="ln-c ln-${v || "x"}" title="${d[1]}">${d[2] || "·"}</span></td>`; }).join("")}</tr>`).join("")}</tbody></table></div></td></tr>` : ""}`).join("")}
-    </tbody><tfoot><tr><th scope="row" colspan="3">Learners who have achieved each criterion</th><td colspan="3"><div class="ln-crits">${crit.map(c => `<span title="${esc(c[1])}"><b>${esc(c[0])}</b> ${colAll(c)} of ${all.n}</span>`).join("")}</div></td></tr></tfoot></table></div>`; }
+    <div class="table-responsive ln-tw mt-3"><table class="table table-sm align-middle ln-d"><thead><tr><th scope="col">Group</th><th scope="col">Teacher</th><th scope="col">Learners</th><th scope="col">Achieved</th><th scope="col">Most missed</th><th scope="col">Resubmissions</th><th scope="col">Verified</th><th scope="col" aria-label="Open"></th></tr></thead><tbody>
+      ${rows.map(r => `<tr><th scope="row">${esc(r.s.set.name || "Group")}</th><td>${esc(r.s.by)}</td><td>${r.n}</td><td><div class="ln-pc"><div class="progress" role="progressbar" aria-label="Achieved" aria-valuenow="${r.pc}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width:${r.pc}%"></div></div><span>${r.marked ? r.pc + "%" : "Not marked"}</span></div></td><td>${r.gap ? `<b>${esc(r.gap[0][0])}</b> <span class="text-body-secondary">${r.gap[1]} not yet</span>` : `<span class="text-body-secondary">None</span>`}</td><td>${lnDeptResub(r, U)}</td><td>${lnDeptIvCell(r, U)}</td><td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" data-lnd="open" data-i="${r.i}">${lnDeptOpen === String(r.i) ? "Hide" : "Look"}</button></td></tr>
+        ${lnDeptOpen === String(r.i) ? `<tr class="ln-dd"><td colspan="8"><div class="table-responsive"><table class="table table-sm align-middle ln-t mb-0"><thead><tr><th scope="col">Learner</th>${crit.map(c => `<th scope="col" title="${esc(c[1])}">${esc(c[0])}</th>`).join("")}</tr></thead><tbody>${r.s.set.learners.map(l => `<tr><th scope="row">${esc(l.name)}</th>${crit.map(c => { const v = (r.m[l.id] || {})[c[0]] || "", d = LN_STATES.find(x => x[0] === v) || LN_STATES[0]; return `<td><span class="ln-c ln-${v || "x"}" title="${d[1]}">${d[2] || "·"}</span></td>`; }).join("")}</tr>`).join("")}</tbody></table></div>${lnDeptIvForm(r, U)}</td></tr>` : ""}`).join("")}
+    </tbody><tfoot><tr><th scope="row" colspan="3">Learners who have achieved each criterion</th><td colspan="5"><div class="ln-crits">${crit.map(c => `<span title="${esc(c[1])}"><b>${esc(c[0])}</b> ${colAll(c)} of ${all.n}</span>`).join("")}</div></td></tr></tfoot></table></div>`; }
 const _lnHtml43 = lnHtml;
 lnHtml = function(){ const lead = !!(acct() && me.isLead); if(!lead) return _lnHtml43.apply(this, arguments).replace("It's kept in your own space.", acct() ? "Only you can change it. The leaders of your department can see it." : "It's kept in your own space.");
   const tabs = `<div class="tk-tabs ln-tabs" role="tablist"><button type="button" role="tab" aria-selected="${lnScope === "mine"}" class="${lnScope === "mine" ? "on" : ""}" data-lnd="scope" data-s="mine">My groups</button><button type="button" role="tab" aria-selected="${lnScope === "dept"}" class="${lnScope === "dept" ? "on" : ""}" data-lnd="scope" data-s="dept">Whole department</button></div>`;
@@ -11271,8 +11332,472 @@ lbHtml = function(){ let h = _lbHtml43.apply(this, arguments); if(!roomOn("tools
 const _render43 = render;
 render = function(){ const r = _render43.apply(this, arguments);
   try{ const o = $("#out"); if(o){ const old = o.querySelector(".les-res"); if(old) old.remove(); if(view === "lesson" && current && current.title && Array.isArray(current.plan) && !current.retroBoard && roomOn("tools") && !editMode && !window.claude)
-      o.insertAdjacentHTML("beforeend", `<div class="les-res"><div><b>Want this as a document?</b> Open it in the editor to rewrite a part, change the reading level, and download it as Word, PDF or PowerPoint. It opens as a copy, so this lesson stays as it is.</div><button type="button" class="btn btn-outline-primary flex-none" data-les-doc="cur">Open in the editor</button></div>`); } }catch(e){ console.error(e); }
+      o.insertAdjacentHTML("beforeend", `<div class="les-res"><div><b>Edit this lesson in the full editor.</b> Rewrite any part with Crafticulum AI, change the reading level, add teaching slides, then save it straight back to the lesson. Word, PDF and PowerPoint downloads are there too.</div><button type="button" class="btn btn-outline-primary flex-none" data-les-doc="cur">Open in the editor</button></div>`); } }catch(e){ console.error(e); }
   return r; };
+/* ===== round 41: house rules for the AI, anonymous learners, a chat that becomes a full lesson, lessons edited in the same editor as everything else,
+   and resubmissions and internal verification in Learners. ===== */
+
+/* ---------- a college's own settings: house rules, and keeping learners anonymous. For its manager ---------- */
+let houseInfo = null, houseBusy = false, houseMsg = "", anonMsg = "";
+const anonOn = () => !!(acct() && me && me.anon);
+function houseLoad(){ if(houseBusy) return; houseBusy = true; authCall("houseget").then(j => { houseInfo = j; }).catch(() => { houseInfo = houseInfo || {failed: true}; }).finally(() => { houseBusy = false; if(view === "settings") renderSettings(); }); }
+try{ ST_GROUPS.find(g => g[0] === "college")[2].push("stHouse", "stAnon"); }catch{}
+function houseSections(sec){
+  if(window.claude || !me || me.demo || !(me.role === "superadmin" || me.role === "owner") || (typeof saOut === "function" && saOut())) return "";
+  if(!houseInfo){ houseLoad(); return sec("stHouse", "House rules for the AI", "", `<p class="small text-body-secondary mb-0">Loading...</p>`); }
+  if(houseInfo.failed) return sec("stHouse", "House rules for the AI", "", `<p class="small mb-2">Couldn't load this just now.</p><button type="button" class="btn btn-sm btn-outline-secondary" data-house="retry">Try again</button>`);
+  const H = houseInfo.house || {}, lim = houseInfo.limits || {about: 600, tone: 600, rules: 1500, sign: 300}, box = (k, label, ph, rows) => `<div class="mb-3"><label class="form-label" for="hs-${k}">${label}</label><textarea class="form-control" id="hs-${k}" rows="${rows}" maxlength="${lim[k]}" placeholder="${esc(ph)}">${esc(H[k] || "")}</textarea></div>`;
+  return sec("stHouse", "House rules for the AI", `Write these once and Crafti, every AI tool and every lesson built in ${esc(houseInfo.collegeName || "your college")} follows them. Staff don't have to remember them and can't switch them off.`, `
+    <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" role="switch" id="hs-on" ${H.on ? "checked" : ""}><label class="form-check-label" for="hs-on">Use the house rules</label></div>
+    ${box("about", "About the college", "e.g. A general further education college in Kent. Most learners are 16 to 19 on vocational courses. Lessons are 90 minutes.", 3)}
+    ${box("tone", "Tone and wording", "e.g. Say learners, not students or pupils. Say tutor, not teacher. Warm and plain. No exclamation marks in letters home.", 3)}
+    ${box("rules", "Policies and rules to follow", "e.g. Behaviour: verbal reminder, then a recorded warning, then a referral to the course leader.\nFeedback always has one thing done well and one next step.\nHomework is called independent study and is set every week.", 6)}
+    ${box("sign", "Sign-off for letters and emails", "e.g. Kind regards,\n[Your name]\n[Department], Example College", 3)}
+    <div class="d-flex flex-wrap gap-3 align-items-center"><button type="button" class="btn btn-primary" data-house="save">Save house rules</button><div class="idea-msg" role="status" id="houseMsg">${esc(houseMsg)}</div></div>
+    <p class="small text-body-secondary mt-3 mb-0">These words are sent to the AI with every request from your college, so don't put anything about a named person in them. They guide the writing. They don't change Second Marker, which only ever checks work against the criteria.</p>`)
+  + sec("stAnon", "Anonymous learners", "For colleges that don't want learner names in Crafticulum at all.", `
+    <div class="d-flex gap-3 align-items-start justify-content-between"><div class="min-w-0"><label class="fw-semibold" for="anonSw">Keep every learner anonymous</label>
+      <div class="small text-body-secondary">Learners become numbers everywhere: class lists, progress, resubmissions, verification and the name picker on the board. Students handing in work type their learner number, and the file is renamed after it. The server refuses to save a name, whoever types it.</div></div>
+      <div class="form-check form-switch mb-0 rm-sw"><input class="form-check-input" type="checkbox" role="switch" id="anonSw" ${houseInfo.anon ? "checked" : ""}></div></div>
+    <div class="idea-msg mt-2" role="status">${esc(anonMsg)}</div>
+    <p class="small text-body-secondary mt-3 mb-0">${houseInfo.anon ? "This is on. Names that were saved before it was switched on are shown as numbers, and are written over for good the next time each list is saved." : "Switching this on hides any names already saved and shows numbers instead. Each name is written over for good the next time its list is saved, so keep your own record of who is who before you switch."} The inside of a file a student hands in is not changed, so ask them to leave their name off the work too.</p>`);
+}
+const _accountSections44 = accountSections;
+accountSections = function(sec){ return _accountSections44.apply(this, arguments) + houseSections(sec); };
+document.addEventListener("click", async e => { const b = e.target.closest("[data-house]"); if(!b) return;
+  if(b.dataset.house === "retry"){ houseInfo = null; return renderSettings(); }
+  if(b.dataset.house === "save"){ const v = k => (document.getElementById("hs-" + k) || {}).value || ""; b.disabled = true;
+    try{ houseInfo = await authCall("houseset", {house: {about: v("about"), tone: v("tone"), rules: v("rules"), sign: v("sign"), on: !!$("#hs-on").checked}}); if(houseInfo.me){ me.house = houseInfo.me.house; } houseMsg = houseInfo.house.on ? "Saved. Everything the AI writes for your college follows these from now on." : "Saved, and switched off."; }
+    catch{ houseMsg = "Couldn't save that. Try again."; }
+    renderSettings(); setTimeout(() => { houseMsg = ""; }, 7000); } });
+document.addEventListener("change", async e => { const t = e.target; if(!t || t.id !== "anonSw") return; const on = t.checked;
+  try{ houseInfo = await authCall("houseset", {anon: on}); me.anon = !!houseInfo.anon; anonMsg = me.anon ? "Learners are now anonymous across your college." : "Names can be used again. Lists that were saved while this was on keep their numbers."; lnSubbed && (lnDept = null); }
+  catch{ anonMsg = "Couldn't save that. Try again."; }
+  renderSettings(); try{ syncShell(); }catch{} const again = $("#anonSw"); if(again) again.focus({preventScroll: true}); setTimeout(() => { anonMsg = ""; }, 7000); });
+const _syncShell44 = syncShell;
+syncShell = function(){ const r = _syncShell44.apply(this, arguments); try{ document.body.classList.toggle("cc-anon", anonOn()); }catch{} return r; };
+
+/* anonymous class lists: numbers go in, names don't. The server checks this too */
+const LN_CODE = /^(Learner \d{1,3}|[A-Za-z]{0,4}[ -]?\d{2,10}[A-Za-z]?)$/;
+document.addEventListener("click", e => { const b = e.target.closest('[data-ln="addgo"]'); if(!b || !anonOn()) return; e.stopPropagation(); e.preventDefault();
+  const s = lnSet(), have = new Set(s.learners.map(l => l.name.toLowerCase())), lines = ($("#lnNames").value || "").split(/\n|,/).map(x => x.replace(/\s+/g, " ").trim()).filter(Boolean), count = Math.max(0, Math.min(80, parseInt(($("#lnCount") || {}).value, 10) || 0)); let n = 0, bad = 0;
+  const put = nm => { if(have.has(nm.toLowerCase()) || s.learners.length >= 80) return; have.add(nm.toLowerCase()); s.learners.push({id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + n, name: nm}); n++; };
+  lines.forEach(x => { if(LN_CODE.test(x)) put(x); else bad++; });
+  for(let i = 1, made = 0; made < count && i < 400; i++){ const nm = "Learner " + String(i).padStart(2, "0"); if(have.has(nm.toLowerCase())) continue; put(nm); made++; }
+  s.learners.sort((a, b2) => a.name.localeCompare(b2.name, undefined, {numeric: true})); if(n) lnSave();
+  if(bad) toast(`${bad} ${bad === 1 ? "line looked like a name and wasn't" : "lines looked like names and weren't"} added. Use learner numbers.`, {bad: true}); else if(n) toast(`${n} ${n === 1 ? "learner" : "learners"} added.`);
+  if(!bad) lnAdding = false; lnDraw(); }, true);
+
+/* ---------- a chat with Crafti becomes a full lesson: slides, tasks, quiz and all, in the unit it belongs to ---------- */
+const asLesCan = () => !acct() || !!(me && me.canGen);
+async function asToLesson(c){
+  if(!c || asBusy) return; if(!sampleFn){ asErr = "Crafti isn't available just now. Try again in a moment."; return asDraw(); }
+  const text = c.msgs.slice(-10).map(m => (m.r === "u" ? "Teacher: " : "Assistant: ") + tkScrub(String(m.t)).replace(/\s+/g, " ").replace(/"/g, "'").slice(0, m.r === "u" ? 700 : 1500)).join("\n").slice(-6500);
+  ctl?.abort(); ctl = new AbortController(); asAbort = ctl; asBusy = true; asLesBusy = true; asErr = ""; asDraw(true);
+  try{
+    let picked = false; const cu = String(c.unit || asUnit || ""); if(cu){ const [li, ui] = cu.split(":").map(Number), Lv = UNITS[li], u = Lv && Lv.u[ui]; if(u) picked = !!presetForm(Lv.s, Lv.l, u.t); }
+    const course = getCourse(), L = curLevel(); if(!L || !(L.u || []).length) throw {code: "no_subject"};
+    if(!picked && L.u.length > 1){
+      const r = await sampleFn.json(`A teacher on a ${L.l} ${course} course planned a lesson in a chat with their assistant:\n"${text.slice(-3000)}"\n\nWhich ONE unit below does this lesson belong to?\n${L.u.map((u, i) => `${i}: ${u.t}${Object.keys(u.a || {}).length ? " (" + Object.values(u.a).join("; ") + ")" : ""}`).join("\n")}\n\nReply with only this JSON: {"unit": number}`, {signal: ctl.signal, cache: false});
+      const i = Number(r && r.unit); if(!Number.isInteger(i) || !L.u[i]) throw {code: "no_unit"}; $("#unit").value = i; fillAims(); fillBriefs();
+    }
+    const u = curUnit(), f = {course, level: L.l, unit: u.t, aim: "Learning aims: " + Object.entries(u.a || {}).map(([k, v]) => k + (v ? " (" + v + ")" : "")).join("; "),
+      criteria: u.c.map(([cd, d]) => cd + " " + d).join("\n"), codes: u.c.map(x => x[0]), length: $("#length").value, kind: "Teaching new content", notes: "", brief: null, seq: null, prev: null,
+      describe: "This is a planning chat between the teacher and their assistant. Build the lesson they settled on, keeping the activities and ideas they agreed:\n" + text};
+    const lesson = await buildLesson(f, ctl.signal);
+    asBusy = false; asLesBusy = false; asAbort = null; saveRecent(lesson); try{ rememberForm(); }catch{} showLesson(lesson); try{ paintCoverage(); updateFollow(); }catch{}
+    toast("Here's the full lesson. It's saved in your lessons, and you can edit any part of it.");
+  }catch(err){ asBusy = false; asLesBusy = false; asAbort = null; const k = err && err.code;
+    asErr = k === "cancelled" || (err && err.name === "AbortError") ? "" : k === "no_subject" ? "Add a subject first, so the lesson has a unit to belong to." : k === "no_unit" ? "Couldn't tell which unit that belongs to. Pick the unit under the message box and try again." : k === "noperm" ? "Building full lessons isn't switched on for you. Ask your head of department." : (typeof ERR !== "undefined" && ERR[k] ? ERR[k].replace("Press Build lesson again.", "Try again.") : "Couldn't build the lesson. Try again.");
+    if(view === "assistant") asDraw(true); }
+}
+let asLesBusy = false;
+const _asHtml44 = asHtml;
+asHtml = function(){ let h = _asHtml44.apply(this, arguments); const c = asChat();
+  if(asLesBusy) h = h.replace("Crafti is on it...", "Crafti is building the full lesson. This usually takes about a minute...");
+  if(c && asLesCan() && !asBusy && c.msgs.some(m => m.r === "a")){ const mark = ">Make this a resource</button>", i = h.lastIndexOf(mark); if(i > 0) h = h.slice(0, i + mark.length) + `<button type="button" class="btn btn-sm btn-primary" data-as-lesson>Build the full lesson</button>` + h.slice(i + mark.length); }
+  if(acct() && me && me.house) h = h.replace("Crafti can be wrong, so check what matters.", "Crafti can be wrong, so check what matters. Your college's house rules are applied.");
+  return h; };
+document.addEventListener("click", e => { if(e.target.closest("[data-as-lesson]")) asToLesson(asChat()); });
+const _tkFormHtml44 = tkFormHtml;
+tkFormHtml = function(){ const h = _tkFormHtml44.apply(this, arguments); return acct() && me && me.house ? h + `<p class="form-text mt-2 mb-0">Your college's house rules are applied to everything this writes.</p>` : h; };
+
+/* ---------- one editor. A lesson opens in the same editor as everything the tools make, and Save lesson writes it back:
+   the board, the student page, the task sheets and the quiz all change with it. Each part of the page is read back into the part of the lesson it came from ---------- */
+const lesLi = a => (a || []).filter(Boolean).map(x => "- " + String(x).replace(/\n/g, " ")).join("\n"), lesOl = a => (a || []).filter(Boolean).map((x, i) => `${i + 1}. ${String(x).replace(/\n/g, " ")}`).join("\n"),
+  lesCell = x => String(x == null ? "" : x).replace(/\|/g, "/").replace(/\n/g, " ").trim(), lesJ = a => a.filter(Boolean).join("\n\n");
+lessonToDoc = function(L){ const sec = [], o = L.objectives || {}, st = L.starter || {}, pl = L.plenary || {}, sd = L.study;
+  sec.push(["objectives", "Objectives", ["all", "most", "some"].filter(k => o[k]).map(k => `- **${k[0].toUpperCase() + k.slice(1)}:** ${o[k]}`).join("\n")]);
+  sec.push(["starter", "Starter: " + (st.title || ""), lesJ([st.prompt, lesLi(st.instructions), st.answers && "**Answers:** " + st.answers])]);
+  sec.push(["board", "On the board", lesJ([(L.steps || []).length && "**Steps**\n\n" + lesOl(L.steps), (L.doneBy || []).length && "**Done by the end**\n\n" + lesLi(L.doneBy), (L.howTo || []).length && "**How we work today**\n\n" + lesLi(L.howTo)])]);
+  if(Array.isArray(L.plan) && L.plan.length) sec.push(["plan", "Lesson plan", "| Minutes | Activity | Criteria |\n|---|---|---|\n" + L.plan.map(r => `| ${lesCell(r.mins)} | ${lesCell(r.activity)} | ${lesCell(r.criteria)} |`).join("\n")]);
+  teachOf(L).forEach((t, i) => sec.push(["teach:" + i, "Teach: " + (t.title || ""), lesJ([t.explain, lesLi(t.points), (t.terms || []).length ? "| Term | Meaning |\n|---|---|\n" + t.terms.map(x => `| ${lesCell(x.term)} | ${lesCell(x.meaning)} |`).join("\n") : "", t.example && "**Example:** " + t.example, t.ask && "**Ask:** " + t.ask, t.answer && "**Answer:** " + t.answer])]));
+  tasksOf(L).forEach((t, i) => sec.push(["task:" + i, `Task ${i + 1}: ${t.title}`, lesJ([t.goal && "**Goal:** " + t.goal, lesOl(t.steps), (t.check || []).length ? "**Success criteria**\n\n" + lesLi(t.check) : "", t.tip && "**Tip:** " + t.tip, t.stretch && "**Stretch:** " + t.stretch])]));
+  if(Array.isArray(L.quiz) && L.quiz.length) sec.push(["quiz", "Exit quiz", L.quiz.map((q, i) => lesJ([`**Q${i + 1}.** ${String(q.q).replace(/\n/g, " ")}`, (q.options || []).map((x, k) => `- ${x}${k === (Number(q.answer) || 0) ? " (correct)" : ""}`).join("\n"), q.why && "**Why:** " + q.why])).join("\n\n")]);
+  if(sd && sd.title) sec.push(["study", "Independent study: " + sd.title, lesJ([sd.goal && "**Goal:** " + sd.goal, lesOl(sd.steps), (sd.sources || []).length ? "**Sources**\n\n" + lesLi(sd.sources) : "", sd.bring && "**Bring next lesson:** " + sd.bring, sd.stretch && "**Stretch:** " + sd.stretch])]);
+  if(L.stretch || L.support) sec.push(["diff", "Stretch and support", lesJ([L.stretch && "**Stretch:** " + L.stretch, L.support && "**Support:** " + L.support])]);
+  sec.push(["plenary", "Plenary: " + (pl.title || ""), lesJ([pl.prompt, lesLi(pl.instructions)])]);
+  const m = L.meta || {}; let unit = ""; try{ UNITS.forEach((Lv, a) => (Lv.u || []).forEach((u, b2) => { if(u.t === m.unit && (!m.level || Lv.l === m.level)) unit = a + ":" + b2; })); }catch{}
+  return {id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), tool: "fromlesson", title: String(L.title || "Lesson").slice(0, 140), vals: {_unit: unit}, personal: false, saved: false, fromLesson: L.id || "", createdAt: Date.now(), updatedAt: Date.now(),
+    sections: sec.filter(s => s[2] || ["objectives", "starter", "plenary"].includes(s[0])).map(s => ({k: s[0], h: s[1].replace(/:\s*$/, "").slice(0, 120), html: tkClean(tkMd(s[2] || ""))}))}; };
+/* what's on the page, as plain blocks: paragraphs, lists and tables */
+function lesBlocks(html){ const d = document.createElement("div"); d.innerHTML = html; const out = [], T = el => el.textContent.replace(/\s+/g, " ").trim();
+  const walk = n => { if(n.nodeType === 3){ const t = n.textContent.replace(/\s+/g, " ").trim(); if(t) out.push({t: "p", x: t}); return; } if(n.nodeType !== 1) return; const tag = n.nodeName;
+    if(tag === "UL" || tag === "OL") return out.push({t: tag === "OL" ? "ol" : "ul", items: [...n.children].filter(c => c.nodeName === "LI").map(T).filter(Boolean)});
+    if(tag === "TABLE") return out.push({t: "table", rows: [...n.querySelectorAll("tr")].map(tr => [...tr.children].map(T))});
+    if(tag === "DIV" && n.querySelector("ul,ol,table,p,div")) return [...n.childNodes].forEach(walk);
+    n.innerHTML.split(/<br\s*\/?>/i).forEach(part => { const s = document.createElement("span"); s.innerHTML = part; const t = T(s); if(t) out.push({t: "p", x: t}); }); };
+  [...d.childNodes].forEach(walk); return out; }
+const lesLab = (x, names) => { const m = String(x).match(new RegExp("^(" + names + ")\\s*(?::\\s*(.*)|$)", "i")); return m ? [m[1].toLowerCase(), (m[2] || "").trim()] : null; };
+function lesSP(base, h, B, word){ const r = {instructions: [], ...(base || {})}, ti = h.replace(new RegExp("^" + word + "\\s*:?\\s*", "i"), "").trim(), ps = [], ins = []; let ans = null; if(ti) r.title = ti;
+  B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "answers?"); if(m) ans = m[1]; else ps.push(b.x); } else if(b.items) ins.push(...b.items); });
+  if(ps.length) r.prompt = ps.join(" "); r.instructions = ins; if(ans !== null) r.answers = ans; return r; }
+function lesTeach(base, h, B){ const t = {title: h.replace(/^teach(ing)?\s*:?\s*/i, "").trim() || (base && base.title) || "Teaching input", mins: base ? base.mins : "", criteria: base ? base.criteria : "", explain: "", points: [], terms: [], example: "", ask: "", answer: ""}, ex = [];
+  B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "example|ask|answer|key terms|key points"); if(!m) return ex.push(b.x); if(["example", "ask", "answer"].includes(m[0])) t[m[0]] = m[1]; }
+    else if(b.t === "table") b.rows.forEach((r, i) => { if(i === 0 && /^term$/i.test(r[0] || "")) return; if(r[0]) t.terms.push({term: r[0], meaning: r[1] || ""}); });
+    else t.points.push(...b.items); });
+  t.explain = ex.join("\n\n"); return t; }
+function lesTask(base, h, B){ const t = {...(base || {}), title: h.replace(/^task\s*\d*\s*:?\s*/i, "").trim() || (base && base.title) || "Task"}, goal = []; let steps = null, check = null, cur = "steps";
+  B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "goal|success criteria|check|steps|tip|stretch"); if(!m) return goal.push(b.x); if(m[0] === "goal") goal.push(m[1]); else if(m[0] === "tip" || m[0] === "stretch") t[m[0]] = m[1]; else cur = m[0] === "steps" ? "steps" : "check"; }
+    else if(b.items){ if(cur === "steps" && steps === null) steps = b.items; else check = (check || []).concat(b.items); cur = "check"; } });
+  t.goal = goal.filter(Boolean).join(" "); t.steps = steps || []; t.check = check || []; return t; }
+function lesQuiz(B){ const qs = []; let q = null;
+  B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "why"); if(m){ if(q) q.why = m[1]; return; } q = {q: b.x.replace(/^Q?\s*\d+\s*[.):]\s*/i, "").trim(), options: [], answer: -1, why: ""}; qs.push(q); }
+    else if(b.items && q) b.items.forEach(x => { const ok = /\(\s*correct\s*\)\s*$/i.test(x), txt = x.replace(/\(\s*correct\s*\)\s*$/i, "").trim(); if(!txt) return; if(ok && q.answer < 0) q.answer = q.options.length; q.options.push(txt); }); });
+  return qs; }
+function lesStudy(base, h, B){ const s = {...(base || {}), title: h.replace(/^independent study\s*:?\s*/i, "").trim() || (base && base.title) || "Independent study"}, goal = []; let steps = null, src = null, cur = "steps";
+  B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "goal|sources|steps|bring next lesson|bring|stretch"); if(!m) return goal.push(b.x); if(m[0] === "goal") goal.push(m[1]); else if(m[0] === "stretch") s.stretch = m[1]; else if(m[0].startsWith("bring")) s.bring = m[1]; else cur = m[0]; }
+    else if(b.items){ if(cur === "steps" && steps === null) steps = b.items; else src = (src || []).concat(b.items); cur = "sources"; } });
+  s.goal = goal.filter(Boolean).join(" "); s.steps = steps || []; s.sources = src || []; return s; }
+function docToLesson(doc, base){ const nl = JSON.parse(JSON.stringify(base)), warn = [], bT = teachOf(base), bK = tasksOf(base), teach = [], tasks = []; let quizSeen = false; delete nl.example;
+  const title = String(doc.title || "").replace(/\s+/g, " ").trim(); if(title) nl.title = title.slice(0, 140);
+  doc.sections.forEach(s => { const k = s.k || "", h = String(s.h || "").replace(/\s+/g, " ").trim(); let B; try{ B = lesBlocks(s.html); }catch{ return warn.push(h || "A part"); }
+    const lines = () => B.flatMap(b => b.t === "p" ? [b.x] : b.items || []);
+    if(k === "objectives"){ const o = {...(base.objectives || {})}; lines().forEach(x => { const m = lesLab(x, "all|most|some"); if(m && m[1]) o[m[0]] = m[1]; }); nl.objectives = o; }
+    else if(k === "starter") nl.starter = lesSP(base.starter, h, B, "starter");
+    else if(k === "plenary") nl.plenary = lesSP(base.plenary, h, B, "plenary");
+    else if(k === "board"){ let cur = "steps"; const got = {}; B.forEach(b => { if(b.t === "p"){ const m = lesLab(b.x, "steps|done by the end|how we work today"); if(m) cur = m[0] === "steps" ? "steps" : m[0][0] === "d" ? "doneBy" : "howTo"; } else if(b.items) got[cur] = (got[cur] || []).concat(b.items); }); ["steps", "doneBy", "howTo"].forEach(x => { nl[x] = got[x] || []; }); }
+    else if(k === "plan"){ const tb = B.find(b => b.t === "table"), rows = tb ? tb.rows.filter((r, i) => !(i === 0 && !/^\d/.test(r[0] || "") && /min/i.test(r[0] || ""))).filter(r => (r[1] || "").trim()) : [];
+      if(!rows.length) return warn.push("The lesson plan"); nl.plan = rows.map((r, i) => ({...((base.plan || [])[i] || {}), mins: Math.max(0, parseInt(r[0], 10) || 0), activity: r[1].trim(), criteria: (r[2] || "").trim()}));
+      if(nl.plan.length !== (base.plan || []).length) delete nl.studentPlan; retime(nl); }
+    else if(k.startsWith("task:")) tasks.push(lesTask(bK[+k.slice(5)], h, B));
+    else if(k === "quiz"){ quizSeen = true; const qs = lesQuiz(B); if(qs.length && qs.every(q => q.q && q.options.length >= 2 && q.answer >= 0)) nl.quiz = cleanQuiz(qs); else warn.push("The exit quiz"); }
+    else if(k === "study"){ const sd = cleanStudy(lesStudy(base.study, h, B)); if(sd) nl.study = sd; }
+    else if(k === "diff"){ lines().forEach(x => { const m = lesLab(x, "stretch|support"); if(m) nl[m[0]] = m[1]; }); }
+    else teach.push(lesTeach(k.startsWith("teach:") ? bT[+k.slice(6)] : null, h, B)); });
+  if(teach.length > 6) warn.push("Teaching parts after the sixth"); nl.teach = cleanTeach(teach); nl.tasks = tasks.filter(t => t.title);
+  if(!quizSeen && Array.isArray(base.quiz) && base.quiz.length && doc.sections.length) nl.quiz = [];
+  return {lesson: nl, warn}; }
+lessonOpenAsDoc = function(L){ if(!L) return; const d = lessonToDoc(L); d.linked = true; d.saved = true; d._base = JSON.parse(JSON.stringify(L)); tkDoc = d; tkDirty = false; tkOpen = "_doc"; tkErr = ""; setView("tools"); window.scrollTo({top: 0}); };
+function lessonSaveDoc(){ if(!tkDoc || !tkDoc.linked) return; tkSync(); const {lesson, warn} = docToLesson(tkDoc, tkDoc._base);
+  if(current && current.id === lesson.id){ undoState = {data: current}; current = lesson; } try{ lessonCache[lesson.id] = lesson; }catch{}
+  saveRecent(lesson); try{ shareKeepFresh(lesson); }catch{}
+  const d = lessonToDoc(lesson); d.linked = true; d.saved = true; d._base = JSON.parse(JSON.stringify(lesson)); tkDoc = d; tkDirty = false;
+  tkNote(warn.length ? `Saved. ${warn.join(" and ")} couldn't be read back, so ${warn.length === 1 ? "that was" : "those were"} left as before.` : "Lesson saved. The board, the student page and the quiz all use this version now.", !!warn.length); tkDraw(); }
+const _tkDocHtml44 = tkDocHtml;
+tkDocHtml = function(){ let h = _tkDocHtml44.apply(this, arguments); const d = tkDoc; if(!d || !d.linked) return h;
+  h = h.replace(/<span class="badge [^"]*">[^<]*<\/span>/, `<span class="badge ${tkDirty ? "text-bg-secondary" : "text-bg-success"} fw-normal">${tkDirty ? "Changed since saving" : "Lesson saved"}</span>`);
+  h = h.replace(/<div class="btn-group">[\s\S]*?<\/div>/, `<button type="button" class="btn btn-sm btn-primary" data-les-save>Save lesson</button>`);
+  h = h.replace('<p class="small text-body-secondary mt-3 mb-0">Written by Crafticulum AI as a draft. Read it through before you use it.</p>', `<button type="button" class="btn btn-sm btn-outline-secondary mt-3" data-les-add>Add a teaching part</button>
+    <p class="small text-body-secondary mt-3 mb-0">This is the lesson itself, not a copy. Press Save lesson and the board, the student page, the task sheets and the quiz all change with it. Keep the bold labels such as Example:, Tip: and (correct), so each line goes back where it belongs.</p>`);
+  return h; };
+const _tkToolHtml44 = tkToolHtml;
+tkToolHtml = function(){ const h = _tkToolHtml44.apply(this, arguments); return tkDoc && tkDoc.linked ? h.replace('data-tk="back">&larr; All tools</button>', 'data-les-back>&larr; Back to the lesson</button>') : h; };
+const _tkSecRun44 = tkSecRun;
+tkSecRun = async function(i, how){ const lk = tkDoc && tkDoc.linked, k = tkDoc && tkDoc.sections[i] ? tkDoc.sections[i].k : undefined;
+  const r = await _tkSecRun44.call(this, i, lk && how ? how + " Keep exactly the same layout as it has now: the same bold labels, the same lists and tables, and (correct) after the right answer of each quiz question." : how);
+  if(tkDoc && tkDoc.sections[i] && k !== undefined) tkDoc.sections[i].k = k; return r; };
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-les-save]")) return lessonSaveDoc();
+  if(e.target.closest("[data-les-add]") && tkDoc && tkDoc.linked){ tkSync(); let at = -1; tkDoc.sections.forEach((s, i) => { if(String(s.k || "").startsWith("teach:") || s.k === "" || (at < 0 && s.k === "plan")) at = i; });
+    tkDoc.sections.splice(at + 1, 0, {k: "", h: "Teach: New part", html: "<p>Explain it here, the way you'd say it to the class.</p><ul><li>A key point</li><li>Another key point</li></ul><p><strong>Example:</strong> a real example</p><p><strong>Ask:</strong> a question for the class</p>"}); tkDirty = true; tkDraw(); const el = document.querySelector(`#tkDoc .tk-sec[data-i="${at + 1}"]`); if(el) el.scrollIntoView({block: "center"}); return; }
+  const bk = e.target.closest("[data-les-back]"); if(!bk) return; tkSync(); if(tkDirty && !bk.dataset.sure){ bk.dataset.sure = "1"; bk.textContent = "Leave without saving? Press again"; return; }
+  const L = tkDoc && tkDoc._base; tkOpen = ""; tkDoc = null; tkDirty = false; tkErr = ""; if(L) showLesson(current && current.id === L.id ? current : L); else setView("lesson"); });
+
+/* ---------- resubmissions: when work came in, when feedback went back, and who has a resubmission out, due or overdue ---------- */
+const LN_RESUB_DAYS = 15;
+let lnSubOpen = false, lnIvOpen = false, lnIv = null, lnIvBusy = false, lnIvMsg = "", lnIvDraft = {};
+const lnToday = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+function lnAddWorkDays(iso, n){ const d = new Date(iso + "T12:00:00Z"); if(isNaN(d)) return ""; while(n > 0){ d.setUTCDate(d.getUTCDate() + 1); const w = d.getUTCDay(); if(w && w !== 6) n--; } return d.toISOString().slice(0, 10); }
+const lnDaysTo = iso => Math.round((new Date(iso + "T12:00:00Z") - new Date(lnToday() + "T12:00:00Z")) / 86400000);
+const lnDate = iso => iso ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", {day: "numeric", month: "short"}) : "";
+function lnSubState(x, gap){ x = x || {};
+  if(x.ro) return [x.ro === "a" ? "Closed: achieved" : "Closed: not achieved", x.ro === "a" ? "ok" : "off"];
+  if(x.ra){ if(x.ri) return ["Back in, to mark", "do"]; if(!x.rd) return ["Resubmission out", "do"]; const n = lnDaysTo(x.rd); return n < 0 ? [`Overdue by ${-n} ${n === -1 ? "day" : "days"}`, "bad"] : [n === 0 ? "Due today" : `Due in ${n} ${n === 1 ? "day" : "days"}`, n <= 3 ? "warn" : "do"]; }
+  if(x.fb) return gap ? ["Resubmission to decide", "warn"] : ["Feedback given", "ok"];
+  if(x.in) return ["In, waiting for feedback", "do"];
+  return ["Not handed in", "off"]; }
+const lnSubCount = (subs, learners) => { let open = 0, late = 0; learners.forEach(l => { const x = (subs || {})[l.id]; if(!x || !x.ra || x.ro) return; open++; if(!x.ri && x.rd && lnDaysTo(x.rd) < 0) late++; }); return {open, late}; };
+function lnSubsHtml(s, U){ const subs = (s.subs || {})[U.key] || {}, m = s.marks[U.key] || {}, crit = U.u.c || [], c = lnSubCount(subs, s.learners), gap = l => crit.some(k => ["n", "r"].includes((m[l.id] || {})[k[0]]));
+  const d = (l, k, v, lab) => `<input type="date" class="form-control form-control-sm ln-in" data-lns="${k}" data-l="${esc(l.id)}" value="${esc(v || "")}" aria-label="${esc(l.name)}: ${lab}">`;
+  return `<details class="ln-x" id="lnSubs" ${lnSubOpen ? "open" : ""}><summary><span class="fw-semibold">Submissions and resubmissions</span><span class="ln-x-n">${c.open ? `${c.open} ${c.open === 1 ? "resubmission" : "resubmissions"} open${c.late ? `, <b class="text-danger">${c.late} overdue</b>` : ""}` : "No resubmissions open"}</span></summary>
+    <p class="small text-body-secondary">Record when each learner handed in and when you gave feedback. If a resubmission is authorised, tick it and the due date is set ${LN_RESUB_DAYS} working days after the feedback (weekends aren't counted, holidays are). Change the date if your centre or awarding body says otherwise.</p>
+    <div class="table-responsive ln-tw"><table class="table table-sm align-middle ln-s"><thead><tr><th scope="col">Learner</th><th scope="col">Handed in</th><th scope="col">Feedback given</th><th scope="col">Resubmission</th><th scope="col">Authorised by</th><th scope="col">Due</th><th scope="col">Back in</th><th scope="col">Outcome</th><th scope="col">Where it stands</th></tr></thead><tbody>
+      ${s.learners.map(l => { const x = subs[l.id] || {}, st = lnSubState(x, gap(l)); return `<tr><th scope="row">${esc(l.name)}</th><td>${d(l, "in", x.in, "handed in")}</td><td>${d(l, "fb", x.fb, "feedback given")}</td>
+        <td><div class="form-check mb-0"><input class="form-check-input" type="checkbox" id="lnra-${esc(l.id)}" data-lns="ra" data-l="${esc(l.id)}" ${x.ra ? "checked" : ""}><label class="form-check-label small" for="lnra-${esc(l.id)}">Authorised</label></div></td>
+        <td><input type="text" class="form-control form-control-sm ln-in" data-lns="rb" data-l="${esc(l.id)}" value="${esc(x.rb || "")}" maxlength="40" placeholder="Lead IV" aria-label="${esc(l.name)}: authorised by" ${x.ra ? "" : "disabled"}></td>
+        <td>${x.ra ? d(l, "rd", x.rd, "resubmission due") : ""}</td><td>${x.ra ? d(l, "ri", x.ri, "resubmission handed in") : ""}</td>
+        <td>${x.ra ? `<select class="form-select form-select-sm ln-in" data-lns="ro" data-l="${esc(l.id)}" aria-label="${esc(l.name)}: outcome"><option value="">Open</option><option value="a" ${x.ro === "a" ? "selected" : ""}>Achieved</option><option value="n" ${x.ro === "n" ? "selected" : ""}>Not achieved</option></select>` : ""}</td>
+        <td><span class="ln-st ln-st-${st[1]}">${st[0]}</span></td></tr>`; }).join("")}</tbody></table></div></details>`; }
+document.addEventListener("toggle", e => { const t = e.target; if(!t || !t.id) return; if(t.id === "lnSubs") lnSubOpen = t.open; if(t.id === "lnIvBox") lnIvOpen = t.open; }, true);
+document.addEventListener("change", e => { const t = e.target; if(!t || !t.dataset || !t.dataset.lns) return; const s = lnSet(), U = lnU(); if(!U) return; const k = t.dataset.lns, all = s.subs || (s.subs = {}), subs = all[U.key] || (all[U.key] = {}), x = subs[t.dataset.l] || (subs[t.dataset.l] = {});
+  if(k === "ra"){ x.ra = t.checked ? 1 : 0; if(x.ra && !x.rd) x.rd = lnAddWorkDays(x.fb || lnToday(), LN_RESUB_DAYS); if(!x.ra){ delete x.rd; delete x.ri; delete x.ro; delete x.rb; } }
+  else if(k === "rb") x.rb = t.value.replace(/[<>]/g, "").trim().slice(0, 40);
+  else if(k === "ro") x.ro = ["a", "n"].includes(t.value) ? t.value : "";
+  else x[k] = /^\d{4}-\d{2}-\d{2}$/.test(t.value) ? t.value : "";
+  if(k === "fb" && x.ra && x.fb && !x.ri) x.rd = lnAddWorkDays(x.fb, LN_RESUB_DAYS);
+  Object.keys(x).forEach(f => { if(!x[f]) delete x[f]; }); if(!Object.keys(x).length) delete subs[t.dataset.l];
+  lnSave(); lnSubOpen = true; const y = window.scrollY, sel = `[data-lns="${k}"][data-l="${CSS.escape(t.dataset.l)}"]`; lnDraw(); window.scrollTo({top: y}); const again = document.querySelector(sel); if(again) again.focus({preventScroll: true}); });
+
+/* ---------- internal verification: a leader samples a group's marking for a unit and signs it off, or sets actions for the teacher ---------- */
+function lnIvLoad(){ if(lnIvBusy || !acct()) return; lnIvBusy = true; storeCall("ivlist").then(j => { lnIv = j.iv || []; }).catch(() => { lnIv = lnIv || []; }).finally(() => { lnIvBusy = false; if(view === "learners") lnDraw(); }); }
+const lnIvWhen = t => new Date(t * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"});
+function lnIvCard(r, learners, mine){ const who = r.sampled.map(id => (learners.find(l => l.id === id) || {}).name).filter(Boolean);
+  return `<li class="ln-iv ${r.decision === "action" && !r.done ? "open" : ""}" data-iv="${esc(r.id)}"><div class="d-flex flex-wrap gap-2 align-items-center"><span class="ln-st ln-st-${r.decision === "agreed" ? "ok" : r.done ? "do" : "warn"}">${r.decision === "agreed" ? "Marking agreed" : r.done ? "Actions done" : "Actions needed"}</span><span class="small text-body-secondary">Sampled by ${esc(r.byName)} on ${lnIvWhen(r.at)} · ${r.sampled.length}${r.of ? " of " + r.of : ""} learners</span>${r.byMe ? `<button type="button" class="btn btn-link btn-sm text-danger p-0 ms-auto" data-lniv="del">Remove</button>` : ""}</div>
+    ${who.length ? `<div class="small mt-1"><span class="text-body-secondary">Sampled:</span> ${who.map(esc).join(", ")}</div>` : ""}${r.notes ? `<div class="small mt-1">${esc(r.notes).replace(/\n/g, "<br>")}</div>` : ""}${r.actions ? `<div class="small mt-1"><b>Actions:</b> ${esc(r.actions).replace(/\n/g, "<br>")}</div>` : ""}
+    ${r.decision === "action" && r.done ? `<div class="small mt-1 text-body-secondary">Marked done${r.doneAt ? " on " + lnIvWhen(r.doneAt) : ""}${r.reply ? ": " + esc(r.reply) : "."}</div>` : ""}
+    ${mine && r.decision === "action" && !r.done ? `<div class="ln-iv-re"><input class="form-control form-control-sm" maxlength="600" placeholder="What you did (optional)" aria-label="What you did"><button type="button" class="btn btn-sm btn-primary" data-lniv="done">Mark actions done</button></div>` : ""}</li>`; }
+function lnIvMineHtml(s, U){ if(!acct()) return ""; if(lnIv === null){ lnIvLoad(); return ""; }
+  const recs = lnIv.filter(r => r.mine && r.gid === s.id && r.unit === U.key), open = recs.filter(r => r.decision === "action" && !r.done).length;
+  return `<details class="ln-x" id="lnIvBox" ${lnIvOpen || open ? "open" : ""}><summary><span class="fw-semibold">Internal verification</span><span class="ln-x-n">${!recs.length ? "Not sampled yet" : open ? `<b class="text-danger">${open} ${open === 1 ? "set of actions" : "sets of actions"} for you</b>` : "Verified " + lnIvWhen(recs[0].at)}</span></summary>
+    ${recs.length ? `<ul class="list-unstyled ln-ivs">${recs.map(r => lnIvCard(r, s.learners, true)).join("")}</ul>` : `<p class="small text-body-secondary mb-0">When a leader of your department samples your marking for this group and unit, their sign-off or actions appear here. They do it from Learners, Whole department.</p>`}</details>`; }
+function lnDeptResub(r, U){ const c = lnSubCount((r.s.set.subs || {})[U.key], r.s.set.learners); return c.open ? `${c.open} open${c.late ? `, <b class="text-danger">${c.late} overdue</b>` : ""}` : `<span class="text-body-secondary">None</span>`; }
+const lnDeptIvOf = (r, U) => (lnIv || []).filter(x => x.o === r.s.o && x.gid === r.s.set.id && x.unit === U.key);
+function lnDeptIvCell(r, U){ if(!acct()) return ""; if(lnIv === null){ lnIvLoad(); return `<span class="text-body-secondary">...</span>`; } const x = lnDeptIvOf(r, U)[0];
+  return !x ? `<span class="ln-st ln-st-off">Not yet</span>` : x.decision === "agreed" ? `<span class="ln-st ln-st-ok">Agreed ${lnDate(new Date(x.at * 1000).toISOString().slice(0, 10))}</span>` : x.done ? `<span class="ln-st ln-st-do">Actions done</span>` : `<span class="ln-st ln-st-warn">Actions open</span>`; }
+function lnDeptIvForm(r, U){ if(!acct() || lnIv === null) return ""; const recs = lnDeptIvOf(r, U), L = r.s.set.learners, key = r.s.o + "|" + r.s.set.id + "|" + U.key, D = lnIvDraft.key === key ? lnIvDraft : (lnIvDraft = {key, sampled: [], decision: "agreed", notes: "", actions: ""});
+  const past = recs.length ? `<ul class="list-unstyled ln-ivs">${recs.map(x => lnIvCard(x, L, false)).join("")}</ul>` : "";
+  if(r.s.mine) return `<div class="ln-ivf"><div class="fw-semibold mb-1">Internal verification</div>${past}<p class="small text-body-secondary mb-0">This is your own marking, so another leader has to verify it.</p></div>`;
+  return `<div class="ln-ivf" data-ivkey="${esc(key)}" data-i="${r.i}"><div class="fw-semibold mb-1">Internal verification</div>${past}
+    <div class="small text-body-secondary mb-2">Choose the learners whose work you sampled, then sign it off or set actions for ${esc(r.s.by)}.</div>
+    <div class="ln-ivp">${L.map(l => `<label class="ln-ivl"><input type="checkbox" class="form-check-input" data-lniv="pick" value="${esc(l.id)}" ${D.sampled.includes(l.id) ? "checked" : ""}> ${esc(l.name)}</label>`).join("")}<button type="button" class="btn btn-sm btn-outline-secondary" data-lniv="suggest">Suggest a sample</button></div>
+    <div class="ln-ivd"><div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="ivdec" id="ivAg" value="agreed" data-lniv="dec" ${D.decision === "agreed" ? "checked" : ""}><label class="form-check-label" for="ivAg">Marking agreed</label></div><div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="ivdec" id="ivAc" value="action" data-lniv="dec" ${D.decision === "action" ? "checked" : ""}><label class="form-check-label" for="ivAc">Actions needed</label></div></div>
+    <div class="ln-ivt"><div><label class="form-label small" for="ivNotes">What you looked at and found</label><textarea class="form-control form-control-sm" id="ivNotes" rows="2" maxlength="1500" data-lniv="notes" placeholder="e.g. Decisions on A.P1 to B.M2 are consistent and the feedback tells learners what to do next.">${esc(D.notes)}</textarea></div>
+      <div ${D.decision === "action" ? "" : "hidden"}><label class="form-label small" for="ivActions">Actions for the teacher</label><textarea class="form-control form-control-sm" id="ivActions" rows="2" maxlength="1500" data-lniv="actions" placeholder="e.g. Re-check B.M2 for the two learners sampled: the evidence describes but doesn't yet compare.">${esc(D.actions)}</textarea></div></div>
+    <div class="d-flex flex-wrap gap-3 align-items-center mt-2"><button type="button" class="btn btn-sm btn-primary" data-lniv="save">${D.decision === "action" ? "Send the actions" : "Sign off"}</button><span class="small text-body-secondary">Refer to learners by their place in the list, not by name, in what you write.</span><span class="idea-msg" role="status">${esc(lnIvMsg)}</span></div></div>`; }
+document.addEventListener("input", e => { const t = e.target; if(!t || !t.dataset || !t.dataset.lniv) return; if(t.dataset.lniv === "notes") lnIvDraft.notes = t.value; if(t.dataset.lniv === "actions") lnIvDraft.actions = t.value; });
+document.addEventListener("change", e => { const t = e.target; if(!t || !t.dataset || !t.dataset.lniv) return; const k = t.dataset.lniv;
+  if(k === "pick"){ lnIvDraft.sampled = [...document.querySelectorAll('[data-lniv="pick"]:checked')].map(x => x.value); return; }
+  if(k === "dec"){ lnIvDraft.decision = t.value; lnIvMsg = ""; const y = window.scrollY; lnDraw(); window.scrollTo({top: y}); } });
+document.addEventListener("click", async e => { const b = e.target.closest("[data-lniv]"); if(!b || /^(INPUT|TEXTAREA)$/.test(b.nodeName)) return; const k = b.dataset.lniv, y = window.scrollY, redraw = () => { lnDraw(); window.scrollTo({top: y}); };
+  if(k === "done" || k === "del"){ const li = b.closest("[data-iv]"), id = li && li.dataset.iv; if(!id) return; if(k === "del" && !b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Remove it? Press again"; return; }
+    try{ const j = await storeCall(k === "done" ? "ivdone" : "ivdel", {id, reply: k === "done" ? (li.querySelector("input") || {}).value || "" : ""}); lnIv = j.iv || []; toast(k === "done" ? "Marked as done. The verifier can see that." : "Removed."); }catch{ toast("Couldn't save that. Try again.", {bad: true}); } return redraw(); }
+  const box = b.closest(".ln-ivf"); if(!box || !lnDept) return; const row = lnDept[+box.dataset.i], U = lnU(); if(!row || !U) return; const L = row.set.learners;
+  if(k === "suggest"){ const m = (row.set.marks || {})[U.key] || {}, crit = U.u.c || [], sc = l => crit.filter(c => (m[l.id] || {})[c[0]] === "a").length, sorted = L.slice().sort((a, b2) => sc(a) - sc(b2)), n = Math.min(L.length, Math.max(2, Math.ceil(L.length * 0.25))), pick = [];
+    for(let i = 0; i < n; i++) pick.push(sorted[Math.round(i * (sorted.length - 1) / Math.max(1, n - 1))].id); lnIvDraft.sampled = [...new Set(pick)]; lnIvMsg = `${lnIvDraft.sampled.length} chosen, spread from the fewest criteria achieved to the most.`; return redraw(); }
+  if(k === "save"){ const D = lnIvDraft; if(!D.sampled.length){ lnIvMsg = "Choose at least one learner you sampled."; return redraw(); } if(D.decision === "action" && D.actions.trim().length < 3){ lnIvMsg = "Say what the teacher needs to do."; return redraw(); } b.disabled = true;
+    try{ const j = await storeCall("ivsave", {o: row.o, gid: row.set.id, group: row.set.name, unit: U.key, unitName: U.u.t, sampled: D.sampled, of: L.length, decision: D.decision, notes: D.notes, actions: D.actions}); lnIv = j.iv || []; lnIvDraft = {}; lnIvMsg = ""; toast(D.decision === "action" ? `Sent. ${row.by} will see the actions in Learners.` : "Signed off."); }
+    catch(err){ const c = err && (err.code || err.error); lnIvMsg = c === "own" ? "You can't verify your own marking." : "Couldn't save that. Try again."; }
+    return redraw(); } });
+const _lnHtml44 = lnHtml;
+lnHtml = function(){ let h = _lnHtml44.apply(this, arguments); const anon = anonOn();
+  if(anon) h = h.replace(/<label class="form-label" for="lnNames">[\s\S]*?<\/div><button type="button" class="btn btn-primary mt-2" data-ln="addgo">/, `<label class="form-label" for="lnNames">Learner numbers, one on each line</label><textarea class="form-control" id="lnNames" rows="4" placeholder="e.g.&#10;204518&#10;204519"></textarea>
+      <div class="ln-anon-n"><label for="lnCount">Or add numbered places</label><input type="number" class="form-control form-control-sm" id="lnCount" min="1" max="80" placeholder="How many"></div><div class="form-text">Your college keeps learners anonymous, so use learner numbers and never names. Keep your own record of who is who.</div><button type="button" class="btn btn-primary mt-2" data-ln="addgo">`)
+    .replace("Press Add learners and paste your class list.", "Press Add learners and add learner numbers. Your college keeps learners anonymous.");
+  if(typeof lnScope !== "undefined" && lnScope === "dept" && acct() && me.isLead) return h;
+  const s = lnSet(), U = lnU(); if(!U || !s.learners.length) return h;
+  const extra = lnSubsHtml(s, U) + lnIvMineHtml(s, U), at = h.indexOf('<section class="ln-hand"'); if(at > 0) return h.slice(0, at) + extra + h.slice(at);
+  const end = h.lastIndexOf("</div>"); return h.slice(0, end) + extra + h.slice(end); };
+/* ===== round 42: the AI Tools page, finished properly. A search-first top, your favourites and recent work, and cards that say what each tool is at a glance ===== */
+const TK_I = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const TK_SHAPES = {
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>', slides: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8M7 8h6M7 11h4"/>',
+  ask: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2.9-1.2 1.800M12 17h.01"/>', cards: '<rect x="3" y="8" width="13" height="10" rx="1.5"/><path d="M7 8V6.500A1.500 1.500 0 0 1 8.500 5h11A1.500 1.500 0 0 1 21 6.500v7a1.500 1.500 0 0 1-1.500 1.500H16"/>',
+  book: '<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>', mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.500 7.500 8.500 6 8.500-6"/>',
+  chat: '<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 9h8M8 12h5"/>', cal: '<rect x="3.500" y="5" width="17" height="15" rx="2"/><path d="M3.500 10h17M8 3v4M16 3v4M8 14h3M8 17h3M14 14h2"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', home: '<path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10M10 20v-5h4v5"/>', tick: '<rect x="4" y="4" width="16" height="16" rx="2.500"/><path d="m8 12 3 3 5-6"/>',
+  target: '<circle cx="12" cy="12" r="8.500"/><circle cx="12" cy="12" r="4.500"/><circle cx="12" cy="12" r="1"/>', people: '<circle cx="9" cy="8" r="3"/><path d="M3 20c.5-3.500 3-5 6-5s5.500 1.500 6 5"/><circle cx="17.500" cy="9" r="2.300"/><path d="M17 14.500c2.300.200 3.700 1.600 4 4"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12.500 9 5 9-5M3 16.500l9 5 9-5"/>', text: '<path d="M3 18 7.500 6 12 18M4.500 14h6M14 18l3.500-9 3.500 9M15.200 15h4.600"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.500 3 14.500 0 18M12 3c-3 3.500-3 14.500 0 18"/>', shield: '<path d="M12 3 5 6v6c0 4.500 3 7.500 7 9 4-1.500 7-4.500 7-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  spark: '<path d="M12 3l1.900 4.600L18.500 9.500l-4.600 1.900L12 16l-1.900-4.600L5.500 9.500l4.600-1.900z"/><path d="M18.500 15.500l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>', chart: '<path d="M4 20V5M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+  eye: '<path d="M2.500 12S6 5.500 12 5.500 21.500 12 21.500 12 18 18.500 12 18.500 2.500 12 2.500 12z"/><circle cx="12" cy="12" r="2.800"/>', grid: '<rect x="4" y="4" width="7" height="7" rx="1.200"/><rect x="13" y="4" width="7" height="7" rx="1.200"/><rect x="4" y="13" width="7" height="7" rx="1.200"/><rect x="13" y="13" width="7" height="7" rx="1.200"/>'};
+const TK_TOOL_I = {lesson: "spark", scheme: "cal", curric: "book", starter: "clock", homework: "home", assess: "tick", interv: "target", slides: "slides", worksheet: "doc", quiz: "ask", flash: "cards", revision: "book", activity: "people", organiser: "grid",
+  report: "doc", parent: "mail", meeting: "cal", feedback: "chat", behaviour: "shield", email: "mail", differ: "layers", reading: "text", eal: "globe", ehcp: "shield", access: "eye", scaffold: "layers", dip: "chart", sar: "chart", qa: "tick", policy: "doc", observe: "eye", cpd: "cal"};
+const TK_CAT_I = {plan: "cal", res: "doc", comms: "mail", send: "layers", lead: "chart"}, TK_CAT_SAY = {plan: "Lessons, schemes and the bits around them.", res: "Things to put in front of learners.", comms: "Reports, letters, emails and meetings.", send: "Adapting and supporting, built in for the whole class.", lead: "For leading a department."};
+const tkIcon = t => TK_I(TK_SHAPES[TK_TOOL_I[t.id]] || TK_SHAPES[TK_CAT_I[t.cat]] || TK_SHAPES.spark);
+const tkFavs = () => (tkPrefs.favs || []).filter(id => TK_BY[id]);
+const TK_STAR = on => `<svg viewBox="0 0 24 24" fill="${on ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.500 2.600 5.400 5.900.8-4.300 4.100 1 5.900-5.200-2.800-5.200 2.800 1-5.900-4.300-4.100 5.900-.8z"/></svg>`;
+tkCardHtml = function(t){ const fav = tkFavs().includes(t.id);
+  return `<div class="tk-tw tk-c-${t.cat}"><button type="button" class="tk-tool" data-tk="open" data-id="${t.id}"><span class="tk-tool-i">${tkIcon(t)}</span><span class="tk-tool-b"><span class="tk-tool-n">${esc(t.name)}</span><span class="tk-tool-d">${esc(t.desc)}</span>
+    <span class="tk-tool-m">${t.go ? `<span class="badge text-bg-light fw-normal border">Already in Crafticulum</span>` : `<span>Saves about ${t.mins || 15} min</span>`}${t.personal ? `<span title="The learner's name is never sent or saved">Name stays private</span>` : ""}</span></span></button>
+    <button type="button" class="tk-fav ${fav ? "on" : ""}" data-tk="fav" data-id="${t.id}" aria-pressed="${fav}" aria-label="${fav ? "Remove " + esc(t.name) + " from your favourites" : "Add " + esc(t.name) + " to your favourites"}" title="${fav ? "Remove from favourites" : "Add to favourites"}">${TK_STAR(fav)}</button></div>`; };
+tkListHtml = function(){
+  const q = tkQ.trim().toLowerCase(), hit = t => !q || (t.name + " " + t.desc + " " + (TK_CATS.find(c => c[0] === t.cat) || [])[1]).toLowerCase().includes(q), recent = (tkPrefs.recent || []).map(id => TK_BY[id]).filter(Boolean), favs = tkFavs().map(id => TK_BY[id]);
+  const n = id => TK_TOOLS.filter(t => t.cat === id && hit(t)).length, plain = !q && !tkCat;
+  const cats = TK_CATS.filter(c => !tkCat || tkCat === c[0]).map(([id, name]) => { const ts = TK_TOOLS.filter(t => t.cat === id && hit(t)); return ts.length ? `<section class="tk-cat tk-c-${id}" aria-labelledby="tkc-${id}"><div class="tk-cat-top"><span class="tk-cat-i">${TK_I(TK_SHAPES[TK_CAT_I[id]])}</span><div><h2 class="h6 tk-cat-h" id="tkc-${id}">${name} <span>${ts.length}</span></h2><p class="tk-cat-p">${TK_CAT_SAY[id] || ""}</p></div></div><div class="tk-grid">${ts.map(tkCardHtml).join("")}</div></section>` : ""; }).join("");
+  const hrs = Math.round((tkPrefs.mins || 0) / 6) / 10, docs = [...tkMine.map(d => ({...d, shared: false})), ...tkShared.map(d => ({...d, shared: true}))].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)), saved = docs.length;
+  const pop = ["worksheet", "quiz", "report", "differ", "parent"].map(id => TK_BY[id]).filter(Boolean);
+  return `<div class="tk-wrap tk-v2">
+    <header class="tk-hero"><div class="tk-hero-l"><h1 class="tk-hero-h">AI Tools</h1><p class="tk-hero-p">Pick a tool, fill in a few boxes, and change what comes back until it's right. Everything uses your subjects, units and learner needs.</p>
+        ${tkTab === "lib" ? "" : `<div class="tk-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.500"/><path d="m20 20-4.200-4.200"/></svg><input type="search" class="form-control" id="tkQ" placeholder="Search ${TK_TOOLS.length} tools, e.g. quiz, report, EAL" value="${esc(tkQ)}" aria-label="Search the tools" autocomplete="off"></div>
+        <div class="tk-pop"><span>Popular</span>${pop.map(t => `<button type="button" data-tk="open" data-id="${t.id}">${esc(t.name)}</button>`).join("")}</div>`}</div>
+      <div class="tk-hero-r">${tkPrefs.made ? `<div class="tk-stat" title="A rough estimate, from how long each kind of resource usually takes to write by hand"><b>${tkPrefs.made}</b> made<span>about ${hrs >= 1 ? hrs + " hours" : (tkPrefs.mins || 0) + " minutes"} saved</span></div>` : ""}
+        ${typeof asCan === "function" && asCan() ? `<button type="button" class="tk-crafti" data-x-nav="assistant">${typeof CRAFTI === "function" ? CRAFTI() : ""}<span><b>Not sure which tool?</b><small>Tell Crafti what you need and he'll write it with you.</small></span></button>` : ""}</div></header>
+    <div class="tk-tabs" role="tablist"><button type="button" role="tab" aria-selected="${tkTab === "tools"}" class="${tkTab === "tools" ? "on" : ""}" data-tk="tab" data-t="tools">Tools</button><button type="button" role="tab" aria-selected="${tkTab === "lib"}" class="${tkTab === "lib" ? "on" : ""}" data-tk="tab" data-t="lib">Saved resources <span>${saved}</span></button></div>
+    ${tkTab === "lib" ? tkLibHtml() : `<div class="tk-find"><div class="tk-chips" role="group" aria-label="Kind of tool"><button type="button" class="${!tkCat ? "on" : ""}" data-tk="cat" data-c="">All<small>${TK_TOOLS.filter(hit).length}</small></button>${TK_CATS.map(([id, nm]) => `<button type="button" class="tk-c-${id} ${tkCat === id ? "on" : ""}" data-tk="cat" data-c="${id}"><i></i>${nm}<small>${n(id)}</small></button>`).join("")}</div></div>
+    ${plain && favs.length ? `<section class="tk-cat tk-row"><h2 class="h6 tk-row-h">${TK_STAR(true)} Your favourites</h2><div class="tk-grid">${favs.map(tkCardHtml).join("")}</div></section>` : ""}
+    ${plain && recent.length ? `<section class="tk-cat tk-row"><h2 class="h6 tk-row-h">You used recently</h2><div class="tk-grid">${recent.filter(t => !favs.includes(t)).slice(0, 3).map(tkCardHtml).join("")}</div></section>` : ""}
+    ${plain && docs.length ? `<section class="tk-cat tk-row"><h2 class="h6 tk-row-h">Pick up where you left off <button type="button" class="btn btn-link btn-sm p-0 ms-2" data-tk="tab" data-t="lib">All saved resources</button></h2><div class="tk-cont">${docs.slice(0, 3).map(d => `<button type="button" data-tk="doc" data-id="${esc(d.id)}"><span class="tk-tool-i">${tkIcon(TK_BY[d.tool] || {id: "", cat: ""})}</span><span class="min-w-0"><b>${esc(d.title)}</b><small>${esc((TK_BY[d.tool] || {}).name || "Resource")} · ${new Date(d.updatedAt || d.createdAt || Date.now()).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}${d.shared ? " · Department" : ""}</small></span></button>`).join("")}</div></section>` : ""}
+    ${cats || `<div class="tk-empty"><div class="tk-empty-i">${TK_ICO}</div><div class="fw-semibold">No tool matches "${esc(tkQ)}"</div><div class="small text-body-secondary mb-2">Try a different word${typeof asCan === "function" && asCan() ? ", or ask Crafti for it in your own words" : ""}.</div><div class="d-flex gap-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-tk="clearq">Clear the search</button>${typeof asCan === "function" && asCan() ? `<button type="button" class="btn btn-sm btn-primary" data-x-nav="assistant">Ask Crafti</button>` : ""}</div></div>`}`}
+  </div>`; };
+const _tkToolHtml45 = tkToolHtml;
+tkToolHtml = function(){ let h = _tkToolHtml45.apply(this, arguments); const t = TK_BY[tkOpen]; if(!t) return h;
+  h = h.replace('<div class="card-like tk-card"><div class="tk-kicker">', `<div class="card-like tk-card tk-c-${t.cat}"><div class="tk-card-top"><span class="tk-tool-i">${tkIcon(t)}</span><button type="button" class="tk-fav ${tkFavs().includes(t.id) ? "on" : ""}" data-tk="fav" data-id="${t.id}" aria-pressed="${tkFavs().includes(t.id)}" aria-label="Favourite">${TK_STAR(tkFavs().includes(t.id))}</button></div><div class="tk-kicker">`);
+  return h.replace('<div class="fw-semibold">It will appear here</div><div class="small text-body-secondary">You can then change any of it, improve one part at a time, save it and download it.</div>', `<div class="fw-semibold">Your ${esc(t.name.toLowerCase())} will appear here</div>
+    <ol class="tk-steps"><li><b>Fill in the boxes</b><span>Only the first ones are needed. The more you say, the closer it lands.</span></li><li><b>Read it and change it</b><span>Click any text to edit, or use Improve this part to rewrite one section.</span></li><li><b>Keep it</b><span>Save to your library or the department's, and download as Word, PowerPoint or PDF.</span></li></ol><div class="small text-body-secondary">Saves about ${t.mins || 15} minutes.</div>`); };
+document.addEventListener("click", e => { const b = e.target.closest('[data-tk="fav"],[data-tk="clearq"]'); if(!b) return;
+  if(b.dataset.tk === "clearq"){ tkQ = ""; tkCat = ""; tkDraw(); const q = $("#tkQ"); if(q) q.focus(); return; }
+  const id = b.dataset.id, on = tkFavs().includes(id); if(tkOpen) tkVals[tkOpen] = tkRead(); tkPrefs.favs = on ? tkFavs().filter(x => x !== id) : [...tkFavs(), id].slice(-8); tkSavePrefs(); if(tkOpen && tkDoc) tkSync(); const y = window.scrollY; tkDraw(); window.scrollTo({top: y}); });
+/* ===== round 43: the education framework. Where you teach (country, setting, stage), what it leads to (framework level, qualification, awarding organisation,
+   specification version), kept as separate things so a primary lesson needs no awarding body and a Scottish Higher isn't forced into English levels.
+   The lists below are a starting set written by hand on 19 Nov 2026. They are NOT official records: nothing here is shown as verified until a person has checked it. ===== */
+const EDU = {
+  seeded: "19 Nov 2026",
+  countries: [["eng", "England"], ["wal", "Wales"], ["sco", "Scotland"], ["ni", "Northern Ireland"]],
+  settings: [["early", "Early years"], ["primary", "Primary"], ["secondary", "Secondary"], ["sixth", "Sixth form"], ["fe", "Further education"], ["appr", "Apprenticeships"], ["adult", "Adult and community learning"], ["he", "Higher education"], ["send", "SEND and specialist provision"], ["prof", "Professional training"]],
+  role: {early: "early years practitioner", primary: "primary school teacher", secondary: "secondary school teacher", sixth: "sixth form teacher", fe: "Further Education lecturer", appr: "apprenticeship trainer", adult: "adult education tutor", he: "university lecturer", send: "teacher in specialist provision", prof: "professional trainer"},
+  room: {early: "an early years setting with young children", primary: "a primary classroom", secondary: "a secondary school classroom", sixth: "a sixth form classroom", fe: "an FE classroom", appr: "apprentices who spend most of their week in the workplace", adult: "a class of adult learners", he: "a university seminar or lecture", send: "a specialist setting, with small groups and learning broken into small steps", prof: "a professional training session for working adults"},
+  stages: {
+    eng: {early: ["Nursery", "Reception (EYFS)"], primary: ["Key Stage 1 (Years 1-2)", "Key Stage 2 (Years 3-6)"], secondary: ["Key Stage 3 (Years 7-9)", "Key Stage 4 (Years 10-11)"], sixth: ["Key Stage 5 (Years 12-13)"]},
+    wal: {early: ["Nursery", "Reception"], primary: ["Progression Step 1 (to age 5)", "Progression Step 2 (to age 8)", "Progression Step 3 (to age 11)"], secondary: ["Progression Step 4 (to age 14)", "Progression Step 5 (to age 16)"], sixth: ["Years 12-13"]},
+    sco: {early: ["Early level (nursery)"], primary: ["Early level (P1)", "First level (P2-P4)", "Second level (P5-P7)"], secondary: ["Third and fourth level (S1-S3)", "Senior phase (S4-S6)"], sixth: ["Senior phase (S5-S6)"]},
+    ni: {early: ["Pre-school"], primary: ["Foundation Stage (P1-P2)", "Key Stage 1 (P3-P4)", "Key Stage 2 (P5-P7)"], secondary: ["Key Stage 3 (Years 8-10)", "Key Stage 4 (Years 11-12)"], sixth: ["Post-16 (Years 13-14)"]},
+    any: {fe: ["16 to 18", "19 and over"], appr: ["Apprenticeship"], adult: ["Adult learners"], he: ["Undergraduate", "Postgraduate taught", "Postgraduate research"], send: ["Personalised pathway", "Alongside the mainstream stages"], prof: ["CPD", "Industry certificate", "Bespoke programme"]}},
+  frameworks: {eng: ["RQF", ["Entry Level 1", "Entry Level 2", "Entry Level 3", "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"]], ni: ["RQF", ["Entry Level 1", "Entry Level 2", "Entry Level 3", "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"]],
+    wal: ["CQFW", ["Entry Level 1", "Entry Level 2", "Entry Level 3", "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"]], sco: ["SCQF", ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10", "Level 11", "Level 12"]]},
+  /* qualification types: [name, the settings it usually belongs to, "g" when it's a general qualification] */
+  types: {
+    eng: [["National curriculum (no qualification)", "primary secondary send"], ["EYFS (no qualification)", "early send"], ["GCSE", "secondary sixth fe adult send", "g"], ["AS and A level", "sixth fe adult", "g"], ["BTEC", "secondary sixth fe adult"], ["T Level", "sixth fe"], ["T Level Foundation Year", "sixth fe"], ["Functional Skills", "secondary fe appr adult send"], ["Entry level certificate", "secondary fe adult send"], ["Vocational or technical qualification", "secondary sixth fe appr adult send"], ["Apprenticeship standard", "appr fe"], ["Access to HE Diploma", "fe adult"], ["HNC or HND", "fe he"], ["Foundation degree", "fe he"], ["Degree", "he"], ["Postgraduate qualification", "he"], ["Professional qualification", "prof fe adult he appr"]],
+    wal: [["Curriculum for Wales (no qualification)", "early primary secondary send"], ["GCSE", "secondary sixth fe adult send", "g"], ["AS and A level", "sixth fe adult", "g"], ["Essential Skills Wales", "secondary fe appr adult send"], ["Entry level certificate", "secondary fe adult send"], ["Vocational or technical qualification", "secondary sixth fe appr adult send"], ["Apprenticeship framework", "appr fe"], ["Access to HE Diploma", "fe adult"], ["HNC or HND", "fe he"], ["Foundation degree", "fe he"], ["Degree", "he"], ["Postgraduate qualification", "he"], ["Professional qualification", "prof fe adult he appr"]],
+    sco: [["Curriculum for Excellence (no qualification)", "early primary secondary send"], ["National 1 to National 5", "secondary sixth fe adult send", "g"], ["Higher", "secondary sixth fe adult", "g"], ["Advanced Higher", "secondary sixth fe", "g"], ["National Certificate or NPA", "secondary sixth fe adult"], ["SVQ", "fe appr adult"], ["Foundation, Modern or Graduate Apprenticeship", "appr secondary fe he"], ["HNC or HND", "fe he"], ["Degree", "he"], ["Postgraduate qualification", "he"], ["Professional qualification", "prof fe adult he appr"]],
+    ni: [["Northern Ireland Curriculum (no qualification)", "early primary secondary send"], ["GCSE", "secondary sixth fe adult send", "g"], ["AS and A level", "sixth fe adult", "g"], ["Essential Skills", "secondary fe appr adult send"], ["Entry level certificate", "secondary fe adult send"], ["Vocational or technical qualification", "secondary sixth fe appr adult send"], ["Apprenticeship", "appr fe"], ["Access to HE Diploma", "fe adult"], ["HNC or HND", "fe he"], ["Foundation degree", "fe he"], ["Degree", "he"], ["Postgraduate qualification", "he"], ["Professional qualification", "prof fe adult he appr"]]},
+  custom: "Non-accredited or custom course",
+  /* awarding organisations: n name, al other names it's known by, br its qualification brands (a brand is not an organisation), k kinds, in countries */
+  orgs: [
+    {n: "AQA", k: "g", in: "eng wal ni"}, {n: "Pearson", br: ["Edexcel", "BTEC"], k: "g v c", in: "eng wal sco ni"}, {n: "OCR", br: ["Cambridge Nationals", "Cambridge Technicals"], k: "g v", in: "eng wal ni"},
+    {n: "WJEC", br: ["Eduqas"], al: ["CBAC"], k: "g v", in: "wal eng ni"}, {n: "CCEA", k: "g v", in: "ni"}, {n: "Qualifications Scotland", al: ["SQA", "Scottish Qualifications Authority"], k: "g v", in: "sco", note: "Took over from the SQA in 2026. Older specifications and certificates still carry the SQA name."},
+    {n: "NCFE", br: ["CACHE"], k: "v c", in: "eng wal ni"}, {n: "City & Guilds", k: "v", in: "eng wal sco ni"}, {n: "Gateway Qualifications", k: "v", in: "eng wal ni"}, {n: "AIM Qualifications", al: ["AIM Qualifications and Assessment Group"], k: "v", in: "eng wal ni"}, {n: "Open College Network organisations", al: ["OCN"], k: "v", in: "eng wal ni"},
+    {n: "VTCT Skills", al: ["VTCT"], k: "s", in: "eng wal sco ni"}, {n: "EAL", k: "s", in: "eng wal sco ni"}, {n: "IMI", al: ["Institute of the Motor Industry"], k: "s", in: "eng wal sco ni"}, {n: "Active IQ", k: "s", in: "eng wal ni"}, {n: "1st4sport", k: "s", in: "eng wal ni"}, {n: "Highfield Qualifications", al: ["Highfield"], k: "s", in: "eng wal sco ni"}, {n: "Qualsafe Awards", al: ["Qualsafe"], k: "s", in: "eng wal sco ni"}, {n: "Lantra", k: "s", in: "eng wal sco ni"},
+    {n: "AAT", k: "p", in: "eng wal sco ni"}, {n: "ACCA", k: "p", in: "eng wal sco ni"}, {n: "CMI", k: "p", in: "eng wal sco ni"}, {n: "CIPD", k: "p", in: "eng wal sco ni"}, {n: "ILM", k: "p", in: "eng wal sco ni"}, {n: "NEBOSH", k: "p", in: "eng wal sco ni"},
+    {n: "UAL Awarding Body", k: "c v", in: "eng wal ni"}, {n: "RSL Awards", al: ["Rockschool"], k: "c v", in: "eng wal sco ni"}, {n: "BCS", al: ["The Chartered Institute for IT"], k: "c p", in: "eng wal sco ni"}],
+  orgNone: "No awarding organisation", orgOwn: "Our own organisation", orgUni: "A degree-awarding institution",
+  registers: {eng: ["Ofqual's register of regulated qualifications", "https://www.gov.uk/find-a-regulated-qualification"], ni: ["the register of regulated qualifications", "https://www.gov.uk/find-a-regulated-qualification"], wal: ["Qualifications Wales", "https://qualifications.wales/"], sco: ["the Scottish qualifications body", "https://www.sqa.org.uk/"]},
+  status: [["", "Not recorded"], ["current", "Current"], ["teachout", "Teach-out (no new starts)"], ["withdrawn", "Withdrawn"]]};
+const eduName = (list, id) => (list.find(x => x[0] === id) || [])[1] || "";
+const eduStages = (c, s) => !c || !s ? [] : [...((EDU.stages[c] || {})[s] || []), ...(EDU.stages.any[s] || []), ...(s === "send" ? ["early", "primary", "secondary", "sixth"].flatMap(k => (EDU.stages[c] || {})[k] || []) : [])];
+const eduLevels = c => { const f = EDU.frameworks[c]; return f ? f[1].map(l => f[0] + " " + l) : []; };
+const eduTypes = (c, s) => !c ? [] : [...(EDU.types[c] || []).filter(t => !s || t[1].split(" ").includes(s)).map(t => t[0]), EDU.custom];
+const eduTypeGen = (c, t) => !!(EDU.types[c] || []).find(x => x[0] === t && x[2] === "g");
+const eduNoOrg = t => !t || /no qualification\)$/.test(t) || t === EDU.custom;
+function eduOrgs(c, s, t){ if(!c) return []; if(s === "he" || /^(Degree|Postgraduate|Foundation degree)/.test(t || "")) return [EDU.orgUni, EDU.orgOwn, EDU.orgNone];
+  const gen = eduTypeGen(c, t), list = EDU.orgs.filter(o => o.in.split(" ").includes(c) && (!t || eduNoOrg(t) || (gen ? o.k.split(" ").includes("g") : true))).map(o => o.n); return [...list, EDU.orgOwn, EDU.orgNone]; }
+const eduOrg = n => EDU.orgs.find(o => o.n === n || (o.al || []).includes(n) || (o.br || []).includes(n));
+const EDU_F = ["country", "setting", "stage", "level", "type", "org"];
+const eduOpts = (c, k) => k === "country" ? EDU.countries.map(x => x[1]) : k === "setting" ? EDU.settings.map(x => x[1]) : k === "stage" ? eduStages(c.country, c.setting) : k === "level" ? eduLevels(c.country) : k === "type" ? eduTypes(c.country, c.setting) : eduOrgs(c.country, c.setting, c.type);
+/* a change higher up clears only what no longer fits below it. Anything the user typed themselves is theirs and stays */
+function eduFix(c){ c.own = c.own || {}; ["stage", "level", "type", "org"].forEach(k => { if(c[k] && !c.own[k] && !eduOpts(c, k).includes(c[k])){ delete c[k]; } }); if(eduNoOrg(c.type) && c.org && !c.own.org && c.org !== EDU.orgNone && c.type) delete c.org; return c; }
+function eduSay(c){ if(!c) return ""; return [eduName(EDU.countries, c.country), eduName(EDU.settings, c.setting), c.stage, c.level, c.type, c.qual, c.org && c.org !== EDU.orgNone ? (c.org === EDU.orgUni || c.org === EDU.orgOwn ? c.orgName || "" : c.org) : "", c.ver && "specification " + c.ver].filter(Boolean).join(", "); }
+const eduDept = () => (courseCfg && courseCfg.ctx) || null;
+function eduCtxOf(course, level){ const x = UNITS.find(u => u.s === course && (!level || u.l === level)); return (x && x.ctx && x.ctx.country ? x.ctx : null) || (eduDept() && eduDept().country ? eduDept() : null); }
+/* the words the AI is given. With no context set, they are exactly what they always were */
+function eduWho(f){ const c = eduCtxOf(f.course, f.level); return c && c.setting ? `You are an experienced ${EDU.role[c.setting]} in ${eduName(EDU.countries, c.country)}` : "You are an experienced UK Further Education lecturer"; }
+function eduLine(f){ const c = eduCtxOf(f.course, f.level); return c ? `\nEducation context: ${eduSay(c)}. Pitch the language, examples and demands for this stage, and use the terms this country's system uses.` : ""; }
+const eduGraded = crit => /(^|\n)\s*[A-Z]{0,2}\.?[PMD]\d/.test(String(crit || ""));
+function eduObj(f){ const x = UNITS.find(u => u.s === f.course && u.l === f.level); return eduGraded(f.criteria) || !(eduCtxOf(f.course, f.level) || (x && x.custom)) ? `"all" maps to Pass, "most" to Merit, "some" to Distinction. Each one line, max 14 words, starting with a verb, ending with (P), (M) or (D).` : `"all" is what every learner will do, "most" is the secure expectation for this stage, "some" is the stretch. Each one line, max 14 words, starting with a verb. Do not mention Pass, Merit or Distinction.`; }
+function eduRoom(f){ const c = eduCtxOf(f.course, f.level); return c && c.setting ? `Keep everything realistic for ${EDU.room[c.setting]}.` : `Keep everything realistic for an FE classroom with PCs${f.course === "Esports" ? " and gaming kit" : ""}.`; }
+const _tkCtxText46 = tkCtxText;
+tkCtxText = function(t, v){ let s = _tkCtxText46.apply(this, arguments); try{ if(!t.ctx) return s; let c = eduDept(); if(v._unit){ const L = UNITS[+String(v._unit).split(":")[0]]; if(L && L.ctx && L.ctx.country) c = L.ctx; } if(c && c.country) s += `\nEducation context: ${eduSay(c)}. Use the terms this country's system uses.`; }catch{} return s; };
+const TK_LEVELS0 = TK_LEVELS.slice();
+function eduToolLevels(){ const c = eduDept(); TK_LEVELS.splice(0, TK_LEVELS.length, ...(c && c.country ? [...["early", "primary", "secondary", "sixth"].flatMap(k => (EDU.stages[c.country] || {})[k] || []), "Further education", "Apprenticeship", "Adult learners", "Higher education"] : TK_LEVELS0)); }
+const _coursesApply46 = coursesApply;
+coursesApply = function(){ const r = _coursesApply46.apply(this, arguments); try{ eduToolLevels(); }catch{} return r; };
+try{ eduToolLevels(); }catch{}
+
+/* ----- the picker: six linked boxes. Each shows only what fits the ones above it, and every one has "Something else" ----- */
+let eduOpen = -2, eduAdd = false, eduMsg = "";
+function eduPick(c, who, full){ c = c || {}; const own = c.own || {}, lab = {country: "Country", setting: "Setting", stage: "Stage", level: "Framework level", type: "Qualification type", org: "Awarding organisation"};
+  const box = k => { const opts = eduOpts(c, k), val = k === "country" ? eduName(EDU.countries, c.country) : k === "setting" ? eduName(EDU.settings, c.setting) : c[k] || "", off = (k === "setting" && !c.country) || (["stage"].includes(k) && !c.setting) || (["level", "type", "org"].includes(k) && !c.country), o = k === "org" ? eduOrg(val) : null;
+    return `<div class="edu-f"><label class="form-label" for="edu-${who}-${k}">${lab[k]}${["level", "org"].includes(k) ? ` <span class="text-body-secondary fw-normal">(if it has one)</span>` : ""}</label>
+      ${own[k] ? `<div class="input-group input-group-sm"><input class="form-control" id="edu-${who}-${k}" data-edu="${k}" data-edu-who="${who}" data-edu-own="1" value="${esc(val)}" maxlength="80" placeholder="Type it"><button type="button" class="btn btn-outline-secondary" data-edu-list="${k}" data-edu-who="${who}">List</button></div>`
+        : `<select class="form-select form-select-sm" id="edu-${who}-${k}" data-edu="${k}" data-edu-who="${who}" ${off ? "disabled" : ""}><option value="">${off ? "Choose the one above first" : k === "level" || k === "org" ? "None, or not sure" : "Choose"}</option>${opts.map(x => `<option ${x === val ? "selected" : ""}>${esc(x)}</option>`).join("")}${k === "country" || k === "setting" ? "" : `<option value="__own">Something else...</option>`}</select>`}
+      ${o && (o.br || o.al || o.note) ? `<div class="form-text">${o.br ? `Its brands: ${o.br.map(esc).join(", ")}. ` : ""}${o.al ? `Also known as ${o.al.map(esc).join(", ")}. ` : ""}${esc(o.note || "")}</div>` : ""}
+      ${k === "org" && (val === EDU.orgUni || val === EDU.orgOwn) ? `<input class="form-control form-control-sm mt-1" data-edu="orgName" data-edu-who="${who}" value="${esc(c.orgName || "")}" maxlength="80" placeholder="${val === EDU.orgUni ? "Name of the university or institution" : "Name of the organisation"}" aria-label="Name of the organisation">` : ""}</div>`; };
+  const reg = EDU.registers[c.country], ver = c.verified;
+  return `<div class="edu-grid">${EDU_F.map(box).join("")}</div>
+    ${full ? `<div class="edu-grid mt-2"><div class="edu-f edu-wide"><label class="form-label" for="edu-${who}-qual">Qualification or course title</label><input class="form-control form-control-sm" id="edu-${who}-qual" data-edu="qual" data-edu-who="${who}" value="${esc(c.qual || "")}" maxlength="140" placeholder="e.g. Level 3 National Extended Diploma in Esports"></div>
+      <div class="edu-f"><label class="form-label" for="edu-${who}-qn">Qualification number <span class="text-body-secondary fw-normal">(if regulated)</span></label><input class="form-control form-control-sm" id="edu-${who}-qn" data-edu="qn" data-edu-who="${who}" value="${esc(c.qn || "")}" maxlength="24" placeholder="e.g. 603/5273/1"></div>
+      <div class="edu-f"><label class="form-label" for="edu-${who}-ver">Specification version or first teaching</label><input class="form-control form-control-sm" id="edu-${who}-ver" data-edu="ver" data-edu-who="${who}" value="${esc(c.ver || "")}" maxlength="40" placeholder="e.g. Issue 4, or September 2025"></div>
+      <div class="edu-f"><label class="form-label" for="edu-${who}-status">Status</label><select class="form-select form-select-sm" id="edu-${who}-status" data-edu="status" data-edu-who="${who}">${EDU.status.map(s => `<option value="${s[0]}" ${(c.status || "") === s[0] ? "selected" : ""}>${s[1]}</option>`).join("")}</select></div></div>
+      <div class="edu-ver ${ver ? "ok" : ""}">${ver ? `<div><b>Checked</b> by ${esc(ver.by || "someone")} on ${new Date(ver.at).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"})}${ver.src ? `, against <span class="text-break">${esc(ver.src)}</span>` : ""}. Changing the title, number, version or organisation clears this.</div><button type="button" class="btn btn-sm btn-outline-secondary" data-edu-unverify="${who}">Clear</button>`
+        : `<div><b>Not verified.</b> Nothing above is an official record until someone has checked it${reg ? ` against <a href="${reg[1]}" target="_blank" rel="noopener">${esc(reg[0])}</a>` : " against the official source"}${c.org && eduOrg(c.org) ? " or the awarding organisation's own site" : ""}.</div>
+          <div class="edu-ver-go"><input class="form-control form-control-sm" data-edu-src="${who}" maxlength="200" placeholder="Where you checked (web address, optional)" aria-label="Where you checked"><button type="button" class="btn btn-sm btn-primary" data-edu-verify="${who}">I've checked this</button></div>`}</div>` : ""}`; }
+const eduBadges = x => { const c = x.ctx || {}; return `${x.custom ? `<span class="badge text-bg-light border fw-normal">Custom course</span>` : ""}${c.status === "withdrawn" ? `<span class="badge text-bg-danger fw-normal">Withdrawn</span>` : c.status === "teachout" ? `<span class="badge text-bg-warning fw-normal">Teach-out</span>` : ""}${c.verified ? `<span class="badge text-bg-success fw-normal">Checked</span>` : `<span class="badge text-bg-secondary fw-normal">Not verified</span>`}`; };
+const _coursesSection46 = coursesSection;
+coursesSection = function(sec){ let h = _coursesSection46.apply(this, arguments); if(!h) return h; const list = (courseCfg.list || []).filter(courseOk), d = eduDept() || {};
+  h = h.replace(/<button type="button" class="btn btn-sm btn-link text-danger p-0" data-crs="rm" data-i="(\d+)">/g, (m, i) => `<span class="edu-b">${eduBadges(list[+i] || {})}</span><button type="button" class="btn btn-sm btn-link p-0" data-edu-open="${i}" aria-expanded="${eduOpen === +i}">${eduOpen === +i ? "Close" : "Details"}</button>` + m);
+  const one = eduOpen >= 0 && list[eduOpen] ? `<div class="edu-card" id="eduOne"><div class="fw-semibold mb-1">${esc(list[eduOpen].s)} <span class="text-body-secondary fw-normal">${esc(list[eduOpen].l)}</span></div><p class="small text-body-secondary mb-2">Where this is taught and what it leads to. Leave a box empty if it doesn't apply: a school curriculum subject has no awarding organisation, and a course of your own has no framework level.${list[eduOpen].ctx ? "" : " It's using the department's context until you change something here."}</p>${eduPick(list[eduOpen].ctx || {...d, verified: null, qual: ((list[eduOpen].src || [])[0] || {}).qualification || ""}, eduOpen, true)}</div>` : "";
+  const dept = `<div class="edu-card" id="eduDept"><div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-1"><div class="fw-semibold">Where you teach</div>${d.country ? `<button type="button" class="btn btn-sm btn-link p-0" data-edu-clear>Clear</button>` : ""}</div>
+    <p class="small text-body-secondary mb-2">Set this once for the department. Lessons, the AI tools and Crafti then write for the right country and stage, in its own terms. Each subject can have its own details too.</p>${eduPick(d, "dept", false)}
+    <div class="idea-msg mt-2" role="status">${esc(eduMsg)}</div><p class="small text-body-secondary mt-2 mb-0">These lists are a starting set written on ${EDU.seeded}, not an official register, and qualifications change. Use Something else for anything that's missing.</p></div>`;
+  const add = eduAdd ? `<div class="edu-card" id="eduAddBox"><div class="fw-semibold mb-1">Add a subject by hand</div><p class="small text-body-secondary mb-2">For a curriculum subject, a university module, or a course of your own with no specification to upload. It takes on the context above.</p>
+    <div class="edu-grid"><div class="edu-f"><label class="form-label" for="eduS">Subject or course</label><input class="form-control form-control-sm" id="eduS" maxlength="40" placeholder="e.g. Science"></div><div class="edu-f"><label class="form-label" for="eduL">Year, stage or level</label><input class="form-control form-control-sm" id="eduL" maxlength="40" value="${esc((d.stage || d.level || "").replace(/\s*\(.*\)$/, ""))}" placeholder="e.g. Year 4"></div></div>
+    <label class="form-label mt-2" for="eduU">Units or topics, one on each line</label><textarea class="form-control form-control-sm" id="eduU" rows="6" placeholder="Living things and their habitats&#10;- Group living things in different ways&#10;- Use a classification key&#10;States of matter&#10;Sound"></textarea>
+    <div class="form-text">A line starting with a dash is something learners should be able to do in the topic above it. They're your own words, and they're marked as a custom course, never as an official specification.</div>
+    <div class="d-flex gap-2 mt-2"><button type="button" class="btn btn-sm btn-primary" data-edu-addgo>Add the subject</button><button type="button" class="btn btn-sm btn-outline-secondary" data-edu-add>Cancel</button></div></div>` : "";
+  h = h.replace('<div class="d-flex flex-wrap gap-3 align-items-center"><button type="button" class="btn btn-primary btn-sm" data-crs="add">', one + dept + add + '<div class="d-flex flex-wrap gap-3 align-items-center"><button type="button" class="btn btn-primary btn-sm" data-crs="add">');
+  return h.replace('data-crs="add">Add a subject from its specification</button>', `data-crs="add">Add a subject from its specification</button>${eduAdd ? "" : `<button type="button" class="btn btn-outline-primary btn-sm" data-edu-add>Add a subject by hand</button>`}`); };
+function eduTarget(who){ if(who === "dept") return courseCfg.ctx || (courseCfg.ctx = {}); const list = (courseCfg.list || []).filter(courseOk), x = list[+who]; if(!x) return null; if(!x.ctx) x.ctx = {...JSON.parse(JSON.stringify(eduDept() || {})), verified: null, qual: ((x.src || [])[0] || {}).qualification || ""}; return x.ctx; }
+function eduSaved(focusId){ coursesSave().catch(() => {}); const y = window.scrollY; renderSettings(); window.scrollTo({top: y}); if(focusId){ const el = document.getElementById(focusId); if(el) el.focus({preventScroll: true}); } }
+document.addEventListener("change", e => { const t = e.target; if(!t || !t.dataset || !t.dataset.edu) return; const who = t.dataset.eduWho, k = t.dataset.edu, c = eduTarget(who); if(!c) return; c.own = c.own || {}; let v = String(t.value || "").replace(/[<>]/g, "").trim().slice(0, 140);
+  if(v === "__own"){ c.own[k] = 1; c[k] = ""; return eduSaved("edu-" + who + "-" + k); }
+  if(k === "country") c.country = (EDU.countries.find(x => x[1] === v) || [""])[0]; else if(k === "setting") c.setting = (EDU.settings.find(x => x[1] === v) || [""])[0]; else c[k] = v;
+  if(!c[k]) delete c[k]; if(["qual", "qn", "ver", "org", "orgName", "type"].includes(k) && c.verified) c.verified = null;
+  eduFix(c); if(who === "dept") eduMsg = c.country ? "Saved. Everything the AI writes for this department now knows this." : ""; eduSaved("edu-" + who + "-" + k); });
+document.addEventListener("click", e => { const q = s => e.target.closest(s); let b;
+  if((b = q("[data-edu-open]"))){ eduOpen = eduOpen === +b.dataset.eduOpen ? -2 : +b.dataset.eduOpen; renderSettings(); const el = $("#eduOne"); if(el) el.scrollIntoView({block: "nearest"}); return; }
+  if((b = q("[data-edu-list]"))){ const c = eduTarget(b.dataset.eduWho); if(c){ delete (c.own || {})[b.dataset.eduList]; delete c[b.dataset.eduList]; eduFix(c); eduSaved(); } return; }
+  if(q("[data-edu-clear]")){ courseCfg.ctx = null; eduMsg = "Cleared."; return eduSaved(); }
+  if((b = q("[data-edu-verify]"))){ const c = eduTarget(b.dataset.eduVerify); if(!c) return; const src = (document.querySelector(`[data-edu-src="${b.dataset.eduVerify}"]`) || {}).value || ""; c.verified = {by: (me && (me.name || me.email)) || "", at: Date.now(), src: src.replace(/[<>"]/g, "").trim().slice(0, 200)}; toast("Recorded as checked, with your name and today's date."); return eduSaved(); }
+  if((b = q("[data-edu-unverify]"))){ const c = eduTarget(b.dataset.eduUnverify); if(c){ c.verified = null; eduSaved(); } return; }
+  if(q("[data-edu-addgo]")){ const s = ($("#eduS").value || "").replace(/[<>]/g, "").trim().slice(0, 40), l = ($("#eduL").value || "").replace(/[<>]/g, "").trim().slice(0, 40) || "Course", u = []; let cur = null;
+    ($("#eduU").value || "").split("\n").map(x => x.replace(/[<>]/g, "").trim()).filter(Boolean).forEach(x => { const m = x.match(/^[-*•]\s*(.+)$/); if(m && cur){ cur.c.push(["LO" + (cur.c.length + 1), m[1].slice(0, 300)]); } else if(!m && u.length < 60){ cur = {t: x.slice(0, 120), a: {}, c: []}; u.push(cur); } });
+    if(!s || !u.length) return toast("Give the subject a name and at least one unit or topic.", {bad: true}); u.forEach(x => { if(!x.c.length) x.c.push(["LO1", x.t]); });
+    const keep = (courseCfg.list || []).filter(x => !(x.s === s && x.l === l)), d = eduDept(); courseCfg = {...courseCfg, list: [...keep, {s, l, u, custom: true, ctx: d && d.country ? {...JSON.parse(JSON.stringify(d)), type: d.type || EDU.custom, verified: null} : null, src: []}]};
+    eduAdd = false; coursesSave().catch(() => {}); try{ presetForm(s, l, u[0].t); rememberForm(); }catch{} renderSettings(); return toast(`${s} added with ${u.length} ${u.length === 1 ? "topic" : "topics"}. Pick it wherever you build or plan.`); }
+  if(q("[data-edu-add]")){ eduAdd = !eduAdd; renderSettings(); const f = $("#eduS"); if(f) f.focus(); } });
+/* a lesson built for a withdrawn qualification says so */
+const _buildLesson46 = buildLesson;
+buildLesson = async function(f, signal){ const L = await _buildLesson46.apply(this, arguments); try{ const c = eduCtxOf(f.course, f.level); if(c && L && L.meta) L.meta.edu = {say: eduSay(c), status: c.status || "", verified: !!c.verified}; }catch{} return L; };
+const _render46 = render;
+render = function(){ const r = _render46.apply(this, arguments);
+  try{ const o = $("#out"); if(o && view === "lesson" && current && current.meta && current.meta.edu && !editMode){ const old = o.querySelector(".edu-strip"); if(old) old.remove(); const m = current.meta.edu, bar = o.querySelector(".les-res");
+      const html = `<div class="edu-strip ${m.status === "withdrawn" ? "bad" : ""}"><span>${esc(m.say)}</span>${m.status === "withdrawn" ? `<b>This qualification is recorded as withdrawn.</b>` : m.status === "teachout" ? `<b>Teach-out: no new starts.</b>` : ""}<span class="text-body-secondary">${m.verified ? "Qualification details checked by your department." : "Qualification details not verified."}</span></div>`;
+      if(bar) bar.insertAdjacentHTML("beforebegin", html); else o.insertAdjacentHTML("beforeend", html); } }catch(e){ console.error(e); }
+  return r; };
+/* the library can be narrowed to one subject and level */
+let lbCourse = "";
+const _lbHtml46 = lbHtml;
+lbHtml = function(){ let h = _lbHtml46.apply(this, arguments); const subs = [...new Set(UNITS.filter(x => !x.none).map(x => x.s + " · " + x.l))]; if(subs.length < 2) return h;
+  const i = h.indexOf('id="lbQ"'); if(i < 0) return h; const end = h.indexOf(">", i) + 1;
+  return h.slice(0, end) + `<select class="form-select" id="lbCourse" aria-label="Subject and level" style="max-width:260px"><option value="">Every subject</option>${subs.map(s => `<option ${s === lbCourse ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>` + h.slice(end); };
+const _lbItems46 = lbItems;
+lbItems = function(){ const a = _lbItems46.apply(this, arguments); if(!lbCourse) return a; const [s, l] = lbCourse.split(" · ");
+  return a.filter(x => { if(x.kind === "lesson"){ const it = x.it || {}; return (!it.course || it.course === s) && (!it.level || it.level === l); } const d = [...tkMine, ...tkShared].find(y => y.id === x.id) || {}, u = d.vals && d.vals._unit ? UNITS[+String(d.vals._unit).split(":")[0]] : null; return !!u && u.s === s && u.l === l; }); };
+document.addEventListener("change", e => { if(e.target && e.target.id === "lbCourse"){ lbCourse = e.target.value; lbDraw(); } });
+
+/* ---------- the quick start guide: a chapter for the AI tools, Crafti, the library, learners and where you teach ---------- */
+(() => { try{
+  const C = TOUR_CH.length; TOUR_CH.push(["AI tools and learners", "The toolkit, Crafti, the library and learner progress"]);
+  const stGo = id => () => { try{ const g = ST_GROUPS.find(x => x[2].includes(id)); if(g && typeof stTab !== "undefined" && stTab !== g[0]){ stTab = g[0]; if(view === "settings") renderSettings(); } }catch{} };
+  const steps = [
+    {c: C, room: "tools", view: "tools", sel: ".tk-hero", h: "AI Tools", t: "32 tools for the jobs around a lesson: worksheets, quizzes, reports, emails, differentiated resources and leadership documents. Search for what you need, or star the ones you use most.", pre: () => { tkOpen = ""; tkDoc = null; tkTab = "tools"; if(view === "tools") tkDraw(); }},
+    {c: C, room: "tools", view: "tools", sel: ".tk-cat .tk-grid", h: "Fill in a few boxes", t: "Open a tool, fill in the boxes and press Write it. Then change any word, rewrite one part at a time, save it to your library and download it as Word, PowerPoint or PDF."},
+    {c: C, room: "assistant", view: "assistant", sel: ".as-main", h: "Crafti", t: "Your assistant. Ask anything, attach a document, or talk a lesson through. Any reply can become a resource, and a whole chat can become a full lesson."},
+    {c: C, room: "library", view: "library", sel: ".tk-find", h: "One library", t: "Every lesson and every resource in one place, yours and your department's. Search it, or narrow it to one subject."},
+    {c: C, room: "learners", view: "learners", sel: ".ln-bar", h: "Learners", t: "Keep a class list and mark each learner against each criterion of a unit. Under the grid you can track hand-ins, feedback and resubmissions, and see internal verification. Every mark is your decision."},
+    {c: C, lead: 1, view: "settings", sel: "#eduDept", h: "Where you teach", t: "Set your country, setting and stage once. Lessons, the tools and Crafti then write for it in its own terms, from early years to university. Subjects can be added from a specification or by hand.", pre: stGo("stCourses")}];
+  const at = TOUR.findIndex(s => s.c === 5 && /Search everything/.test(s.h)); TOUR.splice(at < 0 ? TOUR.length - 1 : at, 0, ...steps);
+}catch(e){ console.error(e); } })();
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

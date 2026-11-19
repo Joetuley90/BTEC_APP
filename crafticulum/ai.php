@@ -47,6 +47,7 @@ if (!empty($me['demo'])) { if (ccDemoBuildsLeft() < 1) out(402, ['error' => (int
 if (($why = ccUsageBlocked($me)) !== '') out(402, ['error' => $why] + (array) ($GLOBALS['ccBlock'] ?? []));
 $prompt = (string) ($body['prompt'] ?? '');
 if ($prompt === '' || strlen($prompt) > 200000) out(400, ['error' => 'Empty or oversized prompt.']);
+$prompt = ccHouseText(ccAccounts(), $me) . $prompt;   // the college's house rules go in front of everything it asks for
 if (in_array(ccConf('ANTHROPIC_API_KEY'), ['sk-ant-REPLACE-ME', ''], true)) out(500, ['error' => 'Crafticulum AI isn\'t set up yet. The site admin adds the API key in Settings, Site setup.']);
 
 @set_time_limit(320); @ignore_user_abort(true);   // a full lesson can take a couple of minutes
