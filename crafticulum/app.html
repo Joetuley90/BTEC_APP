@@ -1411,6 +1411,7 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+#tourSkip{background-color:#15803d!important;border-color:#15803d!important;color:#fff!important;font-weight:600}#tourSkip:hover,#tourSkip:focus-visible{background-color:#166534!important;border-color:#166534!important}
 .tm-rooms{display:grid;grid-template-columns:repeat(2,max-content);gap:1px 18px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--cc-line)}.tm-rooms-h{grid-column:1 / -1;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--bs-secondary-color);margin-bottom:2px}@media (max-width:767.98px){.tm-rooms{grid-template-columns:minmax(0,1fr)}}
 .inst-cron{margin-top:12px;padding:10px 12px;border-radius:.7rem;background:var(--bs-tertiary-bg);font-size:.84rem;display:grid;gap:6px}.inst-cronl{display:block;padding:8px 10px;border-radius:.5rem;background:var(--bs-body-bg);border:1px solid var(--cc-line);font-size:.78rem;word-break:break-all;user-select:all}
 .ep-none{padding:8px 12px;font-size:.84rem;color:var(--bs-secondary-color)}.ep-none:empty{display:none}.ep-hits:has(> .ep-none:empty){display:none}
@@ -3586,7 +3587,7 @@ Learning aim: ${f.aim || "(not given)"}
 Criteria being covered (use these codes and this wording exactly; do not invent other criteria):
 ${f.criteria}
 Lesson length: ${f.length}
-Lesson type: ${f.kind}
+Lesson type: ${f.kind}${typeof kindLine === "function" ? kindLine(f.kind) : ""}
 Extra context: ${f.notes || "none"}
 ${briefBlock(f.brief && briefById(f.brief.id), f.brief && f.brief.task)}${seqBlock(f)}${prevBlock(f)}${describeBlock(f)}
 
@@ -5251,10 +5252,11 @@ function renderHome(){
     <form class="composer" id="hForm">
       <textarea id="hText" rows="3" maxlength="1200" placeholder="e.g. A practical lesson where pairs present a two minute case study, for a lively group of 16" aria-label="Describe the lesson you want" ${homeBusy ? "disabled" : ""}>${esc(homeText)}</textarea>
       <div class="composer-bar">
-        <div class="btn-group btn-group-sm" role="group" aria-label="Course" id="hCourse">${[...$("#course").querySelectorAll("button")].map(b => `<button type="button" class="btn btn-outline-primary" data-v="${esc(b.dataset.v)}" aria-pressed="${b.dataset.v === course}">${esc(b.textContent)}</button>`).join("")}</div>
+        ${$("#course").querySelectorAll("button").length > 4 ? `<select class="form-select form-select-sm" id="hCourseSel" aria-label="Subject">${[...$("#course").querySelectorAll("button")].map(b => `<option value="${esc(b.dataset.v)}" ${b.dataset.v === course ? "selected" : ""}>${esc(b.textContent)}</option>`).join("")}</select>` : `<div class="btn-group btn-group-sm" role="group" aria-label="Course" id="hCourse">${[...$("#course").querySelectorAll("button")].map(b => `<button type="button" class="btn btn-outline-primary" data-v="${esc(b.dataset.v)}" aria-pressed="${b.dataset.v === course}">${esc(b.textContent)}</button>`).join("")}</div>`}
         <select class="form-select form-select-sm" id="hLevel" aria-label="Level">${levelsFor().map(x => `<option ${x.l === L.l ? "selected" : ""}>${esc(x.l)}</option>`).join("")}</select>
         <select class="form-select form-select-sm" id="hUnit" aria-label="Unit"><option value="auto" ${homeAuto ? "selected" : ""}>Best matching unit</option>${L.u.map((u, i) => `<option value="${i}" ${!homeAuto && i === ui ? "selected" : ""}>${esc(u.t)}</option>`).join("")}</select>
         <select class="form-select form-select-sm" id="hLength" aria-label="Lesson length">${[...$("#length").options].map(o => `<option ${o.value === $("#length").value ? "selected" : ""}>${esc(o.value)}</option>`).join("")}</select>
+        <select class="form-select form-select-sm" id="hKind" aria-label="Type of lesson">${[...$("#kind").options].map(o => `<option value="${esc(o.value)}" ${o.value === $("#kind").value ? "selected" : ""}>${esc(o.value === "Teaching new content" ? "Teaching" : o.value)}</option>`).join("")}</select>
         <button type="submit" class="send" aria-label="Build this lesson" title="Build this lesson" ${homeBusy ? "disabled" : ""}>${homeBusy ? `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>`}</button>
       </div>
     </form>
@@ -5295,7 +5297,7 @@ Reply with only this JSON: {"unit": number}`, {signal: ctl.signal, cache: false}
     }
     const u = curUnit();
     const f = {course, level: L.l, unit: u.t, aim: "Learning aims: " + Object.entries(u.a || {}).map(([k, v]) => k + (v ? " (" + v + ")" : "")).join("; "),
-      criteria: u.c.map(([c, d]) => c + " " + d).join("\n"), codes: u.c.map(c => c[0]), length: $("#length").value, kind: "Teaching new content", notes: "", brief: null, seq: null, prev: null, describe: text};
+      criteria: u.c.map(([c, d]) => c + " " + d).join("\n"), codes: u.c.map(c => c[0]), length: $("#length").value, kind: $("#kind").value || "Teaching new content", notes: "", brief: null, seq: null, prev: null, describe: text};
     const lesson = await buildLesson(f, ctl.signal);
     homeBusy = false; homeMsg = ""; homeText = "";
     saveRecent(lesson); rememberForm(); showLesson(lesson); paintCoverage(); updateFollow();
@@ -5315,6 +5317,8 @@ $("#out").addEventListener("change", e => {
   if(id === "hLevel"){ $("#level").value = [...$("#level").options].find(o => o.textContent === e.target.value || o.value === e.target.value)?.value ?? $("#level").value; fillUnits(); }
   else if(id === "hUnit"){ homeAuto = e.target.value === "auto"; if(!homeAuto){ $("#unit").value = e.target.value; fillAims(); fillBriefs(); } }
   else if(id === "hLength") $("#length").value = e.target.value;
+  else if(id === "hKind") $("#kind").value = e.target.value;
+  else if(id === "hCourseSel"){ $("#course").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === e.target.value)); fillLevels(); }
   else return;
   rememberForm(); renderHome();
 });
@@ -5584,7 +5588,7 @@ function tourEls(){
       <div class="tour-top"><span class="tour-n" id="tourN"></span><button type="button" class="btn-close" id="tourEnd" aria-label="Close the guide"></button></div>
       <div class="tour-bar" aria-hidden="true"><i id="tourBar"></i></div>
       <h2 class="h6 mb-1" id="tourH"></h2><p class="small mb-3" id="tourT"></p><div class="tour-ch" id="tourCh" hidden></div>
-      <div class="d-flex gap-2 align-items-center"><button type="button" class="btn btn-sm btn-link text-body-secondary px-0 me-auto" id="tourSkip">Next part</button><button type="button" class="btn btn-sm btn-outline-secondary" id="tourBack">Back</button><button type="button" class="btn btn-sm btn-primary" id="tourNext">Next</button></div></div>`);
+      <div class="d-flex gap-2 align-items-center"><button type="button" class="btn btn-sm btn-success me-auto" id="tourSkip">Next section</button><button type="button" class="btn btn-sm btn-outline-secondary" id="tourBack">Back</button><button type="button" class="btn btn-sm btn-primary" id="tourNext">Next</button></div></div>`);
     $("#tourEnd").onclick = tourStop; $("#tourBack").onclick = () => tourGo(tourI - 1); $("#tourNext").onclick = () => tourGo(tourI + 1);
     $("#tourSkip").onclick = () => { const c = tourL[tourI] && tourL[tourI].c, j = tourL.findIndex((s, k) => k > tourI && s.c !== c); tourGo(j < 0 ? tourL.length - 1 : j); };
     $("#tourCh").onclick = e => { const b = e.target.closest("[data-tch]"); if(!b) return; const j = tourL.findIndex(s => s.c === +b.dataset.tch); if(j >= 0) tourGo(j); };
@@ -11157,6 +11161,7 @@ function navAreas(){ const nav = document.querySelector(".side .side-nav"); if(!
   cap("AI tools", tools); cap("Curriculum and lessons", q('[data-nav="week"]')); cap("Learners and assessment", q('[data-nav="results"]'));
   const libBtn = nav.querySelector('[data-canvas="libCanvas"]'); const last = libBtn || nav.lastElementChild;
   last.insertAdjacentHTML(libBtn ? "beforebegin" : "afterend", `<div class="side-cap nav-cap">Resource library</div><button type="button" class="side-link" id="sideLib" data-x-nav="library" aria-label="Resource library">${LIB_ICO}<span class="lbl">Library</span></button>`);
+  { const aiCap = tools.previousElementSibling; [aiCap && aiCap.classList.contains("nav-cap") ? aiCap : null, tools, $("#sideAssist")].forEach(el => { if(el) nav.appendChild(el); }); }   // the AI group sits at the bottom of the menu, just above Tools
   const first = document.querySelector(".side .side-sec .side-cap:not(.nav-cap)"); if(first && /workspace/i.test(first.textContent)) first.hidden = true; }
 document.addEventListener("click", e => { const b = e.target.closest("[data-x-nav]"); if(!b) return; e.preventDefault(); setView(b.dataset.xNav); });
 const _render40 = render;
@@ -11842,6 +11847,11 @@ document.addEventListener("change", e => { if(e.target && e.target.id === "lbCou
     {c: C, lead: 1, view: "settings", sel: "#eduDept", h: "Where you teach", t: "Set your country, setting and stage once. Lessons, the tools and Crafti then write for it in its own terms, from early years to university. Subjects can be added from a specification or by hand.", pre: stGo("stCourses")}];
   const at = TOUR.findIndex(s => s.c === 5 && /Search everything/.test(s.h)); TOUR.splice(at < 0 ? TOUR.length - 1 : at, 0, ...steps);
 }catch(e){ console.error(e); } })();
+
+/* what each type of lesson means for how the time is spent */
+function kindLine(k){ return {"Assignment workshop": " (learners work on their assignment: keep the teaching input short, give most of the time to supported independent work with clear checkpoints, and help them check their own work against the criteria without doing it for them)",
+  "Practical": " (hands-on: a short demonstration, then most of the time spent doing the practical task, with set-up or safety steps where they matter)",
+  "Revision / catch-up": " (no new content: retrieval practice, fixing the common gaps and misconceptions, and time for anyone who is behind to catch up)"}[k] || ""; }
 /* ===== round 44: official records and a profile for every educator.
    1. A subject's qualification can be looked up on the Ofqual register from the server, so "verified" means the regulator's own record.
    2. My education profile: where you teach, your institution (found in a directory read from official lists), and what you teach. It sets the defaults everywhere.
