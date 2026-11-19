@@ -1263,5 +1263,22 @@ YOUR COLLEGE OR SCHOOL, AS YOU TYPE (v100)
   Until a list has been read in, the forms look exactly as they did.
   New file: inst.php.
 
+WHAT'S NEW IN v103
+
+SCHOOLS LIST FIXES (v103)
+  - Fixed: the sign-up boxes could show nothing. A search made before the list
+    was read in came back empty, and that empty answer was kept by the browser
+    for an hour. Empty answers are never kept now, and each search carries the
+    date of the last import so nothing old is shown after one.
+  - If the list can't be searched, or nothing matches, the box says so
+    instead of staying blank.
+  - Closed schools are left out when a list is read in, and ones read in by an
+    earlier version are removed the first time the directory is used.
+  - A list read in by v98 (kept as a file) is moved into the table by itself.
+  - Weekly refresh: the Institution directory section now says whether the
+    scheduled job is running and when the list is next due, and shows the
+    line to add in cPanel, Cron Jobs, if it isn't. It is the same daily job
+    that sends notifications.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

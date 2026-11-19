@@ -43,7 +43,7 @@ function ccInstImport(array $def, string $by): array {
     else { $out = @fopen($outF . '.tmp', 'w'); if (!$out) { if ($tmp) @unlink($tmp); return ['error' => 'save']; } }
     $seen = []; $n = 0; $closed = 0; $g = fn(array $r, string $k): string => $col[$k] >= 0 && isset($r[$col[$k]]) ? ccInstUtf((string) $r[$col[$k]]) : '';
     while ($rows->valid()) { $r = (array) $rows->current(); $rows->next(); $name = $g($r, 'name'); if ($name === '') continue; $pc = strtoupper($g($r, 'postcode')); $ref = $g($r, 'ref'); $key = $ref !== '' ? 'r' . $ref : strtolower($name . '|' . $pc); if (isset($seen[$key])) continue; $seen[$key] = 1;
-        $st = $g($r, 'status'); $shut = $st !== '' && (bool) preg_match('/closed|merged|ceased/i', $st) && !preg_match('/proposed to close/i', $st); if ($shut) $closed++;
+        $st = $g($r, 'status'); $shut = $st !== '' && (bool) preg_match('/closed|merged|ceased/i', $st) && !preg_match('/proposed to close/i', $st); if ($shut) { $closed++; continue; }   // closed institutions are counted and left out
         $nat = $nation; if ($col['region'] >= 0 && stripos($g($r, 'region'), 'wales') === 0) $nat = 'wal';
         $type = $g($r, 'type'); $ph = $g($r, 'phase'); if ($ph !== '' && strcasecmp($ph, 'Not applicable') !== 0 && stripos($type, $ph) === false) $type = trim($type . ($type !== '' ? ', ' : '') . $ph);
         $town = $g($r, 'town');
@@ -64,15 +64,15 @@ function ccInstAuto(): int { $n = 0; $l0 = ccInstLog();
 /* search every list: all the words typed have to appear in the name, town, postcode or reference. Open ones come first */
 function ccInstSearch(string $q, string $nation = '', int $max = 12): array {
     $words = array_values(array_filter(preg_split('/\s+/', mb_strtolower(trim($q))) ?: [], fn($w) => $w !== '')); if (!$words || mb_strlen(implode('', $words)) < 2) return [];
-    $pcq = strtolower((string) preg_replace('/\s+/', '', $q)); $open = []; $shut = []; $seen = [];
+    $pcq = strtolower((string) preg_replace('/\s+/', '', $q)); $open = []; $shut = []; $seen = []; ccInstMigrate();
     if ($db = ccInstDb()) { $w = []; $args = []; foreach (array_slice($words, 0, 6) as $x) { $w[] = "search LIKE ? ESCAPE '\\'"; $args[] = '%' . addcslashes($x, '%_\\') . '%'; } $sql = '(' . implode(' AND ', $w) . ')';
         if (strlen($pcq) >= 5) { $sql = '(' . $sql . ' OR pc_key = ?)'; $args[] = $pcq; } if ($nation !== '') { $sql .= ' AND nation = ?'; $args[] = $nation; }
-        $st = $db->prepare('SELECT ref, name, town, postcode, type, nation, closed, source FROM institutions WHERE ' . $sql . ' ORDER BY closed, length(name) LIMIT 400'); $st->execute($args);
+        $st = $db->prepare('SELECT ref, name, town, postcode, type, nation, closed, source FROM institutions WHERE closed = 0 AND ' . $sql . ' ORDER BY length(name) LIMIT 400'); $st->execute($args);
         foreach ($st as $r) { $k = strtolower($r['name'] . '|' . $r['postcode']); if (isset($seen[$k])) continue; $seen[$k] = 1; $row = ['ref' => (string) $r['ref'], 'name' => (string) $r['name'], 'town' => (string) $r['town'], 'postcode' => (string) $r['postcode'], 'type' => (string) $r['type'], 'nation' => (string) $r['nation'], 'closed' => !empty($r['closed']), 'source' => (string) $r['source']]; if ($row['closed']) { if (count($shut) < $max) $shut[] = $row; } else $open[] = $row; } }
     foreach ((array) glob(ccInstDir() . '/*.jsonl') as $f) { $src = basename((string) $f, '.jsonl'); $in = @fopen((string) $f, 'r'); if (!$in) continue;
         while (($line = fgets($in)) !== false) { $low = mb_strtolower($line); $hit = true; foreach ($words as $w) if (strpos($low, $w) === false) { $hit = false; break; }
             if (!$hit && !(strlen($pcq) >= 5 && strpos(str_replace(' ', '', $low), $pcq) !== false)) continue;
-            $r = json_decode($line, true); if (!is_array($r) || count($r) < 7) continue; if ($nation !== '' && $r[5] !== $nation) continue;
+            $r = json_decode($line, true); if (!is_array($r) || count($r) < 7 || !empty($r[6])) continue; if ($nation !== '' && $r[5] !== $nation) continue;
             $k = strtolower($r[1] . '|' . $r[3]); if (isset($seen[$k])) continue; $seen[$k] = 1;
             $row = ['ref' => (string) $r[0], 'name' => (string) $r[1], 'town' => (string) $r[2], 'postcode' => (string) $r[3], 'type' => (string) $r[4], 'nation' => (string) $r[5], 'closed' => !empty($r[6]), 'source' => $src];
             if ($row['closed']) { if (count($shut) < $max) $shut[] = $row; } else { $open[] = $row; if (count($open) >= $max * 4) break; } }
@@ -112,6 +112,7 @@ function ccInstDb(): ?PDO { static $db = false; if ($db !== false) return $db; $
             CREATE TABLE IF NOT EXISTS user_qualifications (user TEXT NOT NULL REFERENCES user_education_profiles (user) ON DELETE CASCADE, pos INTEGER, qualification TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS institution_memberships (id INTEGER PRIMARY KEY, user TEXT NOT NULL REFERENCES user_education_profiles (user) ON DELETE CASCADE, pos INTEGER, ref TEXT, name TEXT NOT NULL, town TEXT, postcode TEXT, type TEXT, nation TEXT, source TEXT, manual INTEGER DEFAULT 0, is_default INTEGER DEFAULT 0, status TEXT DEFAULT 'profile', college TEXT, requested_at INTEGER, decided_at INTEGER, decided_by TEXT);
             CREATE INDEX IF NOT EXISTS mem_user ON institution_memberships (user);");
+        if (!is_file($dir . '/_open-only')) { $p->exec('DELETE FROM institutions WHERE closed = 1'); @touch($dir . '/_open-only'); foreach ((array) glob($dir . '/cache/*.json') as $cf) @unlink((string) $cf); }   // once: closed institutions read in by an earlier version are taken out
         @chmod($dir . '/directory.sqlite', 0600); $db = $p; } catch (Throwable $e) { $db = null; }
     return $db; }
 /* a person's education profile, as rows in those tables. A membership row is only ever information: access to a workspace is decided elsewhere */
@@ -151,7 +152,8 @@ function ccInstCacheClear(): void { foreach ((array) glob(ccInstDir() . '/cache/
 function ccInstSuggest(string $q, int $max = 8): array {
     $q = trim((string) preg_replace('/\s+/', ' ', mb_strtolower($q))); if (mb_strlen($q) < 2 || mb_strlen($q) > 60) return [];
     $cdir = ccInstDir() . '/cache'; $cf = $cdir . '/' . sha1($q . '|' . $max) . '.json'; $short = mb_strlen($q) <= 8;
-    if ($short && is_file($cf)) { $j = json_decode((string) @file_get_contents($cf), true); if (is_array($j)) return $j; }
+    if ($short && is_file($cf)) { $j = json_decode((string) @file_get_contents($cf), true); if (is_array($j) && $j) return $j; }
+    ccInstMigrate();
     $words = explode(' ', $q); $pcq = str_replace(' ', '', $q); $out = [];
     if ($db = ccInstDb()) { $w = []; $args = []; $esc = fn(string $x): string => addcslashes($x, '%_\\');
         foreach (array_slice($words, 0, 6) as $x) { $w[] = "search LIKE ? ESCAPE '\\'"; $args[] = '%' . $esc($x) . '%'; } $sql = '(' . implode(' AND ', $w) . ')'; if (strlen($pcq) >= 5) { $sql = '(' . $sql . ' OR pc_key = ?)'; $args[] = $pcq; }
@@ -160,5 +162,16 @@ function ccInstSuggest(string $q, int $max = 8): array {
         foreach ($st as $r) { $k = strtolower($r['name'] . '|' . $r['postcode']); if (isset($seen[$k])) continue; $seen[$k] = 1; $out[] = array_map('strval', $r); if (count($out) >= $max) break; } }
     else { $all = array_values(array_filter(ccInstSearch($q, '', $max * 4), fn($r) => empty($r['closed']))); $rank = fn(array $r): int => (strpos(mb_strtolower($r['name']), $q) === 0 ? 0 : (preg_match('/\b' . preg_quote($words[0], '/') . '/iu', $r['name']) ? 1 : 2)) * 1000 + mb_strlen($r['name']);
         usort($all, fn($a, $b) => $rank($a) <=> $rank($b)); foreach (array_slice($all, 0, $max) as $r) { unset($r['closed']); $out[] = $r; } }
-    if ($short) { if (!is_dir($cdir)) @mkdir($cdir, 0700, true); @file_put_contents($cf, json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX); }
+    if ($short && $out) { if (!is_dir($cdir)) @mkdir($cdir, 0700, true); @file_put_contents($cf, json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX); }
     return $out; }
+
+/* a list read in before the tables existed is still a file: it is moved into the table the first time anyone searches */
+function ccInstMigrate(): void { static $done = false; if ($done) return; $done = true; $db = ccInstDb(); if (!$db) return; $files = (array) glob(ccInstDir() . '/*.jsonl'); if (!$files) return;
+    $lk = @fopen(ccInstDir() . '/_migrate.lock', 'c'); if (!$lk || !flock($lk, LOCK_EX | LOCK_NB)) return; @set_time_limit(300);
+    foreach ($files as $f) { $id = basename((string) $f, '.jsonl'); $in = @fopen((string) $f, 'r'); if (!$in) continue;
+        try { $db->beginTransaction(); $db->prepare('DELETE FROM institutions WHERE source = ?')->execute([$id]); $ins = $db->prepare('INSERT INTO institutions (source, ref, name, town, postcode, pc_key, type, nation, closed, search) VALUES (?,?,?,?,?,?,?,?,?,?)');
+            while (($line = fgets($in)) !== false) { $r = json_decode($line, true); if (!is_array($r) || count($r) < 7 || !empty($r[6])) continue; $ins->execute([$id, (string) $r[0], (string) $r[1], (string) $r[2], (string) $r[3], strtolower(str_replace(' ', '', (string) $r[3])), (string) $r[4], (string) $r[5], empty($r[6]) ? 0 : 1, mb_strtolower($r[1] . ' ' . $r[2] . ' ' . $r[3] . ' ' . str_replace(' ', '', (string) $r[3]) . ' ' . $r[0] . ' ' . $r[4])]); }
+            $db->commit(); fclose($in); @unlink((string) $f); } catch (Throwable $e) { try { $db->rollBack(); } catch (Throwable $e2) {} fclose($in); } }
+    ccInstCacheClear(); flock($lk, LOCK_UN); }
+/* when the list last changed: the sign-up pages put this in the address they search, so nothing old is ever shown after an import */
+function ccInstVersion(): int { $m = 0; foreach ((array) (ccInstLog()['sources'] ?? []) as $s) $m = max($m, (int) ($s['at'] ?? 0)); return $m; }

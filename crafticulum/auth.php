@@ -29,7 +29,7 @@ function out(int $code, array $data): void { http_response_code($code); echo jso
 $body = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : 20001); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
 /* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
-if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); $inst = 0; if (is_file(__DIR__ . '/inst-lib.php')) { require_once __DIR__ . '/inst-lib.php'; try { $inst = ccInstAuto(); } catch (Throwable $e) { $inst = 0; } } out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge(), 'directory' => $inst]); }
+if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); $inst = 0; if (is_file(__DIR__ . '/inst-lib.php')) { require_once __DIR__ . '/inst-lib.php'; @file_put_contents(ccInstDir() . '/_cron.txt', (string) time()); try { $inst = ccInstAuto(); } catch (Throwable $e) { $inst = 0; } } out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge(), 'directory' => $inst]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
 ccSession();
 
@@ -110,7 +110,7 @@ if ($action === 'config') {
     $a = ccAccounts();
     $fresh = !array_filter($a['users'], fn($u) => !empty($u['pass']) || !empty($u['last']));
     require_once __DIR__ . '/inst-lib.php';
-    out(200, ['dir' => !empty(ccInstLog()['sources']), 'google' => ccGoogleId() ?: null, 'googleRedirect' => ccGoogleSecret() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'password' => ccPasswordAllowed(), 'mail' => ccMailReady(), 'depts' => array_values(array_filter(deptList($a), fn($d) => empty($a['colleges'][(string) ($a['depts'][$d['id']]['college'] ?? '')]['self']))), 'fresh' => $fresh, 'site' => ccSitePublic($a), 'url' => ccSiteUrl(), 'demo' => ccDemoOn(), 'billing' => ccBillingOn()]);
+    out(200, ['dir' => !empty(ccInstLog()['sources']), 'dirv' => ccInstVersion(), 'google' => ccGoogleId() ?: null, 'googleRedirect' => ccGoogleSecret() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'password' => ccPasswordAllowed(), 'mail' => ccMailReady(), 'depts' => array_values(array_filter(deptList($a), fn($d) => empty($a['colleges'][(string) ($a['depts'][$d['id']]['college'] ?? '')]['self']))), 'fresh' => $fresh, 'site' => ccSitePublic($a), 'url' => ccSiteUrl(), 'demo' => ccDemoOn(), 'billing' => ccBillingOn()]);
 }
 /* the contact page: anyone can send a message. It's kept for the super admin and emailed to the site's contact address */
 if ($action === 'contact') {

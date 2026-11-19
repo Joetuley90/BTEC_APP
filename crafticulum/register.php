@@ -50,7 +50,7 @@ if ($action === 'profileset') { if (!empty($me['demo'])) out(403, ['error' => 'd
 /* the rest is for the super admin: filling and refreshing the directory */
 if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
 $state = function (): array { $l = ccInstLog(); $files = []; foreach ((array) glob(ccInstDir() . '/import/*.{csv,xlsx,txt}', GLOB_BRACE) as $f) if (strpos(basename((string) $f), '_dl-') !== 0) $files[] = basename((string) $f);
-    return ['sources' => array_values((array) $l['sources']), 'runs' => array_slice((array) $l['runs'], 0, 12), 'files' => $files, 'tables' => (bool) ccInstDb(), 'presets' => array_map(fn($k) => ['id' => $k] + CC_INST_PRESETS[$k], array_keys(CC_INST_PRESETS))]; };
+    return ['sources' => array_values((array) $l['sources']), 'runs' => array_slice((array) $l['runs'], 0, 12), 'files' => $files, 'tables' => (bool) ccInstDb(), 'cron' => ccSiteUrl() . 'auth.php?a=pushcron&k=' . substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), 'cronLast' => (int) @file_get_contents(ccInstDir() . '/_cron.txt'), 'presets' => array_map(fn($k) => ['id' => $k] + CC_INST_PRESETS[$k], array_keys(CC_INST_PRESETS))]; };
 if ($action === 'inststate') out(200, $state());
 if ($action === 'instimport') {
     $pre = CC_INST_PRESETS[(string) ($body['preset'] ?? '')] ?? null; $def = ['id' => (string) ($body['id'] ?? ($body['preset'] ?? '')), 'label' => (string) ($body['label'] ?? ($pre['label'] ?? '')), 'nation' => (string) ($body['nation'] ?? ($pre['nation'] ?? 'eng')),
