@@ -31,3 +31,29 @@
       return '<div class="plan' + (p.id === "pro" ? " hot" : "") + '"><h3>' + esc(p.name) + '</h3><p class="plan-for">' + esc(p["for"]) + '</p><p class="plan-price">' + (p.price < 0 ? "Custom quote" : esc(p.priceText) + (paid ? "<small> a month</small>" : "")) + "</p><ul>" + lines.map(function(l){ return "<li>" + l + "</li>"; }).join("") + "</ul>" + go + "</div>"; }).join("");
   }).catch(function(){});
 })();
+
+/* Sign in and Register open in a pop-up over this page, so nobody is sent away from it. The pop-up is the app's own sign-in, in a frame, so every way of signing in works exactly as it does there.
+   With scripts off, or if the frame can't load, the links still go to the sign-in page as before. */
+(function(){
+  var back = null, frame = null, from = null, warm = null, ready = false, timer = 0;
+  function isApp(a){ var h = a.getAttribute("href") || ""; return /^(\.\/)?app(\.html)?(\?[^#]*)?$/.test(h); }
+  function src(a){ var h = a.getAttribute("href"); return h + (h.indexOf("?") < 0 ? "?" : "&") + "embed=1"; }
+  function close(){ if(!back) return; clearTimeout(timer); back.remove(); back = frame = null; ready = false; document.documentElement.classList.remove("am-open"); if(from && document.contains(from)) try{ from.focus(); }catch(e){} from = null; }
+  function open(a){ if(back) return; from = a; ready = false;
+    back = document.createElement("div"); back.className = "am-back"; back.setAttribute("role", "dialog"); back.setAttribute("aria-modal", "true"); back.setAttribute("aria-label", "Sign in or register");
+    back.innerHTML = '<div class="am-card"><button type="button" class="am-x" aria-label="Close">&times;</button><p class="am-load" role="status">Loading...</p><iframe class="am-frame" title="Sign in or register" allow="identity-credentials-get; publickey-credentials-get"></iframe></div>';
+    frame = back.querySelector("iframe"); frame.src = src(a); document.body.appendChild(back); document.documentElement.classList.add("am-open");
+    back.querySelector(".am-x").focus();
+    back.addEventListener("mousedown", function(e){ if(e.target === back) close(); });
+    back.querySelector(".am-x").addEventListener("click", close);
+    timer = setTimeout(function(){ if(back && !ready){ var href = a.getAttribute("href"); close(); location.href = href; } }, 12000); }   // the frame never spoke: fall back to the page
+  document.addEventListener("click", function(e){ if(e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; var a = e.target.closest ? e.target.closest("a[href]") : null; if(!a || !isApp(a) || a.target === "_blank") return; e.preventDefault(); open(a); });
+  document.addEventListener("keydown", function(e){ if(back && e.key === "Escape") close(); });
+  addEventListener("message", function(e){ if(e.origin !== location.origin || !frame || e.source !== frame.contentWindow) return; var d = e.data || {}; if(d.cc !== "auth") return;
+    if(d.type === "size"){ ready = true; back.classList.add("ready"); frame.style.height = Math.max(260, Math.ceil(d.h)) + "px"; }
+    else if(d.type === "done"){ var to = (from && from.getAttribute("href")) || "app"; clearTimeout(timer); location.href = to; }
+    else if(d.type === "close") close(); });
+  /* start fetching the app as soon as someone reaches for the button, so the pop-up opens quickly */
+  function warmUp(e){ var a = e.target.closest ? e.target.closest("a[href]") : null; if(!a || !isApp(a) || warm) return; warm = document.createElement("link"); warm.rel = "prefetch"; warm.href = a.getAttribute("href").split("?")[0]; document.head.appendChild(warm); }
+  document.addEventListener("pointerover", warmUp, {passive: true}); document.addEventListener("touchstart", warmUp, {passive: true}); document.addEventListener("focusin", warmUp);
+})();

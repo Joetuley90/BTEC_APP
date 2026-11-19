@@ -1411,6 +1411,13 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+.demo-start{max-width:640px;margin:0 auto 18px;text-align:left}.demo-start .fs-ico{width:44px;height:44px;border-radius:5px;display:grid;place-items:center;background:var(--cc-primary-soft);color:var(--cc-primary);margin-bottom:12px}.demo-start .fs-ico svg{width:24px;height:24px}
+html.auth-embed,html.auth-embed body{background:#fff!important;overflow:hidden!important}
+html.auth-embed body>*:not(#authLanding):not(#loginModal):not(script):not(style){visibility:hidden}
+html.auth-embed #authLanding{position:static!important;display:block!important;inset:auto;overflow:visible;background:#fff}
+html.auth-embed .al-hero{display:none!important}
+html.auth-embed .al-side{padding:0 22px 14px!important;justify-content:flex-start;background:#fff;gap:14px}
+html.auth-embed .al-card,html.auth-embed .al-foot{width:100%}
 .sp-back{position:fixed;inset:0;z-index:1080;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,4vh,48px) 12px;overflow-y:auto}body.sp-open{overflow:hidden}
 .sp-card{width:min(860px,100%);background:var(--cc-surface);border:1px solid var(--cc-line);border-radius:5px;padding:22px 24px 26px;box-shadow:var(--cc-shadow-lg)}
 .sp-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}.sp-top .btn-close{flex:none;margin-left:auto}
@@ -12409,7 +12416,7 @@ document.addEventListener("click", async e => { if(e.target.closest("[data-mg-re
   if(from === into){ mgBad = true; mgMsg = "Choose two different colleges."; return renderSettings(); }
   if(mgArm !== key){ mgArm = key; mgBad = false; const n = id => (mgInfo.colleges.find(c => c.id === id) || {}).name; mgMsg = `This folds ${n(from)} into ${n(into)} and switches ${n(from)} off. Press again to go ahead.`; const open = !!(b.closest("details") || {}).open; renderSettings(); if(open){ const d = document.querySelector("#stMerge details"); if(d) d.open = true; } return; }
   mgBusy = true; mgArm = "";
-  try{ const j = await authCall("collegemerge", {from, into, dept: v("dept")}); mgInfo = j; mgPick = {}; mgBad = false; const m = j.merged; mgMsg = `${m.from} is now part of ${m.into}: ${m.people} ${m.people === 1 ? "person" : "people"} and ${m.lessons} ${m.lessons === 1 ? "lesson" : "lessons"} moved. ${m.from} is switched off, not deleted.`; if(typeof team !== "undefined") team = null; if(typeof auInfo !== "undefined") auInfo = null; if(typeof colList !== "undefined") try{ colList = null; }catch{} }
+  try{ const j = await authCall("collegemerge", {from, into, dept: v("dept")}); mgInfo = j; mgPick = {}; mgBad = false; const m = j.merged; mgMsg = `${m.from} is now part of ${m.into}: ${m.people} ${m.people === 1 ? "person" : "people"} and ${m.lessons} ${m.lessons === 1 ? "lesson" : "lessons"} moved. ${m.from} is switched off, not deleted.`; if(typeof team !== "undefined") team = null; if(typeof auInfo !== "undefined") auInfo = null; try{ ovw = null; colInfo = null; }catch{} }
   catch(err){ const c = err && (err.code || err.error); mgBad = true; mgMsg = c === "paid" ? "That college pays by card. Cancel its plan first, so nobody is charged for a college that's gone." : c === "off" ? "The college you're keeping is switched off. Switch it on first." : c === "pick" ? "Choose two different colleges." : "That didn't work. Try again."; }
   mgBusy = false; renderSettings(); });
 
@@ -12451,6 +12458,52 @@ document.addEventListener("click", e => { const b = e.target.closest('[data-ln="
   TOUR.splice(base < 0 ? TOUR.length - 1 : base, 0, steps[0]);
   const _tourGo54 = tourGo; tourGo = function(){ try{ put(); }catch{} return _tourGo54.apply(this, arguments); };
 }catch(e){ console.error(e); } })();
+
+/* ===== round 55: the demo starts empty and is about what the visitor teaches.
+   Nothing built in comes with it: no subjects, units, criteria, plans or forms from any college. The visitor says what they teach in the profile steps, and the demo's subjects,
+   suggestions and lessons follow from that. Their profile and those subjects stay in their own browser: the demo is one shared space, so none of it is saved to the server. ===== */
+const DEMO_KEY = "cc_demo_profile";
+const inDemo = () => { try{ return typeof demoOn === "function" && demoOn(); }catch{ return false; } };
+const _epLoad55 = epLoad;
+epLoad = function(){ if(!inDemo()) return _epLoad55.apply(this, arguments); if(epLoaded) return; epLoaded = true; let p = null; try{ p = JSON.parse(lsGet(DEMO_KEY) || "null"); }catch{} epProfile = p && typeof p === "object" ? {...epBlank(), ...p} : null; epGot = true; try{ epApply(); }catch{} demoSubjects(); };
+const _epSave55 = epSave;
+epSave = function(p){ if(!inDemo()) return _epSave55.apply(this, arguments); epProfile = {...epBlank(), ...p, updatedAt: Date.now()}; lsSet(DEMO_KEY, JSON.stringify(epProfile)); try{ epApply(); }catch{} demoSubjects(true); return Promise.resolve(); };
+const _coursesSave55 = coursesSave;
+coursesSave = function(){ if(!inDemo()) return _coursesSave55.apply(this, arguments); coursesApply(); return Promise.resolve(); };   // never written to the shared demo space
+/* the subjects in the visitor's profile become the demo's subjects: one open topic each, no criteria, so a lesson is built from what they type */
+function demoSubjects(redraw){ if(!inDemo()) return false; const p = epProfile, subs = p ? (p.subjects || []).map(x => String(x).replace(/[<>]/g, "").trim().slice(0, 40)).filter(Boolean).slice(0, 8) : [];
+  const lvl = p ? String((p.levels || [])[0] || (p.stages || [])[0] || "Any level").replace(/[<>]/g, "").slice(0, 40) : "Any level", ctx = typeof epCtx === "function" ? epCtx() : null, want = JSON.stringify(subs.map(s => s + "|" + lvl)), have = JSON.stringify((courseCfg.list || []).filter(x => x.demo).map(x => x.s + "|" + x.l));
+  if(want === have && (courseCfg.list || []).every(x => x.demo)) return false;
+  courseCfg = {builtin: false, briefs: [], ctx: ctx ? {...ctx} : null, list: subs.map(s => ({s, l: lvl, u: [{t: "Any topic", a: {}, c: []}], custom: true, demo: true, ctx: ctx ? {...ctx, verified: null} : null, src: []}))};
+  try{ coursesApply(); }catch(e){ console.error(e); }
+  subs.forEach(s => { HOME_IDEAS[s] = [`An introduction to a new topic in ${s}`, `A practical ${s} lesson with a task in pairs`, `A ${s} revision lesson that ends with a short quiz`]; });
+  if(subs.length) try{ presetForm(subs[0], lvl, "Any topic"); rememberForm(); }catch{}
+  if(redraw && typeof view !== "undefined") try{ render(current); }catch{}
+  return true; }
+function demoStartHtml(){ const p = epProfile, started = p && (p.done || p.setting || p.seen);
+  return `<div class="card shadow-sm first-subj demo-start" id="demoStart"><div class="card-body p-4"><div class="fs-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.500 9.2l5.9-.9z"/></svg></div>
+    <h2 class="h5 mb-2">${started ? "Add a subject you teach" : "Start with what you teach"}</h2>
+    <p class="text-body-secondary mb-3">The demo starts empty. Tell it your subject and who you teach, and everything you try here is about that: the suggestions, the lessons, the tools and Crafti. It takes a minute, and it stays in this browser.</p>
+    <button type="button" class="btn btn-primary" data-demo-start>${started ? "Add my subject" : "Set up the demo"}</button></div></div>`; }
+const _renderHome55 = renderHome;
+renderHome = function(){ if(inDemo()) demoSubjects(); const r = _renderHome55.apply(this, arguments);
+  try{ if(!inDemo()) return r; const h = $("#out .home"); if(!h) return r; const fs = h.querySelector("#firstSubj");
+    if(noSubjects()){ if(fs) fs.outerHTML = demoStartHtml(); else if(!h.querySelector("#demoStart") && h.querySelector("#hForm")) h.querySelector("#hForm").insertAdjacentHTML("beforebegin", demoStartHtml()); const hh = h.querySelector(".home-h"), hs = h.querySelector(".home-sub"); if(hh) hh.textContent = "Welcome to the Crafticulum demo"; if(hs) hs.textContent = "Nothing is set up in here yet, so it can be about your subject."; }
+    else { const p = epProfile, s = ((courseCfg.list || [])[0] || {}).s, st = p ? ((p.stages || [])[0] || (p.levels || [])[0] || "") : "", ta = h.querySelector(".composer textarea, #hPrompt, textarea"); if(ta && s) ta.placeholder = `e.g. ${/^[aeiou]/i.test(s) ? "An" : "A"} ${s} lesson${st ? " for " + st : ""} on the topic you're teaching next`; }
+  }catch(e){ console.error(e); } return r; };
+document.addEventListener("click", e => { if(!e.target.closest("[data-demo-start]")) return; const p = epProfile; try{ epOpen(p && (p.done || p.setting) ? 3 : 0); }catch{ try{ epOpen(0); }catch{} } });
+/* the first time someone opens the demo, the steps open by themselves */
+let demoAsked = false;
+const _render55 = render;
+render = function(){ const demo = inDemo(); if(demo) try{ if(!epLoaded) epLoad(); demoSubjects(); }catch(e){ console.error(e); }   // before the page is drawn, so it's drawn with their subjects
+  const r = _render55.apply(this, arguments);
+  try{ if(demo){ const bar = $("#noSubjBar"), touring = typeof tourI !== "undefined" && tourI >= 0;
+      if(bar){ if(!noSubjects()) bar.remove(); else if(!bar.dataset.demo){ bar.dataset.demo = "1"; bar.innerHTML = `<span>The demo is empty until you say what you teach.</span><button type="button" class="btn btn-sm btn-primary" data-demo-start>Set up the demo</button>`; } }
+      document.querySelectorAll(".ep-ask").forEach(x => { x.hidden = true; });   // the demo has its own way in to the same steps
+      const hs = $("#out .home .home-sub"); if(hs && !noSubjects()) hs.textContent = "Describe the lesson in your own words. Crafticulum builds the plan, starter, tasks, quiz and slides.";
+      if(view === "lesson" && current && current.example && !touring && !homeBusy){ const o = $("#out"); if(o && !o.querySelector("#demoNoLesson")) o.innerHTML = `<div class="tk-wrap"><div class="tk-empty" id="demoNoLesson"><div class="fw-semibold">No lessons yet</div><div class="small text-body-secondary mb-3">Nothing comes ready-made in the demo. Describe a lesson on the dashboard and it opens here, with its plan, tasks, quiz and slides.</div><button type="button" class="btn btn-primary" data-nav="home">${noSubjects() ? "Set up the demo" : "Describe a lesson"}</button></div></div>`; }
+      if(!demoAsked && view === "home" && noSubjects() && !(epProfile && (epProfile.seen || epProfile.done)) && typeof epAutoOk === "function" && epAutoOk() && !touring && !document.querySelector("#epBack")){ demoAsked = true; epProfile = {...epBlank(), seen: Date.now()}; lsSet(DEMO_KEY, JSON.stringify(epProfile)); setTimeout(() => { try{ if(inDemo() && !document.querySelector("#epBack")) epOpen(0); }catch{} }, 400); } } }catch(e){ console.error(e); }
+  return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
@@ -12719,6 +12772,18 @@ async function scOpen(){ let j = {}; try{ const r = await authPost("ssochoose", 
       }catch{ loginSay("Couldn't reach the server.", true); }
       busy("#scGo", false); }); }
   $("#scInst").focus(); }
+
+/* the sign-in shown in a pop-up on the public pages: this same page, in a frame, with only the form. It tells the page outside how tall it is, when the person is in, and when they press Escape */
+const AUTH_EMBED = /[?&]embed=1\b/.test(location.search) && window.parent !== window;
+if(AUTH_EMBED){ (() => {
+  const say = (type, more) => { try{ window.parent.postMessage(Object.assign({cc: "auth", type}, more || {}), location.origin); }catch{} };
+  document.documentElement.classList.add("auth-embed"); const base = document.createElement("base"); base.target = "_top"; document.head.appendChild(base);   // anything that leaves this page (Microsoft, the college sign-in, Terms) takes the whole window with it
+  let done = false, last = 0;
+  const tick = () => { if(done) return; if(typeof me !== "undefined" && me && me.email && !authGate){ done = true; return say("done"); }
+    const side = document.querySelector("#authLanding .al-side"); if(side && !$("#authLanding").hidden){ const h = Math.ceil(side.scrollHeight); if(h && h !== last){ last = h; say("size", {h}); } } };
+  setInterval(tick, 200); addEventListener("load", tick);
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !e.defaultPrevented && !document.querySelector(".ep-hits li")) say("close"); });
+})(); }
 
 function parseJsonReply(text){
   let t = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "");
