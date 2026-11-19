@@ -1481,4 +1481,77 @@ THE COLOURS ARE BACK (v110)
   What stays from v109 is the shape: squarer buttons, boxes, chips, tags and
   menus (no pills), and the plain outline when you tab to a button.
 
+WHAT'S NEW IN v111
+
+STAFF PROFILES (v111)
+  Settings, People, Team: press a person's name. Or Settings, You, Your
+  staff profile, for your own. The super admin can open one from All users.
+  - One page per member of staff: role, department, when they last signed
+    in, what they teach (from their education profile), their classes, the
+    lessons they've written and whether each is in the library or waiting
+    for sign-off, and internal verification both ways: their marking checked
+    by others, and the checks they've done.
+  - Classes are numbers only: learners, units marked, criteria achieved,
+    resubmissions open and overdue. Learners are never named, and the server
+    doesn't send their names for this page at all.
+  - Who can open whose: anyone their own, a head of department their
+    department's, a college manager anyone in the college, the super admin
+    anyone.
+
+GOOGLE, MICROSOFT AND COLLEGE SIGN-IN ASK WHERE YOU WORK (v111)
+  Someone new who signs in that way used to get a new space made for them
+  on the spot. Now, when the institution directory is loaded, they're asked
+  "Where do you work?" first, with the same pick-from-the-list box as the
+  sign-up form.
+  - Their college is already here: they become a request to join it.
+  - It isn't, and plans are on: they get their own space, named after it.
+  - It isn't, and plans are off: they wait to be approved, as before.
+  - If they close the page, they're asked again next time they sign in.
+  - With no directory loaded there's nothing to pick from, so this step is
+    skipped and it works as it did.
+
+A COLLEGE CAN'T BE SET UP TWICE (v111)
+  Every way in is now checked, in this order:
+    1. the institution they picked from the list
+    2. the name, however it's spelt ("Midkent", "MidKent College" and "The
+       Mid Kent College" are one name)
+    3. their email address: if it ends the same way as a college manager's
+       (name@midkent.ac.uk), they belong to that college. Free addresses
+       such as gmail, outlook and icloud are ignored for this.
+  A match is always a request to join, never a new space. This covers the
+  sign-up form, Google, Microsoft and the college sign-in.
+  - The super admin can't add a college, or rename one, to a name that's
+    already here. The message says which college it clashes with.
+  - What this can't catch: someone with a personal email address who leaves
+    the box empty, or says their college isn't in the list. The next section
+    is for those.
+
+COLLEGES SET UP TWICE: FIND AND MERGE (v111)
+  Settings, People, Colleges set up twice. Super admin only.
+  - Lists colleges that share a name, or whose managers' email addresses
+    end the same way, and suggests which to keep (the one set up properly,
+    or the one with most people).
+  - Merge takes two presses. Everyone moves across as a teacher into the
+    department you choose, with their own class lists and settings. Every
+    lesson in the old college is copied in as a draft for sign-off. People
+    waiting to join the old one now wait to join the one you kept.
+  - The college that's folded in is switched off, not deleted, so nothing
+    is lost and it can be looked at later.
+  - A college that pays by card has to cancel its plan first.
+  - "Merge any two colleges" does the same for a pair the list didn't spot.
+
+LEARNER PROFILES: TARGETS AND A PRINTED REPORT (v111)
+  - Target grade and Attendance % on each learner's profile. They're yours
+    to keep up to date, and they're in the download.
+  - Print report opens a plain one-page report in a new tab and brings up
+    the print box: who, class and campus, target, attendance, each unit
+    with its criteria and your decision on each, hand-in and feedback dates,
+    and places for teacher and learner to sign. With learners anonymous it
+    carries the learner number only.
+
+THE GUIDE (v111)
+  The quick guide has a new part, Profiles and admin: a page for each
+  learner, your staff profile and, for the super admin, All users, Colleges
+  set up twice and Updates.
+
 NO CHANGES TO config.php

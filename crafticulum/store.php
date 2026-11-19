@@ -139,6 +139,31 @@ if ($action === 'all') {
 }
 
 /* every class list and set of marks in this department, for its leaders to look at. Each one still belongs to the teacher who made it */
+/* a member of staff on one page: what they teach, their classes (numbers only, never learners' names), the lessons they've written and the verification they've done and had.
+   Anyone can open their own. A head of department can open people in their department, a college manager anyone in the college, the super admin anyone */
+if ($action === 'staff') {
+    $em = strtolower(trim((string) ($body['email'] ?? ''))) ?: $me['email']; $u = $acc['users'][$em] ?? null; $self = $em === $me['email'];
+    if (!$self) { if (!$u || !ccActive($u) || !empty($u['demo'])) out(404, ['error' => 'not_found']); $td = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$td])) out(404, ['error' => 'not_found']);
+        $ok = $me['role'] === 'superadmin' || ($me['role'] === 'owner' && ccCollegeOf($acc, $td) === ccCollegeOf($acc, (string) $dept)) || (!empty($me['isLead']) && $td === (string) $dept); if (!$ok) out(403, ['error' => 'noperm']); }
+    $td = $self ? (string) $dept : (string) $u['dept']; $u = $u ?? []; $tdir = !empty($acc['depts'][$td]['legacy']) ? $base : $base . '/d/' . $td; $tcol = ccCollegeOf($acc, $td);
+    require_once __DIR__ . '/inst-lib.php'; $pr = null; try { $pr = ccProfileGet($em); } catch (Throwable $e) {}
+    $lessons = []; foreach (glob($tdir . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); if (!is_array($l) || strtolower((string) ($l['meta']['author']['email'] ?? '')) !== $em) continue;
+        $lessons[] = ['id' => substr((string) $j['path'], 8), 'title' => mb_substr((string) (($l['title'] ?? '') ?: ($j['data']['title'] ?? 'Lesson')), 0, 120), 'status' => (string) (($l['meta']['status'] ?? '') ?: 'approved'), 'at' => (int) floor(((int) ($j['data']['updatedAt'] ?? 0)) / 1000), 'unit' => mb_substr((string) ($l['meta']['unit'] ?? $l['unit'] ?? ''), 0, 120)]; }
+    usort($lessons, fn($x, $y) => $y['at'] <=> $x['at']);
+    $classes = []; $today = date('Y-m-d'); foreach (glob($base . '/u/' . sha1($em) . '/' . $td . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue; $st = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($st) || !is_array($st['learners'] ?? null)) continue;
+        $ids = array_map(fn($l) => (string) ($l['id'] ?? ''), array_filter($st['learners'], 'is_array')); $tot = 0; $ach = 0; $units = 0; $open = 0; $late = 0;
+        foreach ((array) ($st['marks'] ?? []) as $k => $m) { $any = false; foreach ((array) $m as $lid => $cs) { if (!in_array((string) $lid, $ids, true)) continue; foreach ((array) $cs as $v) { if ($v === '' || $v === null) continue; $any = true; $tot++; if ($v === 'a') $ach++; } } if ($any) $units++; }
+        foreach ((array) ($st['subs'] ?? []) as $k => $m) foreach ((array) $m as $lid => $x) { if (!is_array($x) || empty($x['ra']) || !empty($x['ro']) || !in_array((string) $lid, $ids, true)) continue; $open++; if (empty($x['ri']) && !empty($x['rd']) && (string) $x['rd'] < $today) $late++; }
+        $classes[] = ['name' => mb_substr((string) ($st['name'] ?? 'Group'), 0, 60), 'campus' => mb_substr((string) ($st['campus'] ?? ''), 0, 60), 'learners' => count($ids), 'units' => $units, 'marked' => $tot, 'achieved' => $ach, 'open' => $open, 'late' => $late]; }
+    usort($classes, fn($x, $y) => strcasecmp($x['name'], $y['name']));
+    $iv = json_decode((string) @file_get_contents($tdir . '/_iv.json'), true); if (!is_array($iv)) $iv = []; $row = fn($r) => ['at' => (int) ($r['at'] ?? 0), 'unit' => (string) (($r['unitName'] ?? '') ?: ($r['unit'] ?? '')), 'group' => (string) ($r['group'] ?? ''), 'decision' => (string) ($r['decision'] ?? ''), 'done' => !empty($r['done']), 'who' => ''];
+    $did = []; $had = []; foreach ($iv as $r) { if (!is_array($r)) continue; if (($r['by'] ?? '') === $em) $did[] = ['who' => (string) ($r['ownerName'] ?? '')] + $row($r); if (($r['owner'] ?? '') === $em) $had[] = ['who' => (string) ($r['byName'] ?? '')] + $row($r); }
+    usort($did, fn($x, $y) => $y['at'] <=> $x['at']); usort($had, fn($x, $y) => $y['at'] <=> $x['at']);
+    out(200, ['person' => ['email' => $em, 'name' => (string) (($u['name'] ?? '') ?: ($self ? ($me['name'] ?? '') : '')), 'role' => $self ? (string) $me['role'] : (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($acc['depts'][$td]['name'] ?? ''), 'college' => (string) (ccCollege($acc, $tcol)['name'] ?? ''), 'last' => (int) ($u['last'] ?? 0), 'added' => (int) ($u['added'] ?? 0), 'picture' => (string) ($u['picture'] ?? ''), 'self' => $self],
+        'teaches' => $pr ? ['role' => (string) $pr['role'], 'subjects' => $pr['subjects'], 'stages' => $pr['stages'], 'levels' => $pr['levels'], 'orgs' => $pr['orgs'], 'quals' => $pr['quals'], 'insts' => array_map(fn($i) => (string) $i['name'], $pr['insts'])] : null,
+        'lessons' => ['total' => count($lessons), 'approved' => count(array_filter($lessons, fn($l) => $l['status'] === 'approved')), 'draft' => count(array_filter($lessons, fn($l) => $l['status'] === 'draft')), 'list' => array_slice($lessons, 0, 30)],
+        'classes' => $classes, 'iv' => ['did' => array_slice($did, 0, 20), 'didTotal' => count($did), 'had' => array_slice($had, 0, 20), 'hadTotal' => count($had), 'actions' => count(array_filter($had, fn($r) => !$r['done']))]]);
+}
 if ($action === 'deptlearners') {
     if (empty($me['isLead'])) out(403, ['error' => 'noperm']);
     $sets = []; $who = $acc['users']; foreach (ccSupers() as $e) if (!isset($who[$e])) $who[$e] = ['name' => ''];
