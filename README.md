@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v115, 19 Nov 2026: a redesigned roadmap, and the last of "college" changed to "institution" in the super admin pages, on top of v114's roadmap, five AI tools and institution wording). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v115.zip` and `crafticulum-release.zip`: the same files as one zip (1,875,167 bytes).
+- `crafticulum/`: every file of the current release (v116, 19 Nov 2026: video lessons with Crafti narrating, Crafti live chat on every page, fuller staff profiles with CPD, new workspaces start empty, and a phone fix for long lesson labels). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v116.zip` and `crafticulum-release.zip`: the same files as one zip (1,910,254 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

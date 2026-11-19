@@ -1686,4 +1686,66 @@ THE LAST OF "COLLEGE" IN THE SUPER ADMIN PAGES (v115)
   institutions", "This is the only institution", "Institution with no name
   yet" and a few more messages now say institution too.
 
+WHAT'S NEW IN v116
+
+VIDEO LESSONS, EARLY PREVIEW (v116)
+  - Every lesson has a Video lesson button next to Show on board (or press
+    V). Crafti talks the class through it slide by slide: the title and
+    objectives, the starter, each part of the teaching, each task, the quiz
+    and a wrap-up.
+  - Captions show what's being said. It pauses on the starter and on each
+    task so learners can have a go, then carries on when you press play.
+    Quiz questions get a few seconds' thinking time before the answer.
+  - Speed, voice, captions and "Pause at tasks" can be changed, and are
+    remembered. Keyboard: space to play or pause, arrows for slides,
+    Escape to close.
+  - The voice is the device's own speech, so nothing is recorded or sent
+    anywhere and it costs nothing. If a device has no voice, the captions
+    move on by themselves.
+  - "Write a proper script with Crafticulum AI" writes narration that
+    explains things rather than reading the bullets. It's saved on the
+    lesson, and used on the student page too.
+  - The student page has a "Watch the video lesson" button. Learners get
+    the same video without the quiz, so no answers are given away.
+  - The roadmap shows video lessons as an early preview, out now.
+
+NEW WORKSPACES START EMPTY (v116)
+  A new workspace no longer opens on a ready-made sample lesson. Lessons
+  says "No lessons yet" with a button to describe one. The guide still
+  borrows the sample to show where things are.
+
+STAFF PROFILES, WITH MUCH MORE IN THEM (v116)
+  - A banner with your photo (from your Google or Microsoft sign-in) or
+    initials, your job title and pronouns, your role, department and
+    institution, and how to reach you: email, phone, room and a link.
+  - "Edit profile" on your own: job title, about you, specialisms,
+    campuses, qualifications you hold (PGCE, TAQA, IQA and so on, or add
+    your own), phone, room, when you're around, a "right now" status and a
+    link such as LinkedIn.
+  - Tabs: Overview, Classes, Lessons (with a search), Verification and CPD.
+  - Overview adds your lessons written over the last six months as a small
+    chart, the units you write for, and when you joined.
+  - CPD: log training, standardisation, industry days and the like, with
+    hours. It totals this academic year's hours, handy for appraisals.
+  - A bar shows how much of your profile is filled in, until it's done.
+  - Who can open a profile hasn't changed. Only you can edit yours.
+  - Kept in data/u/<your folder>/_about.json.
+
+CRAFTI LIVE CHAT ON EVERY PAGE (v116)
+  - A Crafti button in the bottom right of every page opens a small chat
+    window. On a phone it opens full screen, and sits above the bottom
+    menu.
+  - Crafti knows which page you're on and, on a lesson, which lesson you've
+    got open, so "help me with this lesson" just works. Untick "Let Crafti
+    see this page" to stop that.
+  - Suggestions change with the page. Enter sends, Shift+Enter is a new
+    line, Escape closes.
+  - The chats are the same ones as on the Crafti page. The expand button
+    carries the chat over there.
+  - It only shows for people who have Crafti switched on.
+
+PHONE FIX (v116)
+  Long labels on a lesson (like a long "Follows:" line) now wrap, instead
+  of making the whole page wider than the screen.
+
 NO CHANGES TO config.php

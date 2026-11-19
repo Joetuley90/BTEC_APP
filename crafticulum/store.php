@@ -141,6 +141,19 @@ if ($action === 'all') {
 /* every class list and set of marks in this department, for its leaders to look at. Each one still belongs to the teacher who made it */
 /* a member of staff on one page: what they teach, their classes (numbers only, never learners' names), the lessons they've written and the verification they've done and had.
    Anyone can open their own. A head of department can open people in their department, an institution manager anyone in the institution, the super admin anyone */
+if ($action === 'staffme') {   // your own profile: the bits only you can say about yourself
+    if (!empty($me['demo'])) out(403, ['error' => 'demo']);
+    $t = fn($k, $n) => mb_substr(trim(preg_replace('/\s+/u', ' ', (string) ($body[$k] ?? ''))), 0, $n);
+    $list = fn($k, $n, $len) => array_values(array_slice(array_unique(array_filter(array_map(fn($x) => mb_substr(trim(preg_replace('/\s+/u', ' ', (string) $x)), 0, $len), is_array($body[$k] ?? null) ? $body[$k] : []), 'strlen')), 0, $n));
+    $link = $t('link', 200); if ($link !== '' && !preg_match('#^https://[^\s<>"]+$#i', $link)) out(400, ['error' => 'link']);
+    $cpd = []; foreach (array_slice(is_array($body['cpd'] ?? null) ? $body['cpd'] : [], 0, 60) as $c) { if (!is_array($c)) continue; $ti = mb_substr(trim((string) ($c['t'] ?? '')), 0, 120); if ($ti === '') continue; $d = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($c['d'] ?? '')) ? (string) $c['d'] : ''; $cpd[] = ['t' => $ti, 'd' => $d, 'h' => max(0, min(200, round((float) ($c['h'] ?? 0), 1))), 'k' => mb_substr(trim((string) ($c['k'] ?? '')), 0, 40)]; }
+    usort($cpd, fn($x, $y) => strcmp($y['d'], $x['d']));
+    $bio = mb_substr(trim(str_replace("\r", '', (string) ($body['bio'] ?? ''))), 0, 800);
+    $ab = ['headline' => $t('headline', 80), 'pronouns' => $t('pronouns', 30), 'bio' => $bio, 'phone' => $t('phone', 40), 'room' => $t('room', 60), 'hours' => $t('hours', 140), 'campuses' => $list('campuses', 6, 40), 'skills' => $list('skills', 12, 40), 'held' => $list('held', 12, 60), 'link' => $link, 'status' => in_array((string) ($body['status'] ?? ''), ['in', 'class', 'away', 'wfh'], true) ? (string) $body['status'] : '', 'cpd' => $cpd, 'at' => time()];
+    $d = $base . '/u/' . sha1($me['email']); if (!is_dir($d)) @mkdir($d, 0700, true);
+    if (@file_put_contents($d . '/_about.json', json_encode($ab, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false) out(500, ['error' => 'write']);
+    out(200, ['ok' => true, 'about' => $ab]);
+}
 if ($action === 'staff') {
     $em = strtolower(trim((string) ($body['email'] ?? ''))) ?: $me['email']; $u = $acc['users'][$em] ?? null; $self = $em === $me['email'];
     if (!$self) { if (!$u || !ccActive($u) || !empty($u['demo'])) out(404, ['error' => 'not_found']); $td = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$td])) out(404, ['error' => 'not_found']);
@@ -150,6 +163,9 @@ if ($action === 'staff') {
     $lessons = []; foreach (glob($tdir . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); if (!is_array($l) || strtolower((string) ($l['meta']['author']['email'] ?? '')) !== $em) continue;
         $lessons[] = ['id' => substr((string) $j['path'], 8), 'title' => mb_substr((string) (($l['title'] ?? '') ?: ($j['data']['title'] ?? 'Lesson')), 0, 120), 'status' => (string) (($l['meta']['status'] ?? '') ?: 'approved'), 'at' => (int) floor(((int) ($j['data']['updatedAt'] ?? 0)) / 1000), 'unit' => mb_substr((string) ($l['meta']['unit'] ?? $l['unit'] ?? ''), 0, 120)]; }
     usort($lessons, fn($x, $y) => $y['at'] <=> $x['at']);
+    $months = []; for ($i = 5; $i >= 0; $i--) $months[date('Y-m', strtotime(date('Y-m-01') . " -$i month"))] = 0; $unitsN = [];
+    foreach ($lessons as $l) { $m = $l['at'] ? date('Y-m', $l['at']) : ''; if (isset($months[$m])) $months[$m]++; if ($l['unit'] !== '') $unitsN[$l['unit']] = ($unitsN[$l['unit']] ?? 0) + 1; }
+    arsort($unitsN); $about = json_decode((string) @file_get_contents($base . '/u/' . sha1($em) . '/_about.json'), true); if (!is_array($about)) $about = null;
     $classes = []; $today = date('Y-m-d'); foreach (glob($base . '/u/' . sha1($em) . '/' . $td . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue; $st = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($st) || !is_array($st['learners'] ?? null)) continue;
         $ids = array_map(fn($l) => (string) ($l['id'] ?? ''), array_filter($st['learners'], 'is_array')); $tot = 0; $ach = 0; $units = 0; $open = 0; $late = 0;
         foreach ((array) ($st['marks'] ?? []) as $k => $m) { $any = false; foreach ((array) $m as $lid => $cs) { if (!in_array((string) $lid, $ids, true)) continue; foreach ((array) $cs as $v) { if ($v === '' || $v === null) continue; $any = true; $tot++; if ($v === 'a') $ach++; } } if ($any) $units++; }
@@ -162,7 +178,7 @@ if ($action === 'staff') {
     out(200, ['person' => ['email' => $em, 'name' => (string) (($u['name'] ?? '') ?: ($self ? ($me['name'] ?? '') : '')), 'role' => $self ? (string) $me['role'] : (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($acc['depts'][$td]['name'] ?? ''), 'college' => (string) (ccCollege($acc, $tcol)['name'] ?? ''), 'last' => (int) ($u['last'] ?? 0), 'added' => (int) ($u['added'] ?? 0), 'picture' => (string) ($u['picture'] ?? ''), 'self' => $self],
         'teaches' => $pr ? ['role' => (string) $pr['role'], 'subjects' => $pr['subjects'], 'stages' => $pr['stages'], 'levels' => $pr['levels'], 'orgs' => $pr['orgs'], 'quals' => $pr['quals'], 'insts' => array_map(fn($i) => (string) $i['name'], $pr['insts'])] : null,
         'lessons' => ['total' => count($lessons), 'approved' => count(array_filter($lessons, fn($l) => $l['status'] === 'approved')), 'draft' => count(array_filter($lessons, fn($l) => $l['status'] === 'draft')), 'list' => array_slice($lessons, 0, 30)],
-        'classes' => $classes, 'iv' => ['did' => array_slice($did, 0, 20), 'didTotal' => count($did), 'had' => array_slice($had, 0, 20), 'hadTotal' => count($had), 'actions' => count(array_filter($had, fn($r) => !$r['done']))]]);
+        'about' => $about, 'months' => $months, 'units' => array_slice(array_map(fn($k, $v) => ['unit' => (string) $k, 'n' => $v], array_keys($unitsN), array_values($unitsN)), 0, 8), 'unitsTotal' => count($unitsN), 'classes' => $classes, 'iv' => ['did' => array_slice($did, 0, 20), 'didTotal' => count($did), 'had' => array_slice($had, 0, 20), 'hadTotal' => count($had), 'actions' => count(array_filter($had, fn($r) => !$r['done']))]]);
 }
 if ($action === 'deptlearners') {
     if (empty($me['isLead'])) out(403, ['error' => 'noperm']);

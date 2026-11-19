@@ -129,6 +129,7 @@ input[type=text]:focus{outline:3px solid rgba(99,102,241,.3);border-color:var(--
 .opt.right{border-color:var(--ok);background:var(--oks)}.opt.right .l{background:var(--ok);color:#fff}
 .opt.wrong{border-color:var(--bad);background:var(--bads)}.opt.wrong .l{background:var(--bad);color:#fff}
 .opt:disabled{cursor:default}
+.vd-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 16px}.vd-row .muted{font-size:14px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 16px var(--f);color:#fff;background-image:var(--grad);border:0;border-radius:12px;padding:13px 22px;cursor:pointer;box-shadow:0 8px 20px -8px rgba(99,102,241,.7)}
 .btn:disabled{opacity:.5;cursor:default}
 .btn.ghost{background:var(--card);background-image:none;color:var(--ink);border:1px solid var(--line);box-shadow:none}
@@ -265,6 +266,7 @@ body.has-nav .wrap{padding-bottom:110px}
 <div class="foot">Shared by your teacher. Bookmark this page to come back to it. <a href="privacy.html" style="color:inherit">Privacy</a> · <a href="cookies.html" style="color:inherit">Cookies</a></div>
 </div>
 <script src="visuals.js?v=1"></script>
+<script src="video.js?v=1"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -386,9 +388,10 @@ function heroHtml(kick, title, sub, chips){
 function showLesson(L){
   document.title = L.title + " · Crafticulum"; $("#sub").textContent = "Lesson"; setDownloads([{files: L.files}]);
   setTimeout(() => setNav("lesson", !!(L.assignments || []).length), 0);
-  $("#app").innerHTML = heroHtml(`${L.course || ""} · ${L.level || ""}${L.length ? " · " + L.length : ""}`, L.title, L.unit, L.criteria) + `<div class="card" data-live="${esc(L.live || id)}">${lessonBody(L)}</div>` + deadlines(L.assignments, L.unit);
+  $("#app").innerHTML = heroHtml(`${L.course || ""} · ${L.level || ""}${L.length ? " · " + L.length : ""}`, L.title, L.unit, L.criteria) + (window.ccVideo && ((L.teach || []).length || (L.tasks || []).length) ? `<div class="vd-row"><button type="button" class="btn" id="vdWatch"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>Watch the video lesson</button><span class="muted">Crafti talks you through it, slide by slide.</span></div>` : "") + `<div class="card" data-live="${esc(L.live || id)}">${lessonBody(L)}</div>` + deadlines(L.assignments, L.unit);
   paintTicks();
   liveWatch([L.live]);
+  const vw = document.getElementById("vdWatch"); if(vw) vw.onclick = () => ccVideo.open(L, {student: true, script: (L.video && L.video.script) || {}, note: "Crafti reads the lesson out using your device's own voice."});
 }
 function showUnit(U){
   document.title = U.unit + " · Crafticulum"; $("#sub").textContent = "Unit lessons";

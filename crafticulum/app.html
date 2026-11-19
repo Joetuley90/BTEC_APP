@@ -1411,6 +1411,98 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v116: long badges wrap instead of pushing the page wider than the phone */
+#out .hero .badge{white-space:normal;text-align:left;max-width:100%;overflow-wrap:anywhere;line-height:1.35}
+#out .hero .card-body,#out .hero{min-width:0;overflow-wrap:anywhere}
+.app-main,#out{min-width:0;max-width:100%}
+/* v116: staff profiles */
+.sp-card.sp2{padding:0;overflow:hidden;position:relative}
+.sp2 .sp-cover{height:92px;background:linear-gradient(120deg,#4f46e5,#7c3aed 55%,#db2777)}
+.sp2 .sp-top{padding:0 24px;margin:-40px 0 6px;align-items:flex-end;flex-wrap:wrap}
+.sp2 .sp-av{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:var(--cc-primary-soft);color:var(--cc-primary);font-weight:800;font-size:1.8rem;border:4px solid var(--cc-surface);overflow:hidden;box-shadow:0 6px 18px -8px rgba(15,23,42,.45)}
+.sp2 .sp-av img{width:100%;height:100%;object-fit:cover}
+.sp2 .sp-who{padding-top:44px}
+.sp2 .sp-hl{font-weight:600;margin:2px 0}
+.sp2 .sp-pron{display:inline-block;margin-left:8px;font-size:.78rem;font-weight:500;color:var(--cc-muted,#64748b);border:1px solid var(--cc-line);border-radius:4px;padding:0 6px}
+.sp2 .sp-status{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;margin-top:6px;padding:2px 8px;border-radius:4px;background:var(--cc-surface-2)}
+.sp2 .sp-status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.sp-s-ok{color:#15803d}.sp-s-warn{color:#b45309}.sp-s-info{color:#2563eb}.sp-s-off{color:#64748b}
+.sp2 .sp-contact{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:.84rem}
+.sp2 .sp-ct{color:inherit;overflow-wrap:anywhere}a.sp-ct{color:var(--cc-primary)}
+.sp2 .sp-acts{display:flex;gap:8px;align-items:center;margin-left:auto;padding-top:44px}
+.sp2 .sp-top .btn-close{margin-left:4px}
+.sp2>#spMsg,.sp2>.sp-tabs,.sp2>.sp-panel,.sp2>.sp-edit{margin-left:24px;margin-right:24px}
+.sp2>.sp-panel,.sp2>.sp-edit{padding-bottom:24px}
+.sp-tabs{display:flex;gap:2px;border-bottom:1px solid var(--cc-line);overflow-x:auto;margin-top:8px}
+.sp-tabs [role=tab]{border:0;background:none;padding:10px 14px;font-weight:600;font-size:.9rem;color:var(--cc-muted,#64748b);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.sp-tabs [role=tab][aria-selected=true]{color:var(--cc-primary);border-bottom-color:var(--cc-primary)}
+.sp-tabs [role=tab]:focus-visible{outline:2px solid var(--cc-primary);outline-offset:-2px}
+.sp-tc{display:inline-block;min-width:20px;padding:0 6px;border-radius:4px;background:var(--cc-surface-2);font-size:.75rem;font-weight:600;margin-left:4px;color:inherit}
+.sp-cols{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px}
+.sp-aside{display:grid;gap:12px;align-content:start;margin-top:24px}
+.sp-box{border:1px solid var(--cc-line);border-radius:6px;padding:12px 14px;background:var(--cc-surface-2)}
+.sp-bh{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-muted,#64748b);margin:0 0 8px}
+.sp-tag{display:inline-block;padding:2px 8px;margin:2px 4px 2px 0;border-radius:4px;background:var(--cc-primary-soft);color:var(--cc-primary);font-size:.8rem;font-weight:600}
+.sp-bio{white-space:normal;line-height:1.55;margin:0}
+.sp-units{margin:0;display:grid;gap:4px}.sp-units li{display:flex;justify-content:space-between;gap:10px;font-size:.86rem;padding:4px 0;border-bottom:1px dashed var(--cc-line)}
+.sp-bars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:end;height:104px}
+.sp-bar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+.sp-bar i{display:block;width:100%;max-width:26px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#7c3aed,#4f46e5)}
+.sp-bv{font-size:.72rem;font-weight:700}.sp-bm{font-size:.7rem;color:var(--cc-muted,#64748b)}
+.sp2 .sp-tiles{margin-top:14px}
+.sp-nudge{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:14px;margin-bottom:-2px;padding:10px 14px;border:1px dashed var(--cc-primary);border-radius:6px;background:var(--cc-primary-soft)}
+.sp-meter{width:120px;height:8px;border-radius:4px;background:var(--cc-surface);overflow:hidden}.sp-meter i{display:block;height:100%;background:linear-gradient(90deg,#4f46e5,#a855f7)}
+.sp-edit{margin-top:14px}
+.sp-held{display:flex;flex-wrap:wrap;gap:6px}
+.sp-pick{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--cc-line);border-radius:4px;font-size:.84rem;cursor:pointer}
+.sp-pick:has(input:checked){border-color:var(--cc-primary);background:var(--cc-primary-soft)}
+.sp-cpd-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.sp-cpd-add{display:grid;grid-template-columns:minmax(0,1fr) 150px 80px 150px auto;gap:6px;margin-bottom:12px}
+.sp-cpd{margin:0;border:1px solid var(--cc-line);border-radius:6px}
+.sp-cpd li{display:grid;grid-template-columns:100px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 12px;border-top:1px solid var(--cc-line);font-size:.86rem}.sp-cpd li:first-child{border-top:0}
+.sp-cpd-d{color:var(--cc-muted,#64748b);font-size:.8rem}
+@media(max-width:767.98px){.sp2 .sp-top{padding:0 16px}.sp2>#spMsg,.sp2>.sp-tabs,.sp2>.sp-panel,.sp2>.sp-edit{margin-left:16px;margin-right:16px}.sp2 .sp-who,.sp2 .sp-acts{padding-top:0}.sp2 .sp-who{flex-basis:100%}.sp2 .sp-acts{margin-left:0}.sp-cols{grid-template-columns:1fr}.sp-cpd-add{grid-template-columns:1fr 1fr}.sp-cpd-add #spcT{grid-column:1/-1}.sp-cpd li{grid-template-columns:1fr auto}.sp-cpd-d{grid-column:1/-1}.sp-cpd-head{grid-template-columns:1fr 1fr 1fr}.sp2 .sp-top .btn-close{position:absolute;top:12px;right:12px;background-color:#fff;border-radius:4px;padding:8px;opacity:.9}}
+/* v116: Crafti chat in the corner */
+.cf-root{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:var(--cf-b,20px);z-index:1060;display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
+.cf-root>*{pointer-events:auto}
+.cf-btn{position:relative;width:60px;height:60px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 12px 28px -10px rgba(79,70,229,.8),0 2px 6px rgba(15,23,42,.2);cursor:pointer;transition:transform .15s}
+.cf-btn:hover{transform:translateY(-2px)}.cf-btn:focus-visible{outline:3px solid #a5b4fc;outline-offset:3px}
+.cf-btn svg{width:30px;height:30px}.cf-btn .cf-face{width:46px;height:46px}
+.cf-badge{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#ef4444;border:2px solid #fff}
+.cf-tip{position:absolute;right:70px;bottom:14px;white-space:nowrap;background:var(--cc-surface);color:var(--cc-text,inherit);border:1px solid var(--cc-line);border-radius:6px;padding:6px 10px;font-size:.82rem;font-weight:600;box-shadow:var(--cc-shadow-lg);animation:cfTip 6s ease forwards}
+@keyframes cfTip{0%,80%{opacity:1}100%{opacity:0;visibility:hidden}}
+.cf-panel{width:min(390px,calc(100vw - 32px));height:min(580px,calc(100vh - var(--cf-b,20px) - 96px));display:flex;flex-direction:column;background:var(--cc-surface);border:1px solid var(--cc-line);border-radius:6px;box-shadow:0 30px 60px -20px rgba(15,23,42,.45);overflow:hidden;animation:cfIn .18s ease-out}
+@keyframes cfIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.cf-head{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;background:linear-gradient(120deg,#4f46e5,#7c3aed);color:#fff}
+.cf-title{font-weight:800;line-height:1.1}.cf-sub{font-size:.75rem;opacity:.9;display:flex;align-items:center;gap:6px}
+.cf-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 2px rgba(74,222,128,.3)}
+.cf-ib{width:36px;height:36px;border:0;border-radius:6px;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.cf-ib:hover{background:rgba(255,255,255,.24)}.cf-ib:focus-visible{outline:2px solid #fff;outline-offset:1px}.cf-ib svg{width:18px;height:18px}
+.cf-av{width:30px;height:30px;flex:none}.cf-av-h{width:38px;height:38px;background:#fff;border-radius:50%;padding:3px}
+.cf-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--cc-surface-2)}
+.cf-m{display:flex;gap:8px;align-items:flex-end;max-width:100%}
+.cf-u{justify-content:flex-end}
+.cf-b{max-width:85%;padding:9px 12px;border-radius:8px;font-size:.9rem;line-height:1.45;overflow-wrap:anywhere;min-width:0}
+.cf-u .cf-b{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-bottom-right-radius:4px}
+.cf-a .cf-b{background:var(--cc-surface);border:1px solid var(--cc-line);border-bottom-left-radius:4px}
+.cf-b.tk-body p:last-of-type{margin-bottom:0}.cf-b.tk-body>*:first-child{margin-top:0}.cf-b table{font-size:.8rem}
+.cf-acts{margin-top:4px}
+.cf-hi{text-align:center;margin:auto 0;padding:8px}.cf-hero{width:84px;height:84px}
+.cf-hi-h{font-weight:800;font-size:1.05rem;margin:6px 0 2px}.cf-hi-t{font-size:.86rem;color:var(--cc-muted,#64748b);margin:0 0 12px}
+.cf-sugs{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.cf-sug{border:1px solid var(--cc-line);background:var(--cc-surface);border-radius:5px;padding:8px 12px;text-align:left;font-size:.86rem;cursor:pointer;color:inherit}
+.cf-sug:hover{border-color:var(--cc-primary);color:var(--cc-primary)}
+.cf-err{font-size:.84rem;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px 10px}
+.cf-form{border-top:1px solid var(--cc-line);padding:8px 10px 10px;background:var(--cc-surface)}
+.cf-ctx{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--cc-muted,#64748b);margin-bottom:6px}
+.cf-row{display:flex;gap:8px;align-items:flex-end}
+.cf-row textarea{resize:none;font-size:.92rem;min-height:42px;max-height:140px}
+.cf-send{flex:none;width:42px;height:42px;border:0;border-radius:5px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;display:grid;place-items:center;cursor:pointer}
+.cf-send svg{width:18px;height:18px}.cf-send:focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+.cf-foot{font-size:.7rem;color:var(--cc-muted,#64748b);margin-top:6px;text-align:center}
+@media(max-width:575.98px){.cf-root.cf-on{left:0;right:0;bottom:0;top:0;padding:0;gap:0;background:rgba(15,23,42,.4)}.cf-root.cf-on .cf-btn{display:none}.cf-root.cf-on .cf-panel{width:100%;height:100%;border-radius:0;border:0;margin-top:auto;padding-bottom:env(safe-area-inset-bottom,0px)}.cf-btn{width:54px;height:54px}.cf-tip{display:none}}
+@media print{.cf-root{display:none}}
+@media (prefers-reduced-motion:reduce){.cf-panel,.cf-tip{animation:none}.cf-btn{transition:none}}
 .rm2 .rm-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:end;padding:28px 30px;border-radius:5px;margin-bottom:12px;color:#fff;background:radial-gradient(700px 260px at 100% 0,rgba(240,171,252,.35),transparent 60%),linear-gradient(135deg,#312e81 0%,#4338ca 55%,#6d28d9 100%)}
 .rm2 .rm-hero p{color:rgba(255,255,255,.86);max-width:620px}.rm2 .rm-hero h1{color:#fff}.rm2 .rm-head{display:block;margin:0}
 .rm2 .rm-kick{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c7d2fe;margin-bottom:6px}
@@ -12434,7 +12526,7 @@ function spDraw(){ let b = $("#spBack"); if(!spInfo){ if(b) b.remove(); document
   b.innerHTML = spHtml(); const c = b.querySelector("[data-sp-close]"); if(c) c.focus({preventScroll: true}); }
 async function spOpen(email){ spFrom = document.activeElement; spInfo = {loading: true}; spDraw(); try{ spInfo = await storeCall("staff", {email: email || ""}); }catch(e){ spInfo = {failed: (e && e.code) || "server"}; } if($("#spBack")) spDraw(); }
 document.addEventListener("click", e => { const o = e.target.closest("[data-sp]"); if(o){ e.preventDefault(); return spOpen(o.dataset.sp); } if(!spInfo) return; if(e.target.closest("[data-sp-close]") || e.target.id === "spBack"){ spInfo = null; spDraw(); } });
-document.addEventListener("keydown", e => { if(!spInfo) return; if(e.key === "Escape"){ e.stopPropagation(); spInfo = null; spDraw(); } if(e.key === "Tab"){ const f = [...document.querySelectorAll("#spBack button, #spBack a[href]")]; if(!f.length) return; if(e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length - 1].focus(); } else if(!e.shiftKey && document.activeElement === f[f.length - 1]){ e.preventDefault(); f[0].focus(); } } }, true);
+document.addEventListener("keydown", e => { if(!spInfo) return; if(e.key === "Escape"){ e.stopPropagation(); spInfo = null; spDraw(); } if(e.key === "Tab"){ const f = [...document.querySelectorAll("#spBack button:not([disabled]), #spBack a[href], #spBack input, #spBack select, #spBack textarea")]; if(!f.length) return; if(e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length - 1].focus(); } else if(!e.shiftKey && document.activeElement === f[f.length - 1]){ e.preventDefault(); f[0].focus(); } } }, true);
 try{ ST_GROUPS.find(g => g[0] === "you")[2].push("stStaff"); }catch{}
 const _accountSections54 = accountSections;
 accountSections = function(sec){ let h = _accountSections54.apply(this, arguments);
@@ -12560,7 +12652,7 @@ const RM_FEATURES = [
   {id: "f-classroom", kind: "link", when: "2027-Q1", title: "Google Classroom", blurb: "Set a lesson, its student page and its quiz as an assignment in a class, and bring your class lists in from Classroom."},
   {id: "f-cover", kind: "feature", when: "2027-Q1", title: "Cover lesson packs", blurb: "One press turns any lesson into a pack a cover teacher can pick up cold: what to say, what to hand out, what to collect."},
   {id: "f-teams", kind: "link", when: "2027-Q2", title: "Microsoft Teams", blurb: "Share lessons and assignments to a class team, and bring class lists in from Teams."},
-  {id: "f-video", kind: "ai", when: "2027-Q2", title: "Video lessons from your slides", blurb: "Crafti presents your slides as a narrated video, talking through each one. For learners who were away, for cover, and for revision."},
+  {id: "f-video", kind: "ai", when: "2027-Q2", early: true, title: "Video lessons from your slides", blurb: "Early preview, out now. Crafti presents a lesson as a narrated video, talking through each slide, pausing for the tasks. Open a lesson and press Video lesson. For learners who were away, for cover, and for revision."},
   {id: "f-retrieval", kind: "ai", when: "2027-Q2", title: "Quizzes that come back", blurb: "Short retrieval quizzes that bring last week's and last month's topics round again, built from the lessons you've already taught."},
   {id: "f-seating", kind: "feature", when: "2027-Q2", title: "Seating plans and groups", blurb: "Drag a seating plan together from your class list, and make groups for a task by mixing or matching on progress."},
   {id: "f-discord", kind: "link", when: "2027-Q3", title: "Discord", blurb: "More than the lesson links it posts today: reminders, hand-in nudges and quiz links in the channels your learners already use."},
@@ -12595,7 +12687,7 @@ function rmItems(){ const S = rmState, out = [];
   TK_ALL.forEach(t => { if(RM_LIVE.includes(t.id)) return; out.push({id: t.id, kind: "tool", title: t.name, blurb: t.desc, when: (S.when || {})[t.id] || RM_TOOL_WHEN[t.id] || "later", tool: true}); });
   RM_FEATURES.forEach(f => out.push({...f, when: (S.when || {})[f.id] || f.when}));
   (S.custom || []).forEach(c => out.push({id: c.id, kind: c.kind || "feature", title: c.title, blurb: c.blurb, when: (S.when || {})[c.id] || c.when || "later", custom: true}));
-  out.forEach(x => { x.votes = +((S.counts || {})[x.id] || 0); x.mine = (S.mine || []).includes(x.id); x.out = x.tool ? tkLive(x.id) : !!(S.released || {})[x.id]; });
+  out.forEach(x => { x.votes = +((S.counts || {})[x.id] || 0); x.mine = (S.mine || []).includes(x.id); x.out = x.tool ? tkLive(x.id) : (!!x.early || !!(S.released || {})[x.id]); });
   return out; }
 let rmKind = "";
 const RM_SHORT = {"2027-Q1": ["Jan to Mar", "2027"], "2027-Q2": ["Apr to Jun", "2027"], "2027-Q3": ["Jul to Sep", "2027"], "2027-Q4": ["Oct to Dec", "2027"], "2028-Q1": ["Jan to Mar", "2028"], "2028-Q2": ["Apr to Jun", "2028"], later: ["After", "June 2028"]};
@@ -12603,9 +12695,9 @@ const RM_VOTE_I = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const rmCanVote = () => rmServer() ? (rmState.signedIn && !(me && me.demo)) : true;
 function rmVoteBtn(x, small){ return `<button type="button" class="rm-vote${x.mine ? " on" : ""}${small ? " sm" : ""}" data-rm-vote aria-pressed="${x.mine}" ${rmCanVote() ? "" : "disabled"} aria-label="${x.mine ? "Take back your vote for" : "Vote for"} ${esc(x.title)}, ${x.votes} ${x.votes === 1 ? "vote" : "votes"}">${RM_VOTE_I}<b>${x.votes}</b><span>${x.mine ? "Voted" : "Vote"}</span></button>`; }
 function rmCard(x){ const S = rmState;
-  return `<li class="rm-i rm-c-${x.kind}${x.out ? " rm-out" : ""}${x.mine ? " rm-mine" : ""}" data-rm="${esc(x.id)}"><div class="rm-i-main"><div class="rm-i-top"><span class="rm-k rm-k-${x.kind}">${RM_KIND[x.kind] || "Feature"}</span>${x.out ? `<span class="rm-live">Out now</span>` : ""}</div><h3 class="rm-t">${esc(x.title)}</h3><p class="rm-b">${esc(x.blurb)}</p></div>
+  return `<li class="rm-i rm-c-${x.kind}${x.out ? " rm-out" : ""}${x.mine ? " rm-mine" : ""}" data-rm="${esc(x.id)}"><div class="rm-i-main"><div class="rm-i-top"><span class="rm-k rm-k-${x.kind}">${RM_KIND[x.kind] || "Feature"}</span>${x.out ? `<span class="rm-live">${x.early ? "Early preview" : "Out now"}</span>` : ""}</div><h3 class="rm-t">${esc(x.title)}</h3><p class="rm-b">${esc(x.blurb)}</p></div>
     <div class="rm-foot">${x.out ? (x.tool ? `<button type="button" class="btn btn-sm btn-outline-primary" data-rm-open="${esc(x.id)}">Open it</button>` : "") : rmVoteBtn(x)}
-      ${S.admin && rmManage ? `<span class="rm-adm"><select class="form-select form-select-sm" data-rm-when aria-label="When ${esc(x.title)} is planned for">${RM_Q.map(q => `<option value="${q[0]}" ${q[0] === x.when ? "selected" : ""}>${q[1]}</option>`).join("")}</select><button type="button" class="btn btn-sm ${x.out ? "btn-outline-secondary" : "btn-success"}" data-rm-rel="${x.out ? 0 : 1}">${x.out ? "Take back" : "Release now"}</button>${x.custom ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-rm-del>Delete</button>` : ""}</span>` : ""}</div></li>`; }
+      ${S.admin && rmManage && !x.early ? `<span class="rm-adm"><select class="form-select form-select-sm" data-rm-when aria-label="When ${esc(x.title)} is planned for">${RM_Q.map(q => `<option value="${q[0]}" ${q[0] === x.when ? "selected" : ""}>${q[1]}</option>`).join("")}</select><button type="button" class="btn btn-sm ${x.out ? "btn-outline-secondary" : "btn-success"}" data-rm-rel="${x.out ? 0 : 1}">${x.out ? "Take back" : "Release now"}</button>${x.custom ? `<button type="button" class="btn btn-sm btn-link text-danger p-0" data-rm-del>Delete</button>` : ""}</span>` : ""}</div></li>`; }
 function rmHtml(){ const S = rmState, every = rmItems(), all = every.filter(x => !rmKind || x.kind === rmKind), out = all.filter(x => x.out), todo = all.filter(x => !x.out), allTodo = every.filter(x => !x.out), mine = allTodo.filter(x => x.mine).length, can = rmCanVote();
   const kinds = [["", "Everything", every.length], ...["tool", "feature", "ai", "link"].map(k => [k, {tool: "AI tools", feature: "Features", ai: "AI", link: "Works with"}[k], every.filter(x => x.kind === k).length])];
   const top = [...allTodo].filter(x => x.votes > 0).sort((a, b) => b.votes - a.votes || a.title.localeCompare(b.title)).slice(0, 5), most = top.length ? top[0].votes : 0;
@@ -12664,6 +12756,362 @@ tkListHtml = function(){ const hidden = TK_ALL.filter(t => !tkLive(t.id)), put =
   return h.slice(0, i) + `<div class="rm-more" id="rmMore"><div class="min-w-0"><div class="fw-semibold">${hidden.length} more tools are on the roadmap</div><div class="small text-body-secondary">We're adding them a few at a time so this page stays easy to use. Vote for the ones you want first.</div></div><button type="button" class="btn btn-sm btn-primary flex-none" data-x-nav="roadmap">See the roadmap and vote</button></div>` + h.slice(i); };
 /* the guide */
 (() => { try{ const at = TOUR.findIndex(s => s.c === 5 && /Search everything/.test(s.h)); TOUR.splice(at < 0 ? TOUR.length - 1 : at, 0, {c: (TOUR[at < 0 ? TOUR.length - 1 : at] || {}).c || 5, view: "roadmap", sel: ".rm-head", h: "The roadmap", t: "What's coming over the next 18 months, a few things at a time. Vote for what you'd use and the most wanted come first. There's a box at the bottom for anything that's missing."}); }catch(e){ console.error(e); } })();
+
+/* ===== round 57: video lessons. Crafti presents a lesson's slides as a narrated video: it talks through each slide, with captions, pauses for the starter and the tasks,
+   and gives thinking time before each quiz answer. The voice is the device's own (the browser's speech), so nothing is recorded or sent anywhere.
+   This file stands on its own: the app uses it, and the student page loads it as video.js. window.ccVideo.open(lesson, options) ===== */
+(function(){
+  if(window.ccVideo) return;
+  const E = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+  const T = s => String(s == null ? "" : s).replace(/\*\*?|__|`|#+\s/g, "").replace(/\s+/g, " ").trim();
+  const lc = s => { s = T(s); return /^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s; };
+  const end = s => { s = T(s); return !s ? "" : /[.!?]$/.test(s) ? s : s + "."; };
+  const arr = a => Array.isArray(a) ? a.filter(x => x != null && String(typeof x === "object" ? (x.title || x.q || "") : x).trim()) : [];
+  const LET = "ABCDEFGH";
+  /* the slides, in the order the lesson is taught. Each has an id, so a written script can be matched to it */
+  function slides(L, o){ o = o || {}; const out = [], ob = L.objectives || {}, st = L.starter || null, teach = arr(L.teach), tasks = arr(L.tasks), quiz = o.student ? [] : arr(L.quiz), m = L.meta || {};
+    out.push({id: "intro", kind: "intro", title: T(L.title) || "Today's lesson", unit: T(m.unit || L.unit || ""), obj: [["All", ob.all], ["Most", ob.most], ["Some", ob.some]].filter(x => T(x[1]))});
+    if(st && T(st.prompt)) out.push({id: "starter", kind: "starter", title: T(st.title) || "Starter", prompt: T(st.prompt), list: arr(st.instructions).map(T), pause: true});
+    teach.forEach((t, i) => out.push({id: "teach-" + i, kind: "teach", n: i + 1, of: teach.length, title: T(t.title) || "Learn", explain: T(t.explain), list: arr(t.points).map(T), terms: arr(t.terms).map(x => typeof x === "object" ? {term: T(x.term), meaning: T(x.meaning || x.def || "")} : {term: T(x), meaning: ""}).filter(x => x.term)}));
+    tasks.forEach((t, i) => out.push({id: "task-" + i, kind: "task", n: i + 1, of: tasks.length, title: T(t.title), goal: T(t.goal), list: arr(t.steps).map(T), mins: +t.mins || 0, pause: true}));
+    quiz.forEach((q, i) => out.push({id: "quiz-" + i, kind: "quiz", n: i + 1, of: quiz.length, q: T(q.q), opts: arr(q.options).map(T), answer: Number.isInteger(q.answer) ? q.answer : -1, why: T(q.why)}));
+    const pl = L.plenary; out.push({id: "end", kind: "end", title: T(L.title), recap: typeof pl === "string" ? T(pl) : pl ? T(pl.prompt || pl.title || "") : ""});
+    return out; }
+  /* what Crafti says on each slide when no script has been written: built from the slide itself */
+  function say(s, first){ const k = s.kind;
+    if(k === "intro"){ const o = Object.fromEntries(s.obj); return [first ? "Hello, I'm Crafti." : "", `Today's lesson is ${end(s.title)}`, s.unit ? `It's part of ${end(s.unit)}` : "", o.All ? `By the end of it, everyone will be able to ${end(lc(o.All))}` : "", o.Most ? `Most of you will ${end(lc(o.Most))}` : "", o.Some ? `And some of you will ${end(lc(o.Some))}` : "", "Let's get started."].filter(Boolean).join(" "); }
+    if(k === "starter") return [`First, a starter: ${end(s.title)}`, end(s.prompt), ...s.list.map(end)].join(" ");
+    if(k === "teach") return [end(s.title), end(s.explain), s.list.length ? "The key points are these." : "", ...s.list.map(end), ...s.terms.filter(t => t.meaning).slice(0, 3).map(t => `${t.term} means ${end(lc(t.meaning))}`)].filter(Boolean).join(" ");
+    if(k === "task") return [`Now it's your turn. Task ${s.n}: ${end(s.title)}`, s.goal ? `By the end you should have ${end(lc(s.goal))}` : "", ...s.list.map((x, j) => `Step ${j + 1}: ${end(x)}`), s.mins ? `Give yourself about ${s.mins} minutes.` : ""].filter(Boolean).join(" ");
+    if(k === "quiz") return [`Question ${s.n}. ${end(s.q)}`, ...s.opts.map((x, j) => `${LET[j]}: ${end(x)}`)].join(" ");
+    if(k === "end") return [`That's the end of today's lesson${s.title ? " on " + s.title : ""}.`, s.recap ? end(s.recap) : "Look back over the key points, and check your work against the steps.", "Well done. See you next time."].join(" ");
+    return ""; }
+  const reveal = s => s.answer >= 0 && s.opts[s.answer] ? `The answer is ${LET[s.answer]}: ${end(s.opts[s.answer])} ${s.why ? end(s.why) : ""}`.trim() : "";
+  const sentences = t => (T(t).match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || []).map(x => x.trim()).filter(Boolean);
+  const CRAFTI = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="vdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><ellipse cx="60" cy="112" rx="28" ry="4" fill="#000" opacity=".25"/><path d="M30 18h44l22 22v54a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V28a10 10 0 0 1 10-10z" fill="url(#vdG)"/><path d="M74 18v22h22z" fill="#c4b5fd"/><circle cx="46" cy="56" r="9" fill="#fff"/><circle cx="72" cy="56" r="9" fill="#fff"/><circle class="vd-eye" cx="48" cy="57" r="4" fill="#1e1b4b"/><circle class="vd-eye" cx="74" cy="57" r="4" fill="#1e1b4b"/><ellipse class="vd-mouth" cx="59" cy="78" rx="10" ry="4" fill="#1e1b4b"/><circle cx="36" cy="70" r="4" fill="#f472b6" opacity=".6"/><circle cx="84" cy="70" r="4" fill="#f472b6" opacity=".6"/></svg>`;
+  const CSS = `.vd{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;background:#0b0e1a;color:#e8eaf6;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.vd *{box-sizing:border-box}.vd button{font:inherit}.vd-top{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08)}.vd-top h2{font-size:1rem;font-weight:700;margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}.vd-top small{color:#a5b4fc;font-size:.78rem;white-space:nowrap}
+.vd-x{width:40px;height:40px;border:0;border-radius:6px;background:rgba(255,255,255,.08);color:#fff;font-size:24px;line-height:1;cursor:pointer}.vd-x:hover{background:rgba(255,255,255,.16)}
+.vd-main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px;position:relative}
+.vd-stage{position:relative;width:min(100%,calc((100vh - 230px) * 16 / 9));aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#fff;color:#0f172a;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);container-type:inline-size;--u:1cqw}
+.vd-slide{position:absolute;inset:0;padding:calc(var(--u) * 5.5) calc(var(--u) * 6.5) calc(var(--u) * 6);display:flex;flex-direction:column;gap:calc(var(--u) * 1.6);animation:vdIn .35s ease both}.vd-slide::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(var(--u) * 1.1);background:linear-gradient(90deg,#4f46e5,#a855f7,#ec4899)}
+@keyframes vdIn{from{opacity:0;transform:translateY(calc(var(--u) * 1.2))}to{opacity:1;transform:none}}
+.vd-k{font-size:calc(var(--u) * 1.5);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6d28d9}.vd-h{font-size:calc(var(--u) * 4.2);font-weight:800;line-height:1.08;letter-spacing:-.02em;margin:0;color:#111827;text-transform:none}.vd-sub{font-size:calc(var(--u) * 2);color:#475569;margin:0}
+.vd-big{font-size:calc(var(--u) * 2.9);line-height:1.3;font-weight:600;color:#1e1b4b;background:#eef0ff;border-left:.6cqw solid #6366f1;padding:calc(var(--u) * 1.6) calc(var(--u) * 2);border-radius:.6cqw;margin:0}
+.vd-list{margin:0;padding-left:calc(var(--u) * 3);display:grid;gap:.9cqw;font-size:calc(var(--u) * 2.2);line-height:1.35}.vd-list li::marker{color:#7c3aed;font-weight:800}
+.vd-obj{display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u) * 1.2) calc(var(--u) * 1.6);align-items:baseline;font-size:calc(var(--u) * 2.2);margin-top:calc(var(--u) * 1)}.vd-tag{font-size:calc(var(--u) * 1.4);font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:.4cqw calc(var(--u) * 1);border-radius:.5cqw;background:#dcfce7;color:#166534}.vd-tag.m{background:#fef3c7;color:#92400e}.vd-tag.s{background:#f3e8ff;color:#6b21a8}
+.vd-terms{display:flex;flex-wrap:wrap;gap:calc(var(--u) * 1);margin-top:auto}.vd-term{font-size:calc(var(--u) * 1.6);padding:.6cqw calc(var(--u) * 1.2);border-radius:.6cqw;background:#f1f5f9;border:1px solid #e2e8f0}.vd-term b{color:#4338ca}
+.vd-opts{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u) * 1.2);margin-top:calc(var(--u) * 1)}.vd-opt{display:flex;gap:calc(var(--u) * 1.2);align-items:center;font-size:calc(var(--u) * 2.2);padding:calc(var(--u) * 1.4) calc(var(--u) * 1.6);border-radius:.8cqw;border:2px solid #e2e8f0;background:#fff;transition:background .3s,border-color .3s,opacity .3s}.vd-opt i{font-style:normal;font-weight:800;width:calc(var(--u) * 3.6);height:calc(var(--u) * 3.6);flex:none;border-radius:50%;display:grid;place-items:center;background:#eef0ff;color:#4338ca}
+.vd-opt.ok{border-color:#16a34a;background:#f0fdf4}.vd-opt.ok i{background:#16a34a;color:#fff}.vd-opt.no{opacity:.45}.vd-why{font-size:calc(var(--u) * 1.9);color:#166534;margin:0}
+.vd-chip{align-self:flex-start;font-size:calc(var(--u) * 1.5);font-weight:700;padding:.5cqw calc(var(--u) * 1.2);border-radius:.5cqw;background:#e0e7ff;color:#3730a3}
+.vd-end{align-items:center;justify-content:center;text-align:center;background:radial-gradient(calc(var(--u) * 60) calc(var(--u) * 30) at 50% 0,#ede9fe,transparent 70%),#fff}
+.vd-think{position:absolute;right:calc(var(--u) * 3);top:calc(var(--u) * 3);font-size:calc(var(--u) * 1.6);font-weight:700;padding:.6cqw calc(var(--u) * 1.4);border-radius:99px;background:#fef3c7;color:#92400e}
+.vd-pause{position:absolute;inset:auto 0 0 0;padding:calc(var(--u) * 1.6) calc(var(--u) * 3);background:linear-gradient(0deg,rgba(17,24,39,.92),rgba(17,24,39,.82));color:#fff;font-size:calc(var(--u) * 1.9);display:flex;gap:calc(var(--u) * 1.6);align-items:center}.vd-pause b{color:#fde68a}
+.vd-crafti{position:absolute;left:calc(var(--u) * 2);bottom:calc(var(--u) * 2);width:calc(var(--u) * 9);height:calc(var(--u) * 9);filter:drop-shadow(0 .6cqw calc(var(--u) * 1) rgba(0,0,0,.25));z-index:2}.vd-crafti svg{width:100%;height:100%}
+.vd.talking .vd-crafti{animation:vdBob 1.2s ease-in-out infinite}.vd.talking .vd-mouth{animation:vdTalk .28s ease-in-out infinite alternate}@keyframes vdBob{50%{transform:translateY(-.6cqw)}}@keyframes vdTalk{from{transform:scaleY(.4)}to{transform:scaleY(1.35)}}.vd-mouth{transform-box:fill-box;transform-origin:center}
+.vd-cap{min-height:56px;max-width:min(980px,96vw);margin:0 auto;padding:6px 16px 0;text-align:center;font-size:clamp(.95rem,1.6vw,1.2rem);line-height:1.4;color:#fff}.vd-cap span{background:rgba(0,0,0,.55);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:2px 8px;border-radius:4px}.vd.nocap .vd-cap{visibility:hidden}
+.vd-bar{display:flex;gap:3px;padding:10px 16px 4px;max-width:1100px;width:100%;margin:0 auto}.vd-seg{flex:1;height:6px;border:0;border-radius:3px;background:rgba(255,255,255,.18);padding:0;cursor:pointer;position:relative;overflow:hidden}.vd-seg.done{background:#8b5cf6}.vd-seg.on{background:rgba(139,92,246,.45)}.vd-seg.on::after{content:"";position:absolute;inset:0;width:var(--p,0%);background:#a78bfa;transition:width .3s linear}.vd-seg:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.vd-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:8px 16px 14px}.vd-b{min-width:44px;height:44px;border:1px solid rgba(255,255,255,.18);border-radius:6px;background:rgba(255,255,255,.06);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-size:.88rem;font-weight:600}.vd-b:hover{background:rgba(255,255,255,.14)}.vd-b svg{width:20px;height:20px}
+.vd-play{min-width:120px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-color:transparent}.vd-play:hover{background:linear-gradient(135deg,#4338ca,#6d28d9)}
+.vd-b:focus-visible,.vd-x:focus-visible,.vd-sel:focus-visible{outline:2px solid #fff;outline-offset:2px}.vd-b[aria-pressed="true"]{background:rgba(139,92,246,.35);border-color:#a78bfa}
+.vd-sel{height:44px;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:#151a2c;color:#fff;padding:0 10px;font-size:.85rem;max-width:200px}
+.vd-note{text-align:center;font-size:.8rem;color:#94a3b8;padding:0 16px 10px;margin:0}.vd-note button{background:none;border:0;color:#c4b5fd;text-decoration:underline;cursor:pointer;padding:0;font-size:inherit}
+@media (max-width:640px){.vd-top small{display:none}.vd-main{padding:8px}.vd-sel{max-width:130px}.vd-b span{display:none}.vd-play span,.vd-b[data-vd="stops"] span{display:inline}}
+@media (max-aspect-ratio:1/1){.vd-stage{aspect-ratio:4/5;width:min(100%,calc((100vh - 250px) * 4 / 5));--u:1.75cqw}.vd-opts{grid-template-columns:1fr}.vd-crafti{width:calc(var(--u) * 7);height:calc(var(--u) * 7)}}
+@media (prefers-reduced-motion:reduce){.vd-slide,.vd.talking .vd-crafti,.vd.talking .vd-mouth{animation:none}}`;
+  const I = {prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20 9 12l10-8zM5 19V5"/></svg>', next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4 10 8-10 8zM19 5v14"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>', pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>', cc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 10.5a2 2 0 1 0 0 3M17 10.5a2 2 0 1 0 0 3"/></svg>'};
+  function slideHtml(s, st){ const k = s.kind;
+    if(k === "intro") return `<div class="vd-slide"><div class="vd-k">Video lesson</div><h3 class="vd-h">${E(s.title)}</h3>${s.unit ? `<p class="vd-sub">${E(s.unit)}</p>` : ""}${s.obj.length ? `<div class="vd-obj">${s.obj.map(o => `<span class="vd-tag ${o[0] === "Most" ? "m" : o[0] === "Some" ? "s" : ""}">${o[0]}</span><span>${E(T(o[1]))}</span>`).join("")}</div>` : ""}</div>`;
+    if(k === "starter") return `<div class="vd-slide"><div class="vd-k">Starter</div><h3 class="vd-h">${E(s.title)}</h3><p class="vd-big">${E(s.prompt)}</p>${s.list.length ? `<ul class="vd-list">${s.list.map(x => `<li>${E(x)}</li>`).join("")}</ul>` : ""}</div>`;
+    if(k === "teach") return `<div class="vd-slide"><div class="vd-k">Learn${s.of > 1 ? ` · ${s.n} of ${s.of}` : ""}</div><h3 class="vd-h">${E(s.title)}</h3>${s.list.length ? `<ul class="vd-list">${s.list.slice(0, 6).map(x => `<li>${E(x)}</li>`).join("")}</ul>` : `<p class="vd-big">${E(s.explain.slice(0, 320))}</p>`}${s.terms.length ? `<div class="vd-terms">${s.terms.slice(0, 5).map(t => `<span class="vd-term"><b>${E(t.term)}</b>${t.meaning ? ": " + E(t.meaning.slice(0, 70)) : ""}</span>`).join("")}</div>` : ""}</div>`;
+    if(k === "task") return `<div class="vd-slide"><div class="vd-k">Your task${s.of > 1 ? ` · ${s.n} of ${s.of}` : ""}</div><h3 class="vd-h">${E(s.title)}</h3>${s.goal ? `<p class="vd-sub">${E(s.goal)}</p>` : ""}${s.list.length ? `<ol class="vd-list">${s.list.slice(0, 7).map(x => `<li>${E(x)}</li>`).join("")}</ol>` : ""}${s.mins ? `<span class="vd-chip">About ${s.mins} minutes</span>` : ""}</div>`;
+    if(k === "quiz") return `<div class="vd-slide"><div class="vd-k">Quick check · ${s.n} of ${s.of}</div><h3 class="vd-h" style="font-size:3.4cqw">${E(s.q)}</h3><div class="vd-opts">${s.opts.map((o, j) => `<div class="vd-opt${st.shown ? (j === s.answer ? " ok" : " no") : ""}"><i>${LET[j]}</i><span>${E(o)}</span></div>`).join("")}</div>${st.shown && s.why ? `<p class="vd-why">${E(s.why)}</p>` : ""}${st.thinking ? `<span class="vd-think" role="status">Think about it...</span>` : ""}</div>`;
+    return `<div class="vd-slide vd-end"><div class="vd-k">Well done</div><h3 class="vd-h">${E(s.title || "That's the lesson")}</h3>${s.recap ? `<p class="vd-sub" style="max-width:70cqw">${E(s.recap)}</p>` : ""}</div>`; }
+  let cur = null;
+  function voices(){ try{ return (speechSynthesis.getVoices() || []).filter(v => /^en(-|_|$)/i.test(v.lang)); }catch{ return []; } }
+  function pickVoice(list, want){ if(want){ const v = list.find(x => x.voiceURI === want); if(v) return v; } return list.find(v => /en-GB/i.test(v.lang) && /female|serena|kate|libby|sonia|google uk english female/i.test(v.name)) || list.find(v => /en-GB/i.test(v.lang)) || list[0] || null; }
+  function store(k, v){ try{ if(v === undefined) return localStorage.getItem("cc_vd_" + k); localStorage.setItem("cc_vd_" + k, v); }catch{ return null; } }
+  function open(L, opts){ if(cur) cur.close(); opts = opts || {}; if(!document.getElementById("vdCss")){ const st = document.createElement("style"); st.id = "vdCss"; st.textContent = CSS; document.head.appendChild(st); }
+    const S = slides(L, opts), script = opts.script || {}, hasTTS = typeof speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined" && !opts.silent;
+    const st = {i: 0, playing: false, line: 0, lines: [], shown: false, thinking: false, timer: 0, gen: 0, rate: +(store("rate") || 1) || 1, cap: store("cap") !== "0", stops: store("stops") !== "0", voice: store("voice") || "", waiting: false, from: document.activeElement};
+    const root = document.createElement("div"); root.className = "vd" + (st.cap ? "" : " nocap"); root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Video lesson: " + (T(L.title) || "lesson"));
+    root.innerHTML = `<div class="vd-top"><h2>${E(T(L.title) || "Video lesson")}</h2><small id="vdPos"></small><button type="button" class="vd-x" data-vd="close" aria-label="Close the video lesson">&times;</button></div>
+      <div class="vd-main"><div class="vd-stage" id="vdStage"><div id="vdSlide"></div><div class="vd-crafti" title="Crafti">${CRAFTI}</div><div id="vdPauseBox"></div></div></div>
+      <div class="vd-cap" id="vdCap" aria-live="polite"></div>
+      <div class="vd-bar" id="vdBar" role="group" aria-label="Slides">${S.map((s, i) => `<button type="button" class="vd-seg" data-vd="go" data-i="${i}" aria-label="Go to slide ${i + 1}: ${E(s.kind === "quiz" ? "question " + s.n : s.title || s.kind)}"></button>`).join("")}</div>
+      <div class="vd-ctl"><button type="button" class="vd-b" data-vd="prev" aria-label="Previous slide">${I.prev}</button><button type="button" class="vd-b vd-play" data-vd="play" id="vdPlay">${I.play}<span>Play</span></button><button type="button" class="vd-b" data-vd="next" aria-label="Next slide">${I.next}</button>
+        <select class="vd-sel" id="vdRate" aria-label="Speed">${[0.8, 0.9, 1, 1.15, 1.3].map(r => `<option value="${r}" ${r === st.rate ? "selected" : ""}>${r === 1 ? "Normal speed" : r + "x"}</option>`).join("")}</select>
+        ${hasTTS ? `<select class="vd-sel" id="vdVoice" aria-label="Voice"></select>` : ""}
+        <button type="button" class="vd-b" data-vd="cap" aria-pressed="${st.cap}" aria-label="Captions">${I.cc}<span>Captions</span></button>
+        <button type="button" class="vd-b" data-vd="stops" aria-pressed="${st.stops}" aria-label="Pause at tasks"><span>Pause at tasks</span></button></div>
+      <p class="vd-note" id="vdNote">${opts.note || ""}</p>`;
+    document.body.appendChild(root); document.documentElement.style.overflow = "hidden";
+    const $ = s => root.querySelector(s);
+    const fillVoices = () => { const sel = $("#vdVoice"); if(!sel) return; const vs = voices(); if(!vs.length){ sel.hidden = true; return; } sel.hidden = false; const v = pickVoice(vs, st.voice); sel.innerHTML = vs.map(x => `<option value="${E(x.voiceURI)}" ${v && x.voiceURI === v.voiceURI ? "selected" : ""}>${E(x.name.replace(/^(Microsoft|Google)\s+/, "").replace(/\s*-\s*English.*$/, ""))}</option>`).join(""); };
+    if(hasTTS){ fillVoices(); try{ speechSynthesis.addEventListener("voiceschanged", fillVoices); }catch{} }
+    const textFor = s => T(script[s.id]) || say(s, s.id === "intro");
+    const stopVoice = () => { st.gen++; clearTimeout(st.timer); if(hasTTS) try{ speechSynthesis.cancel(); }catch{} root.classList.remove("talking"); };
+    const caption = t => { $("#vdCap").innerHTML = t ? `<span>${E(t)}</span>` : ""; };
+    const progress = () => { const s = S[st.i]; root.querySelectorAll(".vd-seg").forEach((b, j) => { b.classList.toggle("done", j < st.i); b.classList.toggle("on", j === st.i); if(j === st.i){ b.style.setProperty("--p", st.lines.length ? Math.round(st.line / st.lines.length * 100) + "%" : "0%"); b.setAttribute("aria-current", "step"); } else b.removeAttribute("aria-current"); }); $("#vdPos").textContent = `Slide ${st.i + 1} of ${S.length}`; };
+    const drawSlide = () => { $("#vdSlide").innerHTML = slideHtml(S[st.i], st); progress(); };
+    const playBtn = () => { const b = $("#vdPlay"); b.innerHTML = st.playing ? `${I.pause}<span>Pause</span>` : `${I.play}<span>${st.i === S.length - 1 && st.line >= st.lines.length && st.lines.length ? "Watch again" : "Play"}</span>`; b.setAttribute("aria-label", st.playing ? "Pause" : "Play"); };
+    const pauseBox = html => { $("#vdPauseBox").innerHTML = html ? `<div class="vd-pause" role="status">${html}</div>` : ""; };
+    /* one sentence at a time, so captions keep up and pausing is instant. If the device won't speak, captions are timed instead */
+    function speak(text, done){ const g = st.gen; caption(text); if(!st.playing) return;
+      const timed = () => { root.classList.add("talking"); st.timer = setTimeout(() => { if(g !== st.gen) return; root.classList.remove("talking"); done(); }, ccVideo.fast ? 25 : Math.max(1200, text.split(/\s+/).length / (2.6 * st.rate) * 1000)); };
+      if(!hasTTS || !voices().length) return timed();
+      let started = false; const u = new SpeechSynthesisUtterance(text), v = pickVoice(voices(), st.voice); if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-GB"; u.rate = st.rate; u.pitch = 1.02;
+      u.onstart = () => { started = true; if(g === st.gen) root.classList.add("talking"); };
+      u.onend = () => { if(g !== st.gen) return; root.classList.remove("talking"); done(); };
+      u.onerror = e => { if(g !== st.gen || (e && e.error === "interrupted") || (e && e.error === "canceled")) return; timed(); };
+      try{ speechSynthesis.speak(u); }catch{ return timed(); }
+      st.timer = setTimeout(() => { if(g === st.gen && !started){ try{ speechSynthesis.cancel(); }catch{} timed(); } }, 2500); }   // a voice that never starts: fall back to timed captions
+    function runLines(after){ if(!st.playing) return; if(st.line >= st.lines.length){ return after(); } speak(st.lines[st.line], () => { st.line++; progress(); runLines(after); }); }
+    function slideDone(){ const s = S[st.i]; if(!st.playing) return;
+      if(s.kind === "quiz" && !st.shown && s.answer >= 0){ st.thinking = true; drawSlide(); caption("Think about it..."); const g = st.gen; st.timer = setTimeout(() => { if(g !== st.gen) return; st.thinking = false; st.shown = true; drawSlide(); st.lines = sentences(reveal(s)); st.line = 0; runLines(advance); }, ccVideo.fast ? 30 : Math.round(4500 / st.rate)); return; }
+      if(s.pause && st.stops && !st.waiting){ st.waiting = true; st.playing = false; playBtn(); root.classList.remove("talking"); pauseBox(`<b>Pause and have a go.</b> Press play when you're ready to carry on.`); return; }
+      advance(); }
+    function advance(){ if(st.i >= S.length - 1){ st.playing = false; playBtn(); caption(""); pauseBox(""); return; } go(st.i + 1, true); }
+    function go(i, keep){ stopVoice(); st.i = Math.max(0, Math.min(S.length - 1, i)); st.shown = false; st.thinking = false; st.waiting = false; st.lines = sentences(textFor(S[st.i])); st.line = 0; pauseBox(""); drawSlide(); caption(""); if(keep && st.playing) runLines(slideDone); else { st.playing = false; playBtn(); } }
+    function play(){ if(st.playing){ st.playing = false; stopVoice(); playBtn(); return; }
+      if(st.waiting){ st.waiting = false; pauseBox(""); st.playing = true; playBtn(); return advance(); }
+      if(st.i === S.length - 1 && st.lines.length && st.line >= st.lines.length){ st.playing = true; go(0, true); playBtn(); return; }
+      st.playing = true; playBtn(); if(S[st.i].kind === "quiz" && st.shown && st.line >= st.lines.length) return advance(); runLines(slideDone); }
+    function close(){ stopVoice(); root.remove(); document.documentElement.style.overflow = ""; document.removeEventListener("keydown", key, true); if(hasTTS) try{ speechSynthesis.removeEventListener("voiceschanged", fillVoices); }catch{} cur = null; try{ if(st.from && document.contains(st.from)) st.from.focus(); }catch{} if(opts.onClose) opts.onClose(); }
+    function key(e){ if(e.target && /^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName) && e.key !== "Escape") return;
+      if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); return close(); }
+      if(e.key === " " || e.key === "k"){ if(e.target && e.target.closest && e.target.closest("button") && e.key === " ") return; e.preventDefault(); return play(); }
+      if(e.key === "ArrowRight"){ e.preventDefault(); return go(st.i + 1, st.playing); } if(e.key === "ArrowLeft"){ e.preventDefault(); return go(st.i - 1, st.playing); }
+      if(e.key === "c"){ $('[data-vd="cap"]').click(); return; }
+      if(e.key === "Tab"){ const f = [...root.querySelectorAll("button:not([hidden]),select:not([hidden])")].filter(x => x.offsetParent !== null); if(!f.length) return; if(e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length - 1].focus(); } else if(!e.shiftKey && document.activeElement === f[f.length - 1]){ e.preventDefault(); f[0].focus(); } } }
+    root.addEventListener("click", e => { const b = e.target.closest("[data-vd]"); if(!b) return; const k = b.dataset.vd;
+      if(k === "close") return close(); if(k === "play") return play(); if(k === "next") return go(st.i + 1, st.playing); if(k === "prev") return go(st.i - 1, st.playing); if(k === "go") return go(+b.dataset.i, st.playing);
+      if(k === "cap"){ st.cap = !st.cap; store("cap", st.cap ? "1" : "0"); root.classList.toggle("nocap", !st.cap); b.setAttribute("aria-pressed", st.cap); return; }
+      if(k === "stops"){ st.stops = !st.stops; store("stops", st.stops ? "1" : "0"); b.setAttribute("aria-pressed", st.stops); return; }
+      if(opts.onAction) opts.onAction(k, api); });
+    root.addEventListener("change", e => { const t = e.target; if(t.id === "vdRate"){ st.rate = +t.value || 1; store("rate", String(st.rate)); if(st.playing){ st.playing = false; stopVoice(); st.playing = true; runLines(slideDone); } } if(t.id === "vdVoice"){ st.voice = t.value; store("voice", st.voice); if(st.playing){ st.playing = false; stopVoice(); st.playing = true; runLines(slideDone); } } });
+    document.addEventListener("keydown", key, true);
+    const api = {close, play, go: i => go(i, st.playing), state: () => ({i: st.i, n: S.length, playing: st.playing, waiting: st.waiting, shown: st.shown, kind: S[st.i].kind, line: st.line, lines: st.lines.slice(), caption: $("#vdCap").textContent}), slides: S, setScript: sc => { Object.assign(script, sc || {}); go(st.i, false); }, note: h => { $("#vdNote").innerHTML = h || ""; }, root};
+    cur = api; go(0, false); setTimeout(() => { const b = $("#vdPlay"); if(b) b.focus(); }, 30); if(opts.autoplay) play();
+    return api; }
+  window.ccVideo = {open, slides, say: (s, f) => say(s, f), reveal, fast: false, get current(){ return cur; }};
+})();
+
+/* ===== round 58 (v116): the video lesson button on every lesson, Crafticulum AI writing the narration, and new workspaces starting empty ===== */
+const VD_LIMIT = 140;   // words per slide the AI is asked to stay under
+function vdPrompt(L){ const S = ccVideo.slides(L), m = L.meta || {};
+  const body = S.map(s => { const k = s.kind, bits = [];
+    if(k === "intro") bits.push("Title slide: " + s.title, s.unit ? "Unit: " + s.unit : "", ...s.obj.map(o => o[0] + " will: " + o[1]));
+    if(k === "starter") bits.push("Starter: " + s.title, s.prompt, ...s.list);
+    if(k === "teach") bits.push("Teaching slide: " + s.title, s.explain, ...s.list.map(x => "- " + x), ...s.terms.map(t => "Term: " + t.term + (t.meaning ? " = " + t.meaning : "")));
+    if(k === "task") bits.push("Task: " + s.title, s.goal ? "Goal: " + s.goal : "", ...s.list.map((x, j) => (j + 1) + ". " + x), s.mins ? "Time: " + s.mins + " minutes" : "");
+    if(k === "quiz") bits.push("Quiz question: " + s.q, ...s.opts.map((x, j) => "ABCDEFGH"[j] + ") " + x));
+    if(k === "end") bits.push("Closing slide", s.recap);
+    return `[${s.id}]\n` + bits.filter(Boolean).join("\n"); }).join("\n\n");
+  return `Write the narration for a video lesson. Crafti, a friendly, clear presenter, talks a class through each slide below as if teaching it live. The learners are on ${m.course || "a course"}${m.level ? " at " + m.level : ""}.
+
+Rules:
+- One short script per slide, in spoken UK English, under ${VD_LIMIT} words each. Plain sentences only: no markdown, no lists, no emoji, no stage directions.
+- Explain the ideas with an example or two, don't just read the bullet points out.
+- On task slides, tell them what to do and that the video will pause while they do it.
+- On quiz slides, read the question and options out but never say the answer. The answer is revealed separately.
+- The intro slide starts with "Hello, I'm Crafti." The closing slide sums up and says goodbye.
+
+Slides:
+${body}
+
+Reply with JSON only, like {"script": {"intro": "...", "starter": "..."}}, with one entry for every slide id in square brackets above.`; }
+function vdOpen(L){ L = L || current; if(!L || typeof ccVideo === "undefined") return;
+  const saved = L.video && L.video.script && typeof L.video.script === "object" ? L.video.script : {}, canAI = !!sampleFn, ex = !!L.example;
+  const note = () => !canAI ? "Crafti reads the lesson out using your device's own voice." : Object.keys(saved).length ? `Narration written by Crafticulum AI. <button type="button" data-vd="write">Write it again</button>` : `Crafti is reading the slides as they are. <button type="button" data-vd="write">Write a proper script with Crafticulum AI</button>${ex ? " (it won't be kept, this is the example)" : ""}`;
+  const api = ccVideo.open(L, {script: {...saved}, note: note(), onAction: async (k, v) => { if(k !== "write" || vdOpen.busy) return; vdOpen.busy = true; v.note("Crafticulum AI is writing the narration..."); if(v.state().playing) v.play();
+      try{ const r = await sampleFn.json(vdPrompt(L), {cache: false}), sc = r && (r.script || r), keep = {};
+        ccVideo.slides(L).forEach(s => { const t = sc && typeof sc[s.id] === "string" ? sc[s.id].replace(/\s+/g, " ").trim().slice(0, 1400) : ""; if(t) keep[s.id] = t; });
+        if(!Object.keys(keep).length) throw new Error("empty");
+        Object.keys(saved).forEach(x => delete saved[x]); Object.assign(saved, keep);
+        if(!ex && current === L){ L.video = {script: keep, at: Date.now()}; try{ saveRecent(L); }catch(e){ console.error(e); } }
+        v.setScript(keep); v.note(note()); }
+      catch(e){ console.error(e); v.note(`Crafticulum AI couldn't write it just now, so Crafti is reading the slides as they are. <button type="button" data-vd="write">Try again</button>`); }
+      finally{ vdOpen.busy = false; } }});
+  return api; }
+function vdButton(){ const ob = document.querySelector("#out .hero #openBoard"); if(!ob || $("#vdBtn")) return;
+  ob.insertAdjacentHTML("afterend", `<button type="button" class="btn btn-outline-primary" id="vdBtn" title="Crafti talks the class through this lesson, slide by slide">Video lesson</button>`);
+  $("#vdBtn").onclick = () => vdOpen(current); }
+const _render58 = render;
+render = function(){ const r = _render58.apply(this, arguments);
+  try{ if(view === "lesson") vdButton();
+    const touring = typeof tourI !== "undefined" && tourI >= 0, demo = typeof inDemo === "function" && inDemo();
+    /* a new workspace starts properly empty: no ready-made sample lesson (the guide still borrows it to show where things are) */
+    if(!demo && plainSite() && view === "lesson" && current && current.example && !touring && !homeBusy){ const o = $("#out");
+      if(o && !o.querySelector("#noLessonYet")) o.innerHTML = `<div class="tk-wrap"><div class="tk-empty" id="noLessonYet"><div class="fw-semibold">No lessons yet</div><div class="small text-body-secondary mb-3">Describe a lesson on the dashboard and it opens here, with its plan, starter, tasks, quiz and slides. You can also watch it as a video lesson.</div><button type="button" class="btn btn-primary" data-nav="home">Describe a lesson</button></div></div>`; } }
+  catch(e){ console.error(e); }
+  return r; };
+document.addEventListener("keydown", e => { if(e.key !== "v" && e.key !== "V") return; if(e.ctrlKey || e.metaKey || e.altKey || view !== "lesson" || !$("#vdBtn") || document.querySelector(".vd, .modal.show, #board:not([hidden])")) return; const t = e.target; if(t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return; e.preventDefault(); vdOpen(current); });
+/* the student page gets the written narration too, so the video sounds the same at home */
+const _studentLesson58 = studentLesson;
+studentLesson = function(L){ const o = _studentLesson58.apply(this, arguments); try{ const sc = L && L.video && L.video.script; if(sc && typeof sc === "object"){ const k = {}; Object.keys(sc).forEach(id => { if(!/^quiz-/.test(id) && typeof sc[id] === "string") k[id] = sc[id].slice(0, 1400); }); if(Object.keys(k).length) o.video = {script: k}; } if(typeof L.plenary === "string" && L.plenary) o.plenary = L.plenary.slice(0, 600); }catch(e){ console.error(e); } return o; };
+
+/* ===== round 59 (v116): staff profiles with more in them. A banner with photo, job title and how to reach them; About, specialisms, qualifications held,
+   campuses and when they're around; lessons written by month and the units they cover; tabs for classes, lessons, verification and CPD. You fill in your own. ===== */
+let spTab = "overview", spEdit = null, spLq = "", spMsg = "";
+const SP_STATUS = {in: ["In today", "ok"], class: ["Teaching right now", "warn"], wfh: ["Working from home", "info"], away: ["Away", "off"]};
+const SP_HELD = ["PGCE", "Cert Ed", "QTS", "QTLS", "DET", "AET", "TAQA assessor", "TAQA IQA", "IV / IQA", "Lead IV", "Degree in the subject", "Industry experience"];
+const SP_TABS = [["overview", "Overview"], ["classes", "Classes"], ["lessons", "Lessons"], ["iv", "Verification"], ["cpd", "CPD"]];
+const spDay = t => t ? new Date(t * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"}) : "";
+const spDate = d => d ? new Date(d + "T12:00:00").toLocaleDateString("en-GB", {day: "numeric", month: "short", year: "numeric"}) : "";
+const spTags = xs => (xs || []).map(x => `<span class="sp-tag">${esc(x)}</span>`).join("");
+function spYearStart(){ const n = new Date(), y = n.getMonth() >= 8 ? n.getFullYear() : n.getFullYear() - 1; return y + "-09-01"; }
+function spEditHtml(){ const A = spEdit, f = (id, label, val, attrs, help) => `<div class="col-md-6"><label class="form-label small fw-semibold" for="${id}">${label}</label><input class="form-control form-control-sm" id="${id}" value="${esc(val || "")}" ${attrs || ""}>${help ? `<div class="form-text">${help}</div>` : ""}</div>`;
+  return `<form class="sp-edit" id="spEditForm" novalidate><h3 class="h6 mb-3">Edit your profile</h3><div class="row g-3">
+    ${f("spfHead", "Job title", A.headline, 'maxlength="80" placeholder="e.g. Lecturer in Esports, Course lead"')}
+    ${f("spfPron", "Pronouns <span class=\"fw-normal text-body-secondary\">(optional)</span>", A.pronouns, 'maxlength="30" placeholder="e.g. she/her"')}
+    <div class="col-12"><label class="form-label small fw-semibold" for="spfBio">About you</label><textarea class="form-control form-control-sm" id="spfBio" rows="4" maxlength="800" placeholder="What you teach, your background in industry, what you're working on this year.">${esc(A.bio || "")}</textarea><div class="form-text"><span id="spfBioN">${(A.bio || "").length}</span> of 800</div></div>
+    ${f("spfSkills", "Specialisms", (A.skills || []).join(", "), 'maxlength="500" placeholder="e.g. Game design, Networking, Shoutcasting"', "Separate them with commas. Up to 12.")}
+    ${f("spfCamp", "Campuses", (A.campuses || []).join(", "), 'maxlength="250" placeholder="e.g. Medway, Maidstone"', "Separate them with commas.")}
+    <div class="col-12"><span class="form-label small fw-semibold d-block">Qualifications you hold</span><div class="sp-held">${[...new Set([...SP_HELD, ...(A.held || [])])].map((q, i) => `<label class="sp-pick"><input type="checkbox" class="form-check-input" data-spf-held value="${esc(q)}" ${(A.held || []).includes(q) ? "checked" : ""}> ${esc(q)}</label>`).join("")}</div>
+      <div class="input-group input-group-sm mt-2" style="max-width:360px"><input class="form-control" id="spfHeldNew" maxlength="60" placeholder="Another one" aria-label="Add another qualification"><button type="button" class="btn btn-outline-secondary" data-spf="held">Add</button></div></div>
+    ${f("spfPhone", "Phone or extension", A.phone, 'maxlength="40" inputmode="tel"')}
+    ${f("spfRoom", "Room or office", A.room, 'maxlength="60" placeholder="e.g. M2.14, Medway"')}
+    ${f("spfHours", "When you're around", A.hours, 'maxlength="140" placeholder="e.g. Mon to Thu, free periods Tue pm"')}
+    <div class="col-md-6"><label class="form-label small fw-semibold" for="spfStatus">Right now</label><select class="form-select form-select-sm" id="spfStatus"><option value="">Don't show</option>${Object.entries(SP_STATUS).map(([k, v]) => `<option value="${k}" ${A.status === k ? "selected" : ""}>${v[0]}</option>`).join("")}</select></div>
+    ${f("spfLink", "A link <span class=\"fw-normal text-body-secondary\">(optional)</span>", A.link, 'maxlength="200" type="url" placeholder="https://www.linkedin.com/in/..."', "LinkedIn, a portfolio or your department page. Must start with https://")}
+  </div><div class="idea-msg mt-2" role="status" id="spfMsg"></div><div class="d-flex gap-2 mt-3"><button type="submit" class="btn btn-primary">Save profile</button><button type="button" class="btn btn-outline-secondary" data-spf="cancel">Cancel</button></div></form>`; }
+function spCpdHtml(A, self){ const C = (A && A.cpd) || [], ys = spYearStart(), yr = C.filter(c => c.d >= ys), hrs = yr.reduce((a, c) => a + (+c.h || 0), 0);
+  return `<div class="sp-cpd-head"><div class="ov-t"><b>${Math.round(hrs * 10) / 10}</b><span>hours this academic year</span></div><div class="ov-t"><b>${yr.length}</b><span>${yr.length === 1 ? "activity" : "activities"} this year</span></div><div class="ov-t"><b>${C.length}</b><span>logged in all</span></div></div>
+    ${self ? `<form class="sp-cpd-add" id="spCpdForm"><input class="form-control form-control-sm" id="spcT" maxlength="120" placeholder="What you did, e.g. Pearson standardisation, Unit 1" aria-label="CPD activity" required><input class="form-control form-control-sm" id="spcD" type="date" value="${new Date().toISOString().slice(0, 10)}" aria-label="Date"><input class="form-control form-control-sm" id="spcH" type="number" min="0" max="200" step="0.5" value="1" aria-label="Hours"><select class="form-select form-select-sm" id="spcK" aria-label="Kind">${["Training", "Standardisation", "Industry", "Observation", "Reading", "Course", "Other"].map(k => `<option>${k}</option>`).join("")}</select><button type="submit" class="btn btn-sm btn-primary">Add</button></form>` : ""}
+    ${C.length ? `<ul class="list-unstyled sp-cpd">${C.map((c, i) => `<li><span class="sp-cpd-d">${esc(spDate(c.d))}</span><span class="min-w-0"><span class="fw-semibold">${esc(c.t)}</span>${c.k ? ` <span class="sp-tag">${esc(c.k)}</span>` : ""}</span><span class="text-body-secondary small text-nowrap">${c.h ? c.h + (c.h === 1 ? " hour" : " hours") : ""}</span>${self ? `<button type="button" class="btn btn-link btn-sm text-danger p-0" data-spc-del="${i}" aria-label="Remove ${esc(c.t)}">Remove</button>` : ""}</li>`).join("")}</ul>` : `<p class="small text-body-secondary mb-0">${self ? "Nothing logged yet. Add training, standardisation, industry days and the like, and it's all in one place for your appraisal." : "Nothing logged yet."}</p>`}`; }
+spHtml = function(){ const S = spInfo; if(!S) return ""; const close = `<button type="button" class="btn-close" data-sp-close aria-label="Close"></button>`;
+  if(S.loading) return `<div class="sp-card"><div class="sp-top"><h2 class="h5 mb-0" id="spTitle">Staff profile</h2>${close}</div><p class="small text-body-secondary mb-0">Loading...</p></div>`;
+  if(S.failed) return `<div class="sp-card"><div class="sp-top"><h2 class="h5 mb-0" id="spTitle">Staff profile</h2>${close}</div><p class="small mb-0">${S.failed === "noperm" ? "You can only open the profiles of people in your own department." : "Couldn't load this just now."}</p></div>`;
+  const P = S.person, T = S.teaches, L = S.lessons, C = S.classes, V = S.iv, A = S.about || {}, self = !!P.self && !(me && me.demo), init = (P.name || P.email).split(/\s+/).map(x => x[0]).slice(0, 2).join("").toUpperCase();
+  const learners = C.reduce((a, c) => a + c.learners, 0), late = C.reduce((a, c) => a + c.late, 0), chips = xs => xs.map(x => `<span class="sp-chip">${esc(x)}</span>`).join("");
+  const ivRow = r => `<li><span class="ln-st ln-st-${r.decision === "agreed" ? "ok" : r.done ? "do" : "warn"}">${r.decision === "agreed" ? "Marking agreed" : r.done ? "Actions done" : "Actions needed"}</span> <span class="small">${esc(r.unit)}${r.group ? ", " + esc(r.group) : ""}</span> <span class="small text-body-secondary">${r.who ? esc(r.who) + " · " : ""}${spDay(r.at)}</span></li>`;
+  const st = SP_STATUS[A.status], months = Object.entries(S.months || {}), mMax = Math.max(1, ...months.map(m => m[1])), units = S.units || [];
+  const filled = [A.headline, A.bio, (A.skills || []).length, (A.held || []).length, (A.campuses || []).length, A.room || A.phone, A.hours, T && T.subjects && T.subjects.length].filter(Boolean).length, pct = Math.round(filled / 8 * 100);
+  const contact = [`<a class="sp-ct" href="mailto:${esc(P.email)}">${esc(P.email)}</a>`, A.phone ? `<a class="sp-ct" href="tel:${esc(A.phone.replace(/[^\d+]/g, ""))}">${esc(A.phone)}</a>` : "", A.room ? `<span class="sp-ct">${esc(A.room)}</span>` : "", A.link ? `<a class="sp-ct" href="${esc(A.link)}" target="_blank" rel="noopener noreferrer">${esc(A.link.replace(/^https:\/\/(www\.)?/, "").slice(0, 40))}</a>` : ""].filter(Boolean).join("");
+  const panel = (k, h) => `<div class="sp-panel" id="spP-${k}" role="tabpanel" aria-labelledby="spT-${k}" ${spTab === k ? "" : "hidden"}>${h}</div>`;
+  const lq = spLq.trim().toLowerCase(), ll = L.list.filter(l => !lq || (l.title + " " + (l.unit || "")).toLowerCase().includes(lq));
+  const overview = `${self && pct < 100 && !spEdit ? `<div class="sp-nudge"><div class="sp-meter" role="progressbar" aria-label="Profile filled in" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><span class="small">Your profile is ${pct}% filled in. Colleagues see this when they open your name.</span><button type="button" class="btn btn-sm btn-outline-primary" data-spf="edit">Fill it in</button></div>` : ""}
+    <div class="ov-tiles sp-tiles"><div class="ov-t"><b>${L.total}</b><span>${L.total === 1 ? "lesson" : "lessons"} written${L.draft ? `, ${L.draft} waiting for sign-off` : ""}</span></div><div class="ov-t"><b>${C.length}</b><span>${C.length === 1 ? "class" : "classes"}, ${learners} ${learners === 1 ? "learner" : "learners"}</span></div><div class="ov-t${late ? " lp-late" : ""}"><b>${late}</b><span>${late === 1 ? "resubmission" : "resubmissions"} overdue</span></div><div class="ov-t"><b>${V.didTotal}</b><span>verified for others</span></div><div class="ov-t${V.actions ? " lp-late" : ""}"><b>${V.hadTotal}</b><span>of their own verified${V.actions ? `, ${V.actions} with actions open` : ""}</span></div></div>
+    <div class="sp-cols"><div class="min-w-0">
+      <h3 class="h6 mt-4 mb-2">About</h3>${A.bio ? `<p class="sp-bio">${esc(A.bio).replace(/\n/g, "<br>")}</p>` : `<p class="small text-body-secondary">${self ? "You haven't written anything about yourself yet." : "Nothing here yet."}</p>`}
+      ${(A.skills || []).length ? `<h3 class="h6 mt-3 mb-2">Specialisms</h3><div>${spTags(A.skills)}</div>` : ""}
+      <h3 class="h6 mt-4 mb-2">Teaches</h3>${T && (T.subjects.length || T.role || T.stages.length || T.levels.length) ? `<div class="sp-teach">${T.role ? `<div><span class="text-body-secondary small">Role</span> ${esc(T.role)}</div>` : ""}${T.subjects.length ? `<div><span class="text-body-secondary small">Subjects</span> ${chips(T.subjects)}</div>` : ""}${T.stages.concat(T.levels).length ? `<div><span class="text-body-secondary small">Stages and levels</span> ${chips(T.stages.concat(T.levels))}</div>` : ""}${T.orgs.concat(T.quals).length ? `<div><span class="text-body-secondary small">Qualifications</span> ${chips(T.quals.concat(T.orgs))}</div>` : ""}</div>` : `<p class="small text-body-secondary mb-0">${P.self ? "You haven't" : "They haven't"} said what ${P.self ? "you" : "they"} teach yet. It's set in Settings, You, under the education profile.</p>`}
+      ${units.length ? `<h3 class="h6 mt-4 mb-2">Units they write for <span class="fw-normal text-body-secondary">(${S.unitsTotal})</span></h3><ul class="list-unstyled sp-units">${units.map(u => `<li><span class="min-w-0 text-truncate">${esc(u.unit)}</span><span class="text-body-secondary small">${u.n} ${u.n === 1 ? "lesson" : "lessons"}</span></li>`).join("")}</ul>` : ""}
+    </div><aside class="sp-aside">
+      ${(A.held || []).length ? `<div class="sp-box"><h3 class="sp-bh">Qualifications held</h3>${spTags(A.held)}</div>` : ""}
+      ${(A.campuses || []).length || A.hours ? `<div class="sp-box"><h3 class="sp-bh">Where and when</h3>${(A.campuses || []).length ? `<div class="mb-1">${spTags(A.campuses)}</div>` : ""}${A.hours ? `<div class="small">${esc(A.hours)}</div>` : ""}</div>` : ""}
+      ${months.length ? `<div class="sp-box"><h3 class="sp-bh">Lessons written, last six months</h3><div class="sp-bars" role="img" aria-label="${esc(months.map(m => new Date(m[0] + "-15").toLocaleDateString("en-GB", {month: "long"}) + ": " + m[1]).join(", "))}">${months.map(m => `<div class="sp-bar" title="${m[1]} in ${esc(new Date(m[0] + "-15").toLocaleDateString("en-GB", {month: "long", year: "numeric"}))}"><span class="sp-bv">${m[1] || ""}</span><i style="height:${Math.max(m[1] ? 6 : 2, Math.round(m[1] / mMax * 64))}px"></i><span class="sp-bm">${esc(new Date(m[0] + "-15").toLocaleDateString("en-GB", {month: "short"}))}</span></div>`).join("")}</div></div>` : ""}
+      <div class="sp-box"><h3 class="sp-bh">On Crafticulum</h3><div class="small">${P.added ? "Joined " + spDay(P.added) + "<br>" : ""}${P.last ? "Last signed in " + spDay(P.last) : "Hasn't signed in yet"}${A.at ? "<br>Profile updated " + spDay(A.at) : ""}</div></div>
+    </aside></div>`;
+  const classes = `${C.length ? `<div class="table-responsive"><table class="table table-sm align-middle sp-t mb-0"><thead><tr><th scope="col">Class</th><th scope="col">Campus</th><th scope="col" class="text-end">Learners</th><th scope="col" class="text-end">Units marked</th><th scope="col" class="text-end">Criteria achieved</th><th scope="col" class="text-end">Resubmissions open</th></tr></thead><tbody>${C.map(c => `<tr><th scope="row">${esc(c.name)}</th><td>${esc(c.campus || "")}</td><td class="text-end">${c.learners}</td><td class="text-end">${c.units}</td><td class="text-end">${c.marked ? Math.round(c.achieved / c.marked * 100) + "%" : ""}</td><td class="text-end">${c.open}${c.late ? ` <span class="text-danger">(${c.late} overdue)</span>` : ""}</td></tr>`).join("")}</tbody></table></div><div class="form-text">Numbers only. Learners aren't named here.</div>` : `<p class="small text-body-secondary mb-0">No class lists yet.</p>`}`;
+  const lessons = `${L.list.length > 6 ? `<input type="search" class="form-control form-control-sm mb-2" id="spLq" value="${esc(spLq)}" placeholder="Find a lesson or unit" aria-label="Find a lesson">` : ""}${L.total > L.list.length ? `<div class="small text-body-secondary mb-2">The newest ${L.list.length} of ${L.total}.</div>` : ""}${ll.length ? `<ul class="list-unstyled sp-list">${ll.map(l => `<li><span class="min-w-0 text-truncate">${esc(l.title)}</span><span class="badge fw-normal ${l.status === "draft" ? "text-bg-warning" : "text-bg-light border"}">${l.status === "draft" ? "Waiting for sign-off" : "In the library"}</span><span class="small text-body-secondary">${spDay(l.at)}</span></li>`).join("")}</ul>` : `<p class="small text-body-secondary mb-0">${L.list.length ? "None match that." : "None in this department's library yet."}</p>`}`;
+  const iv = `<div class="sp-two"><div><div class="small fw-semibold mb-1">Their marking, checked by someone else (${V.hadTotal})</div>${V.had.length ? `<ul class="list-unstyled sp-iv">${V.had.map(ivRow).join("")}</ul>` : `<p class="small text-body-secondary mb-0">None yet.</p>`}</div><div><div class="small fw-semibold mb-1">Checks they've done for others (${V.didTotal})</div>${V.did.length ? `<ul class="list-unstyled sp-iv">${V.did.map(ivRow).join("")}</ul>` : `<p class="small text-body-secondary mb-0">None yet.</p>`}</div></div>`;
+  const tabCount = {classes: C.length, lessons: L.total, iv: V.hadTotal + V.didTotal, cpd: (A.cpd || []).length};
+  return `<div class="sp-card sp2" id="spCard"><div class="sp-cover" aria-hidden="true"></div>
+    <div class="sp-top"><div class="sp-av">${P.picture && /^https:\/\//.test(P.picture) ? `<img src="${esc(P.picture)}" alt="" referrerpolicy="no-referrer">` : esc(init)}</div><div class="min-w-0 flex-grow-1 sp-who">
+      <h2 class="h4 mb-0" id="spTitle">${esc(P.name || P.email)}</h2>${A.headline || A.pronouns ? `<div class="sp-hl">${esc(A.headline || "")}${A.pronouns ? `<span class="sp-pron">${esc(A.pronouns)}</span>` : ""}</div>` : ""}
+      <div class="small text-body-secondary">${esc([SP_ROLE[P.role] || "Teacher", P.dept, P.college].filter(Boolean).join(" · "))}</div>
+      ${st ? `<span class="sp-status sp-s-${st[1]}">${esc(st[0])}</span>` : ""}
+      <div class="sp-contact">${contact}</div></div>
+      <div class="sp-acts">${self && !spEdit ? `<button type="button" class="btn btn-sm btn-primary" data-spf="edit">Edit profile</button>` : ""}<button type="button" class="btn btn-sm btn-outline-secondary" data-spf="copy">Copy email</button>${close}</div></div>
+    <div class="idea-msg" role="status" id="spMsg">${esc(spMsg)}</div>
+    ${spEdit ? spEditHtml() : `<div class="sp-tabs" role="tablist" aria-label="Profile sections">${SP_TABS.map(([k, t]) => `<button type="button" role="tab" id="spT-${k}" aria-controls="spP-${k}" aria-selected="${spTab === k}" tabindex="${spTab === k ? 0 : -1}" data-sp-tab="${k}">${t}${tabCount[k] ? ` <span class="sp-tc">${tabCount[k]}</span>` : ""}</button>`).join("")}</div>
+    ${panel("overview", overview)}${panel("classes", `<h3 class="h6 mt-3 mb-2">Classes</h3>` + classes)}${panel("lessons", `<h3 class="h6 mt-3 mb-2">Lessons written</h3>` + lessons)}${panel("iv", `<h3 class="h6 mt-3 mb-2">Internal verification</h3>` + iv)}${panel("cpd", `<h3 class="h6 mt-3 mb-2">CPD</h3>` + spCpdHtml(A, self))}`}</div>`; };
+const _spOpen59 = spOpen;
+spOpen = function(email){ spTab = "overview"; spEdit = null; spLq = ""; spMsg = ""; return _spOpen59.apply(this, arguments); };
+const spList = v => String(v || "").split(/[,\n]/).map(x => x.trim()).filter(Boolean);
+async function spSave(A){ const j = await storeCall("staffme", A); spInfo.about = j.about; return j; }
+function spRedraw(focusSel){ const b = $("#spBack"); if(!b) return; b.innerHTML = spHtml(); const f = focusSel && b.querySelector(focusSel); if(f) f.focus({preventScroll: true}); }
+document.addEventListener("click", async e => { if(!spInfo || !spInfo.person) return; const t = e.target;
+  const tab = t.closest("[data-sp-tab]"); if(tab){ spTab = tab.dataset.spTab; spMsg = ""; return spRedraw(`#spT-${spTab}`); }
+  const a = t.closest("[data-spf]"); const del = t.closest("[data-spc-del]");
+  if(a){ const k = a.dataset.spf;
+    if(k === "edit"){ spEdit = JSON.parse(JSON.stringify(spInfo.about || {})); spMsg = ""; return spRedraw("#spfHead"); }
+    if(k === "cancel"){ spEdit = null; return spRedraw('[data-spf="edit"]'); }
+    if(k === "copy"){ try{ await navigator.clipboard.writeText(spInfo.person.email); spMsg = "Email copied."; }catch{ spMsg = spInfo.person.email; } const m = $("#spMsg"); if(m) m.textContent = spMsg; return; }
+    if(k === "held"){ const i = $("#spfHeldNew"), v = i && i.value.trim(); if(!v) return; spEdit = spGather(); spEdit.held = [...new Set([...(spEdit.held || []), v.slice(0, 60)])].slice(0, 12); spRedraw("#spfHeldNew"); return; } }
+  if(del){ const A = {...(spInfo.about || {})}; A.cpd = (A.cpd || []).filter((_, i) => i !== +del.dataset.spcDel); try{ await spSave(A); spMsg = "Removed."; }catch{ spMsg = "Couldn't save that just now."; } spRedraw("#spcT"); } });
+function spGather(){ const v = id => { const x = $("#" + id); return x ? x.value : ""; };
+  return {...(spInfo.about || {}), headline: v("spfHead").trim(), pronouns: v("spfPron").trim(), bio: v("spfBio"), skills: spList(v("spfSkills")).slice(0, 12), campuses: spList(v("spfCamp")).slice(0, 6), held: [...document.querySelectorAll("[data-spf-held]:checked")].map(x => x.value).slice(0, 12), phone: v("spfPhone").trim(), room: v("spfRoom").trim(), hours: v("spfHours").trim(), status: v("spfStatus"), link: v("spfLink").trim()}; }
+document.addEventListener("submit", async e => { if(!spInfo || !spInfo.person) return;
+  if(e.target.id === "spEditForm"){ e.preventDefault(); const A = spGather(), m = $("#spfMsg");
+    if(A.link && !/^https:\/\/\S+$/i.test(A.link)){ m.className = "idea-msg mt-2 err"; m.textContent = "The link needs to start with https://"; $("#spfLink").focus(); return; }
+    m.className = "idea-msg mt-2"; m.textContent = "Saving...";
+    try{ await spSave(A); spEdit = null; spMsg = "Profile saved."; spTab = "overview"; spRedraw('[data-spf="edit"]'); }catch(err){ m.className = "idea-msg mt-2 err"; m.textContent = err && err.code === "link" ? "The link needs to start with https://" : "Couldn't save that just now."; } }
+  if(e.target.id === "spCpdForm"){ e.preventDefault(); const tt = $("#spcT").value.trim(); if(!tt){ $("#spcT").focus(); return; }
+    const A = {...(spInfo.about || {})}; A.cpd = [{t: tt, d: $("#spcD").value, h: +$("#spcH").value || 0, k: $("#spcK").value}, ...(A.cpd || [])].slice(0, 60);
+    try{ await spSave(A); spMsg = "Added to your CPD."; }catch{ spMsg = "Couldn't save that just now."; } spRedraw("#spcT"); } });
+document.addEventListener("input", e => { if(e.target.id === "spLq"){ spLq = e.target.value; const pos = e.target.selectionStart; spRedraw("#spLq"); const i = $("#spLq"); if(i) try{ i.setSelectionRange(pos, pos); }catch{} } if(e.target.id === "spfBio"){ const n = $("#spfBioN"); if(n) n.textContent = e.target.value.length; } });
+document.addEventListener("keydown", e => { const t = e.target.closest && e.target.closest("[data-sp-tab]"); if(!t || !["ArrowRight", "ArrowLeft", "Home", "End"].includes(e.key)) return; e.preventDefault(); const ks = SP_TABS.map(x => x[0]), i = ks.indexOf(spTab); spTab = e.key === "Home" ? ks[0] : e.key === "End" ? ks[ks.length - 1] : ks[(i + (e.key === "ArrowRight" ? 1 : -1) + ks.length) % ks.length]; spRedraw(`#spT-${spTab}`); });
+
+/* ===== round 60 (v116): Crafti as a live chat in the bottom right corner of every page. It opens as a small window, knows which page and lesson you're on,
+   and its chats are the same ones as on the Crafti page, so you can carry on there with more room. ===== */
+let cfOpen = false, cfCur = "", cfBusy = false, cfErr = "", cfDraft = "", cfAbort = null, cfUnread = false, cfCtx = true;
+const cfChat = () => asChats.find(c => c.id === cfCur) || null;
+const cfOk = () => { try{ return !window.claude && !!(me && me.email) && asCan() && !phoneForm; }catch{ return false; } };
+const CF_VIEW = {home: "the dashboard", week: "This week", lesson: "a lesson", seq: "Planning", results: "Results", marker: "Second Marker", tools: "AI Tools", library: "the resource library", learners: "Learners", roadmap: "the roadmap", settings: "Settings"};
+function cfContext(){ if(!cfCtx) return ""; const bits = [`The teacher is on ${CF_VIEW[view] || "Crafticulum"} right now.`];
+  try{ if(view === "lesson" && current && !current.example){ const m = current.meta || {}, o = current.objectives || {};
+      bits.push(`The lesson open on screen is "${tkScrub(current.title || "")}"${m.unit ? `, ${tkScrub(m.unit)}` : ""}${m.course ? `, ${tkScrub(m.course)}${m.level ? " " + m.level : ""}` : ""}.${o.all ? ` Objectives: all will ${tkScrub(o.all)}${o.most ? "; most will " + tkScrub(o.most) : ""}${o.some ? "; some will " + tkScrub(o.some) : ""}.` : ""} Parts: ${teachOf(current).map(t => tkScrub(t.title || "")).filter(Boolean).slice(0, 6).join(", ")}. Tasks: ${tasksOf(current).map(t => tkScrub(t.title || "")).filter(Boolean).slice(0, 6).join(", ")}. If they say "this lesson", they mean this one.`); } }catch{}
+  return bits.join(" "); }
+function cfStarters(){ if(view === "lesson" && current && !current.example) return ["Give me a quick hook for this lesson", "How can I stretch the Distinction learners here?", "Three questions to check understanding"];
+  if(view === "learners") return ["How do I support a learner who's fallen behind?", "Ideas for chasing late resubmissions"];
+  if(view === "seq") return ["Help me order the units for this year", "How do I fit revision into a busy term?"];
+  return ["Plan a starter for tomorrow", "Write a parent email about missing work", "What can Crafticulum do for me?"]; }
+const CF_ICO = {send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>', stop: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>', big: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>', plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>', x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
+function cfMsgs(){ const c = cfChat();
+  if(!c || !c.msgs.length) return `<div class="cf-hi">${CRAFTI("cf-hero", 1)}<p class="cf-hi-h">Hi${me && me.name ? " " + esc(String(me.name).trim().split(" ")[0]) : ""}! I'm Crafti.</p><p class="cf-hi-t">Ask me anything about your teaching. I can see which page you're on${view === "lesson" && current && !current.example ? ", and the lesson you've got open" : ""}.</p><div class="cf-sugs">${cfStarters().map(t => `<button type="button" class="cf-sug" data-cf-say="${esc(t)}">${esc(t)}</button>`).join("")}</div></div>`;
+  return c.msgs.slice(-40).map((m, i) => m.r === "u" ? `<div class="cf-m cf-u"><div class="cf-b">${esc(m.t).replace(/\n/g, "<br>")}</div></div>` : `<div class="cf-m cf-a">${CRAFTI("cf-av")}<div class="cf-b tk-body">${tkClean(tkMd(m.t))}<div class="cf-acts"><button type="button" class="btn btn-link btn-sm p-0" data-cf-copy="${c.msgs.length > 40 ? c.msgs.length - 40 + i : i}">Copy</button></div></div></div>`).join(""); }
+function cfHtml(){ return `<div class="cf-panel" id="cfPanel" role="dialog" aria-modal="false" aria-labelledby="cfTitle">
+  <div class="cf-head">${CRAFTI("cf-av cf-av-h")}<div class="min-w-0 flex-grow-1"><div class="cf-title" id="cfTitle">Crafti</div><div class="cf-sub"><span class="cf-dot" aria-hidden="true"></span>Crafticulum AI · replies in seconds</div></div>
+    <button type="button" class="cf-ib" data-cf="new" title="New chat" aria-label="Start a new chat">${CF_ICO.plus}</button><button type="button" class="cf-ib" data-cf="big" title="Open on the Crafti page" aria-label="Open this chat on the Crafti page">${CF_ICO.big}</button><button type="button" class="cf-ib" data-cf="close" aria-label="Close the chat">${CF_ICO.x}</button></div>
+  <div class="cf-log" id="cfLog" aria-live="polite">${cfMsgs()}${cfBusy ? `<div class="cf-m cf-a">${CRAFTI("cf-av")}<div class="cf-b"><span class="as-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="visually-hidden">Crafti is typing</span></div></div>` : ""}${cfErr ? `<div class="cf-err" role="alert">${esc(cfErr)}</div>` : ""}</div>
+  <form class="cf-form" id="cfForm"><label class="cf-ctx"><input type="checkbox" class="form-check-input" id="cfCtx" ${cfCtx ? "checked" : ""}> Let Crafti see this page</label>
+    <div class="cf-row"><textarea id="cfIn" class="form-control" rows="1" maxlength="6000" placeholder="Message Crafti..." aria-label="Message Crafti">${esc(cfDraft)}</textarea>${cfBusy ? `<button type="button" class="cf-send" data-cf="stop" aria-label="Stop">${CF_ICO.stop}</button>` : `<button type="submit" class="cf-send" aria-label="Send">${CF_ICO.send}</button>`}</div>
+    <div class="cf-foot">Crafti can get things wrong. Check anything important.</div></form></div>`; }
+function cfPlace(){ const btn = $("#cfBtn"); if(!btn) return; let b = 20, w = innerWidth;
+  document.querySelectorAll(".bnav, .fab, .ph-board, #phBoardBar").forEach(x => { const r = x.getBoundingClientRect(), cs = getComputedStyle(x); if(!r.width || cs.display === "none" || cs.visibility === "hidden" || cs.position !== "fixed") return; if(r.right > w - 90 && r.top < innerHeight) b = Math.max(b, innerHeight - r.top + 12); });
+  document.documentElement.style.setProperty("--cf-b", b + "px"); }
+function cfDraw(scroll){ let root = $("#cfRoot"); const ok = cfWant();
+  if(!ok){ if(root) root.remove(); return; }
+  if(!root){ root = document.createElement("div"); root.id = "cfRoot"; document.body.appendChild(root); }
+  const focusIn = document.activeElement && document.activeElement.id === "cfIn", sel = focusIn ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
+  root.className = "cf-root" + (cfOpen ? " cf-on" : "");
+  root.innerHTML = (cfOpen ? cfHtml() : "") + `<button type="button" class="cf-btn" id="cfBtn" aria-expanded="${cfOpen}" aria-controls="cfPanel" aria-label="${cfOpen ? "Close the chat with Crafti" : "Chat with Crafti"}">${cfOpen ? CF_ICO.x : CRAFTI("cf-face")}${cfUnread && !cfOpen ? `<span class="cf-badge" aria-hidden="true"></span>` : ""}</button>${!cfOpen && !cfSeen() ? `<div class="cf-tip" aria-hidden="true">Need a hand? Chat with me</div>` : ""}`;
+  cfPlace(); const log = $("#cfLog"); if(log && scroll !== false) log.scrollTop = log.scrollHeight;
+  const ta = $("#cfIn"); if(ta){ cfGrow(ta); if(focusIn){ ta.focus({preventScroll: true}); try{ ta.setSelectionRange(sel[0], sel[1]); }catch{} } } }
+const cfSeen = () => { try{ return localStorage.getItem("cc_cf_seen") === "1"; }catch{ return true; } };
+function cfGrow(ta){ ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight + 2) + "px"; }
+function cfToggle(on){ cfOpen = on == null ? !cfOpen : !!on; if(cfOpen){ cfUnread = false; try{ localStorage.setItem("cc_cf_seen", "1"); }catch{} try{ asLoad(); }catch{} } cfDraw(); if(cfOpen){ const t = $("#cfIn"); if(t) t.focus({preventScroll: true}); } else { const b = $("#cfBtn"); if(b) b.focus({preventScroll: true}); } }
+async function cfSend(text){ text = tkScrub(String(text || "").trim()).slice(0, 6000); if(!text || cfBusy) return; if(!sampleFn){ cfErr = "Crafti isn't available just now. Try again in a moment."; return cfDraw(); }
+  let c = cfChat(); if(!c){ c = {id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), title: text.replace(/\s+/g, " ").slice(0, 60), msgs: [], unit: "", createdAt: Date.now(), from: "popup"}; asChats.unshift(c); cfCur = c.id; }
+  const keepF = asFile, keepU = asUnit; asFile = null; asUnit = ""; let prompt; try{ prompt = asPrompt(c, text); }finally{ asFile = keepF; asUnit = keepU; }
+  const ctx = cfContext(); if(ctx) prompt = prompt.replace(/\n\nTeacher: (?![\s\S]*\n\nTeacher: )/, `\n\nWhere they are: ${ctx} You're in a small chat window, so keep replies short unless they ask for more.\n\nTeacher: `);
+  c.msgs.push({r: "u", t: text, at: Date.now()}); cfBusy = true; cfErr = ""; cfDraft = ""; cfAbort = new AbortController(); cfDraw();
+  try{ const r = await sampleFn(prompt, {signal: cfAbort.signal, meta: {tool: "chat", mins: 0, signal: cfAbort.signal}}), t = String((r && r.text) || (typeof r === "string" ? r : "")).trim(); if(!t) throw {code: "invalid_json"}; c.msgs.push({r: "a", t: t.slice(0, 20000), at: Date.now()}); asSave(c); if(!cfOpen) cfUnread = true; }
+  catch(e){ c.msgs.pop(); if(!c.msgs.length){ asChats = asChats.filter(x => x !== c); cfCur = ""; } cfDraft = text; if(!(e && (e.name === "AbortError" || e.code === "aborted"))) cfErr = (e && e.code === "noperm") ? "Crafti isn't switched on for you. Ask your institution's manager." : tkWhy(e); }
+  finally{ cfBusy = false; cfAbort = null; cfDraw(); } }
+document.addEventListener("click", e => { const t = e.target; if(!t.closest || !t.closest("#cfRoot")) return;
+  if(t.closest("#cfBtn")) return cfToggle();
+  const s = t.closest("[data-cf-say]"); if(s) return cfSend(s.dataset.cfSay);
+  const cp = t.closest("[data-cf-copy]"); if(cp){ const c = cfChat(), m = c && c.msgs[+cp.dataset.cfCopy]; if(m) navigator.clipboard.writeText(m.t).then(() => { cp.textContent = "Copied"; setTimeout(() => { cp.textContent = "Copy"; }, 1500); }).catch(() => {}); return; }
+  const a = t.closest("[data-cf]"); if(!a) return; const k = a.dataset.cf;
+  if(k === "close") return cfToggle(false);
+  if(k === "new"){ if(cfBusy) return; cfCur = ""; cfErr = ""; cfDraft = ""; cfDraw(); const i = $("#cfIn"); if(i) i.focus(); return; }
+  if(k === "stop"){ if(cfAbort) cfAbort.abort(); return; }
+  if(k === "big"){ const id = cfCur; cfOpen = false; asCur = id || asCur; setView("assistant"); return; } });
+document.addEventListener("submit", e => { if(e.target.id !== "cfForm") return; e.preventDefault(); const i = $("#cfIn"); cfSend(i ? i.value : ""); });
+document.addEventListener("input", e => { if(e.target.id === "cfIn"){ cfDraft = e.target.value; cfGrow(e.target); } });
+document.addEventListener("change", e => { if(e.target.id === "cfCtx") cfCtx = e.target.checked; });
+document.addEventListener("keydown", e => { if(e.target.id === "cfIn" && e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); cfSend(e.target.value); return; }
+  if(e.key === "Escape" && cfOpen && document.activeElement && document.activeElement.closest && document.activeElement.closest("#cfRoot") && !document.querySelector(".vd, #spBack, .modal.show")){ e.preventDefault(); cfToggle(false); } });
+addEventListener("resize", () => cfPlace());
+const cfWant = () => cfOk() && view !== "assistant" && !document.querySelector(".vd");
+const _render60 = render;
+render = function(){ const r = _render60.apply(this, arguments); try{ if(!!$("#cfRoot") !== cfWant()) cfDraw(); else if(cfOpen && !cfChat()) cfDraw(false); else cfPlace(); }catch(e){ console.error(e); } return r; };
+setInterval(() => { try{ if(!!$("#cfRoot") !== cfWant()) cfDraw(); else cfPlace(); }catch{} }, 1500);
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
