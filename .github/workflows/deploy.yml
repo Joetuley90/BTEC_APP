@@ -1,0 +1,27 @@
+# Tells the live site to fetch a release the moment it is pushed.
+# It needs one repository secret, CRAFTICULUM_DEPLOY_URL: the address shown in
+# Crafticulum under Settings, Site setup, Updates. Without it this does nothing.
+# No passwords or keys for the server are kept here: the site fetches its own release.
+name: Deploy Crafticulum
+on:
+  push:
+    branches: [main]
+    paths:
+      - crafticulum-release.zip
+      - crafticulum/version.json
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the site to update
+        env:
+          DEPLOY_URL: ${{ secrets.CRAFTICULUM_DEPLOY_URL }}
+        run: |
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "CRAFTICULUM_DEPLOY_URL isn't set, so nothing was deployed."
+            exit 0
+          fi
+          curl -fsS --max-time 240 --retry 2 --retry-delay 40 "${DEPLOY_URL}&sha=${GITHUB_SHA}"
