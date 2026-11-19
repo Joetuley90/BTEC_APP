@@ -1124,5 +1124,63 @@ WHERE YOU TEACH: THE EDUCATION FRAMEWORK (v97)
   Qualifications Wales or the Scottish qualifications body in this release.
   Subjects and lessons saved before v97 are untouched and work as before.
 
+WHAT'S NEW IN v98
+
+THE OFQUAL REGISTER (v98)
+  Settings, Subjects, Details on a subject: "Find it on the Ofqual register".
+  Type part of the title or the qualification number. The server asks the
+  regulator's public register (register-api.ofqual.gov.uk, no key needed) and
+  shows what it finds, marked Available, Teach-out or Withdrawn from the
+  register's own dates. "Use this" fills in the title, number, awarding
+  organisation, level, type and status, and the subject shows "On the Ofqual
+  register" with who matched it and when. "Check again" asks the register
+  afresh and changes the status if the qualification has been withdrawn.
+  - It covers qualifications regulated by Ofqual (England) and CCEA
+    Regulation (Northern Ireland). Wales and Scotland still record their own
+    check by hand.
+  - Answers are kept for a day in data/_register so the same search isn't
+    sent twice.
+  - Your web host must allow outgoing connections to
+    register-api.ofqual.gov.uk. If it doesn't, the page says the register
+    couldn't be reached and nothing else is affected.
+  New file: register.php.
+
+MY EDUCATION PROFILE (v98)
+  Each person can say where and what they teach, in five short steps that can
+  all be skipped: country (the four nations, or international), setting,
+  institution, what they teach (role, subjects, stages, levels, awarding
+  organisations, qualifications), finish.
+  - People who haven't done it see a card on the dashboard. Nobody is stopped
+    from using the app. It's also in Settings, You, "My education profile".
+  - Lessons, AI Tools and Crafti start from it: the AI is told the role,
+    subjects, stage, setting and country (not the institution's name), and
+    where a department hasn't set "Where you teach", the profile is used.
+  - Choosing an institution is information only. It never gives access to a
+    college's workspace, lessons or settings: that still goes through Team.
+  - Several institutions can be chosen, with one marked as the main one, or
+    "I work independently", or one typed in by hand if it isn't listed.
+
+THE INSTITUTION DIRECTORY (v98)
+  Settings, Site, "Institution directory" (super admin only). The list people
+  search in step three, by name, town, postcode or reference number.
+  - England: "Read it in now" downloads the Department for Education's Get
+    Information About Schools file and reads it in. The address is in the box
+    and can be changed. NOTE: this address could not be tested from where
+    this release was built. If it fails, get the current "all establishment
+    data" address from the Downloads page of
+    get-information-schools.service.gov.uk and paste it in, or download the
+    file yourself, put it in data/_inst/import by FTP and read it in from
+    there.
+  - Any other official list (Scotland, Wales, Northern Ireland, universities,
+    training providers): give the CSV's web address or put the file in
+    data/_inst/import, then say which column is the name, town, postcode,
+    reference, type and open/closed status.
+  - Closed institutions are kept and shown as Closed, below the open ones.
+  - Each list records where it came from, when, who read it in and how many
+    rows. Lists set to refresh are read again weekly by the same scheduled
+    job as notifications (Settings, Notifications shows its address).
+  - Until a list is read in, people type their institution's name.
+  New file: inst-lib.php. Lists are kept in data/_inst.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.
