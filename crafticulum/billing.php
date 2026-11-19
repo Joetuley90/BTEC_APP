@@ -2,7 +2,7 @@
 /*
  * Crafticulum: plans and payments.
  *
- * Every college is on a plan (Free, Teacher, Department or Institution). Paid plans are monthly subscriptions taken by Stripe:
+ * Every institution is on a plan (Free, Teacher, Department or Institution). Paid plans are monthly subscriptions taken by Stripe:
  * this file starts a payment (in Stripe's form inside the app when the publishable key is set, on Stripe's own page when it isn't),
  * shows the card and invoices, cancels and resumes, and listens for Stripe telling it that a subscription started, changed or ended.
  * No card details ever touch this server: they are typed into Stripe's own form.
@@ -35,7 +35,7 @@ function stripe(string $method, string $path, array $params = []): array {
     if ($code >= 400) { $m = (string) ($j['error']['message'] ?? 'Stripe said no.'); ccErr('payment', 'Stripe: ' . $m); return ['ok' => false, 'error' => $m, 'code' => $code]; }
     return ['ok' => true, 'data' => $j];
 }
-/* what Stripe says about a subscription becomes the college's plan */
+/* what Stripe says about a subscription becomes the institution's plan */
 function billApply(string $college, array $sub): bool {
     $a = ccAccounts(); if (!isset($a['colleges'][$college])) return false;
     $c = $a['colleges'][$college]; $bill = (array) ($c['bill'] ?? []); $status = (string) ($sub['status'] ?? '');
@@ -50,7 +50,7 @@ function billApply(string $college, array $sub): bool {
     $a['colleges'][$college]['plan'] = $live ? $plan : 'free';
     if (!ccSaveAccounts($a)) return false;
     if ($live && $old !== '' && $old !== $id) stripe('DELETE', '/v1/subscriptions/' . rawurlencode($old));    // they changed plan: the earlier subscription stops
-    /* tell whoever manages the college, once, when something changes */
+    /* tell whoever manages the institution, once, when something changes */
     $pl = ccPlans($a); $name = $live ? (string) $pl[$plan]['name'] : ''; $when = $end ? date('j F Y', $end) : ''; $where = "Settings, Plan and billing:\n" . ccAppUrl();
     if ($live && $old !== $id) ccCollegeMail($a, $college, "You're on the $name plan", "Thank you. Your Crafticulum account is now on the $name plan" . ($when ? ", and the next payment is on $when" : '') . ".\n\nThis month you have " . ($pl[$plan]['builds'] > 0 ? $pl[$plan]['builds'] : 'unlimited') . " builds with Crafticulum AI and " . ($pl[$plan]['checks'] > 0 ? $pl[$plan]['checks'] : 'unlimited') . " Second Marker checks.\n\nYou can see what you've used, change your card, get your invoices or cancel at any time in $where");
     elseif ($live && $bill['cancelAt'] && empty($c['bill']['cancelAt'])) ccCollegeMail($a, $college, "Your $name plan ends on $when", "Your $name plan has been cancelled and won't renew. You keep everything it includes until $when. After that your account moves to the Free plan.\n\nNothing you've made is deleted. If you change your mind before then, you can keep the plan in $where");
@@ -103,7 +103,7 @@ $status = function () use (&$a, $cid, $me, $pubPlans, $money) { $c = ccCollege($
             'canManage' => !empty($me['admin'])]; };
 if ($action === 'status') { if (empty($me['isLead'])) out(403, ['error' => 'noperm']); out(200, $status()); }
 
-/* ---------- the college's manager: pay, or change the card ---------- */
+/* ---------- the institution's manager: pay, or change the card ---------- */
 if (in_array($action, ['checkout', 'portal', 'confirm', 'manage', 'cancel', 'resume', 'card', 'cardconfirm'], true)) {
     if (empty($me['admin'])) out(403, ['error' => 'noperm']);
     if (!ccBillingOn() || !ccStripeReady()) out(400, ['error' => 'off']);

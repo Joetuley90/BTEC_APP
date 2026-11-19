@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v113, 19 Nov 2026: the sign-in pop-up now matches dark mode, on top of v112's pop-up and empty demo). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v113.zip` and `crafticulum-release.zip`: the same files as one zip (1,860,140 bytes).
+- `crafticulum/`: every file of the current release (v114, 19 Nov 2026: an 18-month roadmap people vote on, five AI tools to start with and the rest on the roadmap, "institution" instead of "college" inside the app, and the sign-in pop-up matching dark mode). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v114.zip` and `crafticulum-release.zip`: the same files as one zip (1,872,422 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

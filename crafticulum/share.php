@@ -274,7 +274,7 @@ if ($action === 'get') {
         $d['questions'] = array_map(fn($q) => ['q' => $q['q'], 'options' => $q['options']], $d['questions'] ?? []);
         $d['open'] = !empty($s['open']);
     }
-    // the page carries the name, logo and colour of the college whose teacher shared it
+    // the page carries the name, logo and colour of the institution whose teacher shared it
     if (!function_exists('ccSite')) require __DIR__ . '/auth-lib.php';
     $site = null; if (function_exists('ccSite')) { $acc = ccAccounts(); $sd = (string) ($s['dept'] ?? ''); $site = ccSite($acc, $sd !== '' && isset($acc['depts'][$sd]) ? ccCollegeOf($acc, $sd) : null); unset($site['conf']); }
     out(200, ['kind' => $s['kind'], 'data' => $d, 'updatedAt' => $s['updatedAt'] ?? 0, 'site' => $site]);

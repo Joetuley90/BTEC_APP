@@ -84,12 +84,12 @@ function ccConf(string $k) {
     $v = $s[$k] ?? ''; if ($v !== '' && $v !== null) return $v;
     return defined($k) ? constant($k) : '';
 }
-/* the college's name, logo and colour, shown on the sign-in page, in the app and on student pages */
-/* Crafticulum's own support address. Used on the original site until a contact email is set in Settings. A new college's site never uses it: its messages go to its own people */
+/* the institution's name, logo and colour, shown on the sign-in page, in the app and on student pages */
+/* Crafticulum's own support address. Used on the original site until a contact email is set in Settings. A new institution's site never uses it: its messages go to its own people */
 const CC_SUPPORT_EMAIL = 'app@crafticulum.co.uk';
 /* ---------- colleges ----------
-   One site can hold several colleges. Each has its own name, logo, colour, contact address, departments and people.
-   The super admin looks after the whole site and every college. A college manager looks after one college. */
+   One site can hold several institutions. Each has its own name, logo, colour, contact address, departments and people.
+   The super admin looks after the whole site and every institution. An institution manager looks after one institution. */
 function ccCollegeIds(array $a): array { return array_keys((array) ($a['colleges'] ?? [])); }
 function ccCollegeOf(array $a, string $dept): string { $c = (string) ($a['depts'][$dept]['college'] ?? ''); return isset($a['colleges'][$c]) ? $c : (string) (array_key_first((array) ($a['colleges'] ?? [])) ?? ''); }
 function ccCollege(array $a, string $id): array { $c = (array) ($a['colleges'][$id] ?? []);
@@ -97,7 +97,7 @@ function ccCollege(array $a, string $id): array { $c = (array) ($a['colleges'][$
             'off' => !empty($c['off']), 'cap' => max(0, (int) ($c['cap'] ?? 0)), 'created' => (int) ($c['created'] ?? 0),
             'plan' => isset(CC_PLANS[(string) ($c['plan'] ?? '')]) ? (string) $c['plan'] : 'inst', 'bill' => (array) ($c['bill'] ?? [])]; }
 /* ---------- plans ----------
-   Every college is on a plan. A college set up by the super admin is on Institution unless they choose otherwise. Someone who signs up on their own starts on Free.
+   Every institution is on a plan. An institution set up by the super admin is on Institution unless they choose otherwise. Someone who signs up on their own starts on Free.
    Limits are per month and 0 means no limit. The super admin can change the prices and limits in Settings, Plans and payments. */
 const CC_PLANS = ['free' => ['name' => 'Free', 'price' => 0, 'people' => 1, 'depts' => 1, 'builds' => 10, 'checks' => 2, 'for' => 'Trying it out'],
                   'pro' => ['name' => 'Teacher', 'price' => 499, 'people' => 1, 'depts' => 1, 'builds' => 100, 'checks' => 40, 'for' => 'Individual lecturers'],
@@ -109,12 +109,12 @@ function ccPlans(?array $a = null): array { $set = (array) ((($a ?? ccAccounts()
     foreach (CC_PLANS as $k => $p) { $s = (array) ($set[$k] ?? []); foreach (['price', 'people', 'depts', 'builds', 'checks'] as $f) if (isset($s[$f]) && !($k === 'inst' && $f === 'price') && !($k === 'free' && $f === 'price')) $p[$f] = max(0, (int) $s[$f]); $o[$k] = $p; }
     return $o; }
 function ccPlanOf(array $a, string $college): array { $c = ccCollege($a, $college); return ['id' => $c['plan']] + ccPlans($a)[$c['plan']]; }
-/* how much of this month's allowance a college has used */
+/* how much of this month's allowance an institution has used */
 function ccPlanUsed(string $college, ?array $u = null): array { $r = (array) ((($u ?? ccUsageRead())['colleges'] ?? [])[$college] ?? []); return ['builds' => (int) ($r['builds'] ?? 0), 'checks' => (int) ($r['checks'] ?? 0)]; }
 function ccSaved(string $college = '', ?array $u = null): array { $s = (array) (($u ?? ccUsageRead())['saved'] ?? []); $r = (array) ($college === '' ? ($s['total'] ?? []) : (($s['colleges'] ?? [])[$college] ?? [])); return ['n' => (int) ($r['n'] ?? 0), 'mins' => (int) ($r['mins'] ?? 0)]; }
-function ccCollegePeople(array $a, string $college): int { $d = ccCollegeDepts($a, $college); $s = ccSupers(); return count(array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, $s, true) && in_array((string) ($u['dept'] ?? ''), $d, true), ARRAY_FILTER_USE_BOTH)); }   // super admins belong to no college, so they never take a place
+function ccCollegePeople(array $a, string $college): int { $d = ccCollegeDepts($a, $college); $s = ccSupers(); return count(array_filter($a['users'], fn($u, $e) => ccActive($u) && empty($u['demo']) && !in_array((string) $e, $s, true) && in_array((string) ($u['dept'] ?? ''), $d, true), ARRAY_FILTER_USE_BOTH)); }   // super admins belong to no institution, so they never take a place
 function ccCollegeDepts(array $a, string $college): array { return array_values(array_filter(array_keys($a['depts']), fn($d) => $d !== CC_DEMO_DEPT && ccCollegeOf($a, (string) $d) === $college)); }
-/* what a page needs to know about the site. With a college named, that college's name, logo and colour; without one, the site's only college, or none if there are several */
+/* what a page needs to know about the site. With an institution named, that institution's name, logo and colour; without one, the site's only college, or none if there are several */
 function ccSite(?array $a = null, ?string $college = null): array { $a = $a ?? ccAccounts(); $s = (array) ($a['site'] ?? []); $ids = ccCollegeIds($a);
     $one = $college !== null && isset($a['colleges'][$college]) ? $college : (count($ids) === 1 ? (string) $ids[0] : '');
     $c = $one !== '' ? ccCollege($a, $one) : ['name' => '', 'logo' => '', 'color' => '', 'contact' => '', 'plain' => !empty($s['plain'])];
@@ -122,7 +122,7 @@ function ccSite(?array $a = null, ?string $college = null): array { $a = $a ?? c
     $org = (string) ($s['org'] ?? ''); if ($org === '') $org = count($ids) > 1 ? '' : $c['name'];
     return ['name' => $c['name'], 'logo' => $c['logo'], 'color' => $c['color'], 'plain' => $plain, 'contact' => (string) ($c['contact'] !== '' ? $c['contact'] : (($s['contact'] ?? '') !== '' ? $s['contact'] : ($home ? CC_SUPPORT_EMAIL : ''))),
             'front' => array_key_exists('front', $s) ? !empty($s['front']) : $home, 'publicBrand' => !empty($s['publicBrand']) && count($ids) < 2, 'org' => $org, 'college' => $one, 'colleges' => count($ids)]; }
-/* what people who aren't signed in are shown: the college's name, logo and colour only if the site has chosen to show them before sign-in */
+/* what people who aren't signed in are shown: the institution's name, logo and colour only if the site has chosen to show them before sign-in */
 function ccSitePublic(?array $a = null): array { $s = ccSite($a); if (!$s['publicBrand']) { $s['name'] = ''; $s['logo'] = ''; $s['color'] = ''; } return $s; }   // 'org' stays: the terms and privacy pages must still say who runs the site
 /* ---------- usage: how much each department and person asks of Crafticulum AI, month by month ---------- */
 function ccUsageSet(?array $a = null): array { $u = (array) ((($a ?? ccAccounts())['site'] ?? [])['usage'] ?? []);
@@ -139,7 +139,7 @@ function ccUsageAdd(array $me, int $in, int $out, string $model = '', string $ki
         $note = null; $freeUse = false; try { if (ccBillingOn() && empty($me['demo']) && ($me['role'] ?? '') !== 'superadmin' && ($me['college'] ?? '') !== '') $freeUse = ccPlanOf(ccAccounts(), (string) $me['college'])['id'] === 'free'; } catch (\Throwable $e) {}
         $bump = function (&$r) use ($in, $out) { $r['calls'] = (int) ($r['calls'] ?? 0) + 1; $r['in'] = (int) ($r['in'] ?? 0) + $in; $r['out'] = (int) ($r['out'] ?? 0) + $out; };
         $j['total'] = (array) ($j['total'] ?? []); $bump($j['total']);
-        $sup = ($me['role'] ?? '') === 'superadmin';   // a super admin's own use is the site's, not the college they happen to be looking at
+        $sup = ($me['role'] ?? '') === 'superadmin';   // a super admin's own use is the site's, not the institution they happen to be looking at
         $d = (string) ($me['dept'] ?? 'main'); if (!$sup) { $j['depts'][$d] = (array) ($j['depts'][$d] ?? []); $bump($j['depts'][$d]); } else { $j['site'] = (array) ($j['site'] ?? []); $bump($j['site']); }
         $e = (string) ($me['email'] ?? ''); $j['users'][$e] = (array) ($j['users'][$e] ?? []); $bump($j['users'][$e]); $j['users'][$e]['name'] = (string) ($me['name'] ?? ''); $j['users'][$e]['dept'] = $d;
         $day = date('d'); $j['days'][$day] = (array) ($j['days'][$day] ?? []); $bump($j['days'][$day]);
@@ -164,7 +164,7 @@ function ccUpsell(array $a, string $college, string $k): array { $cur = ccPlanOf
     foreach (ccPlans($a) as $id => $p) { if ($p['price'] <= 0 || $id === $cur['id']) continue; if ($p['people'] > 0 && $n > $p['people']) continue; if ($p[$k] > 0 && $cur[$k] > 0 && $p[$k] <= $cur[$k]) continue; if ($cur['price'] > 0 && $p['price'] <= $cur['price']) continue;
         return ['next' => ['id' => $id, 'name' => $p['name'], 'priceText' => '£' . ($p['price'] % 100 ? number_format($p['price'] / 100, 2) : (string) intdiv($p['price'], 100)), 'builds' => (int) $p['builds'], 'checks' => (int) $p['checks']]]; }
     return ['next' => null]; }
-/* an email to whoever manages a college */
+/* an email to whoever manages an institution */
 function ccCollegeMail(array $a, string $college, string $subject, string $text): int {
     $d = ccCollegeDepts($a, $college); $n = 0; $ready = ccMailReady();
     foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && empty($u['demo']) && in_array((string) ($u['dept'] ?? ''), $d, true) && filter_var((string) $e, FILTER_VALIDATE_EMAIL)) { $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]);
@@ -196,8 +196,8 @@ function ccUsageBlocked(array $me, string $kind = ''): string {
     if ($s['capCalls'] && ($t['calls'] ?? 0) >= $s['capCalls']) return 'This month\'s limit for building with Crafticulum AI has been reached (' . $s['capCalls'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
     if ($s['capCost'] && ($s['in'] || $s['out']) && ccUsageCost($t, $s) >= $s['capCost']) return 'This month\'s spending limit for Crafticulum AI has been reached. It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
     $acc = ccAccounts(); $cid = (string) ($me['college'] ?? ccCollegeOf($acc, (string) ($me['dept'] ?? ''))); $cap = $cid !== '' ? ccCollege($acc, $cid)['cap'] : 0;
-    if ($sup) return '';   // the limits below are a college's and a department's own
-    if ($cap) { $n = 0; foreach (ccCollegeDepts($acc, $cid) as $d) $n += (int) ($u['depts'][$d]['calls'] ?? 0); if ($n >= $cap) return 'Your college has reached this month\'s limit for building with Crafticulum AI (' . $cap . ' requests). It starts again on the 1st. Ask whoever looks after the site to raise it.'; }
+    if ($sup) return '';   // the limits below are an institution's and a department's own
+    if ($cap) { $n = 0; foreach (ccCollegeDepts($acc, $cid) as $d) $n += (int) ($u['depts'][$d]['calls'] ?? 0); if ($n >= $cap) return 'Your institution has reached this month\'s limit for building with Crafticulum AI (' . $cap . ' requests). It starts again on the 1st. Ask whoever looks after the site to raise it.'; }
     if ($s['capDept'] && (($u['depts'][(string) ($me['dept'] ?? '')]['calls'] ?? 0) >= $s['capDept'])) return 'Your department has reached this month\'s limit for building with Crafticulum AI (' . $s['capDept'] . ' requests). It starts again on the 1st. The site admin can raise it in Settings, Usage and cost.';
     return '';
 }
@@ -209,7 +209,7 @@ function ccAccounts(): array {
     // the first department used to be named after the two subjects it started with
     if (isset($j['depts']['main']['name']) && $j['depts']['main']['name'] === 'Esports & IT') $j['depts']['main']['name'] = 'Main department';
     if (empty($j['users']) || !is_array($j['users'])) $j['users'] = [];
-    /* colleges. A site from before colleges existed becomes one college holding every department, with the name, logo and colour it already had.
+    /* colleges. A site from before colleges existed becomes one institution holding every department, with the name, logo and colour it already had.
        Nothing is written here: it is the same answer every time until something is saved. */
     if (empty($j['colleges']) || !is_array($j['colleges'])) { $s = (array) ($j['site'] ?? []);
         $j['colleges'] = ['main' => ['name' => (string) ($s['name'] ?? ''), 'logo' => (string) ($s['logo'] ?? ''), 'color' => (string) ($s['color'] ?? ''), 'contact' => (string) ($s['contact'] ?? ''), 'plain' => !empty($s['plain']), 'created' => (int) ($j['depts'][array_key_first($j['depts'])]['created'] ?? time())]]; }
@@ -243,18 +243,18 @@ function ccMe(): ?array {
     }
     $u['email'] = $uid;
     if ($u['role'] === 'superadmin') {
-        // the super admin belongs to no college. With more than one college on the site they stand outside all of them until they choose to work inside one
+        // the super admin belongs to no institution. With more than one institution on the site they stand outside all of them until they choose to work inside one
         $u['inside'] = count(ccCollegeIds($a)) < 2 || !empty($_SESSION['inside']);
         $d = $u['inside'] ? (string) ($_SESSION['dept'] ?? ($u['dept'] ?? '')) : '';
         if (!isset($a['depts'][$d])) $d = (string) array_key_first($a['depts']);
         $u['dept'] = $d;
     } elseif (!isset($a['depts'][$u['dept'] ?? ''])) return null;
-    elseif ($u['role'] === 'owner') {   // a college manager can work in any department of their own college
+    elseif ($u['role'] === 'owner') {   // an institution manager can work in any department of their own institution
         $home = ccCollegeOf($a, (string) $u['dept']); $d = (string) ($_SESSION['dept'] ?? '');
         if ($d !== '' && isset($a['depts'][$d]) && $d !== CC_DEMO_DEPT && ccCollegeOf($a, $d) === $home) $u['dept'] = $d;
     }
     $u['college'] = ccCollegeOf($a, (string) $u['dept']);
-    if ($u['role'] !== 'superadmin' && $uid !== CC_DEMO_USER && ccCollege($a, $u['college'])['off']) return null;   // the college has been switched off
+    if ($u['role'] !== 'superadmin' && $uid !== CC_DEMO_USER && ccCollege($a, $u['college'])['off']) return null;   // the institution has been switched off
     $p = ccPerms($u);
     $u['canGen'] = $p['gen']; $u['canTeam'] = $p['team']; $u['canSubjects'] = $p['subjects']; $u['canDates'] = $p['dates'];
     $u['canEdit'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true) || !empty($u['canEdit']);
@@ -262,7 +262,7 @@ function ccMe(): ?array {
     $u['collegeName'] = ccCollege($a, $u['college'])['name'];
     if ($u['role'] === 'superadmin' && !$u['inside']) { $u['collegeName'] = ''; $u['deptName'] = ''; }
     $u['isLead'] = in_array($u['role'], ['hod', 'owner', 'superadmin'], true);
-    $u['admin'] = in_array($u['role'], ['owner', 'superadmin'], true);   // runs a college: its departments, people and profile
+    $u['admin'] = in_array($u['role'], ['owner', 'superadmin'], true);   // runs an institution: its departments, people and profile
     $u['demo'] = $uid === CC_DEMO_USER;
     if ($u['demo'] && !ccDemoOn()) return null;
     return $u;
@@ -373,11 +373,11 @@ function ccPublic(array $u): array {
 }
 
 /* ---------- rooms: the parts of the app that can be switched on and off.
-   The super admin can close a room for the whole site or for one college. A college's manager chooses which rooms its heads of department
+   The super admin can close a room for the whole site or for one institution. An institution's manager chooses which rooms its heads of department
    and its teachers get. Every plan has every room; plans differ in how much can be built, not in what is there. ---------- */
 const CC_ROOMS = ['tools' => ['AI Tools', 'The toolkit: worksheets, quizzes, reports, emails and the rest.'], 'assistant' => ['Crafti', 'The assistant you can chat to.'], 'library' => ['Resource library', 'Lessons and saved resources in one place.'],
     'learners' => ['Learners', 'Class lists and each learner against each criterion.'], 'handin' => ['Hand-in links', 'Students hand in work through a link. Each department still has to switch this on itself.'], 'marker' => ['Second Marker', 'Checking learner work against the criteria. Each department still switches this on itself.']];
-function ccRoomsCollege(array $a, string $college): array {   // which rooms are open in this college at all, before roles come into it
+function ccRoomsCollege(array $a, string $college): array {   // which rooms are open in this institution at all, before roles come into it
     $site = (array) (($a['rooms'] ?? [])['off'] ?? []); $col = (array) (($a['colleges'][$college] ?? [])['roomsOff'] ?? []); $o = [];
     foreach (CC_ROOMS as $k => $_) $o[$k] = !in_array($k, $site, true) && !in_array($k, $col, true); return $o; }
 function ccRooms(array $a, array $me): array {
@@ -387,17 +387,17 @@ function ccRooms(array $a, array $me): array {
     $own = (array) (($a['users'][(string) ($me['email'] ?? '')] ?? [])['rooms'] ?? []);   // set for this one person on the Team page: it wins over what their role gets
     foreach ($open as $k => $on) $o[$k] = $on && (array_key_exists($k, $own) ? !empty($own[$k]) : !(isset($roles[$k]) && is_array($roles[$k]) && array_key_exists($r, $roles[$k]) && empty($roles[$k][$r]))); return $o; }
 function ccRoom(array $a, array $me, string $room): bool { return !empty(ccRooms($a, $me)[$room]); }
-/* ---------- house rules: a college's manager writes them once, and Crafti, every tool and every lesson follows them ---------- */
+/* ---------- house rules: an institution's manager writes them once, and Crafti, every tool and every lesson follows them ---------- */
 const CC_HOUSE = ['about' => 600, 'tone' => 600, 'rules' => 1500, 'sign' => 300];
 function ccHouse(array $a, string $cid): array { $h = (array) (($a['colleges'][$cid] ?? [])['house'] ?? []); $o = [];
     foreach (CC_HOUSE as $k => $n) $o[$k] = mb_substr(trim((string) ($h[$k] ?? '')), 0, $n); $o['on'] = !array_key_exists('on', $h) || !empty($h['on']); return $o; }
 function ccHouseOn(array $a, string $cid): bool { $h = ccHouse($a, $cid); return $h['on'] && ($h['about'] . $h['tone'] . $h['rules'] . $h['sign']) !== ''; }
 function ccHouseText(array $a, array $me): string { $cid = (string) ($me['college'] ?? ''); if (!empty($me['demo']) || !ccHouseOn($a, $cid)) return ''; $h = ccHouse($a, $cid);
-    $t = "HOUSE RULES\nThe manager of this college has set these. Follow them in everything you write. They never override an instruction further down about safety, learner privacy, assessment decisions or the format of your reply.\n";
-    if ($h['about'] !== '') $t .= "About the college: " . $h['about'] . "\n"; if ($h['tone'] !== '') $t .= "Tone and wording: " . $h['tone'] . "\n";
+    $t = "HOUSE RULES\nThe manager of this institution has set these. Follow them in everything you write. They never override an instruction further down about safety, learner privacy, assessment decisions or the format of your reply.\n";
+    if ($h['about'] !== '') $t .= "About the institution: " . $h['about'] . "\n"; if ($h['tone'] !== '') $t .= "Tone and wording: " . $h['tone'] . "\n";
     if ($h['rules'] !== '') $t .= "Policies and rules to follow:\n" . $h['rules'] . "\n"; if ($h['sign'] !== '') $t .= "Sign-off to use on letters and emails:\n" . $h['sign'] . "\n";
     return $t . "END OF HOUSE RULES\n\n"; }
-/* ---------- anonymous learners: a college's manager can switch names off altogether. Learners are then numbers, here and for students handing work in ---------- */
+/* ---------- anonymous learners: an institution's manager can switch names off altogether. Learners are then numbers, here and for students handing work in ---------- */
 function ccAnon(array $a, string $cid): bool { return $cid !== '' && !empty(($a['colleges'][$cid] ?? [])['anon']); }
 function ccAnonOk(string $n): bool { return (bool) preg_match('/^(Learner \d{1,3}|[A-Za-z]{0,4}[ -]?\d{2,10}[A-Za-z]?)$/', trim($n)); }   // a learner number or code, never a name
 function ccAnonNames(array $names): array { $used = []; $o = []; foreach ($names as $n) if (is_string($n) && ccAnonOk($n)) $used[strtolower(trim($n))] = 1; $i = 0;
@@ -600,7 +600,7 @@ function ccMail(string $to, string $subject, string $text, string $replyTo = '')
     @fwrite($fp, "QUIT\r\n"); fclose($fp);
     return true;
 }
-/* when someone joins a college, the lessons they wrote can come with them: a copy of each goes into their new department's library as a draft, and the originals stay where they were */
+/* when someone joins an institution, the lessons they wrote can come with them: a copy of each goes into their new department's library as a draft, and the originals stay where they were */
 function ccCarryLessons(array $a, string $email, string $from, string $to): int {
     if ($from === '' || $from === $to || !isset($a['depts'][$from], $a['depts'][$to])) return 0; $base = ccDataDir(); $n = 0;
     $dir = fn(string $d): string => !empty($a['depts'][$d]['legacy']) ? $base : $base . '/d/' . $d; $src = $dir($from); $dst = $dir($to); if (!is_dir($src) || (!is_dir($dst) && !@mkdir($dst, 0700, true))) return 0;
