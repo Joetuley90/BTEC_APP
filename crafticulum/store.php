@@ -56,7 +56,7 @@ $anon = ccAnon($acc, ccCollegeOf($acc, (string) $dept));
 function anonDoc(string $p, $data) { if (!is_array($data)) return $data;
     if (preg_match('#^data/users/[^/]+/learners/#', $p)) { $s = json_decode((string) ($data['json'] ?? ''), true); if (!is_array($s) || !is_array($s['learners'] ?? null)) return $data;
         $s['learners'] = array_values(array_filter($s['learners'], 'is_array'));
-        foreach ($s['learners'] as $i => $l) { unset($s['learners'][$i]['first'], $s['learners'][$i]['last']); $rf = trim((string) ($l['ref'] ?? '')); if ($rf !== '' && ccAnonOk($rf)) $s['learners'][$i]['name'] = $rf; else unset($s['learners'][$i]['ref']); }   // names from an imported list go too; a reference number stands in for the name
+        foreach ($s['learners'] as $i => $l) { unset($s['learners'][$i]['first'], $s['learners'][$i]['last'], $s['learners'][$i]['note']); $rf = trim((string) ($l['ref'] ?? '')); if ($rf !== '' && ccAnonOk($rf)) $s['learners'][$i]['name'] = $rf; else unset($s['learners'][$i]['ref']); }   // names from an imported list go too; a reference number stands in for the name
         $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $s['learners'])); foreach ($s['learners'] as $i => $l) $s['learners'][$i]['name'] = $n[$i];
         $data['json'] = json_encode($s, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); return $data; }
     if (preg_match('#^data/users/[^/]+/classes/#', $p) && is_array($data['names'] ?? null)) $data['names'] = ccAnonNames(array_values($data['names']));
@@ -145,8 +145,9 @@ if ($action === 'deptlearners') {
     foreach ($who as $e => $u) { foreach (glob($base . '/u/' . sha1((string) $e) . '/' . $dept . '/*.json') ?: [] as $f) {
         $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue;
         $s = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($s) || empty($s['learners']) || !is_array($s['learners'])) continue;
-        $ls = array_slice(array_values(array_filter($s['learners'], 'is_array')), 0, 80); if ($anon) { $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $ls)); foreach ($ls as $i => $l) $ls[$i]['name'] = $n[$i]; }
-        $sets[] = ['by' => (string) ((($u['name'] ?? '') ?: $e)), 'mine' => (string) $e === $me['email'], 'o' => sha1((string) $e), 'set' => ['id' => (string) ($s['id'] ?? ''), 'name' => (string) ($s['name'] ?? ''), 'learners' => $ls, 'marks' => (array) ($s['marks'] ?? []), 'subs' => (array) ($s['subs'] ?? [])]]; } }
+        $ls = array_slice(array_values(array_filter($s['learners'], 'is_array')), 0, 80); foreach ($ls as $i => $l) unset($ls[$i]['note']);   // a teacher's own notes on a learner stay with the teacher
+        if ($anon) { foreach ($ls as $i => $l) { unset($ls[$i]['first'], $ls[$i]['last']); $rf = trim((string) ($l['ref'] ?? '')); if ($rf !== '' && ccAnonOk($rf)) $ls[$i]['name'] = $rf; else unset($ls[$i]['ref']); } $n = ccAnonNames(array_map(fn($l) => (string) ($l['name'] ?? ''), $ls)); foreach ($ls as $i => $l) $ls[$i]['name'] = $n[$i]; }
+        $sets[] = ['by' => (string) ((($u['name'] ?? '') ?: $e)), 'mine' => (string) $e === $me['email'], 'o' => sha1((string) $e), 'set' => ['id' => (string) ($s['id'] ?? ''), 'name' => (string) ($s['name'] ?? ''), 'campus' => mb_substr((string) ($s['campus'] ?? ''), 0, 60), 'learners' => $ls, 'marks' => (array) ($s['marks'] ?? []), 'subs' => (array) ($s['subs'] ?? [])]]; } }
     usort($sets, fn($x, $y) => strcasecmp($x['set']['name'] . $x['by'], $y['set']['name'] . $y['by']));
     out(200, ['sets' => $sets]);
 }

@@ -49,17 +49,18 @@ if ($action === 'profileset') { if (!empty($me['demo'])) out(403, ['error' => 'd
 
 /* the rest is for the super admin: filling and refreshing the directory */
 if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
-$state = function (): array { $l = ccInstLog(); $files = []; foreach ((array) glob(ccInstDir() . '/import/*.{csv,xlsx,txt}', GLOB_BRACE) as $f) if (strpos(basename((string) $f), '_dl-') !== 0) $files[] = basename((string) $f);
+$state = function (): array { $l = ccInstLog(); $files = []; foreach ((array) glob(ccInstDir() . '/import/*.{csv,xlsx,ods,txt}', GLOB_BRACE) as $f) if (strpos(basename((string) $f), '_dl-') !== 0) $files[] = basename((string) $f);
     return ['sources' => array_values((array) $l['sources']), 'runs' => array_slice((array) $l['runs'], 0, 12), 'files' => $files, 'tables' => (bool) ccInstDb(), 'cron' => ccSiteUrl() . 'auth.php?a=pushcron&k=' . substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), 'cronLast' => (int) @file_get_contents(ccInstDir() . '/_cron.txt'), 'presets' => array_map(fn($k) => ['id' => $k] + CC_INST_PRESETS[$k], array_keys(CC_INST_PRESETS))]; };
 if ($action === 'inststate') out(200, $state());
 if ($action === 'instimport') {
     $pre = CC_INST_PRESETS[(string) ($body['preset'] ?? '')] ?? null; $def = ['id' => (string) ($body['id'] ?? ($body['preset'] ?? '')), 'label' => (string) ($body['label'] ?? ($pre['label'] ?? '')), 'nation' => (string) ($body['nation'] ?? ($pre['nation'] ?? 'eng')),
         'url' => trim((string) ($body['url'] ?? ($pre['url'] ?? ''))), 'file' => (string) ($body['file'] ?? ''), 'map' => is_array($body['map'] ?? null) && array_filter($body['map']) ? array_map('strval', $body['map']) : ($pre['map'] ?? []), 'auto' => !empty($body['auto'])];
+    if ($pre && !empty($pre['page']) && $def['file'] === '') { $def['page'] = trim((string) ($body['page'] ?? '')) ?: $pre['page']; $def['find'] = (string) $pre['find']; $def['many'] = !empty($pre['many']); $def['url'] = ''; if (defined('INST_TEST_HOST')) $def['page'] = 'http://' . INST_TEST_HOST . '/' . ($def['id'] === 'ni' ? 'ni-{ay}.html' : $def['id'] . '-page.html'); }   // these lists are found from the page they're published on (the test bench has its own copies)
     $r = ccInstImport($def, (string) (($me['name'] ?? '') ?: $me['email'])); if (isset($r['error'])) out(400, $r);
     ccLog($me['dept'], $me, 'read ' . $r['rows'] . ' institutions into the directory from', $def['label'] ?: $def['id']); out(200, $r + $state());
 }
 /* a file sent up from the super admin's own computer, a piece at a time so the host's upload limit doesn't matter */
-if ($action === 'instupload') { $name = preg_replace('/[^A-Za-z0-9._-]+/', '-', basename((string) ($_GET['name'] ?? ''))); if (!preg_match('/\.(csv|xlsx|txt)$/i', (string) $name) || strlen((string) $name) > 80) out(400, ['error' => 'type']);
+if ($action === 'instupload') { $name = preg_replace('/[^A-Za-z0-9._-]+/', '-', basename((string) ($_GET['name'] ?? ''))); if (!preg_match('/\.(csv|xlsx|ods|txt)$/i', (string) $name) || strlen((string) $name) > 80) out(400, ['error' => 'type']);
     $dir = ccInstDir() . '/import'; if (!is_dir($dir) && !@mkdir($dir, 0700, true)) out(500, ['error' => 'save']); $f = $dir . '/' . $name; $i = (int) ($_GET['i'] ?? 0);
     $raw = (string) file_get_contents('php://input', false, null, 0, 1600001); if (strlen($raw) > 1600000) out(413, ['error' => 'big']); if ($i === 0) @unlink($f); elseif (!is_file($f)) out(400, ['error' => 'order']); if (@filesize($f) > 320 * 1024 * 1024) out(413, ['error' => 'big']);
     if (@file_put_contents($f, $raw, $i === 0 ? LOCK_EX : FILE_APPEND | LOCK_EX) === false) out(500, ['error' => 'save']); out(200, ['ok' => true, 'file' => $name, 'size' => (int) @filesize($f)]); }

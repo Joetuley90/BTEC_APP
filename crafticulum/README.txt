@@ -1317,3 +1317,115 @@ CLASS LISTS FROM A CSV FILE (v106)
 
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.
+
+
+WHAT'S NEW IN v107
+
+A PROFILE FOR EACH LEARNER (v107)
+  Learners: press a learner's name.
+  - One page for that learner: every unit they've been marked on, how many
+    criteria are achieved, each criterion's decision, hand-in and feedback
+    dates, any resubmission (and whether it's overdue), and whether their work
+    was in an internal verification sample.
+  - Files handed in through a hand-in link under their name or reference are
+    listed there for the 30 days they're kept.
+  - Edit details puts a name or reference right. Your notes is a private note
+    only you can see: it is never sent to the AI or to your department.
+  - Download gives the profile as a spreadsheet, a row for each criterion.
+  - The same learner in two of your classes is joined up by their reference
+    number. Names alone are never used to join people up.
+  - Leaders can open the same page from Learners, Whole department. They can
+    look but not change anything, and they never see a teacher's notes.
+  - Anonymous learners: where the college has that switched on, a profile is
+    the learner number and nothing else. No name, no notes, no editing. The
+    server also now removes first names, last names and notes from lists
+    saved before the switch whenever it sends them to anyone.
+
+CLASSES AND CAMPUSES (v107)
+  A group is a real class in the college. Each class can now be given its
+  campus (Learners, beside Group). It shows on the learner's profile, in the
+  download and beside the class in Whole department.
+
+LESSONS COME WITH SOMEONE WHO JOINS (v107)
+  Settings, Your college, Asked to join: "Bring their lessons" is ticked.
+  - Approve, and a copy of every lesson that person wrote in their old
+    workspace goes into the department you chose, as a draft in their name,
+    for its leaders to sign off like any other.
+  - Only lessons they wrote come. Old share links, quiz links and results
+    stay behind, and the originals are left where they were.
+  - Untick the box to bring nothing.
+
+SCHOOL LISTS FOR SCOTLAND, WALES AND NORTHERN IRELAND (v107)
+  Settings, Site setup, Institution directory.
+  - Each government gives its list a new file name every time, so the site
+    opens the page the list is published on and takes the newest file:
+      Scotland           gov.scot, School contact details (Excel)
+      Wales              gov.wales, Address list of schools (OpenDocument)
+      Northern Ireland   education-ni.gov.uk, School level data (several Excel
+                         workbooks, read into one list)
+  - Press Read it in now beside each. With Refresh these every week ticked,
+    the daily scheduled job keeps them fresh, like the England list.
+  - OpenDocument (.ods) files can now be read, as well as CSV and Excel, and
+    every sheet in a workbook that has a name column is read, not only the
+    first. Sheets called Notes, Contents or Closed are skipped.
+  - These three were built against the pages as they are today and tested on
+    copies. If one won't read in on your server, open its page, download the
+    file and add it under Another list.
+
+THE SITE UPDATES ITSELF (v107)
+  Settings, Site setup, Updates. This is the last zip you need to upload.
+  - Check for updates looks at the release on GitHub. Update installs it.
+  - Update automatically: the daily scheduled job (the same one that sends
+    notifications) takes a newer release when there is one.
+  - Optional: the repository has a small workflow that tells the site the
+    moment a release is pushed. Copy the address shown under "Update the
+    moment a release is pushed" into a GitHub secret called
+    CRAFTICULUM_DEPLOY_URL (repository, Settings, Secrets and variables,
+    Actions).
+  - Each release is downloaded over https, checked and unpacked beside the
+    site before anything is replaced. config.php, php.ini and everything in
+    the data folder are never written to, whatever the release contains. A
+    release with a file path that points outside the site is refused whole.
+    It never goes back to an older version.
+  - If the server won't let the site change its own files, the section says
+    so and you carry on uploading the zip as before.
+  - New files: update.php, update-lib.php, version.json.
+
+ALL USERS, FOR THE SUPER ADMIN (v107)
+  Settings, People, All users.
+  - Every account on the site in one list, whichever college it's in, with
+    who is waiting for approval and whose email isn't confirmed. Search by
+    name, email or college, or show only those waiting.
+  - Open a person to: confirm their email address for them, approve them
+    into any college and department (as a teacher, head of department or
+    college manager), move someone who's already in to another college
+    (their lessons can come with them), send a link to reset or choose a
+    password (the link is shown too, in case the email doesn't arrive), or
+    remove the account. Removing takes two presses.
+  - Someone who manages a college that has other staff or a paid plan can't
+    be moved out from under it. Super admins are set in config.php and can't
+    be changed here.
+
+SIGNING UP: PICK YOUR COLLEGE, AND NO SECOND COPIES (v107)
+  - On both sign-up forms, a college or school name that's typed has to be
+    chosen from the list that appears. If it isn't there, "It's not in the
+    list" lets the typed name through. Leaving the box empty is still fine
+    for someone working on their own.
+  - If the place chosen is already on the site, the form turns into a
+    request to join it and says so. Its manager approves it as usual.
+  - The server checks as well, so it can't be got round: a new workspace
+    with the same name as a college that's already here is not made. The
+    person becomes a request to join that college instead. "Midkent",
+    "MidKent College" and "The Mid Kent College" all count as the same name.
+    A college set up properly is chosen before a workspace someone started
+    for themselves.
+  - Signing up with Google or Microsoft has no college box, so it isn't
+    covered by this. Tidy those up from All users.
+  - Workspaces that are already doubled up are left alone. Move the person
+    across from All users, then switch the spare one off under Colleges.
+
+NO CHANGES TO config.php
+None of this needs config.php edited. Everything new is set in Settings.
+Two optional lines exist if you ever need them:
+  const UPDATE_REPO = 'owner/repository';   // take updates from another repository
+  const UPDATE_OFF = true;                  // switch updating off altogether
