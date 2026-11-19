@@ -1472,4 +1472,13 @@ A PLAINER LOOK (v109)
   - A college's own colour still runs through all of it.
   - The board and the slides are unchanged.
 
+WHAT'S NEW IN v110
+
+THE COLOURS ARE BACK (v110)
+  v109 swapped the gradients for flat colour. That has been undone: the
+  purple gradients, gradient lettering, glows under the main buttons and the
+  tilted card on the sign-in and front pages are all as they were in v108.
+  What stays from v109 is the shape: squarer buttons, boxes, chips, tags and
+  menus (no pills), and the plain outline when you tab to a button.
+
 NO CHANGES TO config.php

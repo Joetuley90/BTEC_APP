@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v109, 19 Nov 2026: a plainer look, with squarer buttons and boxes and solid colour instead of gradients and glows, on top of v108's phone menu). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v109.zip` and `crafticulum-release.zip`: the same files as one zip (1,842,095 bytes).
+- `crafticulum/`: every file of the current release (v110, 19 Nov 2026: the gradients and colours are back as they were, with the squarer buttons and boxes kept, on top of v108's phone menu). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v110.zip` and `crafticulum-release.zip`: the same files as one zip (1,841,733 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
