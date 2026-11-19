@@ -71,7 +71,7 @@ $html = (string) file_get_contents($dir . '/' . $PAGES[$p]);
 $url = $urlOf($p);
 $title = preg_match('#<title>(.*?)</title>#s', $html, $m) ? plain($m[1]) : 'Crafticulum';
 $desc = preg_match('#<meta name="description" content="([^"]*)"#', $html, $m) ? html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
-$org = 'Crafticulum';                       // the structured data describes Crafticulum itself. A college's own name, logo and details are never put in it
+$org = 'Crafticulum';                       // the structured data describes Crafticulum itself. An institution's own name, logo and details are never put in it
 $branded = $pub['name'] !== '';
 $img = $base . 'og.png';
 

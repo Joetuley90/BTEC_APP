@@ -1602,4 +1602,67 @@ THE SIGN-IN POP-UP IN DARK MODE (v113)
   The pop-up now takes its background and text colour from the form inside
   it, so the two always match, light or dark.
 
+WHAT'S NEW IN v114
+
+A ROADMAP PEOPLE VOTE ON (v114)
+  A new page, Roadmap, in the menu above Settings.
+  - What's coming over the next 18 months, by quarter from January 2027 to
+    June 2028, with each item marked as an AI tool, a feature, an AI
+    feature, or something Crafticulum will work with.
+  - Everyone with an account can vote for as many things as they like, and
+    take a vote back. "Most wanted" puts the list in vote order.
+  - "Something missing?" at the bottom sends an idea to the super admin,
+    with the person's name and college. Five a day each.
+  - On the front page, a short "A roadmap its users vote on" section shows
+    some of what's planned. The full list and voting are for people with an
+    account.
+  - The demo can see the roadmap but can't vote.
+  - Votes are kept against a scrambled form of the account, never the email
+    address, in data/_roadmap.json.
+
+  What's on it
+  - The 24 AI tools that aren't in the first five (see below).
+  - Google Classroom, Microsoft Teams, Discord (more than the lesson links it
+    posts today), your calendar and timetable, your college's records system,
+    and Moodle and Canvas.
+  - Video lessons from your slides, presented by Crafti.
+  - Quizzes that bring old topics back round, Second Marker for photos and
+    handwriting, spoken feedback and read aloud, lessons in other languages.
+  - Cover lesson packs, seating plans and groups, a page for each learner to
+    sign in to, homework set and marked online, progress reports for parents
+    and carers, a dashboard for leaders, a register in the app,
+    observations and learning walks, swapping lessons between colleges,
+    phone apps, teaching without the internet, and a CPD record.
+
+  For the super admin
+  - "Manage the roadmap" on the Roadmap page: move anything to a different
+    quarter, release something (it's marked Out now; an AI tool appears on
+    the AI Tools page for everyone straight away), take it back, add your
+    own items, and read and clear the ideas people send.
+  - "Switch every AI tool on now" turns all 32 back on in one go.
+
+FIVE AI TOOLS TO START WITH (v114)
+  The AI Tools page now has five tools, the jobs teachers do most:
+    Worksheet, Quiz, Editable PowerPoint, Student report, and Differentiate
+    a resource.
+  The lesson planner, scheme of learning and curriculum planner are still
+  there too, as they were, because they're the core of the app.
+  - The other 24 are on the roadmap. Under the tools, a box says how many
+    are coming and links to the roadmap to vote.
+  - Nothing has been deleted. Anything someone saved from a tool that's now
+    on the roadmap is still in their library and still opens.
+  - The front page, the quick guide and the home page no longer say "32
+    tools".
+
+"INSTITUTION" INSTEAD OF "COLLEGE" (v114)
+  Inside the app (settings, team, the super admin pages, messages and the
+  emails the site sends), "college" now reads "institution": institution
+  manager, Your institution, Institutions, Institutions set up twice, and
+  so on. "The college year" reads "the academic year".
+  - Left as they were: the public pages, the sign-in and register form
+    (which already says "college or school"), and names such as MidKent
+    College.
+  - Only words people read have changed. Nothing stored has been renamed,
+    so no data needs moving.
+
 NO CHANGES TO config.php

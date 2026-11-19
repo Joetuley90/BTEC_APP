@@ -51,7 +51,7 @@ if ($legacy && $me['role'] === 'superadmin' && (empty($dinfo['legacyOwner']) || 
     $acc['depts'][$dept]['legacyOwner'] = $me['email']; ccSaveAccounts($acc); $dinfo = $acc['depts'][$dept];
 }
 $isOwner = $legacy && ($dinfo['legacyOwner'] ?? '') === $me['email'];
-/* where the college keeps learners anonymous, names never reach the disk and never leave it: class lists hold numbers */
+/* where the institution keeps learners anonymous, names never reach the disk and never leave it: class lists hold numbers */
 $anon = ccAnon($acc, ccCollegeOf($acc, (string) $dept));
 function anonDoc(string $p, $data) { if (!is_array($data)) return $data;
     if (preg_match('#^data/users/[^/]+/learners/#', $p)) { $s = json_decode((string) ($data['json'] ?? ''), true); if (!is_array($s) || !is_array($s['learners'] ?? null)) return $data;
@@ -140,7 +140,7 @@ if ($action === 'all') {
 
 /* every class list and set of marks in this department, for its leaders to look at. Each one still belongs to the teacher who made it */
 /* a member of staff on one page: what they teach, their classes (numbers only, never learners' names), the lessons they've written and the verification they've done and had.
-   Anyone can open their own. A head of department can open people in their department, a college manager anyone in the college, the super admin anyone */
+   Anyone can open their own. A head of department can open people in their department, an institution manager anyone in the institution, the super admin anyone */
 if ($action === 'staff') {
     $em = strtolower(trim((string) ($body['email'] ?? ''))) ?: $me['email']; $u = $acc['users'][$em] ?? null; $self = $em === $me['email'];
     if (!$self) { if (!$u || !ccActive($u) || !empty($u['demo'])) out(404, ['error' => 'not_found']); $td = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$td])) out(404, ['error' => 'not_found']);
@@ -215,12 +215,12 @@ function pendRead(string $ddir, string $p): ?array { $j = json_decode((string) @
 /* the leaders of this department (the super admins if it has none), for the emails that ask for a sign-off */
 function leadersOf(array $acc, string $dept, string $not = ''): array {
     $to = []; foreach ($acc['users'] as $e => $u) if (($u['role'] ?? '') === 'hod' && ccActive($u) && ($u['dept'] ?? '') === $dept) $to[] = $e;
-    if (!$to) { $c = ccCollegeOf($acc, $dept); foreach ($acc['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && ccCollegeOf($acc, (string) ($u['dept'] ?? '')) === $c) $to[] = $e; }   // no head of department: the college's manager
+    if (!$to) { $c = ccCollegeOf($acc, $dept); foreach ($acc['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && ccCollegeOf($acc, (string) ($u['dept'] ?? '')) === $c) $to[] = $e; }   // no head of department: the institution's manager
     if (!$to) $to = ccSupers();
     return array_values(array_filter(array_unique($to), fn($e) => $e !== $not));
 }
 function once(string $key, int $secs): bool { $f = sys_get_temp_dir() . '/cc_' . sha1($key); if (is_file($f) && filemtime($f) > time() - $secs) return false; @touch($f); return true; }
-/* ---------- the college's own Word and PowerPoint templates ---------- */
+/* ---------- the institution's own Word and PowerPoint templates ---------- */
 const TPL = ['docx' => 'lessonplan.docx', 'pptx' => 'slides.pptx'];
 function tplInfo(string $ddir): array { $j = json_decode((string) @file_get_contents($ddir . '/_tpl/info.json'), true); $j = is_array($j) ? $j : []; foreach (TPL as $k => $f) if (!is_file($ddir . '/_tpl/' . $f)) unset($j[$k]); return $j; }
 if (in_array($action, ['tplinfo', 'tplput', 'tpldel', 'tplget'], true)) {
@@ -231,7 +231,7 @@ if (in_array($action, ['tplinfo', 'tplput', 'tpldel', 'tplget'], true)) {
     if ($action === 'tplget') { if (!is_file($f)) out(404, ['error' => 'none']); header('Content-Type: application/octet-stream'); header('Content-Length: ' . filesize($f)); readfile($f); exit; }
     if (!$lead) out(403, ['error' => 'noperm']);
     $info = tplInfo($ddir);
-    if ($action === 'tpldel') { @unlink($f); unset($info[$kind]); @file_put_contents($td . '/info.json', json_encode($info), LOCK_EX); ccLog($dept, $me, 'removed the college ' . ($kind === 'docx' ? 'lesson plan form' : 'PowerPoint template')); out(200, ['tpl' => (object) $info]); }
+    if ($action === 'tpldel') { @unlink($f); unset($info[$kind]); @file_put_contents($td . '/info.json', json_encode($info), LOCK_EX); ccLog($dept, $me, 'removed the institution ' . ($kind === 'docx' ? 'lesson plan form' : 'PowerPoint template')); out(200, ['tpl' => (object) $info]); }
     // tplput: the file arrives in pieces so it works on hosts with a small upload limit
     $i = (int) ($body['i'] ?? 0); $n = (int) ($body['n'] ?? 1); $bin = base64_decode((string) ($body['data'] ?? ''), true);
     if ($bin === false || $n < 1 || $n > 60 || $i < 0 || $i >= $n) out(400, ['error' => 'Bad piece.']);
@@ -245,7 +245,7 @@ if (in_array($action, ['tplinfo', 'tplput', 'tpldel', 'tplget'], true)) {
     @rename($part, $f); $name = mb_substr(trim((string) preg_replace('/[\x00-\x1F<>\/\\\\]+/u', ' ', (string) ($body['name'] ?? TPL[$kind]))), 0, 80);
     $info[$kind] = ['name' => $name, 'size' => filesize($f), 'at' => time(), 'by' => (string) (($me['name'] ?? '') ?: $me['email'])];
     @file_put_contents($td . '/info.json', json_encode($info, JSON_UNESCAPED_UNICODE), LOCK_EX);
-    ccLog($dept, $me, 'uploaded the college ' . ($kind === 'docx' ? 'lesson plan form' : 'PowerPoint template'), $name);
+    ccLog($dept, $me, 'uploaded the institution ' . ($kind === 'docx' ? 'lesson plan form' : 'PowerPoint template'), $name);
     out(200, ['tpl' => (object) $info]);
 }
 /* ---------- deleted lessons wait in the bin for 30 days ---------- */

@@ -41,7 +41,7 @@ function deptList(array $a, ?string $college = null): array { $o = []; $many = c
     foreach ($a['depts'] as $k => $d) { $k = (string) $k; if ($k === CC_DEMO_DEPT) continue; $c = ccCollegeOf($a, $k); if ($college !== null && $c !== $college) continue; if (ccCollege($a, $c)['off'] && $college === null) continue;
         $o[] = ['id' => $k, 'name' => $d['name'], 'college' => $c] + ($many ? ['collegeName' => ccCollege($a, $c)['name']] : []); }
     return $o; }
-const CC_ROLE_NAMES = ['superadmin' => 'Super admin', 'owner' => 'College manager', 'hod' => 'Head of department', 'teacher' => 'Teacher'];
+const CC_ROLE_NAMES = ['superadmin' => 'Super admin', 'owner' => 'Institution manager', 'hod' => 'Head of department', 'teacher' => 'Teacher'];
 function ccLink(string $type, string $t): string { return ccAppUrl() . '#' . $type . '=' . $t; }
 function siteName(): string { return 'Crafticulum'; }
 /* the welcome for someone who has just started their own space: what to do first, in three steps */
@@ -55,23 +55,23 @@ function welcomeMail(string $email, string $name, string $verify = ''): bool {
         . "3. Teach it and share it: Put the lesson on the board, and give your students their own page with a link or a QR code.\n\n"
         . "Pick up where you left off:\n" . ccAppUrl() . "\n\nStuck on anything? Reply to this email or use Help and feedback in the app.\n");
 }
-/* someone signing up on their own gets their own space: a college on the Free plan with one department, which they manage */
-/* a college that is already here under the same name, so nobody sets the same place up twice. "MidKent", "Midkent College" and "The Mid Kent College" are all one name */
+/* someone signing up on their own gets their own space: an institution on the Free plan with one department, which they manage */
+/* an institution that is already here under the same name, so nobody sets the same place up twice. "MidKent", "Midkent College" and "The Mid Kent College" are all one name */
 function nameKey(string $s): string { $s = (string) preg_replace('/[^a-z0-9 ]+/', ' ', mb_strtolower($s)); $s = (string) preg_replace('/\b(the|of|college|school|academy|university|sixth form|campus)\b/', ' ', $s); return (string) preg_replace('/\s+/', '', $s); }
 function collegeByName(array $a, array $names, ?array $inst): string { $keys = array_values(array_filter(array_map('nameKey', $names), fn($k) => strlen($k) >= 4)); if (!$keys) return ''; $best = '';
     foreach ($a['colleges'] as $cid => $c) { if (!empty($c['off']) || !ccCollegeDepts($a, (string) $cid)) continue; $linked = (array) ($c['inst'] ?? []);
         if ($inst && trim((string) ($inst['ref'] ?? '')) !== '' && array_filter($linked, fn($l) => trim((string) ($l['ref'] ?? '')) !== '')) continue;   // it's linked to a numbered institution, and that wasn't the one picked
         $mine = array_map('nameKey', array_merge([(string) ($c['name'] ?? '')], array_map(fn($l) => (string) ($l['name'] ?? ''), $linked)));
-        if (array_intersect($keys, $mine)) { if (empty($c['self'])) return (string) $cid; if ($best === '') $best = (string) $cid; } }   // a college set up properly comes before a workspace someone started for themselves
+        if (array_intersect($keys, $mine)) { if (empty($c['self'])) return (string) $cid; if ($best === '') $best = (string) $cid; } }   // an institution set up properly comes before a workspace someone started for themselves
     return $best; }
-/* the same college by email address: someone whose address ends the way a college manager's does belongs to that college. Free mail (gmail and the like) says nothing, so it is never used */
+/* the same institution by email address: someone whose address ends the way an institution manager's does belongs to that institution. Free mail (gmail and the like) says nothing, so it is never used */
 const CC_PUBLIC_MAIL = ['gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'hotmail.co.uk', 'live.com', 'live.co.uk', 'msn.com', 'yahoo.com', 'yahoo.co.uk', 'ymail.com', 'icloud.com', 'me.com', 'mac.com', 'aol.com', 'proton.me', 'protonmail.com', 'pm.me', 'btinternet.com', 'sky.com', 'virginmedia.com', 'talktalk.net', 'ntlworld.com', 'blueyonder.co.uk', 'gmx.com', 'gmx.co.uk', 'mail.com', 'zoho.com', 'test.com', 'example.com', 'example.org'];
 function mailDomain(string $email): string { $d = strtolower((string) substr((string) strrchr($email, '@'), 1)); return $d === '' || in_array($d, CC_PUBLIC_MAIL, true) ? '' : $d; }
 function collegeByDomain(array $a, string $email): string { $d = mailDomain($email); if ($d === '') return ''; $best = '';
     foreach ($a['users'] as $e => $u) { if (!ccActive($u) || ($u['role'] ?? '') !== 'owner' || !empty($u['demo']) || mailDomain((string) $e) !== $d || !isset($a['depts'][(string) ($u['dept'] ?? '')])) continue;
         $cid = ccCollegeOf($a, (string) $u['dept']); if (!isset($a['colleges'][$cid]) || !empty($a['colleges'][$cid]['off'])) continue; if (empty($a['colleges'][$cid]['self'])) return $cid; if ($best === '') $best = $cid; }
     return $best; }
-/* the college someone belongs in, if it's already on the site: the one linked to the institution they picked, then one with the same name, then one whose manager shares their email domain */
+/* the institution someone belongs in, if it's already on the site: the one linked to the institution they picked, then one with the same name, then one whose manager shares their email domain */
 function matchCollege(array $a, ?array $inst, array $names, string $email): string {
     if ($inst) foreach ($a['colleges'] as $cid => $c) if (empty($c['off'])) foreach ((array) ($c['inst'] ?? []) as $li) if (ccInstSame($li, $inst)) return (string) $cid;
     return collegeByName($a, array_filter(array_merge([(string) ($inst['name'] ?? '')], $names)), $inst) ?: collegeByDomain($a, $email); }
@@ -93,7 +93,7 @@ function ssoArrive(string $email, string $name, string $via, string $picture = '
     if (!$u && !$isSuper) {
         require_once __DIR__ . '/inst-lib.php'; $new = ['name' => cleanName($name), 'status' => 'pending', 'verified' => true, 'via' => $via, 'requested' => time(), 'role' => 'teacher', 'dept' => '', 'canEdit' => false] + ($picture !== '' ? ['picture' => $picture] : []);
         $col = collegeByDomain($a, $email);
-        if ($col !== '') {   // their address belongs to a college that's already here: they ask to join it, and a second one is never made
+        if ($col !== '') {   // their address belongs to an institution that's already here: they ask to join it, and a second one is never made
             $cn = (string) (ccCollege($a, $col)['name'] ?? ''); $ds = ccCollegeDepts($a, $col); $a['users'][$email] = $new + ['viaInst' => $col, 'instName' => $cn, 'wantDept' => (string) ($ds[0] ?? '')];
             ccSaveAccounts($a); notifyApprovers($a, $email); return ['pending' => true, 'joined' => $cn]; }
         if (!empty(ccInstLog()['sources'])) {   // the directory is loaded: they say where they work before anything is made
@@ -124,9 +124,9 @@ function notifyApprovers(array $a, string $email): void {
     $u = $a['users'][$email]; $d = (string) ($u['wantDept'] ?? '');
     // a head of department or subject leader is approved by the super admin; a teacher by the leaders of that department
     $to = [];
-    if (!empty($u['viaInst'])) foreach ($a['users'] as $e => $x) if (($x['role'] ?? '') === 'owner' && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $u['viaInst']) $to[] = $e;   // found through the directory: the college's manager approves
+    if (!empty($u['viaInst'])) foreach ($a['users'] as $e => $x) if (($x['role'] ?? '') === 'owner' && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $u['viaInst']) $to[] = $e;   // found through the directory: the institution's manager approves
     if (!$to && ($u['wantRole'] ?? 'teacher') !== 'hod' && $d !== '') foreach ($a['users'] as $e => $x) if (($x['role'] ?? '') === 'hod' && ccActive($x) && ($x['dept'] ?? '') === $d && ccPerms($x)['team']) $to[] = $e;
-    if (!$to && $d !== '' && isset($a['depts'][$d])) { $c = ccCollegeOf($a, $d); foreach ($a['users'] as $e => $x) if (($x['role'] ?? '') === 'owner' && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $c) $to[] = $e; }   // then the college's manager
+    if (!$to && $d !== '' && isset($a['depts'][$d])) { $c = ccCollegeOf($a, $d); foreach ($a['users'] as $e => $x) if (($x['role'] ?? '') === 'owner' && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $c) $to[] = $e; }   // then the institution's manager
     if (!$to) $to = ccSupers();
     foreach (array_unique($to) as $t) ccMail($t, 'New account to approve', "Hello,\n\n" . ($u['name'] ?: $email) . " ($email) has asked for a Crafticulum account" . ($d && isset($a['depts'][$d]) ? ' in ' . $a['depts'][$d]['name'] : '') . ".\n\nApprove or decline them in Settings, Team:\n" . ccAppUrl() . "\n");
 }
@@ -167,7 +167,7 @@ if ($action === 'demo') {
     signIn(CC_DEMO_USER);
     out(200, ['ok' => true]);
 }
-/* someone new who came in with Google, Microsoft or the college sign-in says where they work. Their college is found if it's here; a new space is made only if it isn't */
+/* someone new who came in with Google, Microsoft or the institution sign-in says where they work. Their institution is found if it's here; a new space is made only if it isn't */
 if ($action === 'ssochoose') {
     $email = (string) ($_SESSION['ssoChoose'] ?? ''); $a = ccAccounts(); $u = $email !== '' ? ($a['users'][$email] ?? null) : null;
     if (!$u || ccActive($u) || empty($u['needCollege'])) out(400, ['error' => 'expired']);
@@ -193,11 +193,11 @@ if ($action === 'signup') {
     $a = ccAccounts();
     /* the institution they picked from the directory, if they did. It goes into their own profile. It never links a workspace to that institution */
     require_once __DIR__ . '/inst-lib.php'; $inst = null; if (is_array($body['inst'] ?? null) && trim((string) ($body['inst']['name'] ?? '')) !== '') { $inst = ccProfileClean(['insts' => [$body['inst']]])['insts'][0] ?? null; }
-    $newSpace = ($body['space'] ?? '') === 'new' && ccBillingOn(); $instCol = matchCollege($a, $inst, $newSpace ? [(string) ($body['workspace'] ?? '')] : [], $email); $joined = $newSpace && $instCol !== '' ? ((string) (ccCollege($a, $instCol)['name'] ?? '') ?: 'Your college') : '';
+    $newSpace = ($body['space'] ?? '') === 'new' && ccBillingOn(); $instCol = matchCollege($a, $inst, $newSpace ? [(string) ($body['workspace'] ?? '')] : [], $email); $joined = $newSpace && $instCol !== '' ? ((string) (ccCollege($a, $instCol)['name'] ?? '') ?: 'Your institution') : '';
     if ($newSpace && $instCol !== '' && (isset($a['users'][$email]) || in_array($email, ccSupers(), true))) { ccFail($email); out(409, ['error' => 'exists']); }   // starting a space with an address that already has an account is still refused
     $keepInst = function () use ($inst, $email): void { if ($inst) { try { ccProfileSet($email, ['country' => in_array($inst['nation'], ['eng', 'wal', 'sco', 'ni'], true) ? $inst['nation'] : '', 'insts' => [$inst]]); } catch (Throwable $e) {} } };
     /* plans are on and they want their own space: they're in straight away, on the Free plan */
-    if ($newSpace && $instCol === '') {   // where the college is already here, they ask to join it below: a second one is never made
+    if ($newSpace && $instCol === '') {   // where the institution is already here, they ask to join it below: a second one is never made
         if ($pass === '') out(400, ['error' => 'pass_required']);
         if (isset($a['users'][$email])) { ccFail($email); out(409, ['error' => 'exists']); }
         if (in_array($email, ccSupers(), true)) out(409, ['error' => 'exists']);
@@ -212,11 +212,11 @@ if ($action === 'signup') {
     if (isset($a['users'][$email])) { ccFail($email); out(200, ['ok' => true, 'verify' => ccMailReady()]); }   // same answer either way, so no one can find out who has an account
     $a['users'][$email] = ['name' => $name, 'status' => 'pending', 'verified' => false, 'via' => $pass === '' ? 'magic' : 'password', 'requested' => time(),
         'wantDept' => isset($a['depts'][$want]) ? $want : '', 'wantRole' => $wantRole, 'role' => 'teacher', 'dept' => '', 'canEdit' => false, 'methods' => [$pass === '' ? 'magic' : 'password']];
-    if ($instCol !== '') { $cd = ccCollegeDepts($a, $instCol); $w = (string) $a['users'][$email]['wantDept']; if ($cd && ($w === '' || ccCollegeOf($a, $w) !== $instCol)) $a['users'][$email]['wantDept'] = (string) $cd[0];   // asked through their institution: it goes to that college, and its manager decides
+    if ($instCol !== '') { $cd = ccCollegeDepts($a, $instCol); $w = (string) $a['users'][$email]['wantDept']; if ($cd && ($w === '' || ccCollegeOf($a, $w) !== $instCol)) $a['users'][$email]['wantDept'] = (string) $cd[0];   // asked through their institution: it goes to that institution, and its manager decides
         $a['users'][$email]['viaInst'] = $instCol; $a['users'][$email]['instName'] = (string) (($inst['name'] ?? '') ?: (ccCollege($a, $instCol)['name'] ?? '')); }
     if ($pass !== '') $a['users'][$email]['pass'] = password_hash($pass, PASSWORD_DEFAULT);
     ccSaveAccounts($a); $keepInst();
-    if (ccMailReady()) ccMail($email, 'Confirm your email for Crafticulum', "Hello $name,\n\nPlease confirm this is your email address:\n" . ccLink('verify', ccToken($email, 'verify', 72)) . "\n\n" . ($instCol !== '' ? "Your college's manager" : 'A head of department') . " also needs to approve your account. We'll email you when they have.\n\nIf you didn't ask for this, ignore this email.\n");
+    if (ccMailReady()) ccMail($email, 'Confirm your email for Crafticulum', "Hello $name,\n\nPlease confirm this is your email address:\n" . ccLink('verify', ccToken($email, 'verify', 72)) . "\n\n" . ($instCol !== '' ? "Your institution's manager" : 'A head of department') . " also needs to approve your account. We'll email you when they have.\n\nIf you didn't ask for this, ignore this email.\n");
     notifyApprovers($a, $email);
     out(200, ['ok' => true, 'verify' => ccMailReady()] + ($joined !== '' ? ['joined' => $joined] : []));
 }
@@ -492,7 +492,7 @@ if ($action === 'me') {
 if ($action === 'dept') {
     if (empty($me['admin'])) out(403, ['error' => 'noperm']);
     $id = (string) ($body['id'] ?? ''); if (!isset($a['depts'][$id])) out(404, ['error' => 'not_found']);
-    if ($me['role'] === 'owner' && ($id === CC_DEMO_DEPT || ccCollegeOf($a, $id) !== ccCollegeOf($a, (string) ($mine['dept'] ?? '')))) out(403, ['error' => 'noperm']);   // a manager stays inside their own college
+    if ($me['role'] === 'owner' && ($id === CC_DEMO_DEPT || ccCollegeOf($a, $id) !== ccCollegeOf($a, (string) ($mine['dept'] ?? '')))) out(403, ['error' => 'noperm']);   // a manager stays inside their own institution
     $_SESSION['dept'] = $id; if ($me['role'] === 'superadmin') $_SESSION['inside'] = 1;
     if (isset($a['users'][$me['email']])) { $a['users'][$me['email']]['dept'] = $id; ccSaveAccounts($a); }
     out(200, ['me' => ccPublic(ccMe())]);
@@ -538,14 +538,14 @@ if ($action === 'roomsget' || $action === 'roomsset') {
     out(200, ['rooms' => array_map(fn($k) => ['id' => $k, 'name' => CC_ROOMS[$k][0], 'about' => CC_ROOMS[$k][1]], array_keys(CC_ROOMS)), 'super' => $sup, 'college' => $cid, 'collegeName' => $cid !== '' ? ccCollege($a, $cid)['name'] : '',
         'siteOff' => array_values((array) (($a['rooms'] ?? [])['off'] ?? [])), 'collegeOff' => $cid !== '' ? array_values((array) ($a['colleges'][$cid]['roomsOff'] ?? [])) : [], 'roles' => (object) $roles, 'me' => ccRooms($a, ccMe() ?: $me)]);
 }
-/* ---------- joining a college's workspace. A college's manager says which institution in the directory it is. Someone whose profile names that
-   institution can then ask to join. Asking gives them nothing: a manager of that college has to approve it, and chooses the department ---------- */
+/* ---------- joining an institution's workspace. An institution's manager says which institution in the directory it is. Someone whose profile names that
+   institution can then ask to join. Asking gives them nothing: a manager of that institution has to approve it, and chooses the department ---------- */
 if (in_array($action, ['instlink', 'joinfind', 'joinask', 'joinlist', 'joindecide'], true)) {
     require_once __DIR__ . '/inst-lib.php'; $t = fn($v, int $n): string => mb_substr(trim(str_replace(["\0", '<', '>'], '', (string) $v)), 0, $n);
     $inst = fn($x): array => ['ref' => $t($x['ref'] ?? '', 30), 'name' => $t($x['name'] ?? '', 120), 'town' => $t($x['town'] ?? '', 80), 'postcode' => $t($x['postcode'] ?? '', 12), 'source' => $t($x['source'] ?? '', 40)];
     $mgr = in_array($me['role'], ['superadmin', 'owner'], true); $myCol = (string) $me['college'];
     if ($action === 'instlink') { if (!$mgr || $myCol === '' || !isset($a['colleges'][$myCol])) out(403, ['error' => 'noperm']);
-        if (is_array($body['insts'] ?? null)) { $l = []; foreach (array_slice($body['insts'], 0, 5) as $x) if (is_array($x) && $t($x['name'] ?? '', 120) !== '') $l[] = $inst($x); $a['colleges'][$myCol]['inst'] = $l; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccLog($me['dept'], $me, 'changed which institution this college is in the directory'); }
+        if (is_array($body['insts'] ?? null)) { $l = []; foreach (array_slice($body['insts'], 0, 5) as $x) if (is_array($x) && $t($x['name'] ?? '', 120) !== '') $l[] = $inst($x); $a['colleges'][$myCol]['inst'] = $l; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccLog($me['dept'], $me, 'changed which institution this institution is in the directory'); }
         out(200, ['insts' => array_values((array) ($a['colleges'][$myCol]['inst'] ?? []))]); }
     if ($action === 'joinfind') { $mine = array_map($inst, array_filter(array_slice((array) ($body['insts'] ?? []), 0, 6), 'is_array')); $o = [];
         foreach ($a['colleges'] as $cid => $c) { if ((string) $cid === $myCol && $me['role'] !== 'superadmin') continue; foreach ((array) ($c['inst'] ?? []) as $li) foreach ($mine as $mi) if (ccInstSame($li, $mi)) { $open = null; foreach ((array) ($a['joins'] ?? []) as $j) if ($j['email'] === $me['email'] && $j['college'] === (string) $cid) $open = $j;
@@ -556,23 +556,23 @@ if (in_array($action, ['instlink', 'joinfind', 'joinask', 'joinlist', 'joindecid
         $a['joins'] = array_values(array_filter((array) ($a['joins'] ?? []), fn($j) => !($j['email'] === $me['email'] && $j['college'] === $cid) && (int) $j['at'] > time() - 90 * 86400)); if (count(array_filter($a['joins'], fn($j) => $j['email'] === $me['email'] && ($j['state'] ?? 'open') === 'open')) >= 3) out(429, ['error' => 'many']);
         $a['joins'][] = ['id' => bin2hex(random_bytes(6)), 'email' => $me['email'], 'name' => (string) ($me['name'] ?? ''), 'college' => $cid, 'inst' => $hit['name'], 'note' => $t($body['note'] ?? '', 300), 'at' => time(), 'state' => 'open'];
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccMemberStatus($me['email'], $hit, 'requested', $cid);
-        foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && ccCollegeOf($a, (string) ($u['dept'] ?? '')) === $cid) ccMail((string) $e, 'Someone has asked to join your college', "Hello,\n\n" . ((string) ($me['name'] ?? '') ?: $me['email']) . " (" . $me['email'] . ") has asked to join your college's workspace on Crafticulum. They have been given nothing yet. Open Settings, Your college, to approve or decline.\n\n" . ccAppUrl() . "\n");
+        foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && ccCollegeOf($a, (string) ($u['dept'] ?? '')) === $cid) ccMail((string) $e, 'Someone has asked to join your institution', "Hello,\n\n" . ((string) ($me['name'] ?? '') ?: $me['email']) . " (" . $me['email'] . ") has asked to join your institution's workspace on Crafticulum. They have been given nothing yet. Open Settings, Your institution, to approve or decline.\n\n" . ccAppUrl() . "\n");
         out(200, ['ok' => true]); }
     if (!$mgr || $myCol === '') out(403, ['error' => 'noperm']);
     if ($action === 'joindecide') { $id = (string) ($body['id'] ?? ''); $k = null; foreach ((array) ($a['joins'] ?? []) as $i => $j) if ($j['id'] === $id && $j['college'] === $myCol && ($j['state'] ?? 'open') === 'open') $k = $i; if ($k === null) out(404, ['error' => 'not_found']);
         $j = $a['joins'][$k]; $em = (string) $j['email']; $u = $a['users'][$em] ?? null; $ok = !empty($body['ok']);
         if ($ok) { if (!$u || !ccActive($u)) out(400, ['error' => 'gone']); $d = (string) ($body['dept'] ?? ''); if (!isset($a['depts'][$d]) || ccCollegeOf($a, $d) !== $myCol) out(400, ['error' => 'dept']);
-            $from = ccCollegeOf($a, (string) ($u['dept'] ?? '')); if (($u['role'] ?? '') === 'owner') { $others = count(array_filter($a['users'], fn($x, $e) => $e !== $em && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $from, ARRAY_FILTER_USE_BOTH)); if ($others > 0 || !empty($a['colleges'][$from]['bill']['sub'])) out(400, ['error' => 'manager']); }   // someone running a college with staff or a paid plan can't be moved out from under it
+            $from = ccCollegeOf($a, (string) ($u['dept'] ?? '')); if (($u['role'] ?? '') === 'owner') { $others = count(array_filter($a['users'], fn($x, $e) => $e !== $em && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $from, ARRAY_FILTER_USE_BOTH)); if ($others > 0 || !empty($a['colleges'][$from]['bill']['sub'])) out(400, ['error' => 'manager']); }   // someone running an institution with staff or a paid plan can't be moved out from under it
             seatCheck($a, $d); $a['users'][$em] = array_merge($u, ['role' => 'teacher', 'dept' => $d, 'canEdit' => false, 'movedFrom' => (string) ($u['dept'] ?? ''), 'approvedBy' => $me['email'], 'added' => time()]); unset($a['users'][$em]['perms']);
             $carried = !empty($body['lessons']) ? ccCarryLessons($a, $em, (string) ($u['dept'] ?? ''), $d) : 0; if ($carried) ccLog($d, $me, 'brought ' . $carried . ' lessons across with', $em);
-            ccLog($me['dept'], $me, 'approved a request to join from', $em); ccMail($em, 'You have joined ' . (ccCollege($a, $myCol)['name'] ?: 'the college'), "Hello,\n\nYour request to join " . (ccCollege($a, $myCol)['name'] ?: 'the college') . " on Crafticulum was approved. Sign in and you'll be in its workspace as a teacher." . ($carried ? ' ' . ($carried === 1 ? 'The lesson you wrote has' : 'The ' . $carried . ' lessons you wrote have') . ' come with you, as ' . ($carried === 1 ? 'a draft' : 'drafts') . ' in your new department.' : ' Lessons from your old workspace stay there.') . "\n\n" . ccAppUrl() . "\n"); }
+            ccLog($me['dept'], $me, 'approved a request to join from', $em); ccMail($em, 'You have joined ' . (ccCollege($a, $myCol)['name'] ?: 'the institution'), "Hello,\n\nYour request to join " . (ccCollege($a, $myCol)['name'] ?: 'the institution') . " on Crafticulum was approved. Sign in and you'll be in its workspace as a teacher." . ($carried ? ' ' . ($carried === 1 ? 'The lesson you wrote has' : 'The ' . $carried . ' lessons you wrote have') . ' come with you, as ' . ($carried === 1 ? 'a draft' : 'drafts') . ' in your new department.' : ' Lessons from your old workspace stay there.') . "\n\n" . ccAppUrl() . "\n"); }
         else ccLog($me['dept'], $me, 'declined a request to join from', $em);
         $a['joins'][$k]['state'] = $ok ? 'approved' : 'declined'; $a['joins'][$k]['by'] = $me['email']; $a['joins'][$k]['decided'] = time(); if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
         foreach ((array) ($a['colleges'][$myCol]['inst'] ?? []) as $li) ccMemberStatus($em, $li, $ok ? 'approved' : 'declined', $myCol, $me['email']); }
     $depts = []; foreach ($a['depts'] as $d => $x) if (ccCollegeOf($a, (string) $d) === $myCol) $depts[] = ['id' => (string) $d, 'name' => (string) ($x['name'] ?? $d)];
     out(200, ['joins' => array_values(array_map(fn($j) => ['id' => $j['id'], 'email' => $j['email'], 'name' => $j['name'], 'inst' => $j['inst'], 'note' => (string) ($j['note'] ?? ''), 'at' => (int) $j['at'], 'state' => (string) ($j['state'] ?? 'open')], array_filter((array) ($a['joins'] ?? []), fn($j) => $j['college'] === $myCol))), 'depts' => $depts, 'insts' => array_values((array) ($a['colleges'][$myCol]['inst'] ?? [])), 'carried' => (int) ($carried ?? 0)]);
 }
-/* a college's own settings: its house rules for the AI, and whether its learners are kept anonymous. For its manager, or the super admin working inside it */
+/* an institution's own settings: its house rules for the AI, and whether its learners are kept anonymous. For its manager, or the super admin working inside it */
 if ($action === 'houseget' || $action === 'houseset') {
     $sup = $me['role'] === 'superadmin'; $own = $me['role'] === 'owner'; if (!$sup && !$own) out(403, ['error' => 'noperm']);
     $cid = (string) $me['college']; if ($cid === '' || !isset($a['colleges'][$cid])) out(404, ['error' => 'not_found']);
@@ -584,7 +584,7 @@ if ($action === 'houseget' || $action === 'houseset') {
     }
     out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
 }
-/* the super admin steps back out of the college they were working inside */
+/* the super admin steps back out of the institution they were working inside */
 if ($action === 'leave') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
     unset($_SESSION['inside'], $_SESSION['dept']);
@@ -627,9 +627,9 @@ if ($action === 'markerset') {
     ccLog($d, $me, $now['on'] && !$was['on'] ? 'switched on Second Marker' : (!$now['on'] && $was['on'] ? 'switched off Second Marker' : 'changed the Second Marker settings'));
     out(200, ['marker' => $now + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)]]);
 }
-/* ---------- the site: the college's name, logo and colour, and the sign-in, email and Crafticulum AI settings (super admin) ---------- */
+/* ---------- the site: the institution's name, logo and colour, and the sign-in, email and Crafticulum AI settings (super admin) ---------- */
 if ($action === 'siteget' || $action === 'siteset') {
-    /* the college's own profile (name, logo, colour, contact) belongs to the college the person is working in: its manager or the super admin can change it.
+    /* the institution's own profile (name, logo, colour, contact) belongs to the institution the person is working in: its manager or the super admin can change it.
        Everything else here is about the whole site, and only the super admin sees or changes it. */
     if (empty($me['admin'])) out(403, ['error' => 'noperm']);
     $super = $me['role'] === 'superadmin'; $cid = (string) $me['college'];
@@ -652,7 +652,7 @@ if ($action === 'siteget' || $action === 'siteset') {
             if ($v === '') unset($conf[$k]); else $conf[$k] = in_array($k, ['MAX_REQUESTS_PER_HOUR', 'SMTP_PORT', 'SESSION_DAYS'], true) ? max(1, min($k === 'SESSION_DAYS' ? 365 : 1000000, (int) $v)) : ($k === 'DEMO_BUILDS' ? max(0, min(500, (int) $v)) : $v);
             if ($k === 'BACKUP_URL' && isset($conf[$k]) && !preg_match('#^https://#i', (string) $conf[$k]) && !preg_match('#^http://(127\.0\.0\.1|localhost)[:/]#i', (string) $conf[$k])) out(400, ['error' => 'backupurl']); }
         $site['conf'] = $conf; $a['site'] = $site; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-        ccLog($me['dept'], $me, $super ? 'changed the site settings' : 'changed the college\'s profile');
+        ccLog($me['dept'], $me, $super ? 'changed the site settings' : 'changed the institution\'s profile');
     }
     $inCol = fn($u) => ccCollegeOf($a, (string) ($u['dept'] ?? '')) === $cid;
     if (!$super) out(200, ['site' => ccSite($a, $cid), 'conf' => (object) [], 'mail' => ccMailReady(), 'scope' => 'college',
@@ -684,7 +684,7 @@ if ($action === 'usage' || $action === 'usageset') {
     $row = fn($r) => ['calls' => (int) ($r['calls'] ?? 0), 'in' => (int) ($r['in'] ?? 0), 'out' => (int) ($r['out'] ?? 0), 'cost' => $priced ? round(ccUsageCost($r, $set), 2) : null];
     $own = $me['role'] === 'owner'; $mineDepts = $own ? ccCollegeDepts($a, (string) $me['college']) : [$me['dept']]; $many = count(ccCollegeIds($a)) > 1;
     $depts = []; foreach ($u['depts'] as $id => $r) { $id = (string) $id; if (!$super && !in_array($id, $mineDepts, true)) continue; $depts[] = ['id' => $id, 'name' => (string) ($a['depts'][$id]['name'] ?? $id) . ($super && $many && isset($a['depts'][$id]) ? ' (' . ccCollege($a, ccCollegeOf($a, $id))['name'] . ')' : '')] + $row($r); }
-    if ($super && !empty($u['site']['calls'])) $depts[] = ['id' => '', 'name' => 'Super admin (not part of a college)'] + $row((array) $u['site']);
+    if ($super && !empty($u['site']['calls'])) $depts[] = ['id' => '', 'name' => 'Super admin (not part of an institution)'] + $row((array) $u['site']);
     $users = []; foreach ($u['users'] as $e => $r) { if (!$super && !in_array((string) ($r['dept'] ?? ''), $mineDepts, true)) continue; $users[] = ['name' => (string) (($r['name'] ?? '') ?: $e), 'dept' => (string) ($a['depts'][$r['dept'] ?? '']['name'] ?? '')] + $row($r); }
     usort($depts, fn($x, $y) => $y['calls'] <=> $x['calls']); usort($users, fn($x, $y) => $y['calls'] <=> $x['calls']);
     $months = []; foreach (glob(ccDataDir() . '/_usage/*.json') ?: [] as $f) $months[] = basename($f, '.json'); if (!in_array(date('Y-m'), $months, true)) $months[] = date('Y-m'); rsort($months);
@@ -756,10 +756,10 @@ if ($action === 'overview') {
     usort($log, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
     out(200, ['colleges' => $rows, 'total' => $tot + ['siteCalls' => (int) ($u['total']['calls'] ?? 0), 'own' => (int) ($u['site']['calls'] ?? 0), 'inbox' => ccInboxOpen()], 'log' => array_slice($log, 0, 25), 'billing' => ccBillingOn(), 'viewing' => ['college' => (string) $me['college'], 'dept' => (string) $me['dept']]]);
 }
-/* ---------- the super admin: one college, with everything in it ---------- */
+/* ---------- the super admin: one institution, with everything in it ---------- */
 if ($action === 'collegeget') {
     if ($me['role'] !== 'superadmin' && $me['role'] !== 'owner') out(403, ['error' => 'noperm']);
-    $id = $me['role'] === 'owner' ? (string) $me['college'] : (string) ($body['id'] ?? ''); if (!isset($a['colleges'][$id])) out(404, ['error' => 'not_found']);   // a manager only ever gets their own college
+    $id = $me['role'] === 'owner' ? (string) $me['college'] : (string) ($body['id'] ?? ''); if (!isset($a['colleges'][$id])) out(404, ['error' => 'not_found']);   // a manager only ever gets their own institution
     $c = ccCollege($a, $id); $ids = ccCollegeDepts($a, $id); $u = ccUsageRead(); $supers = ccSupers(); $depts = []; $people = []; $calls = 0; $lessons = 0; $log = [];
     foreach ($ids as $d) { $dir = !empty($a['depts'][$d]['legacy']) ? ccDataDir() : ccDataDir() . '/d/' . $d; $n = count(glob($dir . '/lessons/*.json') ?: []); $dc = (int) ($u['depts'][$d]['calls'] ?? 0); $calls += $dc; $lessons += $n;
         $depts[] = ['id' => $d, 'name' => (string) $a['depts'][$d]['name'], 'lessons' => $n, 'calls' => $dc, 'staff' => 0];
@@ -806,7 +806,7 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
             $a['users'][$mgr] = array_merge($u, ['status' => 'active', 'role' => 'owner', 'dept' => $did, 'canEdit' => true, 'addedBy' => $me['email']]); unset($a['users'][$mgr]['wantDept'], $a['users'][$mgr]['wantRole'], $a['users'][$mgr]['perms']);
             if (!empty($body['managerName'])) $a['users'][$mgr]['name'] = cleanName((string) $body['managerName']); }
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-        ccLog($did, $me, 'set up the college', $name);
+        ccLog($did, $me, 'set up the institution', $name);
         if ($mgr !== '') { $t = ccToken($mgr, 'invite', 24 * 7); $extra['link'] = ccLink('invite', $t);
             $extra['mailed'] = ccMail($mgr, "You've been added to Crafticulum", "Hello" . (!empty($a['users'][$mgr]['name']) ? ' ' . $a['users'][$mgr]['name'] : '') . ",\n\n" . ($me['name'] ?: $me['email']) . " has set up $name on Crafticulum and made you its manager. You can add its departments and staff, and set its name, logo and colour.\n\nChoose a password with this link (it works for 7 days):\n" . $extra['link'] . "\n\n" . (ccGoogleId() || ccMsId() ? "Or sign in with your Google or Microsoft account using this email address.\n" : "")); }
         $extra += ['newCollege' => $id, 'newDept' => $did];
@@ -821,7 +821,7 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
             if (array_key_exists('cap', $body)) $a['colleges'][$id]['cap'] = max(0, min(100000000, (int) $body['cap']));
             if (array_key_exists('plan', $body)) { $pl = (string) $body['plan']; if (!isset(CC_PLANS[$pl])) out(400, ['error' => 'plan']); $a['colleges'][$id]['plan'] = $pl; }   // set by hand: a quote agreed outside Stripe, or a free upgrade
             if (array_key_exists('off', $body)) { if (!empty($body['off']) && $id === $me['college'] && !empty($me['inside'] ?? true)) out(400, ['error' => 'own']); $a['colleges'][$id]['off'] = !empty($body['off']); }
-            ccLog($me['dept'], $me, 'changed the college', (string) $a['colleges'][$id]['name']);
+            ccLog($me['dept'], $me, 'changed the institution', (string) $a['colleges'][$id]['name']);
         } else {
             if (count($a['colleges']) < 2) out(400, ['error' => 'last']);
             if ($id === $me['college'] && !empty($me['inside'] ?? true)) out(400, ['error' => 'own']);
@@ -853,11 +853,11 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
                 foreach (array_keys($meta['users']) as $e) $mv(ccPushFile((string) $e));
                 $meta['gone'] = $gone; if (@file_put_contents($hold . '/meta.json', json_encode($meta, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false) out(500, ['error' => 'save']);
                 foreach ($depts as $d) unset($a['depts'][$d]);
-                unset($a['colleges'][$id]); ccLog($me['dept'], $me, 'deleted the college', $cname . ' (' . $gone['people'] . ' people, ' . $gone['depts'] . ' departments). Kept for ' . CC_DELETED_DAYS . ' days'); $extra['gone'] = $gone + ['days' => CC_DELETED_DAYS];
+                unset($a['colleges'][$id]); ccLog($me['dept'], $me, 'deleted the institution', $cname . ' (' . $gone['people'] . ' people, ' . $gone['depts'] . ' departments). Kept for ' . CC_DELETED_DAYS . ' days'); $extra['gone'] = $gone + ['days' => CC_DELETED_DAYS];
             } else {
             foreach ($a['users'] as $e => $u) if (in_array((string) ($u['dept'] ?? ''), $depts, true) && ccActive($u) && !in_array((string) $e, ccSupers(), true)) out(400, ['error' => 'has_staff']);
             foreach ($depts as $d) unset($a['depts'][$d]);     // the departments' files stay in data/d/ in case they're wanted back
-            ccLog($me['dept'], $me, 'removed the college', $cname); unset($a['colleges'][$id]);
+            ccLog($me['dept'], $me, 'removed the institution', $cname); unset($a['colleges'][$id]);
             }
         }
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
@@ -867,7 +867,7 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
 /* ---------- staff and departments ---------- */
 if (!$me['canTeam']) out(403, ['error' => 'noperm']);
 $isSuper = $me['role'] === 'superadmin'; $isAdmin = !empty($me['admin']);
-/* who can manage whom. The super admin: everyone. A college manager: every head of department and teacher in their own college, and the people
+/* who can manage whom. The super admin: everyone. An institution manager: every head of department and teacher in their own institution, and the people
    asking to join it, but not other managers. A head of department: the teachers in their own department and people asking to join it as a teacher. */
 function canManage(array $u, array $me, ?array $a = null): bool {
     if ($me['role'] === 'superadmin') return true;
@@ -880,7 +880,7 @@ function canManage(array $u, array $me, ?array $a = null): bool {
         return isset($a['depts'][$d]) && $d !== CC_DEMO_DEPT && ccCollegeOf($a, $d) === $me['college'];
     }
     if (ccActive($u)) return ($u['role'] ?? 'teacher') === 'teacher' && ($u['dept'] ?? '') === $me['dept'];
-    if (!empty($u['viaInst'])) return false;   // someone who asked through their institution is for the college's manager to approve
+    if (!empty($u['viaInst'])) return false;   // someone who asked through their institution is for the institution's manager to approve
     return ($u['wantRole'] ?? 'teacher') === 'teacher' && in_array($u['wantDept'] ?? '', $one ? ['', $me['dept']] : [$me['dept']], true);
 }
 /* a plan only has so many places */
@@ -942,7 +942,7 @@ if (in_array($action, ['collegedupes', 'collegemerge'], true)) {
         return $o; };
     if ($action === 'collegedupes') out(200, ['dupes' => $dupes($a), 'colleges' => collegeList($a)]);
     $from = (string) ($body['from'] ?? ''); $into = (string) ($body['into'] ?? ''); if ($from === $into || !isset($a['colleges'][$from], $a['colleges'][$into])) out(400, ['error' => 'pick']);
-    if (!empty($a['colleges'][$into]['off'])) out(400, ['error' => 'off']); if (!empty($a['colleges'][$from]['bill']['sub'])) out(400, ['error' => 'paid']);   // a college paying by card has to cancel first, so nobody is charged for a college that's gone
+    if (!empty($a['colleges'][$into]['off'])) out(400, ['error' => 'off']); if (!empty($a['colleges'][$from]['bill']['sub'])) out(400, ['error' => 'paid']);   // an institution paying by card has to cancel first, so nobody is charged for an institution that's gone
     $toDepts = ccCollegeDepts($a, $into); $d = (string) ($body['dept'] ?? ''); if (!in_array($d, $toDepts, true)) $d = (string) ($toDepts[0] ?? ''); if ($d === '') out(400, ['error' => 'dept']);
     $fromDepts = ccCollegeDepts($a, $from); $moved = 0; $lessons = 0; $base = ccDataDir(); @set_time_limit(120);
     foreach ($fromDepts as $fd) { $lessons += ccCarryLessons($a, '*', (string) $fd, $d); }
@@ -954,10 +954,10 @@ if (in_array($action, ['collegedupes', 'collegemerge'], true)) {
     foreach ((array) ($a['joins'] ?? []) as $i => $j) if (($j['college'] ?? '') === $from) $a['joins'][$i]['college'] = $into;
     $fn = (string) ($a['colleges'][$from]['name'] ?? ''); $tn = (string) ($a['colleges'][$into]['name'] ?? ''); $a['colleges'][$from]['off'] = true; $a['colleges'][$from]['mergedInto'] = $into; $a['colleges'][$from]['mergedAt'] = time();
     if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-    ccLog($d, $me, 'merged the college ' . $fn . ' into', $tn . ' (' . $moved . ' people, ' . $lessons . ' lessons)');
+    ccLog($d, $me, 'merged the institution ' . $fn . ' into', $tn . ' (' . $moved . ' people, ' . $lessons . ' lessons)');
     out(200, ['dupes' => $dupes($a), 'colleges' => collegeList($a), 'merged' => ['from' => $fn, 'into' => $tn, 'people' => $moved, 'lessons' => $lessons]]);
 }
-/* All users: every account on the site, for the super admin. Confirm an email by hand, or put someone in any college (approving them if they were waiting) */
+/* All users: every account on the site, for the super admin. Confirm an email by hand, or put someone in any institution (approving them if they were waiting) */
 if (in_array($action, ['allusers', 'userverify', 'usermove'], true)) {
     if (!$isSuper) out(403, ['error' => 'noperm']);
     $all = function (array $a, array $extra = []): array { $supers = ccSupers(); $rows = []; $dn = fn(string $d): string => (string) ($a['depts'][$d]['name'] ?? '');
@@ -973,13 +973,13 @@ if (in_array($action, ['allusers', 'userverify', 'usermove'], true)) {
     if ($action === 'userverify') { $a['users'][$email]['verified'] = true; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccLog((string) (($old['dept'] ?? '') ?: $me['dept']), $me, 'confirmed the email address by hand for', $email); out(200, $all($a)); }
     $d = (string) ($body['dept'] ?? ''); if (!isset($a['depts'][$d]) || $d === CC_DEMO_DEPT) out(400, ['error' => 'dept']); $r = in_array($body['role'] ?? '', ['teacher', 'hod', 'owner'], true) ? (string) $body['role'] : 'teacher';
     $was = ccActive($old); $from = $was ? (string) ($old['dept'] ?? '') : ''; $fromCol = $from !== '' && isset($a['depts'][$from]) ? ccCollegeOf($a, $from) : ''; $toCol = ccCollegeOf($a, $d);
-    if ($was && ($old['role'] ?? '') === 'owner' && $fromCol !== '' && $fromCol !== $toCol) { $others = count(array_filter($a['users'], fn($x, $e) => $e !== $email && ccActive($x) && !in_array((string) $e, ccSupers(), true) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $fromCol, ARRAY_FILTER_USE_BOTH)); if ($others > 0 || !empty($a['colleges'][$fromCol]['bill']['sub'])) out(400, ['error' => 'manager']); }   // someone running a college with staff or a paid plan can't be moved out from under it
+    if ($was && ($old['role'] ?? '') === 'owner' && $fromCol !== '' && $fromCol !== $toCol) { $others = count(array_filter($a['users'], fn($x, $e) => $e !== $email && ccActive($x) && !in_array((string) $e, ccSupers(), true) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $fromCol, ARRAY_FILTER_USE_BOTH)); if ($others > 0 || !empty($a['colleges'][$fromCol]['bill']['sub'])) out(400, ['error' => 'manager']); }   // someone running an institution with staff or a paid plan can't be moved out from under it
     if (!$was || $fromCol !== $toCol) seatCheck($a, $d);
     $u = array_merge($old, ['status' => 'active', 'role' => $r, 'dept' => $d]); if (!$was) $u += ['methods' => []]; if (!$was) { $u['canEdit'] = false; $u['approvedBy'] = $me['email']; $u['added'] = time(); } elseif ($from !== $d) $u['movedFrom'] = $from;
     if ($r === 'owner') $u['canEdit'] = true; if ($r === 'hod') { if (!isset($u['perms'])) $u['perms'] = permsFrom(null); } else unset($u['perms']); unset($u['wantDept'], $u['wantRole']);
     $a['users'][$email] = $u; $carried = $was && $from !== '' && $from !== $d && !empty($body['lessons']) ? ccCarryLessons($a, $email, $from, $d) : 0;
     if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-    $cn = (string) (ccCollege($a, $toCol)['name'] ?? '') ?: 'the college'; $what = $r === 'owner' ? 'a college manager' : ($r === 'hod' ? 'a head of department / subject leader' : 'a teacher');
+    $cn = (string) (ccCollege($a, $toCol)['name'] ?? '') ?: 'the institution'; $what = $r === 'owner' ? 'an institution manager' : ($r === 'hod' ? 'a head of department / subject leader' : 'a teacher');
     ccLog($d, $me, ($was ? 'moved ' : 'approved ') . $email . ' into ' . $a['depts'][$d]['name'] . ' as', $what . ($carried ? ', with ' . $carried . ' lessons' : ''));
     if (!$was) ccMail($email, "You're in: Crafticulum", "Hello" . (!empty($old['name']) ? ' ' . $old['name'] : '') . ",\n\nYour Crafticulum account has been approved for " . $cn . ", " . $a['depts'][$d]['name'] . ".\n\n" . (empty($old['pass']) && in_array($old['via'] ?? '', ['magic', 'password'], true) ? "Sign in with this link (it works once, for 24 hours):\n" . ccLink('magic', ccToken($email, 'magic', 24)) . "\n\nAfter that, use Email me a sign-in link on the sign-in page.\n" : "Sign in here:\n" . ccAppUrl() . "\n"));
     elseif ($fromCol !== $toCol) ccMail($email, 'Your Crafticulum account has moved to ' . $cn, "Hello" . (!empty($old['name']) ? ' ' . $old['name'] : '') . ",\n\nYour account is now in " . $cn . ", " . $a['depts'][$d]['name'] . ", as " . $what . "." . ($carried ? " The lessons you wrote have come with you as drafts." : "") . "\n\n" . ccAppUrl() . "\n");
@@ -999,10 +999,10 @@ if ($action === 'useradd') {
     unset($u['wantDept'], $u['wantRole']);
     if (!empty($body['name'])) $u['name'] = cleanName((string) $body['name']);
     $a['users'][$email] = $u; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-    ccLog($d, $me, 'added ' . ($r === 'owner' ? 'a college manager' : ($r === 'hod' ? 'a head of department / subject leader' : 'a teacher')), $email);
+    ccLog($d, $me, 'added ' . ($r === 'owner' ? 'an institution manager' : ($r === 'hod' ? 'a head of department / subject leader' : 'a teacher')), $email);
     $extra = [];
     if (!empty($body['invite'])) { $t = ccToken($email, 'invite', 24 * 7); $extra['link'] = ccLink('invite', $t);
-        $extra['mailed'] = ccMail($email, "You've been added to Crafticulum", "Hello" . (!empty($u['name']) ? ' ' . $u['name'] : '') . ",\n\n" . ($me['name'] ?: $me['email']) . " has added you to Crafticulum " . ($r === 'owner' ? 'to manage ' . (ccCollege($a, ccCollegeOf($a, $d))['name'] ?: 'your college') : 'for ' . $a['depts'][$d]['name']) . ".\n\nChoose a password with this link (it works for 7 days):\n" . $extra['link'] . "\n\n" . (ccGoogleId() || ccMsId() ? "Or sign in with your Google or Microsoft account using this email address.\n" : "")); }
+        $extra['mailed'] = ccMail($email, "You've been added to Crafticulum", "Hello" . (!empty($u['name']) ? ' ' . $u['name'] : '') . ",\n\n" . ($me['name'] ?: $me['email']) . " has added you to Crafticulum " . ($r === 'owner' ? 'to manage ' . (ccCollege($a, ccCollegeOf($a, $d))['name'] ?: 'your institution') : 'for ' . $a['depts'][$d]['name']) . ".\n\nChoose a password with this link (it works for 7 days):\n" . $extra['link'] . "\n\n" . (ccGoogleId() || ccMsId() ? "Or sign in with your Google or Microsoft account using this email address.\n" : "")); }
     out(200, teamData($a, $me) + $extra);
 }
 if (!$old) out(404, ['error' => 'not_found']);
@@ -1036,7 +1036,7 @@ if ($action === 'userset') {
     if (array_key_exists('perms', $body)) { if (!$isAdmin) out(403, ['error' => 'noperm']); if (($u['role'] ?? '') !== 'hod' || !is_array($body['perms'])) out(400, ['error' => 'role']);
         $u['perms'] = array_merge(ccPerms($u), array_map(fn($v) => !empty($v), array_intersect_key($body['perms'], array_flip(CC_PERMS)))); }
     if (array_key_exists('canEdit', $body)) $u['canEdit'] = !empty($body['canEdit']);
-    if (array_key_exists('room', $body)) { $rk = (string) $body['room']; if (!$isAdmin) out(403, ['error' => 'noperm']); if (!isset(CC_ROOMS[$rk]) || ($u['role'] ?? '') === 'owner') out(400, ['error' => 'room']);   // one room, for this one person: only a college's manager or the super admin
+    if (array_key_exists('room', $body)) { $rk = (string) $body['room']; if (!$isAdmin) out(403, ['error' => 'noperm']); if (!isset(CC_ROOMS[$rk]) || ($u['role'] ?? '') === 'owner') out(400, ['error' => 'room']);   // one room, for this one person: only an institution's manager or the super admin
         $u['rooms'] = (array) ($u['rooms'] ?? []); $u['rooms'][$rk] = !empty($body['on']); }
     if (array_key_exists('dept', $body)) { $d = (string) $body['dept']; if (!isset($a['depts'][$d])) out(400, ['error' => 'dept']); if (!in_array($d, myDepts($a, $me), true)) out(403, ['error' => 'noperm']); $u['dept'] = $d; }
     if (!empty($body['totpReset'])) unset($u['totp']);
