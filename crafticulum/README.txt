@@ -1594,4 +1594,12 @@ THE DEMO STARTS EMPTY AND FOLLOWS THE VISITOR (v112)
     are still shared until it's emptied each night, as before.
   - New workspaces already started empty. This brings the demo in line.
 
+WHAT'S NEW IN v113
+
+THE SIGN-IN POP-UP IN DARK MODE (v113)
+  On a phone or computer set to dark mode, the form inside the pop-up went
+  dark but the pop-up around it stayed white, so labels and boxes clashed.
+  The pop-up now takes its background and text colour from the form inside
+  it, so the two always match, light or dark.
+
 NO CHANGES TO config.php

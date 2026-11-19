@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v112, 19 Nov 2026: Sign in and Register open in a pop-up on the public pages, and the demo starts empty and follows what the visitor says they teach). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v112.zip` and `crafticulum-release.zip`: the same files as one zip (1,859,858 bytes).
+- `crafticulum/`: every file of the current release (v113, 19 Nov 2026: the sign-in pop-up now matches dark mode, on top of v112's pop-up and empty demo). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v113.zip` and `crafticulum-release.zip`: the same files as one zip (1,860,140 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
