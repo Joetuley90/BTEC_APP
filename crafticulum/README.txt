@@ -1182,5 +1182,57 @@ THE INSTITUTION DIRECTORY (v98)
   - Until a list is read in, people type their institution's name.
   New file: inst-lib.php. Lists are kept in data/_inst.
 
+WHAT'S NEW IN v99
+
+THE DIRECTORY FILLS MORE EASILY (v99)
+  - England: if today's file isn't published yet, the last three days are
+    tried. A site whose directory is empty reads the England list in by itself
+    the first time the daily scheduled job runs.
+  - The address of the England file still could not be tested from where this
+    release was built. If "Read it in now" fails, download "all establishment
+    data" from the Downloads page of get-information-schools.service.gov.uk
+    and use "Another list": choose the file, name the list, press Read it in.
+  - Files can be sent up from your own computer, in pieces, so your host's
+    upload limit doesn't matter. CSV and Excel (.xlsx) both work.
+  - Column names no longer have to be typed. They are worked out from the
+    file's first row (title rows above it are skipped) and shown after the
+    import. Fill a column box in only to correct one.
+  - No list is bundled in the download. The official files are too large and
+    change daily, so they are read in on your server.
+
+THE STEPS OPEN BY THEMSELVES (v99)
+  Someone who has never seen the profile steps gets them on their dashboard
+  the first time they sign in, once. Closing them is remembered on every
+  device, and the dashboard card stays until the profile is done or hidden.
+
+ASKING TO JOIN A COLLEGE (v99)
+  - A college's manager links the college to its record in the directory:
+    Settings, Your college, "Your institution and requests to join".
+  - Someone whose own profile names that institution is told it uses
+    Crafticulum and can press Ask to join. Asking changes nothing.
+  - The manager sees who has asked, picks a department and approves or
+    declines. Approved people come in as teachers, and are emailed if email is
+    set up. Lessons in the workspace they came from stay there.
+  - Someone who manages a college with other staff or a paid plan can't be
+    moved out from under it.
+  - Anyone can type an institution's name into a profile, so approving is the
+    check: make sure you know who they are.
+
+PROFILES IN PROPER TABLES (v99)
+  The directory and every education profile now live in a small SQLite
+  database, data/_inst/directory.sqlite, with separate tables:
+  institutions, institution_campuses, institution_import_logs,
+  user_education_profiles, user_subjects, user_teaching_levels,
+  user_awarding_organisations, user_qualifications, institution_memberships.
+  Profiles saved in v98 are carried across the first time each person signs
+  in. If your server's PHP doesn't have SQLite, files are used instead and
+  everything works the same. Accounts, lessons and the rest of the app are
+  stored as they always were.
+
+THE PROFILE SETS WHERE YOU START (v99)
+  With no choice remembered yet, the lesson form and Planning open on the
+  subject and level in your profile, if your department teaches it. The
+  Resource library opens narrowed to it. Change either and your choice stays.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

@@ -487,6 +487,39 @@ if ($action === 'roomsget' || $action === 'roomsset') {
     out(200, ['rooms' => array_map(fn($k) => ['id' => $k, 'name' => CC_ROOMS[$k][0], 'about' => CC_ROOMS[$k][1]], array_keys(CC_ROOMS)), 'super' => $sup, 'college' => $cid, 'collegeName' => $cid !== '' ? ccCollege($a, $cid)['name'] : '',
         'siteOff' => array_values((array) (($a['rooms'] ?? [])['off'] ?? [])), 'collegeOff' => $cid !== '' ? array_values((array) ($a['colleges'][$cid]['roomsOff'] ?? [])) : [], 'roles' => (object) $roles, 'me' => ccRooms($a, ccMe() ?: $me)]);
 }
+/* ---------- joining a college's workspace. A college's manager says which institution in the directory it is. Someone whose profile names that
+   institution can then ask to join. Asking gives them nothing: a manager of that college has to approve it, and chooses the department ---------- */
+if (in_array($action, ['instlink', 'joinfind', 'joinask', 'joinlist', 'joindecide'], true)) {
+    require_once __DIR__ . '/inst-lib.php'; $t = fn($v, int $n): string => mb_substr(trim(str_replace(["\0", '<', '>'], '', (string) $v)), 0, $n);
+    $inst = fn($x): array => ['ref' => $t($x['ref'] ?? '', 30), 'name' => $t($x['name'] ?? '', 120), 'town' => $t($x['town'] ?? '', 80), 'postcode' => $t($x['postcode'] ?? '', 12), 'source' => $t($x['source'] ?? '', 40)];
+    $mgr = in_array($me['role'], ['superadmin', 'owner'], true); $myCol = (string) $me['college'];
+    if ($action === 'instlink') { if (!$mgr || $myCol === '' || !isset($a['colleges'][$myCol])) out(403, ['error' => 'noperm']);
+        if (is_array($body['insts'] ?? null)) { $l = []; foreach (array_slice($body['insts'], 0, 5) as $x) if (is_array($x) && $t($x['name'] ?? '', 120) !== '') $l[] = $inst($x); $a['colleges'][$myCol]['inst'] = $l; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccLog($me['dept'], $me, 'changed which institution this college is in the directory'); }
+        out(200, ['insts' => array_values((array) ($a['colleges'][$myCol]['inst'] ?? []))]); }
+    if ($action === 'joinfind') { $mine = array_map($inst, array_filter(array_slice((array) ($body['insts'] ?? []), 0, 6), 'is_array')); $o = [];
+        foreach ($a['colleges'] as $cid => $c) { if ((string) $cid === $myCol && $me['role'] !== 'superadmin') continue; foreach ((array) ($c['inst'] ?? []) as $li) foreach ($mine as $mi) if (ccInstSame($li, $mi)) { $open = null; foreach ((array) ($a['joins'] ?? []) as $j) if ($j['email'] === $me['email'] && $j['college'] === (string) $cid) $open = $j;
+                $o[(string) $cid] = ['college' => (string) $cid, 'name' => (string) ccCollege($a, (string) $cid)['name'] ?: $li['name'], 'inst' => $li['name'], 'asked' => $open ? (int) $open['at'] : 0, 'state' => $open ? (string) ($open['state'] ?? 'open') : '']; } }
+        out(200, ['colleges' => array_values($o), 'manager' => $me['role'] === 'owner']); }
+    if ($action === 'joinask') { if (!empty($me['demo']) || $me['role'] === 'superadmin') out(403, ['error' => 'noperm']); $cid = (string) ($body['college'] ?? ''); if (!isset($a['colleges'][$cid]) || $cid === $myCol) out(404, ['error' => 'not_found']);
+        $p = ccProfileGet($me['email']); $hit = null; foreach ((array) ($a['colleges'][$cid]['inst'] ?? []) as $li) foreach ((array) ($p['insts'] ?? []) as $mi) if (ccInstSame($li, $mi)) $hit = $mi; if (!$hit) out(403, ['error' => 'profile']);   // only for an institution that is in your own saved profile
+        $a['joins'] = array_values(array_filter((array) ($a['joins'] ?? []), fn($j) => !($j['email'] === $me['email'] && $j['college'] === $cid) && (int) $j['at'] > time() - 90 * 86400)); if (count(array_filter($a['joins'], fn($j) => $j['email'] === $me['email'] && ($j['state'] ?? 'open') === 'open')) >= 3) out(429, ['error' => 'many']);
+        $a['joins'][] = ['id' => bin2hex(random_bytes(6)), 'email' => $me['email'], 'name' => (string) ($me['name'] ?? ''), 'college' => $cid, 'inst' => $hit['name'], 'note' => $t($body['note'] ?? '', 300), 'at' => time(), 'state' => 'open'];
+        if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); ccMemberStatus($me['email'], $hit, 'requested', $cid);
+        foreach ($a['users'] as $e => $u) if (($u['role'] ?? '') === 'owner' && ccActive($u) && ccCollegeOf($a, (string) ($u['dept'] ?? '')) === $cid) ccMail((string) $e, 'Someone has asked to join your college', "Hello,\n\n" . ((string) ($me['name'] ?? '') ?: $me['email']) . " (" . $me['email'] . ") has asked to join your college's workspace on Crafticulum. They have been given nothing yet. Open Settings, Your college, to approve or decline.\n\n" . ccAppUrl() . "\n");
+        out(200, ['ok' => true]); }
+    if (!$mgr || $myCol === '') out(403, ['error' => 'noperm']);
+    if ($action === 'joindecide') { $id = (string) ($body['id'] ?? ''); $k = null; foreach ((array) ($a['joins'] ?? []) as $i => $j) if ($j['id'] === $id && $j['college'] === $myCol && ($j['state'] ?? 'open') === 'open') $k = $i; if ($k === null) out(404, ['error' => 'not_found']);
+        $j = $a['joins'][$k]; $em = (string) $j['email']; $u = $a['users'][$em] ?? null; $ok = !empty($body['ok']);
+        if ($ok) { if (!$u || !ccActive($u)) out(400, ['error' => 'gone']); $d = (string) ($body['dept'] ?? ''); if (!isset($a['depts'][$d]) || ccCollegeOf($a, $d) !== $myCol) out(400, ['error' => 'dept']);
+            $from = ccCollegeOf($a, (string) ($u['dept'] ?? '')); if (($u['role'] ?? '') === 'owner') { $others = count(array_filter($a['users'], fn($x, $e) => $e !== $em && ccActive($x) && ccCollegeOf($a, (string) ($x['dept'] ?? '')) === $from, ARRAY_FILTER_USE_BOTH)); if ($others > 0 || !empty($a['colleges'][$from]['bill']['sub'])) out(400, ['error' => 'manager']); }   // someone running a college with staff or a paid plan can't be moved out from under it
+            seatCheck($a, $d); $a['users'][$em] = array_merge($u, ['role' => 'teacher', 'dept' => $d, 'canEdit' => false, 'movedFrom' => (string) ($u['dept'] ?? ''), 'approvedBy' => $me['email'], 'added' => time()]); unset($a['users'][$em]['perms']);
+            ccLog($me['dept'], $me, 'approved a request to join from', $em); ccMail($em, 'You have joined ' . (ccCollege($a, $myCol)['name'] ?: 'the college'), "Hello,\n\nYour request to join " . (ccCollege($a, $myCol)['name'] ?: 'the college') . " on Crafticulum was approved. Sign in and you'll be in its workspace as a teacher. Lessons from your old workspace stay there.\n\n" . ccAppUrl() . "\n"); }
+        else ccLog($me['dept'], $me, 'declined a request to join from', $em);
+        $a['joins'][$k]['state'] = $ok ? 'approved' : 'declined'; $a['joins'][$k]['by'] = $me['email']; $a['joins'][$k]['decided'] = time(); if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
+        foreach ((array) ($a['colleges'][$myCol]['inst'] ?? []) as $li) ccMemberStatus($em, $li, $ok ? 'approved' : 'declined', $myCol, $me['email']); }
+    $depts = []; foreach ($a['depts'] as $d => $x) if (ccCollegeOf($a, (string) $d) === $myCol) $depts[] = ['id' => (string) $d, 'name' => (string) ($x['name'] ?? $d)];
+    out(200, ['joins' => array_values(array_map(fn($j) => ['id' => $j['id'], 'email' => $j['email'], 'name' => $j['name'], 'inst' => $j['inst'], 'note' => (string) ($j['note'] ?? ''), 'at' => (int) $j['at'], 'state' => (string) ($j['state'] ?? 'open')], array_filter((array) ($a['joins'] ?? []), fn($j) => $j['college'] === $myCol))), 'depts' => $depts, 'insts' => array_values((array) ($a['colleges'][$myCol]['inst'] ?? []))]);
+}
 /* a college's own settings: its house rules for the AI, and whether its learners are kept anonymous. For its manager, or the super admin working inside it */
 if ($action === 'houseget' || $action === 'houseset') {
     $sup = $me['role'] === 'superadmin'; $own = $me['role'] === 'owner'; if (!$sup && !$own) out(403, ['error' => 'noperm']);
