@@ -1452,4 +1452,24 @@ PROFILE DETAILS ON THE DASHBOARD (v108)
   institution, Change) is hidden for now. The profile itself is still in
   Settings, You, and still sets what lessons start from.
 
+WHAT'S NEW IN v109
+
+A PLAINER LOOK (v109)
+  The whole app, the sign-in page and the public pages.
+  - Corners: buttons, boxes, chips, tags and menus are squarer. Pill-shaped
+    buttons and chips are gone. Buttons are 6px, cards 8px, tags 4px.
+    Round things that should be round (photos, initials, status dots) stay
+    round.
+  - Colour: one solid colour where there were purple-to-pink gradients. The
+    sign-in panel, the front page banner, Crafti's chat bubbles and Send
+    button, and the lesson box's arrow are all flat now. Gradient lettering
+    is plain lettering.
+  - No coloured glows under buttons, and softer, smaller shadows. Edges are
+    drawn with a thin line instead.
+  - Nothing is tilted or floating on the sign-in and front pages.
+  - Clearer focus: a plain 2px outline on buttons and a thin ring on boxes
+    when you tab to them.
+  - A college's own colour still runs through all of it.
+  - The board and the slides are unchanged.
+
 NO CHANGES TO config.php
