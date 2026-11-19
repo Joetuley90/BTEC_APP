@@ -850,7 +850,7 @@ function teamData(array $a, array $me): array {
     foreach ($a['users'] as $email => $u) {
         if (in_array($email, ccSupers(), true) && ccActive($u)) continue;
         if (!canManage($u, $me, $a)) continue;
-        $row = ['email' => $email, 'name' => (string) ($u['name'] ?? ''), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($u['dept'] ?? ''), 'canEdit' => !empty($u['canEdit']), 'perms' => ccPerms($u),
+        $row = ['email' => $email, 'name' => (string) ($u['name'] ?? ''), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($u['dept'] ?? ''), 'canEdit' => !empty($u['canEdit']), 'rooms' => ccRooms($a, ['email' => $email, 'role' => (string) ($u['role'] ?? 'teacher'), 'college' => ccCollegeOf($a, (string) ($u['dept'] ?? ''))]), 'roomsOpen' => ccRoomsCollege($a, ccCollegeOf($a, (string) ($u['dept'] ?? ''))), 'perms' => ccPerms($u),
                 'last' => (int) ($u['last'] ?? 0), 'methods' => (array) ($u['methods'] ?? []), 'hasPass' => !empty($u['pass']), 'totp' => !empty($u['totp']['on'])];
         if (ccActive($u)) $team[] = $row; else $pend[] = $row + ['verified' => !empty($u['verified']), 'via' => (string) ($u['via'] ?? 'password'), 'wantDept' => (string) ($u['wantDept'] ?? ''), 'wantRole' => (string) ($u['wantRole'] ?? 'teacher'), 'requested' => (int) ($u['requested'] ?? 0)];
     }
@@ -937,11 +937,13 @@ if ($action === 'userset') {
     if (array_key_exists('perms', $body)) { if (!$isAdmin) out(403, ['error' => 'noperm']); if (($u['role'] ?? '') !== 'hod' || !is_array($body['perms'])) out(400, ['error' => 'role']);
         $u['perms'] = array_merge(ccPerms($u), array_map(fn($v) => !empty($v), array_intersect_key($body['perms'], array_flip(CC_PERMS)))); }
     if (array_key_exists('canEdit', $body)) $u['canEdit'] = !empty($body['canEdit']);
+    if (array_key_exists('room', $body)) { $rk = (string) $body['room']; if (!$isAdmin) out(403, ['error' => 'noperm']); if (!isset(CC_ROOMS[$rk]) || ($u['role'] ?? '') === 'owner') out(400, ['error' => 'room']);   // one room, for this one person: only a college's manager or the super admin
+        $u['rooms'] = (array) ($u['rooms'] ?? []); $u['rooms'][$rk] = !empty($body['on']); }
     if (array_key_exists('dept', $body)) { $d = (string) $body['dept']; if (!isset($a['depts'][$d])) out(400, ['error' => 'dept']); if (!in_array($d, myDepts($a, $me), true)) out(403, ['error' => 'noperm']); $u['dept'] = $d; }
     if (!empty($body['totpReset'])) unset($u['totp']);
     $a['users'][$email] = $u; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
-    $ch = array_intersect(array_keys($body), ['role', 'perms', 'canEdit', 'dept', 'totpReset', 'name']);
-    if ($ch) ccLog((string) ($u['dept'] ?? $me['dept']), $me, 'changed ' . implode(', ', array_map(fn($k) => ['role' => 'the role', 'perms' => 'the permissions', 'canEdit' => 'edit rights', 'dept' => 'the department', 'totpReset' => 'two-step codes', 'name' => 'the name'][$k], $ch)) . ' for', $email);
+    $ch = array_intersect(array_keys($body), ['role', 'perms', 'canEdit', 'dept', 'totpReset', 'name', 'room']);
+    if ($ch) ccLog((string) ($u['dept'] ?? $me['dept']), $me, 'changed ' . implode(', ', array_map(fn($k) => ['role' => 'the role', 'perms' => 'the permissions', 'canEdit' => 'edit rights', 'dept' => 'the department', 'totpReset' => 'two-step codes', 'name' => 'the name', 'room' => 'what they can use (' . (CC_ROOMS[(string) ($body['room'] ?? '')] ?? '') . (!empty($body['on']) ? ' on' : ' off') . ')'][$k], $ch)) . ' for', $email);
     teamOut($a, $me);
 }
 if ($action === 'userdel') { if ($email === $me['email']) out(400, ['error' => 'self']); unset($a['users'][$email]); ccSaveAccounts($a); ccLog((string) ($old['dept'] ?? $me['dept']), $me, 'removed', $email); teamOut($a, $me); }
