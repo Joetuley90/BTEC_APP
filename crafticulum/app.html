@@ -1411,6 +1411,14 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+.al-sub{margin-bottom:12px!important}
+.al-say{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin:0 0 clamp(18px,3.4vh,30px);font-size:.92rem;color:#c7d2fe}.al-say-w{font-family:"Lexend","Plus Jakarta Sans",sans-serif;font-weight:800;letter-spacing:-.04em;color:#fff}
+.al-say-p{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;white-space:nowrap}.al-say-p b{font-weight:800;color:#f0abfc}
+.al-crafti{display:flex;gap:14px;align-items:center;max-width:470px;margin-top:18px}.al-cr{flex:none;width:76px;height:76px;filter:drop-shadow(0 10px 18px rgba(15,23,42,.35));animation:alBob 3.2s ease-in-out infinite}
+.al-bubble{position:relative;margin:0;padding:12px 16px;border-radius:1rem;background:#fff;color:#1e1b4b;font-size:.92rem;line-height:1.45;box-shadow:0 14px 34px -14px rgba(15,23,42,.55)}.al-bubble b{display:block;font-weight:800}
+.al-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:16px;height:16px;background:#fff;transform:translateY(-50%) rotate(45deg);border-radius:3px}
+@keyframes alBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@media (prefers-reduced-motion:reduce){.al-cr{animation:none}}
+@media (max-height:760px){.al-crafti{margin-top:12px}.al-cr{width:60px;height:60px}}
 .ep-hits button.on{background:var(--cc-primary-soft)}.ep-hits mark{background:none;color:var(--cc-primary-text);padding:0;font-weight:800}.su-inst-say b{color:var(--bs-body-color)}#lpModal .ep-hits{max-height:220px}
 .ep-join{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-top:14px;padding:12px 14px;border-radius:.8rem;background:var(--cc-primary-soft);border:1px solid rgba(var(--cc-primary-rgb),.2);font-size:.88rem}.ep-join>div:first-child{flex:1 1 300px}.ep-joinl{text-align:center;font-size:.82rem;margin-top:6px;color:var(--bs-secondary-color)}#stInstLink .ep-insts li{flex-wrap:wrap}
 .edu-reg{padding:12px 14px;border-radius:.8rem;background:var(--cc-primary-soft);border:1px solid rgba(var(--cc-primary-rgb),.2)}.edu-reg .form-label{font-size:.82rem;font-weight:700;margin-bottom:4px}
@@ -1780,7 +1788,8 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
   <section class="al-hero" aria-labelledby="alH"><div class="al-hero-in">
     <div class="al-brand"><svg class="al-logo" viewBox="0 0 100 100" aria-hidden="true"><path d="M22 8 H64 V36 H36 V64 H92 V78 Q92 92 78 92 H22 Q8 92 8 78 V22 Q8 8 22 8 Z" fill="#ffffff"/><path d="M64 8 L92 36 H64 Z" fill="#a5b4fc"/></svg><span class="wm wm-rev">craft<span class="wm-2">iculum</span></span></div>
     <h1 id="alH">From one sentence to a <em>full lesson.</em></h1>
-    <p class="al-sub">Plan it, teach it from the board and share it with your students. Any course, any subject, any level.</p>
+    <p class="al-sub">Plan it, teach it from the board and share it with your students. Any subject, any stage, across the UK.</p>
+    <p class="al-say"><span class="al-say-w">crafticulum</span><span class="al-say-p" aria-label="Pronounced kraf TIK yuh luhm">kraf-<b>TIK</b>-yuh-luhm</span><span class="al-say-d">craft + curriculum</span></p>
     <div class="al-demo" aria-hidden="true">
       <div class="al-prompt"><span>A practical lesson where pairs pitch an idea in 2 minutes</span><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></i></div>
       <div class="al-lesson">
@@ -1790,6 +1799,7 @@ nav.st-jump.st-sticky{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-wi
         <div class="al-outs"><span>Lesson plan</span><span>Slides</span><span>Worksheet</span><span>Quiz</span><span>Student page</span></div>
       </div>
     </div>
+    <div class="al-crafti"><svg class="al-cr" viewBox="0 0 120 120" role="img" aria-label="Crafti"><defs><linearGradient id="crGal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><ellipse cx="60" cy="110" rx="30" ry="5" fill="#0f172a" opacity=".12"/><path d="M96 62 q14 -10 12 -24" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/><circle cx="108" cy="36" r="6" fill="#fbbf24"/><path d="M24 72 q-10 4 -12 14" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/><path d="M34 14 H74 L98 38 V88 Q98 104 82 104 H38 Q22 104 22 88 V26 Q22 14 34 14 Z" fill="url(#crGal)"/><path d="M74 14 L98 38 H80 Q74 38 74 32 Z" fill="#c4b5fd"/><circle cx="45" cy="58" r="11" fill="#fff"/><circle cx="75" cy="58" r="11" fill="#fff"/><circle cx="47" cy="60" r="5" fill="#0f172a"/><circle cx="77" cy="60" r="5" fill="#0f172a"/><circle cx="49" cy="58" r="1.800" fill="#fff"/><circle cx="79" cy="58" r="1.800" fill="#fff"/><path d="M46 78 Q60 92 74 78" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="33" cy="74" r="5" fill="#f472b6" opacity=".7"/><circle cx="87" cy="74" r="5" fill="#f472b6" opacity=".7"/><path d="M14 30 l2.500 6 6 2.500 -6 2.500 -2.500 6 -2.500 -6 -6 -2.500 6 -2.500z" fill="#fbbf24"/></svg><p class="al-bubble"><b>Hi, I’m Crafti!</b> I’m here to help. Ask me anything about your teaching and I’ll write it with you.</p></div>
     <ul class="al-points">
       <li><b>Plan</b>Every unit, week by week, from your own specification.</li>
       <li><b>Teach</b>From the board, with timers and live lessons.</li>
