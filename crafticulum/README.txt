@@ -1429,3 +1429,27 @@ None of this needs config.php edited. Everything new is set in Settings.
 Two optional lines exist if you ever need them:
   const UPDATE_REPO = 'owner/repository';   // take updates from another repository
   const UPDATE_OFF = true;                  // switch updating off altogether
+
+
+WHAT'S NEW IN v108
+
+THE MENU ON A PHONE (v108)
+  On a phone or small tablet the top bar used to hold every menu icon, and
+  they ran over the logo. Now it holds three things: the logo, Search and a
+  Menu button.
+  - Menu opens the whole menu full screen, the same as on a computer: every
+    section named (Curriculum and lessons, Learners and assessment, Resource
+    library, AI tools, Tools), every place with its name beside its icon, and
+    your account at the bottom.
+  - Choosing somewhere takes you there and closes the menu. Close, or Escape
+    on a keyboard, closes it too. The page you're on is highlighted.
+  - Anything switched off for you (a room, for instance) stays out of it.
+  - The bar along the bottom is unchanged.
+  - Nothing changes on a computer.
+
+PROFILE DETAILS ON THE DASHBOARD (v108)
+  The row above the lesson box (role, subjects, stage, setting, country,
+  institution, Change) is hidden for now. The profile itself is still in
+  Settings, You, and still sets what lessons start from.
+
+NO CHANGES TO config.php

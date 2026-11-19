@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v107, 19 Nov 2026: a profile for each learner, All users for the super admin, sign-up that joins a college instead of making a second one, lessons that come with someone who joins, school lists for Scotland, Wales and Northern Ireland, and updates the site fetches for itself). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v107.zip` and `crafticulum-release.zip`: the same files as one zip (1,839,348 bytes).
+- `crafticulum/`: every file of the current release (v108, 19 Nov 2026: a proper menu on phones, with the logo, Search and Menu in the top bar and the whole menu full screen; the profile details row on the dashboard is hidden). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v108.zip` and `crafticulum-release.zip`: the same files as one zip (1,841,182 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
