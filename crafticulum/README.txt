@@ -1280,5 +1280,19 @@ SCHOOLS LIST FIXES (v103)
     line to add in cPanel, Cron Jobs, if it isn't. It is the same daily job
     that sends notifications.
 
+WHAT'S NEW IN v104
+
+WHAT EACH PERSON CAN USE, ON THE TEAM PAGE (v104)
+  Settings, People, Team. Each teacher and head of department now has six
+  ticks under "Can use", beside their other options: AI Tools, Crafti,
+  Resource library, Learners, Hand-in links, Second Marker.
+  - Only a college's manager and the super admin see and change them.
+  - A person's own tick wins over what their role gets in "Who can use what".
+  - A room switched off for the whole college is greyed out and can't be
+    given to anyone.
+  - Hand-in links and Second Marker still have to be switched on by the
+    department as well.
+  - College managers always have everything in their college.
+
 NO CHANGES TO config.php
 None of this needs config.php edited. Everything new is set in Settings.

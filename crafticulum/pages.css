@@ -118,7 +118,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}footer
 .plans-note{color:var(--mut);font-size:.9rem;margin:18px 0 0}
 
 /* photos and drawings */
-.shots{padding:0 0 clamp(40px,6vw,72px)}.shots .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.shots{padding:clamp(40px,6vw,72px) 0}.shots .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .shot{margin:0;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column}
 .shot svg,.shot img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;height:auto}
 .shot figcaption{padding:12px 16px;font-size:.94rem;font-weight:600}
@@ -144,3 +144,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}footer
 .meet p{margin:0;color:var(--mut);font-size:1.02rem;max-width:64ch}
 @keyframes crBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}@media (prefers-reduced-motion:reduce){.meet .crafti{animation:none}}
 .ai-note{margin:22px 0 0;color:var(--mut);font-size:.95rem}
+
+/* the AI section: its own blue band, the same in light and dark */
+section.blue{background:linear-gradient(135deg,#312e81 0%,#4338ca 52%,#6d28d9 100%);color:#fff;position:relative;overflow:hidden}
+section.blue::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 320px at 88% 0,rgba(240,171,252,.22),transparent 65%),radial-gradient(600px 300px at 0 100%,rgba(56,189,248,.16),transparent 65%);pointer-events:none}
+section.blue .wrap{position:relative}section.blue h2{color:#fff}section.blue .sub,section.blue .ai-note{color:#dbe1ff}section.blue .kick.dark{color:#c7d2fe}
+section.blue .card{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}section.blue .card h3{color:#fff}section.blue .card p{color:#dbe1ff}
+section.blue .meet{background:#fff;border-color:transparent;box-shadow:0 24px 60px -28px rgba(15,23,42,.7)}section.blue .meet p{color:#475569}
