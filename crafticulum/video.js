@@ -1,0 +1,141 @@
+
+/* ===== round 57: video lessons. Crafti presents a lesson's slides as a narrated video: it talks through each slide, with captions, pauses for the starter and the tasks,
+   and gives thinking time before each quiz answer. The voice is the device's own (the browser's speech), so nothing is recorded or sent anywhere.
+   This file stands on its own: the app uses it, and the student page loads it as video.js. window.ccVideo.open(lesson, options) ===== */
+(function(){
+  if(window.ccVideo) return;
+  const E = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+  const T = s => String(s == null ? "" : s).replace(/\*\*?|__|`|#+\s/g, "").replace(/\s+/g, " ").trim();
+  const lc = s => { s = T(s); return /^[A-Z][a-z]/.test(s) ? s[0].toLowerCase() + s.slice(1) : s; };
+  const end = s => { s = T(s); return !s ? "" : /[.!?]$/.test(s) ? s : s + "."; };
+  const arr = a => Array.isArray(a) ? a.filter(x => x != null && String(typeof x === "object" ? (x.title || x.q || "") : x).trim()) : [];
+  const LET = "ABCDEFGH";
+  /* the slides, in the order the lesson is taught. Each has an id, so a written script can be matched to it */
+  function slides(L, o){ o = o || {}; const out = [], ob = L.objectives || {}, st = L.starter || null, teach = arr(L.teach), tasks = arr(L.tasks), quiz = o.student ? [] : arr(L.quiz), m = L.meta || {};
+    out.push({id: "intro", kind: "intro", title: T(L.title) || "Today's lesson", unit: T(m.unit || L.unit || ""), obj: [["All", ob.all], ["Most", ob.most], ["Some", ob.some]].filter(x => T(x[1]))});
+    if(st && T(st.prompt)) out.push({id: "starter", kind: "starter", title: T(st.title) || "Starter", prompt: T(st.prompt), list: arr(st.instructions).map(T), pause: true});
+    teach.forEach((t, i) => out.push({id: "teach-" + i, kind: "teach", n: i + 1, of: teach.length, title: T(t.title) || "Learn", explain: T(t.explain), list: arr(t.points).map(T), terms: arr(t.terms).map(x => typeof x === "object" ? {term: T(x.term), meaning: T(x.meaning || x.def || "")} : {term: T(x), meaning: ""}).filter(x => x.term)}));
+    tasks.forEach((t, i) => out.push({id: "task-" + i, kind: "task", n: i + 1, of: tasks.length, title: T(t.title), goal: T(t.goal), list: arr(t.steps).map(T), mins: +t.mins || 0, pause: true}));
+    quiz.forEach((q, i) => out.push({id: "quiz-" + i, kind: "quiz", n: i + 1, of: quiz.length, q: T(q.q), opts: arr(q.options).map(T), answer: Number.isInteger(q.answer) ? q.answer : -1, why: T(q.why)}));
+    const pl = L.plenary; out.push({id: "end", kind: "end", title: T(L.title), recap: typeof pl === "string" ? T(pl) : pl ? T(pl.prompt || pl.title || "") : ""});
+    return out; }
+  /* what Crafti says on each slide when no script has been written: built from the slide itself */
+  function say(s, first){ const k = s.kind;
+    if(k === "intro"){ const o = Object.fromEntries(s.obj); return [first ? "Hello, I'm Crafti." : "", `Today's lesson is ${end(s.title)}`, s.unit ? `It's part of ${end(s.unit)}` : "", o.All ? `By the end of it, everyone will be able to ${end(lc(o.All))}` : "", o.Most ? `Most of you will ${end(lc(o.Most))}` : "", o.Some ? `And some of you will ${end(lc(o.Some))}` : "", "Let's get started."].filter(Boolean).join(" "); }
+    if(k === "starter") return [`First, a starter: ${end(s.title)}`, end(s.prompt), ...s.list.map(end)].join(" ");
+    if(k === "teach") return [end(s.title), end(s.explain), s.list.length ? "The key points are these." : "", ...s.list.map(end), ...s.terms.filter(t => t.meaning).slice(0, 3).map(t => `${t.term} means ${end(lc(t.meaning))}`)].filter(Boolean).join(" ");
+    if(k === "task") return [`Now it's your turn. Task ${s.n}: ${end(s.title)}`, s.goal ? `By the end you should have ${end(lc(s.goal))}` : "", ...s.list.map((x, j) => `Step ${j + 1}: ${end(x)}`), s.mins ? `Give yourself about ${s.mins} minutes.` : ""].filter(Boolean).join(" ");
+    if(k === "quiz") return [`Question ${s.n}. ${end(s.q)}`, ...s.opts.map((x, j) => `${LET[j]}: ${end(x)}`)].join(" ");
+    if(k === "end") return [`That's the end of today's lesson${s.title ? " on " + s.title : ""}.`, s.recap ? end(s.recap) : "Look back over the key points, and check your work against the steps.", "Well done. See you next time."].join(" ");
+    return ""; }
+  const reveal = s => s.answer >= 0 && s.opts[s.answer] ? `The answer is ${LET[s.answer]}: ${end(s.opts[s.answer])} ${s.why ? end(s.why) : ""}`.trim() : "";
+  const sentences = t => (T(t).match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || []).map(x => x.trim()).filter(Boolean);
+  const CRAFTI = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="vdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><ellipse cx="60" cy="112" rx="28" ry="4" fill="#000" opacity=".25"/><path d="M30 18h44l22 22v54a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V28a10 10 0 0 1 10-10z" fill="url(#vdG)"/><path d="M74 18v22h22z" fill="#c4b5fd"/><circle cx="46" cy="56" r="9" fill="#fff"/><circle cx="72" cy="56" r="9" fill="#fff"/><circle class="vd-eye" cx="48" cy="57" r="4" fill="#1e1b4b"/><circle class="vd-eye" cx="74" cy="57" r="4" fill="#1e1b4b"/><ellipse class="vd-mouth" cx="59" cy="78" rx="10" ry="4" fill="#1e1b4b"/><circle cx="36" cy="70" r="4" fill="#f472b6" opacity=".6"/><circle cx="84" cy="70" r="4" fill="#f472b6" opacity=".6"/></svg>`;
+  const CSS = `.vd{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;background:#0b0e1a;color:#e8eaf6;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.vd *{box-sizing:border-box}.vd button{font:inherit}.vd-top{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08)}.vd-top h2{font-size:1rem;font-weight:700;margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}.vd-top small{color:#a5b4fc;font-size:.78rem;white-space:nowrap}
+.vd-x{width:40px;height:40px;border:0;border-radius:6px;background:rgba(255,255,255,.08);color:#fff;font-size:24px;line-height:1;cursor:pointer}.vd-x:hover{background:rgba(255,255,255,.16)}
+.vd-main{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px;position:relative}
+.vd-stage{position:relative;width:min(100%,calc((100vh - 230px) * 16 / 9));aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#fff;color:#0f172a;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);container-type:inline-size;--u:1cqw}
+.vd-slide{position:absolute;inset:0;padding:calc(var(--u) * 5.5) calc(var(--u) * 6.5) calc(var(--u) * 6);display:flex;flex-direction:column;gap:calc(var(--u) * 1.6);animation:vdIn .35s ease both}.vd-slide::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(var(--u) * 1.1);background:linear-gradient(90deg,#4f46e5,#a855f7,#ec4899)}
+@keyframes vdIn{from{opacity:0;transform:translateY(calc(var(--u) * 1.2))}to{opacity:1;transform:none}}
+.vd-k{font-size:calc(var(--u) * 1.5);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6d28d9}.vd-h{font-size:calc(var(--u) * 4.2);font-weight:800;line-height:1.08;letter-spacing:-.02em;margin:0;color:#111827;text-transform:none}.vd-sub{font-size:calc(var(--u) * 2);color:#475569;margin:0}
+.vd-big{font-size:calc(var(--u) * 2.9);line-height:1.3;font-weight:600;color:#1e1b4b;background:#eef0ff;border-left:.6cqw solid #6366f1;padding:calc(var(--u) * 1.6) calc(var(--u) * 2);border-radius:.6cqw;margin:0}
+.vd-list{margin:0;padding-left:calc(var(--u) * 3);display:grid;gap:.9cqw;font-size:calc(var(--u) * 2.2);line-height:1.35}.vd-list li::marker{color:#7c3aed;font-weight:800}
+.vd-obj{display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u) * 1.2) calc(var(--u) * 1.6);align-items:baseline;font-size:calc(var(--u) * 2.2);margin-top:calc(var(--u) * 1)}.vd-tag{font-size:calc(var(--u) * 1.4);font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:.4cqw calc(var(--u) * 1);border-radius:.5cqw;background:#dcfce7;color:#166534}.vd-tag.m{background:#fef3c7;color:#92400e}.vd-tag.s{background:#f3e8ff;color:#6b21a8}
+.vd-terms{display:flex;flex-wrap:wrap;gap:calc(var(--u) * 1);margin-top:auto}.vd-term{font-size:calc(var(--u) * 1.6);padding:.6cqw calc(var(--u) * 1.2);border-radius:.6cqw;background:#f1f5f9;border:1px solid #e2e8f0}.vd-term b{color:#4338ca}
+.vd-opts{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u) * 1.2);margin-top:calc(var(--u) * 1)}.vd-opt{display:flex;gap:calc(var(--u) * 1.2);align-items:center;font-size:calc(var(--u) * 2.2);padding:calc(var(--u) * 1.4) calc(var(--u) * 1.6);border-radius:.8cqw;border:2px solid #e2e8f0;background:#fff;transition:background .3s,border-color .3s,opacity .3s}.vd-opt i{font-style:normal;font-weight:800;width:calc(var(--u) * 3.6);height:calc(var(--u) * 3.6);flex:none;border-radius:50%;display:grid;place-items:center;background:#eef0ff;color:#4338ca}
+.vd-opt.ok{border-color:#16a34a;background:#f0fdf4}.vd-opt.ok i{background:#16a34a;color:#fff}.vd-opt.no{opacity:.45}.vd-why{font-size:calc(var(--u) * 1.9);color:#166534;margin:0}
+.vd-chip{align-self:flex-start;font-size:calc(var(--u) * 1.5);font-weight:700;padding:.5cqw calc(var(--u) * 1.2);border-radius:.5cqw;background:#e0e7ff;color:#3730a3}
+.vd-end{align-items:center;justify-content:center;text-align:center;background:radial-gradient(calc(var(--u) * 60) calc(var(--u) * 30) at 50% 0,#ede9fe,transparent 70%),#fff}
+.vd-think{position:absolute;right:calc(var(--u) * 3);top:calc(var(--u) * 3);font-size:calc(var(--u) * 1.6);font-weight:700;padding:.6cqw calc(var(--u) * 1.4);border-radius:99px;background:#fef3c7;color:#92400e}
+.vd-pause{position:absolute;inset:auto 0 0 0;padding:calc(var(--u) * 1.6) calc(var(--u) * 3);background:linear-gradient(0deg,rgba(17,24,39,.92),rgba(17,24,39,.82));color:#fff;font-size:calc(var(--u) * 1.9);display:flex;gap:calc(var(--u) * 1.6);align-items:center}.vd-pause b{color:#fde68a}
+.vd-crafti{position:absolute;left:calc(var(--u) * 2);bottom:calc(var(--u) * 2);width:calc(var(--u) * 9);height:calc(var(--u) * 9);filter:drop-shadow(0 .6cqw calc(var(--u) * 1) rgba(0,0,0,.25));z-index:2}.vd-crafti svg{width:100%;height:100%}
+.vd.talking .vd-crafti{animation:vdBob 1.2s ease-in-out infinite}.vd.talking .vd-mouth{animation:vdTalk .28s ease-in-out infinite alternate}@keyframes vdBob{50%{transform:translateY(-.6cqw)}}@keyframes vdTalk{from{transform:scaleY(.4)}to{transform:scaleY(1.35)}}.vd-mouth{transform-box:fill-box;transform-origin:center}
+.vd-cap{min-height:56px;max-width:min(980px,96vw);margin:0 auto;padding:6px 16px 0;text-align:center;font-size:clamp(.95rem,1.6vw,1.2rem);line-height:1.4;color:#fff}.vd-cap span{background:rgba(0,0,0,.55);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:2px 8px;border-radius:4px}.vd.nocap .vd-cap{visibility:hidden}
+.vd-bar{display:flex;gap:3px;padding:10px 16px 4px;max-width:1100px;width:100%;margin:0 auto}.vd-seg{flex:1;height:6px;border:0;border-radius:3px;background:rgba(255,255,255,.18);padding:0;cursor:pointer;position:relative;overflow:hidden}.vd-seg.done{background:#8b5cf6}.vd-seg.on{background:rgba(139,92,246,.45)}.vd-seg.on::after{content:"";position:absolute;inset:0;width:var(--p,0%);background:#a78bfa;transition:width .3s linear}.vd-seg:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.vd-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:8px 16px 14px}.vd-b{min-width:44px;height:44px;border:1px solid rgba(255,255,255,.18);border-radius:6px;background:rgba(255,255,255,.06);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-size:.88rem;font-weight:600}.vd-b:hover{background:rgba(255,255,255,.14)}.vd-b svg{width:20px;height:20px}
+.vd-play{min-width:120px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-color:transparent}.vd-play:hover{background:linear-gradient(135deg,#4338ca,#6d28d9)}
+.vd-b:focus-visible,.vd-x:focus-visible,.vd-sel:focus-visible{outline:2px solid #fff;outline-offset:2px}.vd-b[aria-pressed="true"]{background:rgba(139,92,246,.35);border-color:#a78bfa}
+.vd-sel{height:44px;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:#151a2c;color:#fff;padding:0 10px;font-size:.85rem;max-width:200px}
+.vd-note{text-align:center;font-size:.8rem;color:#94a3b8;padding:0 16px 10px;margin:0}.vd-note button{background:none;border:0;color:#c4b5fd;text-decoration:underline;cursor:pointer;padding:0;font-size:inherit}
+@media (max-width:640px){.vd-top small{display:none}.vd-main{padding:8px}.vd-sel{max-width:130px}.vd-b span{display:none}.vd-play span,.vd-b[data-vd="stops"] span{display:inline}}
+@media (max-aspect-ratio:1/1){.vd-stage{aspect-ratio:4/5;width:min(100%,calc((100vh - 250px) * 4 / 5));--u:1.75cqw}.vd-opts{grid-template-columns:1fr}.vd-crafti{width:calc(var(--u) * 7);height:calc(var(--u) * 7)}}
+@media (prefers-reduced-motion:reduce){.vd-slide,.vd.talking .vd-crafti,.vd.talking .vd-mouth{animation:none}}`;
+  const I = {prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20 9 12l10-8zM5 19V5"/></svg>', next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4 10 8-10 8zM19 5v14"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>', pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>', cc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 10.5a2 2 0 1 0 0 3M17 10.5a2 2 0 1 0 0 3"/></svg>'};
+  function slideHtml(s, st){ const k = s.kind;
+    if(k === "intro") return `<div class="vd-slide"><div class="vd-k">Video lesson</div><h3 class="vd-h">${E(s.title)}</h3>${s.unit ? `<p class="vd-sub">${E(s.unit)}</p>` : ""}${s.obj.length ? `<div class="vd-obj">${s.obj.map(o => `<span class="vd-tag ${o[0] === "Most" ? "m" : o[0] === "Some" ? "s" : ""}">${o[0]}</span><span>${E(T(o[1]))}</span>`).join("")}</div>` : ""}</div>`;
+    if(k === "starter") return `<div class="vd-slide"><div class="vd-k">Starter</div><h3 class="vd-h">${E(s.title)}</h3><p class="vd-big">${E(s.prompt)}</p>${s.list.length ? `<ul class="vd-list">${s.list.map(x => `<li>${E(x)}</li>`).join("")}</ul>` : ""}</div>`;
+    if(k === "teach") return `<div class="vd-slide"><div class="vd-k">Learn${s.of > 1 ? ` · ${s.n} of ${s.of}` : ""}</div><h3 class="vd-h">${E(s.title)}</h3>${s.list.length ? `<ul class="vd-list">${s.list.slice(0, 6).map(x => `<li>${E(x)}</li>`).join("")}</ul>` : `<p class="vd-big">${E(s.explain.slice(0, 320))}</p>`}${s.terms.length ? `<div class="vd-terms">${s.terms.slice(0, 5).map(t => `<span class="vd-term"><b>${E(t.term)}</b>${t.meaning ? ": " + E(t.meaning.slice(0, 70)) : ""}</span>`).join("")}</div>` : ""}</div>`;
+    if(k === "task") return `<div class="vd-slide"><div class="vd-k">Your task${s.of > 1 ? ` · ${s.n} of ${s.of}` : ""}</div><h3 class="vd-h">${E(s.title)}</h3>${s.goal ? `<p class="vd-sub">${E(s.goal)}</p>` : ""}${s.list.length ? `<ol class="vd-list">${s.list.slice(0, 7).map(x => `<li>${E(x)}</li>`).join("")}</ol>` : ""}${s.mins ? `<span class="vd-chip">About ${s.mins} minutes</span>` : ""}</div>`;
+    if(k === "quiz") return `<div class="vd-slide"><div class="vd-k">Quick check · ${s.n} of ${s.of}</div><h3 class="vd-h" style="font-size:3.4cqw">${E(s.q)}</h3><div class="vd-opts">${s.opts.map((o, j) => `<div class="vd-opt${st.shown ? (j === s.answer ? " ok" : " no") : ""}"><i>${LET[j]}</i><span>${E(o)}</span></div>`).join("")}</div>${st.shown && s.why ? `<p class="vd-why">${E(s.why)}</p>` : ""}${st.thinking ? `<span class="vd-think" role="status">Think about it...</span>` : ""}</div>`;
+    return `<div class="vd-slide vd-end"><div class="vd-k">Well done</div><h3 class="vd-h">${E(s.title || "That's the lesson")}</h3>${s.recap ? `<p class="vd-sub" style="max-width:70cqw">${E(s.recap)}</p>` : ""}</div>`; }
+  let cur = null;
+  function voices(){ try{ return (speechSynthesis.getVoices() || []).filter(v => /^en(-|_|$)/i.test(v.lang)); }catch{ return []; } }
+  function pickVoice(list, want){ if(want){ const v = list.find(x => x.voiceURI === want); if(v) return v; } return list.find(v => /en-GB/i.test(v.lang) && /female|serena|kate|libby|sonia|google uk english female/i.test(v.name)) || list.find(v => /en-GB/i.test(v.lang)) || list[0] || null; }
+  function store(k, v){ try{ if(v === undefined) return localStorage.getItem("cc_vd_" + k); localStorage.setItem("cc_vd_" + k, v); }catch{ return null; } }
+  function open(L, opts){ if(cur) cur.close(); opts = opts || {}; if(!document.getElementById("vdCss")){ const st = document.createElement("style"); st.id = "vdCss"; st.textContent = CSS; document.head.appendChild(st); }
+    const S = slides(L, opts), script = opts.script || {}, hasTTS = typeof speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined" && !opts.silent;
+    const st = {i: 0, playing: false, line: 0, lines: [], shown: false, thinking: false, timer: 0, gen: 0, rate: +(store("rate") || 1) || 1, cap: store("cap") !== "0", stops: store("stops") !== "0", voice: store("voice") || "", waiting: false, from: document.activeElement};
+    const root = document.createElement("div"); root.className = "vd" + (st.cap ? "" : " nocap"); root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Video lesson: " + (T(L.title) || "lesson"));
+    root.innerHTML = `<div class="vd-top"><h2>${E(T(L.title) || "Video lesson")}</h2><small id="vdPos"></small><button type="button" class="vd-x" data-vd="close" aria-label="Close the video lesson">&times;</button></div>
+      <div class="vd-main"><div class="vd-stage" id="vdStage"><div id="vdSlide"></div><div class="vd-crafti" title="Crafti">${CRAFTI}</div><div id="vdPauseBox"></div></div></div>
+      <div class="vd-cap" id="vdCap" aria-live="polite"></div>
+      <div class="vd-bar" id="vdBar" role="group" aria-label="Slides">${S.map((s, i) => `<button type="button" class="vd-seg" data-vd="go" data-i="${i}" aria-label="Go to slide ${i + 1}: ${E(s.kind === "quiz" ? "question " + s.n : s.title || s.kind)}"></button>`).join("")}</div>
+      <div class="vd-ctl"><button type="button" class="vd-b" data-vd="prev" aria-label="Previous slide">${I.prev}</button><button type="button" class="vd-b vd-play" data-vd="play" id="vdPlay">${I.play}<span>Play</span></button><button type="button" class="vd-b" data-vd="next" aria-label="Next slide">${I.next}</button>
+        <select class="vd-sel" id="vdRate" aria-label="Speed">${[0.8, 0.9, 1, 1.15, 1.3].map(r => `<option value="${r}" ${r === st.rate ? "selected" : ""}>${r === 1 ? "Normal speed" : r + "x"}</option>`).join("")}</select>
+        ${hasTTS ? `<select class="vd-sel" id="vdVoice" aria-label="Voice"></select>` : ""}
+        <button type="button" class="vd-b" data-vd="cap" aria-pressed="${st.cap}" aria-label="Captions">${I.cc}<span>Captions</span></button>
+        <button type="button" class="vd-b" data-vd="stops" aria-pressed="${st.stops}" aria-label="Pause at tasks"><span>Pause at tasks</span></button></div>
+      <p class="vd-note" id="vdNote">${opts.note || ""}</p>`;
+    document.body.appendChild(root); document.documentElement.style.overflow = "hidden";
+    const $ = s => root.querySelector(s);
+    const fillVoices = () => { const sel = $("#vdVoice"); if(!sel) return; const vs = voices(); if(!vs.length){ sel.hidden = true; return; } sel.hidden = false; const v = pickVoice(vs, st.voice); sel.innerHTML = vs.map(x => `<option value="${E(x.voiceURI)}" ${v && x.voiceURI === v.voiceURI ? "selected" : ""}>${E(x.name.replace(/^(Microsoft|Google)\s+/, "").replace(/\s*-\s*English.*$/, ""))}</option>`).join(""); };
+    if(hasTTS){ fillVoices(); try{ speechSynthesis.addEventListener("voiceschanged", fillVoices); }catch{} }
+    const textFor = s => T(script[s.id]) || say(s, s.id === "intro");
+    const stopVoice = () => { st.gen++; clearTimeout(st.timer); if(hasTTS) try{ speechSynthesis.cancel(); }catch{} root.classList.remove("talking"); };
+    const caption = t => { $("#vdCap").innerHTML = t ? `<span>${E(t)}</span>` : ""; };
+    const progress = () => { const s = S[st.i]; root.querySelectorAll(".vd-seg").forEach((b, j) => { b.classList.toggle("done", j < st.i); b.classList.toggle("on", j === st.i); if(j === st.i){ b.style.setProperty("--p", st.lines.length ? Math.round(st.line / st.lines.length * 100) + "%" : "0%"); b.setAttribute("aria-current", "step"); } else b.removeAttribute("aria-current"); }); $("#vdPos").textContent = `Slide ${st.i + 1} of ${S.length}`; };
+    const drawSlide = () => { $("#vdSlide").innerHTML = slideHtml(S[st.i], st); progress(); };
+    const playBtn = () => { const b = $("#vdPlay"); b.innerHTML = st.playing ? `${I.pause}<span>Pause</span>` : `${I.play}<span>${st.i === S.length - 1 && st.line >= st.lines.length && st.lines.length ? "Watch again" : "Play"}</span>`; b.setAttribute("aria-label", st.playing ? "Pause" : "Play"); };
+    const pauseBox = html => { $("#vdPauseBox").innerHTML = html ? `<div class="vd-pause" role="status">${html}</div>` : ""; };
+    /* one sentence at a time, so captions keep up and pausing is instant. If the device won't speak, captions are timed instead */
+    function speak(text, done){ const g = st.gen; caption(text); if(!st.playing) return;
+      const timed = () => { root.classList.add("talking"); st.timer = setTimeout(() => { if(g !== st.gen) return; root.classList.remove("talking"); done(); }, ccVideo.fast ? 25 : Math.max(1200, text.split(/\s+/).length / (2.6 * st.rate) * 1000)); };
+      if(!hasTTS || !voices().length) return timed();
+      let started = false; const u = new SpeechSynthesisUtterance(text), v = pickVoice(voices(), st.voice); if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-GB"; u.rate = st.rate; u.pitch = 1.02;
+      u.onstart = () => { started = true; if(g === st.gen) root.classList.add("talking"); };
+      u.onend = () => { if(g !== st.gen) return; root.classList.remove("talking"); done(); };
+      u.onerror = e => { if(g !== st.gen || (e && e.error === "interrupted") || (e && e.error === "canceled")) return; timed(); };
+      try{ speechSynthesis.speak(u); }catch{ return timed(); }
+      st.timer = setTimeout(() => { if(g === st.gen && !started){ try{ speechSynthesis.cancel(); }catch{} timed(); } }, 2500); }   // a voice that never starts: fall back to timed captions
+    function runLines(after){ if(!st.playing) return; if(st.line >= st.lines.length){ return after(); } speak(st.lines[st.line], () => { st.line++; progress(); runLines(after); }); }
+    function slideDone(){ const s = S[st.i]; if(!st.playing) return;
+      if(s.kind === "quiz" && !st.shown && s.answer >= 0){ st.thinking = true; drawSlide(); caption("Think about it..."); const g = st.gen; st.timer = setTimeout(() => { if(g !== st.gen) return; st.thinking = false; st.shown = true; drawSlide(); st.lines = sentences(reveal(s)); st.line = 0; runLines(advance); }, ccVideo.fast ? 30 : Math.round(4500 / st.rate)); return; }
+      if(s.pause && st.stops && !st.waiting){ st.waiting = true; st.playing = false; playBtn(); root.classList.remove("talking"); pauseBox(`<b>Pause and have a go.</b> Press play when you're ready to carry on.`); return; }
+      advance(); }
+    function advance(){ if(st.i >= S.length - 1){ st.playing = false; playBtn(); caption(""); pauseBox(""); return; } go(st.i + 1, true); }
+    function go(i, keep){ stopVoice(); st.i = Math.max(0, Math.min(S.length - 1, i)); st.shown = false; st.thinking = false; st.waiting = false; st.lines = sentences(textFor(S[st.i])); st.line = 0; pauseBox(""); drawSlide(); caption(""); if(keep && st.playing) runLines(slideDone); else { st.playing = false; playBtn(); } }
+    function play(){ if(st.playing){ st.playing = false; stopVoice(); playBtn(); return; }
+      if(st.waiting){ st.waiting = false; pauseBox(""); st.playing = true; playBtn(); return advance(); }
+      if(st.i === S.length - 1 && st.lines.length && st.line >= st.lines.length){ st.playing = true; go(0, true); playBtn(); return; }
+      st.playing = true; playBtn(); if(S[st.i].kind === "quiz" && st.shown && st.line >= st.lines.length) return advance(); runLines(slideDone); }
+    function close(){ stopVoice(); root.remove(); document.documentElement.style.overflow = ""; document.removeEventListener("keydown", key, true); if(hasTTS) try{ speechSynthesis.removeEventListener("voiceschanged", fillVoices); }catch{} cur = null; try{ if(st.from && document.contains(st.from)) st.from.focus(); }catch{} if(opts.onClose) opts.onClose(); }
+    function key(e){ if(e.target && /^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName) && e.key !== "Escape") return;
+      if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); return close(); }
+      if(e.key === " " || e.key === "k"){ if(e.target && e.target.closest && e.target.closest("button") && e.key === " ") return; e.preventDefault(); return play(); }
+      if(e.key === "ArrowRight"){ e.preventDefault(); return go(st.i + 1, st.playing); } if(e.key === "ArrowLeft"){ e.preventDefault(); return go(st.i - 1, st.playing); }
+      if(e.key === "c"){ $('[data-vd="cap"]').click(); return; }
+      if(e.key === "Tab"){ const f = [...root.querySelectorAll("button:not([hidden]),select:not([hidden])")].filter(x => x.offsetParent !== null); if(!f.length) return; if(e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length - 1].focus(); } else if(!e.shiftKey && document.activeElement === f[f.length - 1]){ e.preventDefault(); f[0].focus(); } } }
+    root.addEventListener("click", e => { const b = e.target.closest("[data-vd]"); if(!b) return; const k = b.dataset.vd;
+      if(k === "close") return close(); if(k === "play") return play(); if(k === "next") return go(st.i + 1, st.playing); if(k === "prev") return go(st.i - 1, st.playing); if(k === "go") return go(+b.dataset.i, st.playing);
+      if(k === "cap"){ st.cap = !st.cap; store("cap", st.cap ? "1" : "0"); root.classList.toggle("nocap", !st.cap); b.setAttribute("aria-pressed", st.cap); return; }
+      if(k === "stops"){ st.stops = !st.stops; store("stops", st.stops ? "1" : "0"); b.setAttribute("aria-pressed", st.stops); return; }
+      if(opts.onAction) opts.onAction(k, api); });
+    root.addEventListener("change", e => { const t = e.target; if(t.id === "vdRate"){ st.rate = +t.value || 1; store("rate", String(st.rate)); if(st.playing){ st.playing = false; stopVoice(); st.playing = true; runLines(slideDone); } } if(t.id === "vdVoice"){ st.voice = t.value; store("voice", st.voice); if(st.playing){ st.playing = false; stopVoice(); st.playing = true; runLines(slideDone); } } });
+    document.addEventListener("keydown", key, true);
+    const api = {close, play, go: i => go(i, st.playing), state: () => ({i: st.i, n: S.length, playing: st.playing, waiting: st.waiting, shown: st.shown, kind: S[st.i].kind, line: st.line, lines: st.lines.slice(), caption: $("#vdCap").textContent}), slides: S, setScript: sc => { Object.assign(script, sc || {}); go(st.i, false); }, note: h => { $("#vdNote").innerHTML = h || ""; }, root};
+    cur = api; go(0, false); setTimeout(() => { const b = $("#vdPlay"); if(b) b.focus(); }, 30); if(opts.autoplay) play();
+    return api; }
+  window.ccVideo = {open, slides, say: (s, f) => say(s, f), reveal, fast: false, get current(){ return cur; }};
+})();
