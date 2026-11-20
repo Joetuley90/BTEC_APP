@@ -115,11 +115,14 @@ case 'submit': { // student sends initials + answers, gets their own marking bac
         for ($i = 0; $i < $n; $i++) { $v = $answers[$i] ?? null; $a[] = is_int($v) && $v >= 0 && $v < count($d['questions'][$i]['options']) ? $v : null; }
         $resps = (array) $d['responses'];
         if (!isset($resps[$token]) && count($resps) >= MAX_RESPONSES) return [$d, ['error' => 'full']];
-        $resps[$token] = ['initials' => $initials, 'answers' => $a, 'at' => time()];
+        /* a made-up name for the class board: picked once, never the same as anyone else's in the room */
+        $alias = isset($resps[$token]['alias']) ? (int) $resps[$token]['alias'] : null;
+        if ($alias === null) { $used = []; foreach ($resps as $x) if (isset($x['alias'])) $used[(int) $x['alias']] = 1; do { $alias = random_int(0, 575); } while (isset($used[$alias])); }
+        $resps[$token] = ['initials' => $initials, 'answers' => $a, 'at' => time(), 'alias' => $alias];
         $d['responses'] = $resps;
         $results = []; $score = 0;
         foreach ($d['questions'] as $i => $q) { $ok = $a[$i] === $q['answer']; $score += $ok ? 1 : 0; $results[] = ['correct' => $ok, 'answer' => $q['answer'], 'why' => $q['why']]; }
-        return [$d, ['ok' => true, 'score' => $score, 'total' => $n, 'results' => $results]];
+        return [$d, ['ok' => true, 'score' => $score, 'total' => $n, 'results' => $results, 'alias' => $alias]];
     });
     if (($resp['error'] ?? '') === 'full') fail(429, 'This quiz is full.');
     if (($resp['state'] ?? '') === 'closed') out(404, $resp);
@@ -143,7 +146,7 @@ case 'end': {    // teacher ends: returns everything once, then deletes it
         if (!$d) return [null, ['state' => 'closed']];
         if (!hash_equals($d['secret'], $hash)) return [$d, ['error' => 'forbidden']];
         return [null, ['_delete' => true, 'ok' => true, 'title' => $d['title'], 'questions' => $d['questions'],
-                       'responses' => array_values(array_map(fn($r) => ['initials' => $r['initials'], 'answers' => $r['answers']], (array) $d['responses']))]];
+                       'responses' => array_values(array_map(fn($r) => ['initials' => $r['initials'], 'answers' => $r['answers'], 'alias' => $r['alias'] ?? null], (array) $d['responses']))]];
     });
     if (($resp['error'] ?? '') === 'forbidden') fail(403, 'Not allowed.');
     out(200, $resp);

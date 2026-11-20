@@ -1975,4 +1975,19 @@ SUPER ADMIN (v121)
   - The roadmap's "when" menus now stay open while you choose. The page
     was redrawing underneath them and closing them.
 
+VERSION 122: SHARE QUIZ RESULTS WITH THE CLASS
+- Quiz room (the quiz with initials): when you end the quiz, the report has a new
+  "Show the class" button. It puts the results on the board with made-up names
+  (Brave Otter, Rapid Lynx) in place of initials: how many answered, the class
+  percentage, the average, how the scores spread, a leaderboard, the questions
+  most got wrong with the most common slip and the right answer, and tips for
+  getting them all right next time.
+- Each learner sees their own made-up name on their phone under their score, so
+  they can find themselves on the board and nobody else can.
+- "Add tips from Crafticulum AI" writes the tips from the class totals. It is
+  never sent initials. Without it the tips come from the quiz's own explanations.
+- Hands up on the lesson board: the results slide now shows every question that
+  caught the class out (up to three), the common slip, and the tips.
+- Your own report, with initials, is unchanged and stays on your screen only.
+
 NO CHANGES TO config.php
