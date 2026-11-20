@@ -601,9 +601,10 @@ if ($action === 'houseget' || $action === 'houseset') {
         if (is_array($body['house'] ?? null)) { $h = []; foreach (CC_HOUSE as $k => $n) $h[$k] = mb_substr(trim(str_replace(["\r", "\0"], '', (string) ($body['house'][$k] ?? ''))), 0, $n); $h['on'] = !empty($body['house']['on']);
             $a['colleges'][$cid]['house'] = $h; ccLog($me['dept'], $me, 'changed the house rules for the AI'); }
         if (array_key_exists('anon', $body)) { $on = !empty($body['anon']); if ($on !== ccAnon($a, $cid)) { $a['colleges'][$cid]['anon'] = $on; ccLog($me['dept'], $me, $on ? 'switched on anonymous learners' : 'switched off anonymous learners'); } }
+        if (array_key_exists('profilesPublic', $body)) { $on = !empty($body['profilesPublic']); if ($on !== !empty($a['colleges'][$cid]['profilesPublic'])) { $a['colleges'][$cid]['profilesPublic'] = $on; ccLog($me['dept'], $me, $on ? 'made staff profiles public' : 'made staff profiles private again'); } }
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
     }
-    out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
+    out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'profilesPublic' => !empty($a['colleges'][$cid]['profilesPublic']), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
 }
 /* the super admin steps back out of the institution they were working inside */
 if ($action === 'leave') {

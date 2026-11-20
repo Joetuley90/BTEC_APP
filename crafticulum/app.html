@@ -1411,6 +1411,13 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v134: the first lesson, without setting up */
+#out .fl-spec summary{cursor:pointer;font-size:.9rem;font-weight:600;color:var(--cc-primary-text)}
+#out .home.fl-on #firstSubj{text-align:left}
+/* v134: post a link to Classroom or Teams */
+.sm-post{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.sm-post .btn{display:inline-flex;align-items:center;gap:7px}
+.gc-dot{width:10px;height:10px;border-radius:3px;display:inline-block}.gc-g{background:#1e8e3e}.gc-t{background:#5059c9}
 /* v130: our team on the Department page, and the pick-several department box */
 #out .ot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:0}
 #out .ot-card{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:16px 10px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);color:var(--bs-body-color);text-decoration:none;height:100%;transition:border-color .15s,transform .15s}
@@ -13462,18 +13469,30 @@ document.addEventListener("click", e => { const b = e.target.closest('[data-as63
    and packed into an MP4 here, so nothing leaves the device. It has captions burned in and no sound: the device's voice can't be recorded. ===== */
 const MP4_W = 1280, MP4_H = 720, MP4_FPS = 10;
 /* ---------- a small MP4 writer: one H.264 track, every frame the same length ---------- */
-function mp4Pack(chunks, avcC, w, h, fps){
+function mp4Pack(chunks, avcC, w, h, fps, audio){
   const u8 = n => [n & 255], u16 = n => [(n >> 8) & 255, n & 255], u32 = n => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255], str = s => [...s].map(c => c.charCodeAt(0));
   const box = (type, ...parts) => { const body = parts.flat(Infinity), len = 8 + body.length; return [...u32(len), ...str(type), ...body]; };
   const full = (type, v, flags, ...parts) => box(type, u8(v), u8(flags >> 16), u16(flags & 0xffff), ...parts);
   const matrix = [...u32(0x00010000), ...u32(0), ...u32(0), ...u32(0), ...u32(0x00010000), ...u32(0), ...u32(0), ...u32(0), ...u32(0x40000000)];
-  const ts = 1000, dt = Math.round(ts / fps), n = chunks.length, dur = n * dt, sizes = chunks.map(c => c.byteLength), keys = chunks.map((c, i) => c.key ? i + 1 : 0).filter(Boolean);
-  const moov = off => box("moov",
-    full("mvhd", 0, 0, u32(0), u32(0), u32(ts), u32(dur), u32(0x00010000), u16(0x0100), u16(0), u32(0), u32(0), matrix, Array(24).fill(0), u32(2)),
+  const ts = 1000, dt = Math.round(ts / fps), n = chunks.length, vdur = n * dt, sizes = chunks.map(c => c.byteLength), keys = chunks.map((c, i) => c.key ? i + 1 : 0).filter(Boolean);
+  const A = audio && audio.chunks && audio.chunks.length ? audio : null, an = A ? A.chunks.length : 0, adur = A ? Math.round(an * A.frame * ts / A.rate) : 0, dur = Math.max(vdur, adur);
+  /* about a second of picture, then the second of sound that goes with it, so players never have to jump around the file */
+  const group = (arr, per) => { const g = []; for(let i = 0; i < arr.length; i += per) g.push(arr.slice(i, i + per)); return g; };
+  const vg = group(chunks, Math.max(1, Math.round(fps))), ag = A ? group(A.chunks, Math.max(1, Math.round(A.rate / A.frame))) : [], order = [];
+  for(let i = 0; i < Math.max(vg.length, ag.length); i++){ if(vg[i]) order.push(["v", vg[i]]); if(ag[i]) order.push(["a", ag[i]]); }
+  const offs = base => { let p = base; const v = [], a = []; order.forEach(([k, g]) => { (k === "v" ? v : a).push(p); g.forEach(c => { p += c.byteLength; }); }); return {v, a}; };
+  const stsc = groups => { const e = []; groups.forEach((g, i) => { if(!e.length || e[e.length - 1][1] !== g.length) e.push([i + 1, g.length]); }); return full("stsc", 0, 0, u32(e.length), e.map(x => [u32(x[0]), u32(x[1]), u32(1)])); };
+  const stco = list => full("stco", 0, 0, u32(list.length), list.map(o => u32(o)));
+  const sound = () => { const head = [Array(6).fill(0), u16(1), u32(0), u32(0), u16(1), u16(16), u16(0), u16(0), u32(A.rate * 65536)];
+    if(A.kind === "opus") return box("Opus", ...head, box("dOps", u8(0), u8(1), u16(312), u32(A.rate), u16(0), u8(0)));
+    const asc = [...A.asc], dsi = [0x05, asc.length, ...asc], dcd = [0x04, 13 + dsi.length, 0x40, 0x15, 0, 0, 0, ...u32(A.bitrate || 96000), ...u32(A.bitrate || 96000), ...dsi], sl = [0x06, 1, 0x02];
+    return box("mp4a", ...head, full("esds", 0, 0, [0x03, 3 + dcd.length + sl.length, ...u16(2), 0, ...dcd, ...sl])); };
+  const moov = o => box("moov",
+    full("mvhd", 0, 0, u32(0), u32(0), u32(ts), u32(dur), u32(0x00010000), u16(0x0100), u16(0), u32(0), u32(0), matrix, Array(24).fill(0), u32(A ? 3 : 2)),
     box("trak",
-      full("tkhd", 0, 3, u32(0), u32(0), u32(1), u32(0), u32(dur), u32(0), u32(0), u16(0), u16(0), u16(0), u16(0), matrix, u32(w << 16), u32(h << 16)),
+      full("tkhd", 0, 3, u32(0), u32(0), u32(1), u32(0), u32(vdur), u32(0), u32(0), u16(0), u16(0), u16(0), u16(0), matrix, u32(w << 16), u32(h << 16)),
       box("mdia",
-        full("mdhd", 0, 0, u32(0), u32(0), u32(ts), u32(dur), u16(0x55c4), u16(0)),
+        full("mdhd", 0, 0, u32(0), u32(0), u32(ts), u32(vdur), u16(0x55c4), u16(0)),
         full("hdlr", 0, 0, u32(0), str("vide"), u32(0), u32(0), u32(0), str("VideoHandler"), u8(0)),
         box("minf",
           full("vmhd", 0, 1, u16(0), u16(0), u16(0), u16(0)),
@@ -13482,12 +13501,26 @@ function mp4Pack(chunks, avcC, w, h, fps){
             full("stsd", 0, 0, u32(1), box("avc1", Array(6).fill(0), u16(1), u16(0), u16(0), Array(12).fill(0), u16(w), u16(h), u32(0x00480000), u32(0x00480000), u32(0), u16(1), Array(32).fill(0), u16(0x0018), u16(0xffff), box("avcC", [...avcC]))),
             full("stts", 0, 0, u32(1), u32(n), u32(dt)),
             full("stss", 0, 0, u32(keys.length), keys.map(k => u32(k))),
-            full("stsc", 0, 0, u32(1), u32(1), u32(n), u32(1)),
+            stsc(vg),
             full("stsz", 0, 0, u32(0), u32(n), sizes.map(s => u32(s))),
-            full("stco", 0, 0, u32(1), u32(off)))))));
+            stco(o.v))))),
+    A ? box("trak",
+      full("tkhd", 0, 3, u32(0), u32(0), u32(2), u32(0), u32(adur), u32(0), u32(0), u16(0), u16(1), u16(0x0100), u16(0), matrix, u32(0), u32(0)),
+      box("mdia",
+        full("mdhd", 0, 0, u32(0), u32(0), u32(A.rate), u32(an * A.frame), u16(0x55c4), u16(0)),
+        full("hdlr", 0, 0, u32(0), str("soun"), u32(0), u32(0), u32(0), str("SoundHandler"), u8(0)),
+        box("minf",
+          full("smhd", 0, 0, u16(0), u16(0)),
+          box("dinf", full("dref", 0, 0, u32(1), full("url ", 0, 1))),
+          box("stbl",
+            full("stsd", 0, 0, u32(1), sound()),
+            full("stts", 0, 0, u32(1), u32(an), u32(A.frame)),
+            stsc(ag),
+            full("stsz", 0, 0, u32(0), u32(an), A.chunks.map(c => u32(c.byteLength))),
+            stco(o.a))))) : []);
   const ftyp = box("ftyp", str("isom"), u32(0x200), str("isom"), str("iso2"), str("avc1"), str("mp41"));
-  const m0 = moov(0), off = ftyp.length + m0.length + 8, total = sizes.reduce((a, b) => a + b, 0);
-  return new Blob([new Uint8Array(ftyp), new Uint8Array(moov(off)), new Uint8Array([...u32(8 + total), ...str("mdat")]), ...chunks.map(c => c.data)], {type: "video/mp4"}); }
+  const m0 = moov(offs(0)), base = ftyp.length + m0.length + 8; let total = 0; order.forEach(([k, g]) => g.forEach(c => { total += c.byteLength; }));
+  return new Blob([new Uint8Array(ftyp), new Uint8Array(moov(offs(base))), new Uint8Array([...u32(8 + total), ...str("mdat")]), ...order.flatMap(([k, g]) => g.map(c => c.data))], {type: "video/mp4"}); }
 /* ---------- what happens when: each slide's sentences, the thinking time on a question, a pause on each task ---------- */
 const mp4Sent = t => (String(t || "").replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || []).map(x => x.trim()).filter(Boolean);
 function mp4Plan(L, script){ const S = ccVideo.slides(L), segs = []; const secs = t => Math.max(1.6, t.split(/\s+/).length / 2.6);
@@ -13528,7 +13561,9 @@ async function mp4Make(L, script, onProg, signal){ if(!mp4Can()) throw {code: "n
   const sup = await VideoEncoder.isConfigSupported(cfg).catch(() => null); if(!sup || !sup.supported) throw {code: "nocodec"};
   const crafti = await new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(MP4_CRAFTI); });
   try{ await document.fonts.ready; }catch{}
-  const plan = mp4Plan(L, script), frames = [], title = String(L.title || "Lesson").slice(0, 60);
+  const plan = mp4Plan(L, script); let audio = null;
+  if(typeof mp4Voice === "function"){ try{ audio = await mp4Voice(plan, onProg, signal); }catch(e){ if(e && e.code === "aborted") throw e; console.error(e); audio = {fail: ""}; } }
+  const has = !!(audio && audio.chunks), P = p => onProg && onProg(has ? 0.45 + 0.55 * p : p), frames = [], title = String(L.title || "Lesson").slice(0, 60);
   plan.segs.forEach((sg, j) => { const nf = Math.max(1, Math.round(sg.sec * MP4_FPS)); for(let f = 0; f < nf; f++) frames.push(j); });
   const cv = typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(MP4_W, MP4_H) : Object.assign(document.createElement("canvas"), {width: MP4_W, height: MP4_H}), g = cv.getContext("2d");
   const chunks = []; let avcC = null, fail = null;
@@ -13539,9 +13574,9 @@ async function mp4Make(L, script, onProg, signal){ if(!mp4Can()) throw {code: "n
     if(frames[f] !== last){ last = frames[f]; mp4Frame(g, plan.segs[last], plan.segs[last].i, plan.slides.length, crafti, title); }
     const vf = new VideoFrame(cv, {timestamp: Math.round(f * 1e6 / MP4_FPS), duration: Math.round(1e6 / MP4_FPS)}); enc.encode(vf, {keyFrame: f % (MP4_FPS * 3) === 0}); vf.close();
     while(enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 0));
-    if(f % 20 === 0){ onProg && onProg(f / total); await new Promise(r => setTimeout(r, 0)); } }
+    if(f % 20 === 0){ P(f / total); await new Promise(r => setTimeout(r, 0)); } }
   await enc.flush(); enc.close(); if(fail) throw fail; if(!avcC || !chunks.length) throw {code: "empty"};
-  onProg && onProg(1); return {blob: mp4Pack(chunks, avcC, MP4_W, MP4_H, MP4_FPS), secs: total / MP4_FPS}; }
+  P(1); return {blob: mp4Pack(chunks, avcC, MP4_W, MP4_H, MP4_FPS, has ? audio : null), secs: total / MP4_FPS, voice: has ? audio.kind : "", why: audio && audio.fail || ""}; }
 /* ---------- the button in the player ---------- */
 let mp4Abort = null;
 const _vdOpen64 = vdOpen;
@@ -13551,9 +13586,9 @@ vdOpen = function(L){ const api = _vdOpen64.apply(this, arguments); if(!api) ret
     if(b.dataset.vd === "mp4stop"){ if(mp4Abort) mp4Abort.abort(); return; } if(mp4Abort) return; if(api.state().playing) api.play();
     const btn = api.root.querySelector('[data-vd="mp4"]'); btn.disabled = true; mp4Abort = new AbortController(); const script = (L.video && L.video.script) || {};
     api.note(`Making the video... <span id="mp4Pct">0%</span> <button type="button" data-vd="mp4stop">Stop</button>`);
-    try{ const r = await mp4Make(L, script, p => { const x = document.getElementById("mp4Pct"); if(x) x.textContent = Math.round(p * 100) + "%"; }, mp4Abort.signal);
+    try{ const r = await mp4Make(L, JSON.parse(JSON.stringify(script)), p => { const x = document.getElementById("mp4Pct"); if(x) x.textContent = Math.round(p * 100) + "%"; }, mp4Abort.signal);
       await ccSave((String(L.title || "Video lesson").replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 80) || "Video lesson") + ".mp4", r.blob);
-      api.note(`Saved the MP4 (${Math.floor(r.secs / 60)} min ${Math.round(r.secs % 60)} s, ${(r.blob.size / 1048576).toFixed(1)} MB). It has captions but no sound, so learners read along. Post it on Teams or Google Classroom like any video.`); }
+      api.note(`Saved the MP4 (${Math.floor(r.secs / 60)} min ${Math.round(r.secs % 60)} s, ${(r.blob.size / 1048576).toFixed(1)} MB). ${r.voice === "aac" ? "It has a voice and captions." : r.voice === "opus" ? "It has a voice and captions. This browser saved the sound in a format a few older players can't play. Chrome or Edge on Windows or a Mac makes one that plays everywhere." : (r.why || "It has captions but no sound, so learners read along.")} Post it on Teams or Google Classroom like any video.`); }
     catch(err){ api.note(err && err.code === "aborted" ? "Stopped. Nothing was saved." : err && err.code === "nocodec" ? "This browser can't make MP4 files. Try Chrome, Edge or Safari." : "Couldn't make the video this time. Try again."); console.error(err); }
     finally{ mp4Abort = null; btn.disabled = false; } }, true);
   return api; };
@@ -14250,6 +14285,110 @@ tmLoad = async function(){ const r = await _tmLoad83b.apply(this, arguments); tr
 /* the guide re-adds the super admin's steps each time it starts: take the removed page's step out for good */
 const _tourGo83 = tourGo;
 tourGo = function(){ const r = _tourGo83.apply(this, arguments); try{ for(let i = TOUR.length - 1; i >= 0; i--) if(/stMerge|sideTeam/.test(TOUR[i].sel || "")){ TOUR[i].sa = 0; TOUR[i].acc = 0; TOUR.splice(i, 1); } if(typeof tourL !== "undefined" && Array.isArray(tourL)) for(let i = tourL.length - 1; i >= 0; i--) if(/stMerge|sideTeam/.test(tourL[i].sel || "") && i !== tourI) tourL.splice(i, 1); }catch{} return r; };
+
+/* ===== round 84 (v134): before launch. An institution's manager can make every staff profile public in one go (each person can still say no);
+   a lesson's student link posts to Google Classroom or Microsoft Teams with one button. ===== */
+/* ---------- public profiles for the whole institution ---------- */
+const _otHtml84 = otHtml;
+otHtml = function(sec){ let h = _otHtml84.apply(this, arguments);
+  try{ if(!h || !tmInfo) return h; const boss = me && (me.role === "owner" || me.role === "superadmin"), all = !!tmInfo.allPublic;
+    if(all) h = h.replace('for="otPublic">Make my profile public</label>', 'for="otPublic">My profile is public</label>').replace("Colleagues who are signed in can always see it. Switched on,", "Your institution has made staff profiles public. Switch this off to keep yours for colleagues only. While it's on,");
+    if(boss){ const at = h.lastIndexOf("</section>"); const box = `<div class="ot-pub" id="otAllBox"><div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" role="switch" id="otAll" ${all ? "checked" : ""}><label class="form-check-label fw-semibold" for="otAll">Make everyone's profile public</label></div>
+      <div class="small text-body-secondary">For the whole institution. Anyone with a profile's address can then see that person's name, photo, role, departments, what they teach and their qualifications, and never an email, phone number, room or where they are today. Each person can still switch their own off. Tell your staff before you switch this on.</div></div>`;
+      h = at >= 0 ? h.slice(0, at) + box + h.slice(at) : h + box; } }catch(e){ console.error(e); } return h; };
+document.addEventListener("change", async e => { if(!e.target || e.target.id !== "otAll") return; const on = e.target.checked; e.target.disabled = true;
+  try{ const r = await authCall("houseset", {profilesPublic: on}); try{ tmInfo = await storeCall("directory"); }catch{ if(tmInfo) tmInfo.allPublic = !!r.profilesPublic; } toast(r.profilesPublic ? "Staff profiles are public. Each person can still switch their own off." : "Staff profiles are for colleagues only, unless someone has switched their own on."); }catch{ toast("Couldn't save that. Try again.", {bad: true}); }
+  renderSettings(); });
+/* ---------- post a student link to Google Classroom or Microsoft Teams ---------- */
+function gcLinks(url, title){ const u = encodeURIComponent(url), t = encodeURIComponent(title || "Lesson");
+  return `<div class="sm-post" id="smPost"><span class="small fw-semibold">Post it to</span>
+    <a class="btn btn-sm btn-outline-secondary" id="smClassroom" target="_blank" rel="noopener" href="https://classroom.google.com/share?url=${u}&title=${t}"><span class="gc-dot gc-g" aria-hidden="true"></span>Google Classroom</a>
+    <a class="btn btn-sm btn-outline-secondary" id="smTeams" target="_blank" rel="noopener" href="https://teams.microsoft.com/share?href=${u}&msgText=${t}&assignTitle=${t}"><span class="gc-dot gc-t" aria-hidden="true"></span>Microsoft Teams</a></div>`; }
+const _drawShare84 = drawShare;
+drawShare = function(){ const r = _drawShare84.apply(this, arguments);
+  try{ const inp = $("#smUrl"), st = shareSt; if(inp && inp.value && st && st.kind !== "cover" && !$("#smPost")){ const o = shareObj() || {}, title = st.kind === "unit" ? ((curUnit() || {}).t || "Unit") : (o.title || (current && current.title) || "Lesson"); const row = inp.closest(".sm-sec").querySelector(".d-flex"); if(row) row.insertAdjacentHTML("afterend", gcLinks(inp.value, (st.kind === "lquiz" || st.kind === "test" ? "Quiz: " : "") + title)); } }catch(e){ console.error(e); }
+  return r; };
+
+/* ===== round 85 (v134): the first two minutes for someone who signed up on their own. No setting up first: three boxes (subject, year or level, what the lesson is about)
+   and Build my first lesson makes the subject for them and builds straight away. Uploading a specification is still there, one line below, for when they want lessons built against criteria. ===== */
+let flSt = {s: "", l: "", about: "", busy: false, msg: ""};
+function flHtml(){ const st = flSt;
+  return `<h2 class="h5 mb-1">What are you teaching?</h2>
+    <p class="text-body-secondary mb-3">Fill in three boxes and you'll have a full lesson in about two minutes. There's nothing to set up first.</p>
+    <form id="flForm" novalidate><div class="row g-2">
+      <div class="col-sm-7"><label class="form-label small fw-semibold mb-1" for="flS">Subject</label><input class="form-control" id="flS" maxlength="50" placeholder="e.g. Science" autocomplete="off" value="${esc(st.s)}"></div>
+      <div class="col-sm-5"><label class="form-label small fw-semibold mb-1" for="flL">Year or level</label><input class="form-control" id="flL" maxlength="30" placeholder="e.g. Year 8, GCSE, Level 3" autocomplete="off" value="${esc(st.l)}"></div>
+      <div class="col-12"><label class="form-label small fw-semibold mb-1" for="flA">What's the lesson about?</label><textarea class="form-control" id="flA" rows="3" maxlength="600" placeholder="e.g. An introduction to photosynthesis with a short practical">${esc(st.about)}</textarea></div></div>
+      <div class="d-flex flex-wrap gap-3 align-items-center mt-3"><button type="submit" class="btn btn-primary btn-lg" id="flGo" ${st.busy ? "disabled" : ""}>${st.busy ? "Getting it ready..." : "Build my first lesson"}</button><span class="small text-danger" role="status" id="flMsg">${esc(st.msg)}</span></div></form>
+    <details class="fl-spec mt-4"><summary>Have a specification? Use that and lessons are built against its criteria</summary>
+      <p class="small text-body-secondary mt-2 mb-2">Upload the PDF from your awarding body. Crafticulum reads the units and criteria, you check what it found, and every lesson, plan and document is then built against them. It takes a few minutes, and you can do it later without losing anything.</p>
+      <button type="button" class="btn btn-outline-primary btn-sm" data-crs="add">Upload a specification</button></details>`; }
+function flTopic(t){ t = t.replace(/\s+/g, " ").trim().replace(/^(an?|the)\s+(introduction to|lesson on|practical on)\s+/i, "").replace(/^(introduce|introducing|teach|teaching|a lesson (on|about)|lesson (on|about))\s+/i, ""); if(t.length > 60){ t = t.slice(0, 60); const i = t.lastIndexOf(" "); if(i > 25) t = t.slice(0, i); } t = t.replace(/[\s,;:.]+$/, ""); return t ? t[0].toUpperCase() + t.slice(1) : ""; }
+async function flGo(){ const st = flSt; if(st.busy) return; const v = id => ($("#" + id).value || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim(); st.s = v("flS"); st.l = v("flL"); st.about = v("flA");
+  const bad = !st.s ? ["flS", "Type the subject."] : !st.l ? ["flL", "Type the year or level."] : st.about.length < 8 ? ["flA", "Say what the lesson is about, in a few words."] : null;
+  if(bad){ st.msg = bad[1]; render(current); const f = $("#" + bad[0]); if(f) f.focus(); return; }
+  const topic = flTopic(st.about) || st.s, title = "Unit 1: " + topic, unit = {t: title, a: {A: topic}, c: [["A.1", `Understand the main ideas in ${topic}`], ["A.2", `Apply ${topic} to a real example`]]};
+  st.busy = true; st.msg = ""; render(current);
+  try{ const keep = (courseCfg.list || []).filter(x => !(x.s === st.s && x.l === st.l)); courseCfg = {...courseCfg, builtin: false, list: [...keep, {s: st.s, l: st.l, u: [unit], quick: true}]}; await coursesSave();
+    const about = st.about; flSt = {s: "", l: "", about: "", busy: false, msg: ""}; presetForm(st.s, st.l, title); rememberForm(); render(current);
+    try{ homeText = about; }catch{} const box = $("#hText"); if(box){ box.value = about; box.dispatchEvent(new Event("input", {bubbles: true})); homeBuild(); } else toast(`${st.s} is ready. Type what the lesson is about and press Enter.`); }
+  catch(e){ console.error(e); st.busy = false; st.msg = "Couldn't save that. Check the connection and try again."; render(current); } }
+document.addEventListener("submit", e => { if(e.target && e.target.id === "flForm"){ e.preventDefault(); flGo(); } });
+document.addEventListener("input", e => { const t = e.target; if(!t) return; if(t.id === "flS") flSt.s = t.value; else if(t.id === "flL") flSt.l = t.value; else if(t.id === "flA") flSt.about = t.value; });
+const _renderHome85 = renderHome;
+renderHome = function(){ const r = _renderHome85.apply(this, arguments);
+  try{ const h = $("#out .home"), body = h && h.querySelector("#firstSubj .card-body"); if(!body || !quickSelf() || !me.canSubjects || !me.canGen) return r;
+    const had = document.activeElement && document.activeElement.id; body.innerHTML = flHtml(); h.classList.add("fl-on");
+    const hs = h.querySelector(".home-sub"); if(hs) hs.textContent = "Tell us what you're teaching and your first lesson is ready in about two minutes.";
+    if(had && /^fl[SLA]$/.test(had)){ const f = $("#" + had); if(f){ f.focus(); try{ f.setSelectionRange(f.value.length, f.value.length); }catch{} } } }catch(e){ console.error(e); }
+  return r; };
+/* ===== round 86 (v134): a real voice on video lessons. When the super admin has added a Google Cloud Text-to-Speech key, the MP4 gets a sound track:
+   each caption is spoken (speak.php keeps the key on the server and never pays for the same sentence twice), every slide stays up for as long as its
+   sentence takes to say, and the sound is encoded on the device (AAC where the browser has it, Opus where it doesn't). With no key the MP4 is
+   exactly as before: captions, no sound. ===== */
+CONF_GROUPS.push(["A voice for video lessons", "Video lessons download as an MP4 with captions. Add a Google Cloud key and they get a spoken voice too. In Google Cloud, switch on the Cloud Text-to-Speech API, then make an API key under APIs and services, Credentials. Google gives a million characters a month free on these voices, about 80 video lessons. The ceiling below stops the site voicing more than that, so there's no bill unless you raise it.", [["TTS_KEY", "Google Cloud API key", "AIza..."], ["TTS_VOICE", "Voice", "en-GB-Chirp3-HD-Charon"], ["TTS_CAP", "Most characters to voice in a month", "900000"]]]);
+CONF_SECRET.push("TTS_KEY");
+let vcI = null;
+const vcInfo = fresh => (fresh || !vcI) ? (vcI = fetch("speak.php?a=info", {credentials: "same-origin"}).then(r => r.ok ? r.json() : {on: false}).catch(() => ({on: false}))) : vcI;
+const VC_RATE = 48000;
+async function vcCodec(){ if(typeof AudioEncoder === "undefined" || typeof AudioData === "undefined") return null;
+  const tries = [{kind: "aac", cfg: {codec: "mp4a.40.2", sampleRate: VC_RATE, numberOfChannels: 1, bitrate: 96000, aac: {format: "aac"}}}, {kind: "opus", cfg: {codec: "opus", sampleRate: VC_RATE, numberOfChannels: 1, bitrate: 48000}}];
+  for(const t of tries){ const s = await AudioEncoder.isConfigSupported(t.cfg).catch(() => null); if(s && s.supported) return t; } return null; }
+/* a WAV from the server (24 kHz, 16-bit, mono) as numbers between -1 and 1, at 48 kHz */
+function vcWav(b64){ const bin = atob(b64), n = bin.length, u = new Uint8Array(n); for(let i = 0; i < n; i++) u[i] = bin.charCodeAt(i);
+  let p = 12, at = 44, len = n - 44; while(p + 8 <= n){ const id = bin.substr(p, 4), sz = u[p + 4] | (u[p + 5] << 8) | (u[p + 6] << 16) | (u[p + 7] << 24); if(id === "data"){ at = p + 8; len = Math.min(sz >>> 0, n - at); break; } p += 8 + sz + (sz & 1); }
+  const dv = new DataView(u.buffer, at, len - (len % 2)), m = dv.byteLength >> 1, out = new Float32Array(m * 2); let prev = 0;
+  for(let i = 0; i < m; i++){ const s = dv.getInt16(i * 2, true) / 32768; out[i * 2] = i ? (prev + s) / 2 : s; out[i * 2 + 1] = s; prev = s; }
+  return out; }
+async function vcSay(text){ const r = await fetch("speak.php?a=say", {method: "POST", credentials: "same-origin", headers: {"Content-Type": "application/json"}, body: JSON.stringify({text})});
+  const j = await r.json().catch(() => ({})); if(!r.ok || !j.audio) throw {code: "voice", why: j.error === "cap" ? "This month's voice allowance has been used up, so this one has captions only." : j.error === "off" ? "" : (j.why || "The voice didn't answer, so this one has captions only.")};
+  return vcWav(j.audio); }
+/* the sound for a whole video: changes how long each caption stays up so it matches the speech, then returns the encoded sound track */
+async function mp4Voice(plan, onProg, signal){ const info = await vcInfo(true); if(!info || !info.on) return null;
+  const pick = await vcCodec(); if(!pick) return {fail: "This browser can't add sound to an MP4, so this one has captions only. Chrome or Edge on a computer can."};
+  const say = sg => sg.think ? "Have a think about it." : sg.cap, todo = plan.segs.filter(sg => sg.cap), heard = new Map(); let done = 0, next = 0, bad = null;
+  const worker = async () => { while(next < todo.length && !bad){ const t = say(todo[next++]); if(signal && signal.aborted) return;
+      if(!heard.has(t)) heard.set(t, vcSay(t.slice(0, 880))); try{ await heard.get(t); }catch(e){ bad = e; } done++; onProg && onProg(0.45 * done / todo.length); } };
+  await Promise.all([worker(), worker(), worker()]); if(signal && signal.aborted) throw {code: "aborted"}; if(bad) return {fail: bad.why || ""};
+  const lead = Math.round(VC_RATE * 0.15), pcm = [];
+  for(const sg of plan.segs){ const a = sg.cap ? await heard.get(say(sg)) : null, need = a ? (a.length + lead) / VC_RATE + 0.35 : 0;
+    const nf = Math.max(1, Math.round(Math.max(a ? need : sg.sec, sg.think || sg.pause ? sg.sec : 0) * MP4_FPS)); sg.sec = nf / MP4_FPS; pcm.push(a); }
+  const chunks = []; let asc = null, fail = null, frame = 0;
+  const enc = new AudioEncoder({output: (c, meta) => { if(meta && meta.decoderConfig && meta.decoderConfig.description && !asc){ const d = meta.decoderConfig.description; asc = d instanceof ArrayBuffer ? new Uint8Array(d.slice(0)) : new Uint8Array(d.buffer, d.byteOffset, d.byteLength).slice(); }
+      if(!frame && c.duration) frame = Math.round(c.duration * VC_RATE / 1e6); const b = new Uint8Array(c.byteLength); c.copyTo(b); chunks.push({data: b, byteLength: c.byteLength}); }, error: e => { fail = e; }});
+  enc.configure(pick.cfg); let at = 0;
+  for(let j = 0; j < plan.segs.length; j++){ if(signal && signal.aborted){ try{ enc.close(); }catch{} throw {code: "aborted"}; } if(fail) throw fail;
+    const len = Math.round(plan.segs[j].sec * VC_RATE), buf = new Float32Array(len), a = pcm[j]; if(a) buf.set(a.subarray(0, Math.max(0, len - lead)), lead);
+    for(let o = 0; o < len; o += VC_RATE){ const part = buf.subarray(o, Math.min(len, o + VC_RATE)); const ad = new AudioData({format: "f32", sampleRate: VC_RATE, numberOfFrames: part.length, numberOfChannels: 1, timestamp: Math.round((at + o) * 1e6 / VC_RATE), data: part}); enc.encode(ad); ad.close(); }
+    at += len; while(enc.encodeQueueSize > 8) await new Promise(r => setTimeout(r, 0)); }
+  await enc.flush(); enc.close(); if(fail) throw fail; if(!chunks.length) return {fail: ""};
+  if(pick.kind === "aac" && (!asc || asc.length < 2)) asc = new Uint8Array([0x11, 0x88]);   /* AAC-LC, 48 kHz, mono */
+  return {chunks, rate: VC_RATE, frame: frame || (pick.kind === "aac" ? 1024 : 960), kind: pick.kind, asc, bitrate: pick.cfg.bitrate}; }
+/* the player says whether the MP4 will have a voice before anyone presses the button */
+const _vdOpen86 = vdOpen;
+vdOpen = function(){ const api = _vdOpen86.apply(this, arguments); if(!api) return api;
+  vcInfo().then(i => { const b = api.root.querySelector('[data-vd="mp4"]'); if(b && i && i.on) b.title = "Download this video lesson as an MP4 file, with a voice and captions"; });
+  return api; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
