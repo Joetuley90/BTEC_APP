@@ -73,7 +73,7 @@ $title = preg_match('#<title>(.*?)</title>#s', $html, $m) ? plain($m[1]) : 'Craf
 $desc = preg_match('#<meta name="description" content="([^"]*)"#', $html, $m) ? html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
 $org = 'Crafticulum';                       // the structured data describes Crafticulum itself. An institution's own name, logo and details are never put in it
 $branded = $pub['name'] !== '';
-$img = $base . 'og.png';
+$img = $base . 'og.jpg';
 
 /* structured data, built from what the page itself says */
 $graph = [];
@@ -84,13 +84,15 @@ $graph[] = ['@type' => 'WebSite', '@id' => $base . '#site', 'name' => 'Crafticul
 $page = ['@type' => $p === 'contact' ? 'ContactPage' : 'WebPage', '@id' => $url . '#page', 'url' => $url, 'name' => $title, 'description' => $desc, 'inLanguage' => 'en-GB', 'isPartOf' => ['@id' => $base . '#site'], 'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $img, 'width' => 1200, 'height' => 630]];
 if ($p === 'about') {
     $features = []; if (preg_match_all('#<div class="card"><div class="ico">.*?</div><h3>(.*?)</h3>#s', $html, $mm)) foreach ($mm[1] as $t) { $t = plain($t); if ($t !== '') $features[] = $t; }
+    if (!$features && preg_match('#<ul class="gets">(.*?)</ul>#s', $html, $gm) && preg_match_all('#<li><b>(.*?)</b>#s', $gm[1], $mm)) foreach ($mm[1] as $t) { $t = plain($t); if ($t !== '') $features[] = $t; }
     $app = ['@type' => 'SoftwareApplication', '@id' => $base . '#app', 'name' => 'Crafticulum', 'url' => $base, 'description' => $desc, 'image' => $img, 'applicationCategory' => 'EducationalApplication', 'operatingSystem' => 'Any, in a web browser',
             'inLanguage' => 'en-GB', 'audience' => ['@type' => 'EducationalAudience', 'educationalRole' => 'teacher'], 'provider' => ['@id' => $base . '#org']];
     if (function_exists('ccBillingOn') && ccBillingOn()) { $app['offers'] = []; foreach (ccPlans() as $pl) if ($pl['price'] >= 0) $app['offers'][] = ['@type' => 'Offer', 'name' => $pl['name'], 'price' => number_format($pl['price'] / 100, 2, '.', ''), 'priceCurrency' => 'GBP']; }
     if ($features) $app['featureList'] = $features;
     $graph[] = $app; $page['about'] = ['@id' => $base . '#app'];
     $faq = [];
-    if (preg_match_all('#<details class="faq-i"[^>]*>\s*<summary>(.*?)</summary>(.*?)</details>#s', $html, $mm, PREG_SET_ORDER)) foreach ($mm as $q) { $qq = plain($q[1]); $aa = plain($q[2]); if ($qq !== '' && $aa !== '') $faq[] = ['@type' => 'Question', 'name' => $qq, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $aa]]; }
+    $plansOn = function_exists('ccBillingOn') && ccBillingOn();
+    if (preg_match_all('#<details class="faq-i"([^>]*)>\s*<summary>(.*?)</summary>(.*?)</details>#s', $html, $mm, PREG_SET_ORDER)) foreach ($mm as $q) { if (!$plansOn && strpos($q[1], 'data-if-plans') !== false) continue; $qq = plain($q[2]); $aa = plain($q[3]); if ($qq !== '' && $aa !== '') $faq[] = ['@type' => 'Question', 'name' => $qq, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $aa]]; }
     if ($faq) $graph[] = ['@type' => 'FAQPage', '@id' => $url . '#faq', 'mainEntity' => $faq, 'isPartOf' => ['@id' => $url . '#page']];
 } else {
     $short = trim(explode('·', $title)[0]);
@@ -103,7 +105,7 @@ $ld = json_encode(['@context' => 'https://schema.org', '@graph' => $graph], JSON
 $head = "\n" . '<link rel="canonical" href="' . h($url) . '">' . "\n"
     . '<meta property="og:url" content="' . h($url) . '">' . "\n"
     . '<meta property="og:image" content="' . h($img) . '">' . "\n" . '<meta property="og:image:width" content="1200">' . "\n" . '<meta property="og:image:height" content="630">' . "\n"
-    . '<meta property="og:image:alt" content="Crafticulum: lessons built against your specification">' . "\n"
+    . '<meta property="og:image:alt" content="Crafticulum: a full lesson from one sentence">' . "\n"
     . '<meta name="twitter:image" content="' . h($img) . '">' . "\n"
     . '<link rel="sitemap" type="application/xml" href="' . h($base . 'sitemap.xml') . '">' . "\n"
     . '<script type="application/ld+json">' . $ld . '</script>' . "\n";

@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v130, 20 Nov 2026: Our team on the Department page, profile pages at /institution/team/name with an opt-in public view, a pick-several department box in Team, and Institutions set up twice removed). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v130.zip` and `crafticulum-release.zip`: the same files as one zip (2,005,127 bytes).
+- `crafticulum/`: every file of the current release (v131, 20 Nov 2026: a shorter front page built around signing up, with real screenshots and a new link preview image, and the quiz code slide on Crafticulum's PowerPoint). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v131.zip` and `crafticulum-release.zip`: the same files as one zip (2,587,201 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

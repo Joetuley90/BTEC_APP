@@ -8829,12 +8829,20 @@ async function customDeck(d, opts){
   if(sp.length) sections.push(["Today's plan", sp.map(r => `${r.time}  ${r.what}`)]);
   T.forEach(t => sections.push([t.title, [...(t.points || []), ...(t.example ? ["Example: " + t.example] : []), ...(t.ask ? ["Check: " + t.ask] : [])]]));
   ts.forEach((t, i) => sections.push([`Task ${i + 1}: ${t.title}${t.mins ? " (" + t.mins + " min)" : ""}`, [...(t.goal ? ["You will produce: " + t.goal] : []), ...(t.steps || []).map((s, j) => `${j + 1}. ${s}`), ...(t.stretch ? ["Stretch: " + t.stretch] : [])]]));
+  /* a slide with the code for the phone quiz, before the questions, when the deck is downloaded with one */
+  const qrOn = !!(opts && opts.qrPng && (d.quiz || []).length);
+  if(qrOn) sections.push(["Exit quiz: answer on your phone", ["Point your phone's camera at the code", opts.initials ? "Type your initials, then answer each question" : "Answer each question. No names are taken", "Your score shows as soon as you send it"], "qr"]);
   (d.quiz || []).forEach((q, i) => sections.push([`Exit quiz: question ${i + 1}`, [q.q, ...(q.options || []).map((o, j) => "ABCD"[j] + ". " + o)]]));
   if(d.plenary && (d.plenary.prompt || d.plenary.title)) sections.push([`Plenary: ${d.plenary.title || ""}`, [d.plenary.prompt || "", ...((d.plenary.instructions) || [])]]);
-  const content = (s, [h, lines]) => { const AP = /<a:p>[\s\S]*?<\/a:p>|<a:p [\s\S]*?<\/a:p>/g;
+  const content = (s, [h, lines, kind]) => { const AP = /<a:p>[\s\S]*?<\/a:p>|<a:p [\s\S]*?<\/a:p>/g;
     const xml = s.xml.replace(AP, p => { const txt = []; p.replace(/<a:t(?: [^>]*)?>([\s\S]*?)<\/a:t>/g, (m, t) => { txt.push(xDec(t)); return m; }); if(!/\{\{\s*CONTENT\s*\}\}/.test(txt.join(""))) return p;
       return lines.filter(Boolean).map(l => fillXml(p, {CONTENT: l}, false)).join("") || fillXml(p, {CONTENT: ""}, false); });
-    return {xml: fillXml(xml, {...vals, HEADING: h}, false), rels: s.rels}; };
+    let outXml = fillXml(xml, {...vals, HEADING: h}, false), outRels = s.rels;
+    if(kind === "qr"){ const sz = pres.match(/<p:sldSz\b[^>]*\bcx="(\d+)"[^>]*\bcy="(\d+)"/) || [0, 12192000, 6858000], W = +sz[1], H = +sz[2], side = Math.round(H * 0.46), x = Math.round(W - side - W * 0.07), y = Math.round(H * 0.3);
+      const pic = `<p:pic><p:nvPicPr><p:cNvPr id="9901" name="Quiz code" descr="QR code for the exit quiz"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rIdQrCode"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${side}" cy="${side}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`;
+      if(/<\/p:spTree>/.test(outXml) && /xmlns:r=/.test(outXml)){ outXml = outXml.replace("</p:spTree>", pic + "</p:spTree>"); outRels = outRels.replace("</Relationships>", `<Relationship Id="rIdQrCode" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="${"../media/" + "lesson-qr.png"}"/></Relationships>`); } }
+    return {xml: outXml, rels: outRels}; };
+  if(qrOn){ zip.file("ppt/media/lesson-qr.png", opts.qrPng, NOF); const ctf = zip.file("[Content_Types].xml"); if(ctf){ const ct = await ctf.async("string"); if(!/Extension="png"/i.test(ct)) zip.file("[Content_Types].xml", ct.replace(/(<Types\b[^>]*>)/, '$1<Default Extension="png" ContentType="image/png"/>'), NOF); } }
   const out = []; let used = false;
   src.forEach(s => { const flat = s.xml.replace(/<[^>]+>/g, ""); if(/\{\{\s*(CONTENT|HEADING)\s*\}\}/.test(flat)){ if(!used){ used = true; sections.forEach(sec => out.push(content(s, sec))); } } else out.push({xml: fillXml(s.xml, vals, false), rels: s.rels}); });
   Object.keys(zip.files).forEach(n => { if(/^ppt\/slides\/(slide\d+\.xml|_rels\/slide\d+\.xml\.rels)$/.test(n)) zip.remove(n); });

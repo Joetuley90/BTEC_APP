@@ -2112,4 +2112,25 @@ VERSION 130: THE TEAM LIVES WITH THE DEPARTMENT, AND PROFILE PAGES
 - Admin, Institutions: "Institutions set up twice" has been removed.
 - NEW FILE: profile.php, and two new lines in .htaccess. Upload .htaccess.
 
+VERSION 131: A SHORTER FRONT PAGE, AND THE QUIZ CODE SLIDE
+- The front page (index.html) is about a third of the length and built around
+  one action. With plans on, the main button is Start free, in the menu bar,
+  the top of the page and again at the bottom. With plans off it is Sign in
+  or register, and Get in touch.
+- It now has: the headline, three steps, what you get (with real screenshots
+  of a lesson, the board and a PowerPoint slide), who it's for in three short
+  cards, pricing, six questions and a closing sign-up panel.
+- Gone from the front page: the long sections on where you teach, the AI
+  toolkit, the roadmap, and four of the ten questions. Nothing was removed
+  from the app.
+- Link preview: sharing crafticulum.co.uk on WhatsApp, LinkedIn, X or Teams
+  now shows the new picture (og.jpg). The page's title and
+  description are shorter.
+- NEW FILES in assets: shot-lesson.webp, shot-board.webp, shot-slide1.webp,
+  shot-slide2.webp, and og.jpg beside index.html. pages.css and page.php
+  changed.
+- Crafticulum's PowerPoint template now gets the quiz code slide ("Exit quiz:
+  answer on your phone") just before the questions, when a deck is downloaded
+  with the quiz room or phone quiz open.
+
 NO CHANGES TO config.php
