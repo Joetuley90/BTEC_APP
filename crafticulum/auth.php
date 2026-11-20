@@ -139,6 +139,23 @@ if ($action === 'config') {
     out(200, ['dir' => !empty(ccInstLog()['sources']), 'dirv' => ccInstVersion(), 'google' => ccGoogleId() ?: null, 'googleRedirect' => ccGoogleSecret() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'password' => ccPasswordAllowed(), 'mail' => ccMailReady(), 'depts' => array_values(array_filter(deptList($a), fn($d) => empty($a['colleges'][(string) ($a['depts'][$d['id']]['college'] ?? '')]['self']))), 'fresh' => $fresh, 'site' => ccSitePublic($a), 'url' => ccSiteUrl(), 'demo' => ccDemoOn(), 'billing' => ccBillingOn()]);
 }
 /* the contact page: anyone can send a message. It's kept for the super admin and emailed to the site's contact address */
+/* a signed-in person reports a problem or an idea from the chat button: it lands in the same inbox, with where they were and what they were using */
+if ($action === 'report') {
+    $who = ccMe(); if (!$who || !empty($who['demo'])) out(401, ['error' => 'login']);
+    $clean = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $s)), 0, $n);
+    $line = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x1F\x7F<>]+/u', ' ', (string) $s)), 0, $n);
+    $msg = $clean($body['msg'] ?? '', 4000); if (mb_strlen($msg) < 5) out(400, ['error' => 'short']);
+    if (!ccContactAllowed()) out(429, ['error' => 'slow']);
+    $kind = ($body['kind'] ?? '') === 'feedback' ? 'feedback' : 'problem'; $id = bin2hex(random_bytes(6)); $name = (string) ($who['name'] ?? '') !== '' ? (string) $who['name'] : (string) $who['email'];
+    $row = ['id' => $id, 'at' => time(), 'kind' => $kind, 'name' => $line($name, 80), 'email' => (string) $who['email'], 'org' => $line((string) ($who['collegeName'] ?? ''), 100), 'msg' => $msg, 'page' => $line($body['page'] ?? '', 120), 'browser' => $line($body['browser'] ?? '', 120),
+            'who' => (CC_ROLE_NAMES[$who['role']] ?? '') . ', ' . (string) ($who['deptName'] ?? ''), 'done' => false, 'from' => 'app'];
+    if (!ccInboxChange(function ($j) use ($row, $id) { $j[$id] = $row; return $j; })) out(500, ['error' => 'save']);
+    $label = $kind === 'problem' ? 'Problem reported' : 'Idea sent';
+    foreach (ccSupers() as $t) if ($t !== $who['email']) ccNotify((string) $t, 'people', "$label by $name", 'Sent from the chat button. Open Admin, To do to read it.');
+    $a = ccAccounts(); $to = (string) (ccSite($a)['contact'] ?? ''); $tos = $to !== '' ? [$to] : array_values(array_filter(ccSupers(), fn($e) => (bool) filter_var($e, FILTER_VALIDATE_EMAIL)));
+    if (ccMailReady()) foreach (array_slice($tos, 0, 3) as $t) ccMail($t, "$label by $name", "$label, sent from inside Crafticulum.\n\nFrom: $name <{$row['email']}>" . ($row['org'] !== '' ? "\nInstitution: {$row['org']}" : '') . "\nSigned in as: {$row['who']}\nThey were on: {$row['page']}\nUsing: {$row['browser']}\n\n$msg\n\nReply to this email to answer them.", (string) $row['email']);
+    out(200, ['ok' => true]);
+}
 if ($action === 'contact') {
     $clean = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $s)), 0, $n);
     $line = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x1F\x7F<>]+/u', ' ', (string) $s)), 0, $n);

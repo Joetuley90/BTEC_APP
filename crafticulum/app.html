@@ -1411,6 +1411,15 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v126: report a problem, in the Crafti chat */
+#cfRoot .cfr{display:block;padding:14px;overflow-y:auto}
+#cfRoot .cfr-meta{font-size:.74rem;line-height:1.45;color:var(--cc-muted,#64748b);background:color-mix(in srgb,var(--cc-primary) 6%,var(--cc-surface));border-radius:6px;padding:8px 10px;margin-top:8px;overflow-wrap:anywhere}
+#cfRoot .cfr-meta b{color:var(--cc-text,inherit)}
+#cfRoot .cfr-done{text-align:center;padding:28px 10px}
+#cfRoot .cfr-tick{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;margin:0 auto 10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:1.4rem}
+#cfRoot .cfr-link{border:0;background:none;padding:0;color:var(--cc-primary-text,#4338ca);font-weight:600;font-size:.74rem;text-decoration:underline;cursor:pointer}
+#cfRoot .cf-ib.on{background:rgba(255,255,255,.3)}
+#cfRoot .cf-panel:has(.cfr){animation:none}
 /* v124: the super admin bar stays on screen while the page scrolls */
 html body.sa-in #saBar{position:sticky;top:0;z-index:1040;height:var(--demo-h,48px);overflow:hidden}
 html body.sa-in:not(.mnav-open) .side,html body.sa-in .topbar{top:var(--demo-h,48px)}
@@ -8764,7 +8773,9 @@ async function customDeck(d, opts){
   return zip.generateAsync({type: (opts && opts.type) || "uint8array", compression: "DEFLATE", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation"});
 }
 const _buildLessonDeck19 = buildLessonDeck;
-buildLessonDeck = async function(JZ, tpl, d, opts){ if(acct() && (tplNow.pptx || plainSite())){ try{ return await customDeck(d, opts); }catch(e){ console.error(e); if(!tplNow.pptx) throw e; toast("Your institution's PowerPoint template couldn't be filled in, so the built-in one was used. Check it has a slide with {{HEADING}} and {{CONTENT}}.", {bad: true}); } } return _buildLessonDeck19.apply(this, arguments); };
+/* v126: every department, the original one included, gets Crafticulum's own PowerPoint unless its institution has uploaded one. Set to false to give the original department its old built-in deck back. */
+var CC_OWN_DECK = true;
+buildLessonDeck = async function(JZ, tpl, d, opts){ if(acct() && (tplNow.pptx || plainSite() || CC_OWN_DECK)){ try{ return await customDeck(d, opts); }catch(e){ console.error(e); if(!tplNow.pptx){ if(plainSite()) throw e; return _buildLessonDeck19.apply(this, arguments); } toast("Your institution's PowerPoint template couldn't be filled in, so the built-in one was used. Check it has a slide with {{HEADING}} and {{CONTENT}}.", {bad: true}); } } return _buildLessonDeck19.apply(this, arguments); };
 document.addEventListener("click", async e => {   // the lesson plan form: the institution's own, if there is one
   const o = e.target.closest("[data-lp-open]"); if(!o || !acct() || !(tplNow.docx || plainSite())) return; e.stopPropagation(); e.preventDefault();
   if(typeof JSZip === "undefined" || !downloadsApi) return toast("The Word tools didn't load. Reload the page.", {bad: true});
@@ -13910,6 +13921,45 @@ render = function(){ naAll(); return _render75.apply(this, arguments); };
   if(co){ co[2] = co[2].filter(id => !mv.includes(id)); const at = co[2].indexOf("stSite"); co[2].splice(at >= 0 ? at + 1 : 0, 0, ...mv); }
   const ap = AD_GROUPS.find(x => x[0] === "people"); if(ap) ap[2] = ap[2].filter(id => !mv.includes(id)); mv.forEach(id => AD_IDS.delete(id));
   AD_HELP.people = "Everyone on the whole site. An institution's own team and departments are in its Settings, on the Institution page."; }catch(e){ console.error(e); } })();
+
+/* ===== round 77 (v126): Report a problem, inside the Crafti chat at the bottom right. One box to say what happened; the page, the device and the version go with it,
+   so nobody has to be asked what they were doing. It lands in the super admin's messages (Admin, To do) and is emailed to the site's contact address. ===== */
+let cfRep = null, cfVer = "";
+const CFR_VIEWS = {home: "Dashboard", week: "This week", lesson: "Lessons", seq: "Planning", library: "Library", learners: "Learners", results: "Results", tools: "AI Tools", assistant: "Crafti", team: "Our team", settings: "Settings", admin: "Admin", marker: "Second Marker", roadmap: "Roadmap", board: "Board"};
+function cfrWhere(){ let v = ""; try{ v = CFR_VIEWS[view] || view || ""; if(view === "settings"){ const t = document.querySelector(".st-tab.on, .st-tab[aria-selected='true'], .st-tab.active"); if(t) v += ", " + t.textContent.trim(); } if(view === "lesson" && current && current.title && !current.example) v += ": " + String(current.title).slice(0, 50); if(!$("#board").hidden) v += " (board open)"; }catch{} return (v + " · " + location.pathname).slice(0, 118); }
+function cfrDevice(){ const u = navigator.userAgent, br = /Edg\//.test(u) ? "Edge" : /OPR\//.test(u) ? "Opera" : /Chrome\//.test(u) ? "Chrome" : /Firefox\//.test(u) ? "Firefox" : /Safari\//.test(u) ? "Safari" : "Browser", os = /iPhone|iPad|iPod/.test(u) ? "iPhone or iPad" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /Mac OS/.test(u) ? "Mac" : /CrOS/.test(u) ? "Chromebook" : /Linux/.test(u) ? "Linux" : "";
+  return [br, os, innerWidth + " x " + innerHeight, document.documentElement.getAttribute("data-bs-theme") === "dark" ? "dark" : "light", cfVer ? "version " + cfVer : ""].filter(Boolean).join(" · ").slice(0, 118); }
+function cfrHtml(){ const r = cfRep;
+  if(r.sent) return `<div class="cf-log cfr" id="cfLog"><div class="cfr-done"><div class="cfr-tick" aria-hidden="true">&#10003;</div><div class="fw-semibold">Sent. Thank you.</div><div class="small text-body-secondary">It's gone to the Crafticulum team with the page you were on, so there's nothing else to do.</div><div class="d-flex gap-2 justify-content-center mt-3"><button type="button" class="btn btn-sm btn-outline-primary" data-cfr="again">Report another</button><button type="button" class="btn btn-sm btn-primary" data-cfr="back">Back to Crafti</button></div></div></div>`;
+  return `<form class="cf-log cfr" id="cfrForm"><div class="btn-group btn-group-sm w-100 mb-2" role="group" aria-label="What is it"><button type="button" class="btn ${r.kind === "problem" ? "btn-primary" : "btn-outline-primary"}" data-cfr="kind" data-v="problem" aria-pressed="${r.kind === "problem"}">Something's wrong</button><button type="button" class="btn ${r.kind === "feedback" ? "btn-primary" : "btn-outline-primary"}" data-cfr="kind" data-v="feedback" aria-pressed="${r.kind === "feedback"}">An idea or a request</button></div>
+    <label class="form-label small fw-semibold mb-1" for="cfrMsg">${r.kind === "problem" ? "What happened, and what did you expect?" : "What would make this better?"}</label>
+    <textarea class="form-control" id="cfrMsg" rows="6" maxlength="4000" placeholder="${r.kind === "problem" ? "e.g. I pressed PowerPoint on lesson 3 and nothing downloaded." : "e.g. Let me copy a week's plan to another group."}">${esc(r.text)}</textarea>
+    <div class="cfr-meta"><b>Sent with it:</b> ${esc(r.where)}<br>${esc(cfrDevice())}<br>Your name and email, so we can reply. No learner details.</div>
+    ${r.err ? `<div class="cf-err" role="alert">${esc(r.err)}</div>` : ""}
+    <div class="d-flex gap-2 mt-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-cfr="back">Back</button><button type="submit" class="btn btn-sm btn-primary flex-grow-1" id="cfrSend" ${r.busy ? "disabled" : ""}>${r.busy ? "Sending..." : "Send"}</button></div></form>`; }
+const _cfHtml77 = cfHtml;
+cfHtml = function(){ let h = _cfHtml77.apply(this, arguments);
+  h = h.replace('<button type="button" class="cf-ib" data-cf="new"', `<button type="button" class="cf-ib${cfRep ? " on" : ""}" data-cfr="open" id="cfrBtn" title="Report a problem" aria-label="Report a problem or send an idea"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4M5 4h11l-1.500 4 1.500 4H5"/></svg></button><button type="button" class="cf-ib" data-cf="new"`);
+  if(cfRep){ h = h.replace(/<div class="cf-log" id="cfLog"[\s\S]*?<form class="cf-form" id="cfForm">[\s\S]*?<\/form>/, cfrHtml()).replace('<div class="cf-title" id="cfTitle">Crafti</div>', '<div class="cf-title" id="cfTitle">Report a problem</div>').replace(/<div class="cf-sub">[\s\S]*?<\/div>/, '<div class="cf-sub">Goes straight to the Crafticulum team</div>'); }
+  else h = h.replace('<div class="cf-foot">', '<div class="cf-foot"><button type="button" class="cfr-link" data-cfr="open">Something not working? Report a problem</button><br>');
+  return h; };
+function cfrOpen(){ cfRep = {kind: "problem", text: "", where: cfrWhere(), busy: false, err: "", sent: false}; if(!cfVer) fetch("version.json", {cache: "no-store"}).then(r => r.json()).then(j => { cfVer = String(j.v || ""); if(cfRep && !cfRep.sent){ const m = $("#cfrMsg"), had = m && document.activeElement === m, pos = m && m.selectionStart; cfDraw(false); const n = $("#cfrMsg"); if(n && had){ n.focus({preventScroll: true}); try{ n.setSelectionRange(pos, pos); }catch{} } } }).catch(() => {});
+  if(!cfOpen) cfToggle(true); else cfDraw(false); const m = $("#cfrMsg"); if(m) m.focus({preventScroll: true}); }
+async function cfrSend(){ const r = cfRep; if(!r || r.busy) return; const msg = r.text.trim(); if(msg.length < 5){ r.err = "Add a few words about what happened."; cfDraw(false); const m = $("#cfrMsg"); if(m) m.focus(); return; }
+  r.busy = true; r.err = ""; cfDraw(false);
+  try{ await authCall("report", {kind: r.kind, msg, page: r.where, browser: cfrDevice()}); r.sent = true; }
+  catch(e){ r.err = e && e.code === "slow" ? "That's a lot of messages in a short time. Try again in a minute." : "Couldn't send that. Check your connection and try again."; }
+  r.busy = false; cfDraw(false); }
+document.addEventListener("input", e => { if(cfRep && e.target && e.target.id === "cfrMsg") cfRep.text = e.target.value; });
+document.addEventListener("submit", e => { if(e.target && e.target.id === "cfrForm"){ e.preventDefault(); cfrSend(); } });
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-cfr]"); if(!b) return; e.preventDefault(); const k = b.dataset.cfr;
+  if(k === "open"){ if(cfRep) { cfRep = null; cfDraw(); } else cfrOpen(); }
+  else if(k === "back"){ cfRep = null; cfDraw(); const t = $("#cfIn"); if(t) t.focus({preventScroll: true}); }
+  else if(k === "again") cfrOpen();
+  else if(k === "kind" && cfRep){ cfRep.kind = b.dataset.v; cfRep.err = ""; cfDraw(false); const m = $("#cfrMsg"); if(m) m.focus({preventScroll: true}); } });
+/* closing the chat puts the report away once it's been sent */
+const _cfToggle77 = cfToggle;
+cfToggle = function(){ const r = _cfToggle77.apply(this, arguments); if(!cfOpen && cfRep && cfRep.sent){ cfRep = null; } return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

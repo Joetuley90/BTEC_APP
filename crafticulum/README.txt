@@ -2029,4 +2029,16 @@ VERSION 125: CRAFTICULUM'S OWN TEMPLATES, AND A NEUTRAL AUTHOR
   and new ones are saved that way. Nothing stored is rewritten until a lesson
   is next saved.
 
+VERSION 126: REPORT A PROBLEM, AND ONE POWERPOINT TEMPLATE FOR EVERYONE
+- The Crafti chat (bottom right) has Report a problem: a flag button in its
+  header and a link under the message box. One box to say what happened, or
+  to send an idea. The page they were on, their browser, screen size and the
+  version go with it, plus their name and email so you can reply.
+- Reports land in Admin, To do with your other messages, and are emailed to
+  the site's contact address.
+- The original department's PowerPoint downloads now use Crafticulum's own
+  template, like every other department. An uploaded template still wins.
+  The quiz QR slide isn't on this template yet. To go back, set CC_OWN_DECK
+  to false.
+
 NO CHANGES TO config.php

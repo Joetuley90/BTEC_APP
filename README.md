@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v125, 20 Nov 2026: Crafticulum's own PowerPoint and lesson plan templates in its colours and font, By Crafticulum on lessons the super admin built, and Team and Departments on the Institution page). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v125.zip` and `crafticulum-release.zip`: the same files as one zip (1,982,085 bytes).
+- `crafticulum/`: every file of the current release (v126, 20 Nov 2026: Report a problem from the Crafti chat, and every department's PowerPoint on Crafticulum's own template). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v126.zip` and `crafticulum-release.zip`: the same files as one zip (1,985,073 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
