@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v134, 20 Nov 2026: a first lesson with no setting up, a real voice on video lessons, post to Google Classroom or Teams, and public profiles for a whole institution). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v134.zip` and `crafticulum-release.zip`: the same files as one zip (2,596,622 bytes).
+- `crafticulum/`: every file of the current release (v135, 20 Nov 2026: the terms now give a full refund in the first 30 days; v134 added a first lesson with no setting up, a voice on video lessons, Classroom and Teams sharing, and public profiles for a whole institution). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v135.zip` and `crafticulum-release.zip`: the same files as one zip (2,597,108 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
