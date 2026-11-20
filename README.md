@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v124, 20 Nov 2026: the super admin bar stays on screen and works with one institution, so the super admin can always step out and stands outside every institution; Open lesson on its own; quiz results for the class). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v124.zip` and `crafticulum-release.zip`: the same files as one zip (1,963,569 bytes).
+- `crafticulum/`: every file of the current release (v125, 20 Nov 2026: Crafticulum's own PowerPoint and lesson plan templates in its colours and font, By Crafticulum on lessons the super admin built, and Team and Departments on the Institution page). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v125.zip` and `crafticulum-release.zip`: the same files as one zip (1,982,085 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
