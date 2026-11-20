@@ -2141,4 +2141,8 @@ VERSION 132: THE FRONT PAGE, SHORTER AGAIN
 - Under the headline it says how to say the name: kraf-TIK-yuh-luhm, craft +
   curriculum.
 
+VERSION 133: NO QUESTIONS ON THE FRONT PAGE
+- The questions section has gone from the front page. It is now the headline,
+  How it works, What you get, Pricing and the sign-up panel.
+
 NO CHANGES TO config.php
