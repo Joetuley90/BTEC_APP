@@ -2193,4 +2193,40 @@ VERSION 138: ICO NUMBER AND BACKUP LOCATION
 - The privacy notice gives the ICO registration number as Z92242123, and it
   and the data processing agreement say the remote backups are in London.
 
+VERSION 139: THE MONEY SIDE, AND THINGS FOR TEST WEEK
+- Admin, Money now opens on Business: monthly recurring revenue, annual run
+  rate, paying customers, what was lost this month, what is owed on
+  invoices and what Crafticulum AI cost. Below that: twelve months of
+  monthly revenue, what moved it this month (new, came back, upgrades,
+  downgrades, lost), new accounts day by day, who is active, the plans,
+  and every institution with what it pays, how it pays, when it renews,
+  its people, its builds and its AI cost. It downloads as a spreadsheet.
+  The figures are kept in data/_money.json from this version on.
+- Invoices. An institution's manager can ask to pay by invoice in Settings,
+  Plan and billing, with a purchase order number. In Admin, Money,
+  Invoices you set the price, send it (it gets a number and a pay-by
+  date and is emailed as a link), and mark it paid. Paid puts the
+  institution on its plan for the months it covers. A month before the
+  term ends they are reminded, and two weeks after it ends with nothing
+  new paid the plan goes back to Free. Add your bank details under Your
+  details on invoices first. NEW FILE: money.php.
+- A sample lesson at /sample, linked from the front page, with a quiz
+  visitors can answer. A security summary at /security for IT teams.
+  NEW FILES: sample.html, sample.js, security.html. .htaccess and
+  page.php changed to serve them.
+- Report a problem (in Crafti) can take a screenshot, by choosing a picture
+  or pasting one. It shows with the message in Admin, To do.
+- Add several people at once: Settings, Institution, under Team. Paste a
+  list or upload a CSV.
+- What's new: after an update, people see a short list of what changed,
+  once.
+- When 80% of the month's builds are used a note says so on screen, with
+  the way to a bigger plan for the manager. (The email already existed.)
+- The voice for video lessons is picked from a list in Admin, System, and
+  Play a sample checks the key works.
+- A reminder email goes to someone who signed up on their own three days
+  ago and has made fewer than two lessons. Once only.
+- App icons (home screen, install) are now the logo itself, not the white
+  version on a tile.
+
 NO CHANGES TO config.php

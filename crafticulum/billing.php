@@ -46,9 +46,11 @@ function billApply(string $college, array $sub): bool {
     $end = (int) ($sub['current_period_end'] ?? ($sub['items']['data'][0]['current_period_end'] ?? 0));
     $bill = ['customer' => (string) (is_array($sub['customer'] ?? null) ? ($sub['customer']['id'] ?? '') : ($sub['customer'] ?? ($bill['customer'] ?? ''))), 'sub' => $live ? $id : '', 'status' => $live ? $status : 'ended',
              'plan' => $live ? $plan : '', 'periodEnd' => $end, 'cancelAt' => !empty($sub['cancel_at_period_end']) ? $end : 0, 'at' => time()];
+    if ($live) { $amt = (int) ($sub['items']['data'][0]['price']['unit_amount'] ?? 0); $bill['mrr'] = $amt > 0 ? $amt : max(0, (int) (ccPlans($a)[$plan]['price'] ?? 0)); }
     $a['colleges'][$college]['bill'] = $bill;
     $a['colleges'][$college]['plan'] = $live ? $plan : 'free';
     if (!ccSaveAccounts($a)) return false;
+    try { ccMoneySync($a, $college, 'card'); } catch (\Throwable $e) {}
     if ($live && $old !== '' && $old !== $id) stripe('DELETE', '/v1/subscriptions/' . rawurlencode($old));    // they changed plan: the earlier subscription stops
     /* tell whoever manages the institution, once, when something changes */
     $pl = ccPlans($a); $name = $live ? (string) $pl[$plan]['name'] : ''; $when = $end ? date('j F Y', $end) : ''; $where = "Settings, Plan and billing:\n" . ccAppUrl();

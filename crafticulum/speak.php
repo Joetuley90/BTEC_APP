@@ -29,6 +29,7 @@ if ($action !== 'say' || $_SERVER['REQUEST_METHOD'] !== 'POST') out(404, ['error
 if (!empty($me['demo'])) out(403, ['error' => 'noperm']);
 if ($key === '' || !function_exists('curl_init')) out(503, ['error' => 'off']);
 $body = json_decode((string) file_get_contents('php://input', false, null, 0, 20000), true); if (!is_array($body)) out(400, ['error' => 'json']);
+if ($me['role'] === 'superadmin' && isset(TTS_VOICES[(string) ($body['voice'] ?? '')])) $voice = (string) $body['voice'];   // the super admin trying a voice before saving it
 $text = trim((string) preg_replace('/\s+/u', ' ', (string) ($body['text'] ?? ''))); $text = (string) preg_replace('/[<>{}\x00-\x1F]/u', '', $text);
 if ($text === '' || mb_strlen($text) > 900) out(400, ['error' => 'text']);
 if (!is_dir($dir)) { @mkdir($dir, 0700, true); @file_put_contents($dir . '/.htaccess', "Require all denied\n"); }
@@ -43,6 +44,6 @@ $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); $err
 $j = is_string($res) ? json_decode($res, true) : null; $wav = is_array($j) ? base64_decode((string) ($j['audioContent'] ?? ''), true) : false;
 if ($code !== 200 || !is_string($wav) || strlen($wav) < 100) { $why = is_array($j) ? (string) ($j['error']['message'] ?? '') : $err; ccErr('voice', 'The voice for video lessons did not work. ' . ($why !== '' ? $why : 'Google answered ' . $code . '.')); out(502, ['error' => 'voice', 'why' => $code === 400 || $code === 403 ? 'Google refused the key or the voice. Check Admin, System, Site setup.' : 'The voice service did not answer. Try again in a minute.']); }
 @file_put_contents($file, $wav, LOCK_EX);
-$fh = @fopen($meter, 'c+'); if ($fh) { flock($fh, LOCK_EX); $m = json_decode((string) stream_get_contents($fh), true); $now = is_array($m) && ($m['m'] ?? '') === $month ? (int) ($m['n'] ?? 0) : 0; ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode(['m' => $month, 'n' => $now + $n])); flock($fh, LOCK_UN); fclose($fh); }
+$fh = @fopen($meter, 'c+'); if ($fh) { flock($fh, LOCK_EX); $m = json_decode((string) stream_get_contents($fh), true); $now = is_array($m) && ($m['m'] ?? '') === $month ? (int) ($m['n'] ?? 0) : 0; ftruncate($fh, 0); rewind($fh); $by = is_array($m) && ($m['m'] ?? '') === $month ? (array) ($m['c'] ?? []) : []; $ck = (string) ($me['college'] ?? ''); if ($ck !== '' && $me['role'] !== 'superadmin') $by[$ck] = (int) ($by[$ck] ?? 0) + $n; fwrite($fh, json_encode(['m' => $month, 'n' => $now + $n, 'c' => $by])); flock($fh, LOCK_UN); fclose($fh); }
 if (random_int(1, 40) === 1) { $all = glob($dir . '/*.wav') ?: []; foreach ($all as $f) if (filemtime($f) < time() - 60 * 86400) @unlink($f); }   /* sentences nobody has asked for in two months */
 out(200, ['audio' => base64_encode($wav), 'rate' => 24000]);
