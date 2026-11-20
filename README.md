@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v127, 20 Nov 2026: departments as tiles with their lead, subjects and awarding body; Subjects in its own Settings tab; bigger lesson tabs that wrap; larger buttons on phones; the original department's PowerPoint back on its own template). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v127.zip` and `crafticulum-release.zip`: the same files as one zip (1,989,085 bytes).
+- `crafticulum/`: every file of the current release (v128, 20 Nov 2026: a department drop-down on the Subjects and Department pages, built-in Esports and IT shown in Subjects, an Add a department tile; department tiles and the Subjects tab from v127). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v128.zip` and `crafticulum-release.zip`: the same files as one zip (1,990,697 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

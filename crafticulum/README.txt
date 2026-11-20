@@ -2062,4 +2062,15 @@ VERSION 127: EASIER TO USE, AND THE ORIGINAL POWERPOINT BACK
   template again, with the quiz QR slide. Every other department still gets
   Crafticulum's template. Report a problem is unchanged.
 
+VERSION 128: WHICH DEPARTMENT, AND THE BUILT-IN SUBJECTS
+- The Subjects and Department pages in Settings say which department they are
+  for, with a drop-down of the institution's departments. Pick another and you
+  move into it and stay on the same page. Managers and the super admin see
+  every department; other people see it only if they are in more than one.
+- The drop-down ends with Add a department, and Departments has an Add a
+  department tile. Both go to the add form on the Institution page.
+- Subjects lists the built-in subjects (Esports and IT, Pearson BTEC) next to
+  the ones you added, marked Built in. Each subject you added shows its
+  awarding body, or says it isn't set.
+
 NO CHANGES TO config.php

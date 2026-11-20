@@ -1411,6 +1411,14 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v128: which department a settings page is for */
+#out .dp-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;margin-bottom:16px;border:1px solid color-mix(in srgb,var(--cc-primary) 35%,var(--cc-line));border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 7%,var(--cc-surface))}
+#out .dp-bar-l{font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-muted);margin:0}
+#out .dp-bar select{width:auto;min-width:220px;max-width:100%;font-weight:700}
+#out .dp-bar-h{font-size:.84rem;color:var(--cc-muted);flex:1 1 240px}
+#out .dk-badge{background:var(--cc-surface-2);color:var(--cc-muted);border:1px solid var(--cc-line);font-weight:700}
+#out .dp-tile.dp-add{border-style:dashed;align-items:flex-start;justify-content:center;color:var(--cc-primary-text)}
+#out .dp-plus{width:36px;height:36px;border-radius:5px;display:grid;place-items:center;font-size:1.4rem;font-weight:700;background:color-mix(in srgb,var(--cc-primary) 14%,transparent)}
 /* v128: department tiles */
 #out .dp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
 #out .dp-tile{display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px 16px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);color:var(--bs-body-color);cursor:pointer;min-height:150px;transition:border-color .15s,box-shadow .15s}
@@ -14049,10 +14057,37 @@ document.addEventListener("click", e => { const t = e.target.closest && e.target
   if(a.dataset.dpa === "subjects") goSection("settings", "stCourses");
   else if(a.dataset.dpa === "go" && dpSel){ try{ sessionStorage.setItem("cc_dp_go", "1"); }catch{} colSwitch(dpSel); } });
 /* after stepping into a department from its tile, land on its subjects */
-(() => { let n = 0; const t = setInterval(() => { if(++n > 40) return clearInterval(t); try{ if(typeof me !== "undefined" && me && me.email && typeof ccDepts !== "undefined"){ clearInterval(t); let go = ""; try{ go = sessionStorage.getItem("cc_dp_go") || ""; sessionStorage.removeItem("cc_dp_go"); }catch{} if(go) setTimeout(() => goSection("settings", "stCourses"), 600); } }catch{} }, 400); })();
+(() => { let n = 0; const t = setInterval(() => { if(++n > 40) return clearInterval(t); try{ if(typeof me !== "undefined" && me && me.email && typeof ccDepts !== "undefined"){ clearInterval(t); let go = ""; try{ go = sessionStorage.getItem("cc_dp_go") || ""; sessionStorage.removeItem("cc_dp_go"); }catch{} if(go === "teaching") setTimeout(() => { stTab = "teaching"; setView("settings"); }, 600); else if(go) setTimeout(() => goSection("settings", "stCourses"), 600); } }catch{} }, 400); })();
 /* the departments list arrives after the page: draw the tiles when it does */
 const _ccDeptsLoad79 = ccDeptsLoad;
 ccDeptsLoad = async function(){ const r = await _ccDeptsLoad79.apply(this, arguments); try{ if(view === "settings") dpTiles(); }catch{} return r; };
+
+/* ===== round 80 (v128): the Subjects and Department pages say which department they are for, with a drop-down of the institution's departments to move between them
+   (and a way to add one). The Subjects list shows the built-in subjects too, Esports and IT, marked Built in, with each subject's awarding body beside it. ===== */
+function dkBar(){ const out = $("#out"); if(!out || view !== "settings") return; const old = $("#dpBar"); if(old) old.remove();
+  if(stTab !== "subjects" && stTab !== "teaching") return; if(!ccDepts || !ccDepts.length) return;
+  const canAll = !!me && (me.role === "superadmin" || me.role === "owner"); if(!canAll && ccDepts.length < 2) return;
+  const first = [...out.querySelectorAll("section.st-sec")].find(s => !s.hidden && getComputedStyle(s).display !== "none"); if(!first) return;
+  const cur = ccDepts.find(d => d.mine) || ccDepts[0];
+  first.insertAdjacentHTML("beforebegin", `<div class="dp-bar" id="dpBar"><label class="dp-bar-l" for="dpPick">Department</label><select class="form-select" id="dpPick" aria-describedby="dpBarHint">${ccDepts.map(d => `<option value="${esc(d.id)}" ${d.id === cur.id ? "selected" : ""}>${esc(d.name)}</option>`).join("")}${canAll ? `<option value="+">Add a department...</option>` : ""}</select><span class="dp-bar-h" id="dpBarHint">${stTab === "subjects" ? `These are ${esc(cur.name)}'s subjects.` : `These settings are for ${esc(cur.name)}.`} Pick another department to see ${stTab === "subjects" ? "its subjects" : "its settings"}.</span></div>`); }
+function dkSubjects(){ const box = $("#stCourses"); if(!box) return;
+  const own = (courseCfg.list || []).filter(courseOk);
+  box.querySelectorAll(".st-group [data-crs='rm']").forEach(b => { const x = own[+b.dataset.i], row = b.closest(".st-group"), line = row && row.querySelector(".small.text-body-secondary"); if(!x || !line || line.querySelector(".dk-org")) return; const org = dpOrgOf(x.ctx) || dpOrgOf(courseCfg.ctx) || x.awarding || ""; line.insertAdjacentHTML("beforeend", `<span class="dk-org"> · ${org ? esc(org) : "awarding body not set"}</span>`); });
+  const mine = typeof ccMine === "function" ? ccMine() : null; if(plainSite() || courseCfg.builtin === false || (mine && !mine.builtin) || box.querySelector(".dk-built")) return;
+  let g = box.querySelector(".st-groups"); if(!g){ const p = [...box.querySelectorAll("p")].find(x => /No subjects added yet/.test(x.textContent)); if(!p) return; p.insertAdjacentHTML("afterend", `<div class="st-groups mb-3"></div>`); p.textContent = "This department teaches the built-in subjects below. Add your own from a specification and they sit alongside."; g = box.querySelector(".st-groups"); }
+  g.insertAdjacentHTML("afterbegin", BUILTIN_UNITS.map(x => `<div class="st-group dk-built"><div class="min-w-0 flex-grow-1"><div class="fw-semibold">${esc(x.s)} <span class="text-body-secondary fw-normal">${esc(x.l || "")}</span></div><div class="small text-body-secondary text-truncate">${(x.u || []).length} units · ${(x.u || []).reduce((a, u) => a + ((u.c || []).length), 0)} criteria · Pearson BTEC</div></div><span class="badge dk-badge">Built in</span></div>`).join("")); }
+const _stLayout80 = stLayout;
+stLayout = function(){ const r = _stLayout80.apply(this, arguments); try{ dkBar(); dkSubjects(); }catch(e){ console.error(e); } return r; };
+const _ccDeptsLoad80 = ccDeptsLoad;
+ccDeptsLoad = async function(){ const r = await _ccDeptsLoad80.apply(this, arguments); try{ if(view === "settings"){ dkBar(); dkSubjects(); } }catch{} return r; };
+document.addEventListener("change", e => { if(!e.target || e.target.id !== "dpPick") return; const v = e.target.value;
+  if(v === "+"){ goSection("settings", "stDepts"); setTimeout(() => { const i = $("#tmDeptNew"); if(i){ i.scrollIntoView({block: "center"}); i.focus({preventScroll: true}); } }, 500); return; }
+  const cur = (ccDepts || []).find(d => d.mine); if(cur && cur.id === v) return;
+  try{ sessionStorage.setItem("cc_dp_go", stTab === "teaching" ? "teaching" : "subjects"); }catch{} colSwitch(v); });
+/* an Add a department tile at the end of the tiles */
+const _dpTiles80 = dpTiles;
+dpTiles = function(){ const r = _dpTiles80.apply(this, arguments); try{ const w = $("#dpTiles"); if(w && !w.querySelector(".dp-add") && $("#tmDeptNew")) w.insertAdjacentHTML("beforeend", `<button type="button" class="dp-tile dp-add" data-dpa="add"><span class="dp-plus" aria-hidden="true">+</span><span class="dp-name">Add a department</span><span class="dp-none">Give it a name and, if you have them, its specifications.</span></button>`); }catch{} return r; };
+document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('[data-dpa="add"]'); if(!a) return; const i = $("#tmDeptNew"); if(i){ i.scrollIntoView({block: "center", behavior: "smooth"}); i.focus({preventScroll: true}); } });
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
