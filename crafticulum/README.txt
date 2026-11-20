@@ -2167,4 +2167,11 @@ VERSION 134: FIRST LESSON, A VOICE, CLASSROOM AND TEAMS, PUBLIC PROFILES
   public. Each person can still switch their own off. Nothing but name,
   photo, role, departments, subjects and qualifications is shown.
 
+VERSION 135: REFUNDS IN THE FIRST 30 DAYS
+- The terms of use, under Plans and payments, now say: a full refund on the
+  first payment for a plan if you ask within 30 days; no part-month refunds
+  after that; refunds for double charges or faults on our side; and what
+  happens if an account or the site is closed. Only shown when plans are on.
+  Refunds themselves are made in your Stripe dashboard.
+
 NO CHANGES TO config.php
