@@ -2174,4 +2174,10 @@ VERSION 135: REFUNDS IN THE FIRST 30 DAYS
   happens if an account or the site is closed. Only shown when plans are on.
   Refunds themselves are made in your Stripe dashboard.
 
+VERSION 136: THE COMPANY BEHIND CRAFTICULUM
+- The terms, the privacy notice and the foot of every public page now say
+  that Crafticulum is a trading name of Next Level Labs Ltd, with its
+  company number and registered office. The privacy notice also gives the
+  ICO registration number.
+
 NO CHANGES TO config.php
