@@ -1861,4 +1861,29 @@ FIXED (v118)
   your own settings, Admin opens Admin, and What's coming opens the
   roadmap with its release controls.
 
+WHAT'S NEW IN v119
+
+PHONE LAYOUT FIX (v119)
+  v118's app page was packaged from a half-finished build, so it went out
+  without the tag that tells phones to use the phone layout. Phones showed
+  the app zoomed out, like a desktop. v119 is v118 built properly, and
+  the packaging step now refuses to make a zip from an unfinished build.
+
+GO BACK TO THE LAST VERSION (v119)
+  - Admin, System, Updates has "Go back to version N". Press it twice
+    and the site is back on the version it ran before the last update.
+  - Automatic: every update now keeps a copy of the files it replaces
+    (data/_update/prev), so going back takes a few seconds and needs
+    nothing from GitHub. Going back can itself be undone.
+  - GitHub: if there's no copy on the server (the update was uploaded
+    as a zip), the release before the one running is fetched from the
+    repository's history instead.
+  - After going back, automatic updates wait for a release newer than
+    the one you left, so the site doesn't jump straight forward again.
+    "Update to version" still works by hand whenever you want.
+  - config.php and the data folder are never touched, as with updates.
+  - The first Go back after installing v119 by the updater returns to
+    v118, which has the phone layout fault, so there's no reason to use
+    it until the next release.
+
 NO CHANGES TO config.php

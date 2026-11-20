@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v118, 20 Nov 2026: simpler, from the audit: a shorter menu, one set-up list on the dashboard, a lesson's buttons down to Edit, Teach, Share and More, Settings regrouped, term dates folded, and the super admin menu fixed). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v118.zip` and `crafticulum-release.zip`: the same files as one zip (2,568,220 bytes).
+- `crafticulum/`: every file of the current release (v119, 20 Nov 2026: fixes the phone layout that v118 broke, and adds Go back, which undoes the last update from Admin, System, Updates). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v119.zip` and `crafticulum-release.zip`: the same files as one zip (1,939,045 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
