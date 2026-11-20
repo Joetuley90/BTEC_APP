@@ -120,7 +120,7 @@
       if(st.waiting){ st.waiting = false; pauseBox(""); st.playing = true; playBtn(); return advance(); }
       if(st.i === S.length - 1 && st.lines.length && st.line >= st.lines.length){ st.playing = true; go(0, true); playBtn(); return; }
       st.playing = true; playBtn(); if(S[st.i].kind === "quiz" && st.shown && st.line >= st.lines.length) return advance(); runLines(slideDone); }
-    function close(){ stopVoice(); root.remove(); document.documentElement.style.overflow = ""; document.removeEventListener("keydown", key, true); if(hasTTS) try{ speechSynthesis.removeEventListener("voiceschanged", fillVoices); }catch{} cur = null; try{ if(st.from && document.contains(st.from)) st.from.focus(); }catch{} if(opts.onClose) opts.onClose(); }
+    function close(){ stopVoice(); root.remove(); document.documentElement.style.overflow = ""; document.removeEventListener("keydown", key, true); if(hasTTS) try{ speechSynthesis.removeEventListener("voiceschanged", fillVoices); }catch{} cur = null; try{ if(st.from && document.contains(st.from) && st.from.offsetParent !== null) st.from.focus(); else { const t = document.querySelector("#teachBtn"); if(t) t.focus(); } }catch{} if(opts.onClose) opts.onClose(); }
     function key(e){ if(e.target && /^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName) && e.key !== "Escape") return;
       if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); return close(); }
       if(e.key === " " || e.key === "k"){ if(e.target && e.target.closest && e.target.closest("button") && e.key === " ") return; e.preventDefault(); return play(); }

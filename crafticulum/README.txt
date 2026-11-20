@@ -1812,4 +1812,53 @@ FRONT PAGE WORDING (v117)
   The last "your college" lines on the front page now say "school or
   college" or "institution".
 
+WHAT'S NEW IN v118
+
+SIMPLER, FROM THE AUDIT (v118)
+  Nothing has been taken away. Things that moved are one click further
+  in, and the search box finds any of them by name.
+
+  The side menu
+  - Three headings: Teaching, Learners and AI.
+  - The Library sits with This week, Lessons and Planning. My created
+    lessons is a button at the top of the Library (and still My lessons
+    on a phone).
+  - Show on board and Display are no longer in the menu. They're on every
+    lesson (and the B key), and in Settings.
+  - At the bottom: Our team, Admin (super admins), Settings, Help and
+    feedback, and What's coming (the roadmap, same page and address).
+
+  The dashboard
+  - One set-up list at a time: the institution's first, then yours once
+    that's done or put away.
+  - "Make Crafticulum yours" waits until the set-up list is out of the
+    way, and no link appears twice.
+
+  A lesson
+  - Four buttons: Edit, Teach, Share and More.
+  - Teach has Show on board, Video lesson and Go live on the board.
+  - Share now includes what was under Export (PowerPoint, the lesson plan
+    form, task sheets, the cover pack and the copy buttons), under
+    Download.
+  - More has Next lesson, and "Change or regenerate", which opens the
+    steer box, Regenerate lesson, Undo and History.
+
+  Settings
+  - You: your account, your profile, and Preferences (display, install
+    as an app and notifications in one card).
+  - Teaching is now two tabs: Department (subjects, rules, Second
+    Marker, documents, learner needs, deleted lessons) and Calendar and
+    groups (term dates, groups, assignment dates, Discord).
+  - Term dates show as a short summary (when term starts, the holidays)
+    until you press Edit term dates.
+  - The Everything tab has gone. Search finds any setting by name.
+  - Teachers no longer see the automatic backup and student data cards,
+    which only say what their manager has set.
+
+FIXED (v118)
+  For a super admin outside every institution, Settings in the menu kept
+  going back to Admin, and the roadmap wouldn't open. Settings now opens
+  your own settings, Admin opens Admin, and What's coming opens the
+  roadmap with its release controls.
+
 NO CHANGES TO config.php
