@@ -1990,4 +1990,10 @@ VERSION 122: SHARE QUIZ RESULTS WITH THE CLASS
   caught the class out (up to three), the common slip, and the tips.
 - Your own report, with initials, is unchanged and stays on your screen only.
 
+VERSION 123: OPEN LESSON, ON ITS OWN
+- Open lesson in Planning (and opening one from the Library) now shows the
+  lesson full width, without the New lesson panel beside it.
+- A small bar above it has Back to Planning, and New lesson to bring the panel
+  back. Lessons in the menu and Create a lesson work as before.
+
 NO CHANGES TO config.php

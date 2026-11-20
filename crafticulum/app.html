@@ -1411,6 +1411,10 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v123: a lesson opened from Planning or the Library, on its own */
+@media (min-width:992px){ body.ls-focus .app-main > .row > .col-lg-5.col-xl-4{display:none!important} body.ls-focus .app-main > .row > .col-lg-7.col-xl-8{flex:0 0 100%;max-width:100%;width:100%} body.ls-focus .app-main{max-width:1180px;margin:0 auto} }
+.lsf-bar{display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem}
+@media (max-width:991.98px){ .lsf-bar #lsfNew{display:none} }
 /* v121: the super admin bar */
 body #saBar{display:flex;flex-wrap:nowrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:7px 14px;background:linear-gradient(90deg,#312e81,#6d28d9);color:#fff;font-size:.86rem;text-align:left;min-height:var(--demo-h,48px)}
 body #saBar .sa-who{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;min-width:0;flex:1 1 auto;text-align:left}
@@ -13837,6 +13841,25 @@ showSlide = function(s){ const r = _showSlide72.apply(this, arguments);
       const html = (m.length ? `<div id="qsMiss">${m.slice(0, 3).map(p => `<div class="res-call"><b>Q${p.i + 1} caught us out (${p.pct}% right):</b> ${esc(p.q.q)}<br>${p.slip >= 0 ? `<span style="color:var(--chalk-dim)">Most common slip: ${LT[p.slip]}) ${esc(p.q.options[p.slip])}</span><br>` : ""}Answer: <span style="color:var(--chalk-g)">${LT[p.q.answer]}) ${esc(p.q.options[p.q.answer])}</span>${p.q.why ? ` · ${esc(p.q.why)}` : ""}</div>`).join("")}</div>` : `<div class="res-call" id="qsMiss" style="border-color:var(--chalk-g)"><b style="color:var(--chalk-g)">Full marks:</b> every hand went to the right answer.</div>`)
         + `<div class="res-call" id="qsTips" style="border-color:var(--chalk-y)"><b style="color:var(--chalk-y)">How to get them all right next time</b><ol style="margin:.3em 0 0;padding-left:1.3em">${qsTips(m).map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>`;
       grid.insertAdjacentHTML("beforebegin", html); fitBoard($("#bFrame")); } } }catch(e){ console.error(e); }
+  return r; };
+
+/* ===== round 73 (v123): Open lesson from Planning or the Library shows the lesson on its own, full width, without the New lesson panel beside it.
+   A small bar above it goes back to Planning or brings the panel back. Lessons in the menu and Create a lesson still open the panel as before. ===== */
+let lsFocus = false, lsFrom = "";
+document.addEventListener("click", e => { const t = e.target; if(!t || !t.closest) return;
+  if(t.closest('[data-sq="open"]')){ lsFocus = true; lsFrom = "seq"; }
+  else if(t.closest('[data-ov="open"], #libList [data-open]')){ lsFocus = true; lsFrom = ""; }
+  else if(t.closest("[data-lsf]")){ lsFocus = false; render(current); const f = $("#form"); if(f) f.scrollIntoView({block: "nearest"}); }
+  else if(t.closest("[data-nav]")) lsFocus = false; }, true);
+const lsFocusOn = () => lsFocus && view === "lesson" && !!current && !current.example;
+const _setView73 = setView;
+setView = function(){ lsFocus = false; return _setView73.apply(this, arguments); };
+const _syncShell73 = syncShell;
+syncShell = function(){ const r = _syncShell73.apply(this, arguments); try{ document.body.classList.toggle("ls-focus", lsFocusOn()); }catch{} return r; };
+const _render73 = render;
+render = function(){ const r = _render73.apply(this, arguments);
+  try{ const on = lsFocusOn(); document.body.classList.toggle("ls-focus", on); const o = $("#out"), old = $("#lsfBar"); if(old && (!on || old.parentElement !== o)) old.remove();
+    if(on && o && !$("#lsfBar")) o.insertAdjacentHTML("afterbegin", `<div id="lsfBar" class="lsf-bar">${lsFrom === "seq" ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-nav="seq" id="lsfBack"><span aria-hidden="true">←</span> Back to Planning</button>` : ""}<button type="button" class="btn btn-sm btn-outline-primary ms-auto" data-lsf id="lsfNew">New lesson</button></div>`); }catch(e){ console.error(e); }
   return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
