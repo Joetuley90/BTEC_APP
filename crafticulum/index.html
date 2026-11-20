@@ -6,16 +6,16 @@
 (function(){try{var h=location.hash,q=location.search;if(/^#(invite|reset|magic|verify|signin|marker|open|join)\b/.test(h)||/[?&](signin|code|state|open)\b/.test(q))location.replace("app.html"+q+h);}catch(e){}})();</script>
 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Crafticulum: lessons built against your specification</title>
-<meta name="description" content="Crafticulum turns one sentence into a full lesson, built against your specification: plan, teaching content, tasks, quiz, slides and a page for your students. For any subject and any stage, from primary to university, across the UK.">
+<title>Crafticulum: a full lesson from one sentence</title>
+<meta name="description" content="Tell Crafticulum what you're teaching and get the whole lesson in two minutes: plan, slides, tasks, a quiz and a page for your students, built against your specification. Free to start.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Crafticulum">
 <meta property="og:locale" content="en_GB">
-<meta property="og:title" content="Crafticulum: lessons built against your specification">
-<meta property="og:description" content="Crafticulum turns one sentence into a full lesson, built against your specification: plan, teaching content, tasks, quiz, slides and a page for your students. For any subject and any stage, from primary to university, across the UK.">
+<meta property="og:title" content="Crafticulum: a full lesson from one sentence">
+<meta property="og:description" content="Tell Crafticulum what you're teaching and get the whole lesson in two minutes: plan, slides, tasks, a quiz and a page for your students, built against your specification. Free to start.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Crafticulum: lessons built against your specification">
-<meta name="twitter:description" content="Crafticulum turns one sentence into a full lesson, built against your specification: plan, teaching content, tasks, quiz, slides and a page for your students. For any subject and any stage, from primary to university, across the UK.">
+<meta name="twitter:title" content="Crafticulum: a full lesson from one sentence">
+<meta name="twitter:description" content="Tell Crafticulum what you're teaching and get the whole lesson in two minutes: plan, slides, tasks, a quiz and a page for your students, built against your specification. Free to start.">
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="favicon.ico?v=4" sizes="any">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
@@ -27,149 +27,89 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="pages.css?v=18">
+<link rel="stylesheet" href="pages.css?v=19">
 </head>
-<body>
+<body class="home">
 <header class="nav"><div class="wrap"><a class="brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 8 H64 V36 H36 V64 H92 V78 Q92 92 78 92 H22 Q8 92 8 78 V22 Q8 8 22 8 Z" fill="#4f46e5"/><path d="M64 8 L92 36 H64 Z" fill="#a5b4fc"/></svg><span><span class="wm">craft<span class="wm-2">iculum</span></span><small hidden></small></span></a>
-<nav aria-label="On this page"><a href="#what">What it does</a><a href="#stages">Where you teach</a><a href="#ai">AI tools</a><a href="#how">How it works</a><a href="#who">Who it's for</a><a href="#pricing" data-if-plans hidden>Pricing</a><a href="#get">How to get it</a><a href="contact.html">Contact</a></nav>
-<a class="btn btn-p btn-sm" href="app.html">Sign in</a></div></header>
+<nav aria-label="On this page"><a href="#how">How it works</a><a href="#get-what">What you get</a><a href="#pricing" data-if-plans hidden>Pricing</a><a href="#faq">Questions</a></nav>
+<a class="btn btn-p btn-sm nav-solo" data-no-plans href="app.html">Sign in</a><a class="nav-in" data-if-plans hidden href="app.html">Sign in</a><a class="btn btn-p btn-sm" data-if-plans hidden href="app.html?start=free">Start free</a></div></header>
 <main>
 <section class="hero"><div class="wrap">
-  <div><span class="kick">Plan it. Teach it. Share it.</span>
+  <div><span class="kick">For teachers in schools and colleges</span>
     <h1>From one sentence to a <em>full lesson.</em></h1>
-    <p class="lead">Tell Crafticulum what you're teaching. It builds the lesson against your specification: the timed plan, the teaching content, tasks, an exit quiz, slides and a page for your students. Any subject, any stage, from primary to university, in England, Wales, Scotland and Northern Ireland. Then Crafti and the AI tools take care of the worksheets, reports and emails around it.</p>
-    <p class="say"><span class="say-w">crafticulum</span><span class="say-p" aria-label="Pronounced kraf TIK yuh luhm">kraf-<b>TIK</b>-yuh-luhm</span><span class="say-d">craft + curriculum</span></p>
-    <div class="cta"><a class="btn btn-w" href="app.html">Sign in</a><a class="btn btn-g" data-demo hidden href="#">Try the demo</a><a class="btn btn-g" href="#get">How to get it</a></div><p class="demo-note" data-demo-note hidden>No sign-up. A sample department you share with anyone else trying it, emptied every night.</p></div>
-  <div class="demo" aria-hidden="true">
-    <div class="ask"><span>A practical lesson where pairs pitch an idea in 2 minutes</span><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></i></div>
-    <div class="les"><b>Pitching an idea in 2 minutes</b><div class="bar"><span style="flex:5"></span><span style="flex:20"></span><span style="flex:45"></span><span style="flex:10"></span><span style="flex:10"></span></div>
-      <p class="mins">Starter 5 · Teach 20 · Practical 45 · Quiz 10 · Recap 10</p><div class="outs"><span>Lesson plan</span><span>Slides</span><span>Worksheet</span><span>Quiz</span><span>Student page</span></div></div>
-  </div>
+    <p class="lead">Tell Crafticulum what you're teaching. Two minutes later you have the plan, slides, tasks, a quiz and a page for your students, built against your specification.</p>
+    <div class="cta"><a class="btn btn-w btn-lg" data-no-plans href="app.html">Sign in or register</a><a class="btn btn-w btn-lg" data-if-plans hidden href="app.html?start=free">Start free</a><a class="btn btn-g" data-demo hidden href="#">Try the demo</a><a class="btn btn-g" data-if-plans hidden href="#how">See how it works</a><a class="btn btn-g" data-no-plans href="contact.html?about=enquiry">Get in touch</a></div>
+    <p class="hero-note" data-if-plans hidden>Free plan, no card needed. Your first lesson takes about two minutes.</p>
+    <p class="demo-note" data-demo-note hidden>The demo needs no sign-up. It's a sample department shared with anyone else trying it, emptied every night.</p></div>
+  <figure class="frame"><div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="assets/shot-lesson.webp?v=1" width="1600" height="1000" alt="A lesson in Crafticulum: learning objectives, today's task and tabs for the starter, teaching content, tasks and exit quiz" fetchpriority="high"></figure>
 </div></section>
 
-<section class="band" id="what"><div class="wrap">
-  <h2>Everything a lesson needs, in one place</h2>
-  <p class="sub">You describe the lesson. Crafticulum does the writing up, and you stay in charge of every word.</p>
-  <div class="grid">
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg></div><h3>Built against your specification</h3><p>Upload the specification PDF from your awarding body. The units, learning aims and criteria are read from it, and every lesson is matched to them.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></div><h3>A full lesson from one sentence</h3><p>A starter, objectives, real teaching content, tasks with success criteria, stretch and support, an exit quiz and independent study.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div><h3>Teach it from the board</h3><p>A clean board view takes you through the lesson step by step, with timers, the teaching content and the tasks, ready for the classroom screen.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></div><h3>A page for your students</h3><p>Students scan a QR code or open a link. No accounts and nothing to install. They get the tasks, the teaching content and the quiz on their own phone.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3"/></svg></div><h3>Quizzes and results</h3><p>Run the exit quiz on phones or by a show of hands. See which criteria the class found hard, lesson by lesson and across a unit.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></div><h3>Your documents, your templates</h3><p>Download the lesson plan, PowerPoint and worksheets. Upload your own lesson plan form and slide template and they're filled in for you.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><h3>Plan the whole year</h3><p>Sequences of learning, a year planner, term dates, assignment hand-in dates and a view of what's on this week.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.5a6 6 0 0 1 3 5.5"/></svg></div><h3>Made for departments</h3><p>Heads of department and subject leaders build and sign off lessons. Teachers use them, copy them and suggest changes. Everyone sees who wrote what.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3.5V12c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6.5z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div><h3>Checked before it's taught</h3><p>A fact check reads a lesson back and flags anything that looks wrong or out of date. Sign-off keeps a teacher's change waiting until a leader accepts it.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13l4.5 4.5L18 8"/><path d="M11 17.5l1.5 1.5L21 10.5"/></svg></div><h3>Second Marker checks the work</h3><p>It reads a learner's work against each criterion and suggests met or not yet, with the evidence and what to do next. The assessor makes every final call.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 14l2 2 4-4"/></svg></div><h3>Records and IV forms filled in</h3><p>Mark one learner or a whole class set. The assessment record, resubmission records and internal verification forms come out in Word, ready to sign.</p></div>
-    <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 12a9 9 0 0 1-15.5 6.2"/><path d="M18.5 2.5v3.5H15M5.5 21.5V18H9"/></svg></div><h3>Marking feeds your planning</h3><p>The criteria a group most often misses show on the Results page, with a button that starts a catch-up lesson on exactly that criterion.</p></div>
-  </div>
-</div></section>
+<div class="strip"><div class="wrap"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Any subject</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Primary to university</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> England, Wales, Scotland and Northern Ireland</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Built on your own specification</span></div></div>
 
-<section class="band" id="stages"><div class="wrap">
-  <span class="kick dark">New</span>
-  <h2>For wherever you teach</h2>
-  <p class="sub">Tell Crafticulum your country, your setting and your stage once. Lessons, the AI tools and Crafti then write for it, in the words your system uses.</p>
-  <div class="grid">
-    <div class="card"><h3>Every stage</h3><p>Early years, primary, secondary, sixth form, further education, apprenticeships, adult learning, higher education, specialist provision and professional training.</p></div>
-    <div class="card"><h3>All four nations</h3><p>Key stages in England and Northern Ireland, progression steps in Wales, Curriculum for Excellence and SCQF levels in Scotland. Nobody is squeezed into England's levels.</p></div>
-    <div class="card"><h3>Set up around you</h3><p>Tell it your country, your setting, your school or college and what you teach. Every step can be skipped, and lessons, tools and Crafti start from your answers.</p></div>
-    <div class="card"><h3>With or without a qualification</h3><p>Upload a specification and its units and criteria are read in for you to check. Or add a subject by hand: a primary topic, a university module, or a course of your own.</p></div>
-    <div class="card"><h3>Honest about what's official</h3><p>Look a qualification up on Ofqual's register and its number, title, awarding organisation and status are filled in from the regulator's own record. Anything typed by hand shows as not verified until someone has checked it.</p></div>
-  </div>
-</div></section>
-
-<section class="band blue" id="ai"><div class="wrap">
-  <span class="kick dark">New</span>
-  <h2>An AI toolkit for the rest of the job</h2>
-  <p class="sub">Lessons are only part of the week. Crafticulum now helps with the worksheets, the reports, the emails and the planning around them, all tied to the units you teach.</p>
-  <div class="meet"><svg class="crafti" viewBox="0 0 120 120" role="img" aria-label="Crafti, the Crafticulum assistant"><defs><linearGradient id="crGp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><ellipse cx="60" cy="110" rx="30" ry="5" fill="#0f172a" opacity=".12"/><path d="M96 62 q14 -10 12 -24" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/><circle cx="108" cy="36" r="6" fill="#fbbf24"/><path d="M24 72 q-10 4 -12 14" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round"/><path d="M34 14 H74 L98 38 V88 Q98 104 82 104 H38 Q22 104 22 88 V26 Q22 14 34 14 Z" fill="url(#crGp)"/><path d="M74 14 L98 38 H80 Q74 38 74 32 Z" fill="#c4b5fd"/><circle cx="45" cy="58" r="11" fill="#fff"/><circle cx="75" cy="58" r="11" fill="#fff"/><circle cx="47" cy="60" r="5" fill="#0f172a"/><circle cx="77" cy="60" r="5" fill="#0f172a"/><circle cx="49" cy="58" r="1.8" fill="#fff"/><circle cx="79" cy="58" r="1.8" fill="#fff"/><path d="M46 78 Q60 92 74 78" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="33" cy="74" r="5" fill="#f472b6" opacity=".7"/><circle cx="87" cy="74" r="5" fill="#f472b6" opacity=".7"/><path d="M14 30 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z" fill="#fbbf24"/></svg><div><h3>Meet Crafti</h3><p>Crafti is your teaching sidekick. Ask him anything, hand him the boring bits, or pick a unit and he already knows its criteria. He remembers what you tell him to, and anything he writes can become a resource you edit, save and download.</p></div></div>
-  <div class="grid">
-    <div class="card"><h3>Tools that work one way</h3><p>Worksheets, quizzes, editable PowerPoints, student reports and differentiated resources to start with, and more arriving from the roadmap. Fill in a few boxes, then change any word on the page.</p></div>
-    <div class="card"><h3>Reports, emails and meetings</h3><p>Report comments, messages home, feedback, agendas and minutes, in your own tone. A learner's name never leaves your device.</p></div>
-    <div class="card"><h3>Built for every learner</h3><p>Differentiate a task three ways, change a text's reading age, build an EAL pack, or rework a worksheet so it's easier to read.</p></div>
-    <div class="card"><h3>For leaders too</h3><p>Improvement plans, self-evaluation, quality assurance forms, policy drafts, observation templates and CPD plans, from your own evidence.</p></div>
-    <div class="card"><h3>Learners and progress</h3><p>Mark each learner against each criterion, track hand-ins, resubmissions and internal verification, and plan an intervention from the gaps. Every mark is yours, and a school or college can keep every learner anonymous.</p></div>
-    <div class="card"><h3>One library, every format</h3><p>Lessons and resources in one place, yours and your department's. Download as Word, PDF or PowerPoint, with your school or college's name on it.</p></div>
-  </div>
-  <p class="ai-note">Your school or college decides who gets what. A manager can switch each part on or off for heads of department and for teachers, and write house rules that everything the AI produces will follow.</p>
-</div></section>
-<section class="shots" aria-label="Crafticulum in use"><div class="wrap">
-  <figure class="shot" data-pic="class"><svg viewBox="0 0 400 300" role="img" aria-label="Drawing of a teacher at a whiteboard with a class"><rect width="400" height="300" fill="#eef0ff"/><rect x="40" y="34" width="220" height="130" rx="8" fill="#fff" stroke="#c7cbf5" stroke-width="3"/><rect x="58" y="52" width="96" height="10" rx="5" fill="var(--p)"/><rect x="58" y="74" width="150" height="7" rx="3.5" fill="#d7daf3"/><rect x="58" y="90" width="128" height="7" rx="3.5" fill="#d7daf3"/><rect x="58" y="106" width="140" height="7" rx="3.5" fill="#d7daf3"/><circle cx="222" cy="128" r="20" fill="#fde68a"/><path d="M222 128V108a20 20 0 0 1 17.3 30z" fill="#f59e0b"/><circle cx="312" cy="96" r="20" fill="#8d5a3b"/><path d="M280 190c0-26 14-44 32-44s32 18 32 44z" fill="var(--p)"/><path d="M286 158l-30-26" stroke="#8d5a3b" stroke-width="9" stroke-linecap="round"/><rect x="0" y="238" width="400" height="62" fill="#dfe2fb"/><g><circle cx="70" cy="226" r="17" fill="#f2c9a5"/><path d="M42 300c0-30 12-48 28-48s28 18 28 48z" fill="#10b981"/><circle cx="160" cy="226" r="17" fill="#5b3a29"/><path d="M132 300c0-30 12-48 28-48s28 18 28 48z" fill="#f59e0b"/><circle cx="250" cy="226" r="17" fill="#e0ac86"/><path d="M222 300c0-30 12-48 28-48s28 18 28 48z" fill="#7c3aed"/><circle cx="338" cy="226" r="17" fill="#a9745a"/><path d="M310 300c0-30 12-48 28-48s28 18 28 48z" fill="#0ea5e9"/></g></svg><figcaption>Teach it from the board, step by step.</figcaption></figure>
-  <figure class="shot" data-pic="practical"><svg viewBox="0 0 400 300" role="img" aria-label="Drawing of a computer workstation with a headset"><rect width="400" height="300" fill="#eafaf3"/><rect x="0" y="226" width="400" height="74" fill="#cfeee0"/><rect x="92" y="52" width="216" height="136" rx="10" fill="#0f172a"/><rect x="102" y="62" width="196" height="116" rx="5" fill="#1e293b"/><rect x="116" y="150" width="18" height="18" rx="3" fill="#10b981"/><rect x="142" y="128" width="18" height="40" rx="3" fill="var(--p)"/><rect x="168" y="108" width="18" height="60" rx="3" fill="#f59e0b"/><rect x="194" y="92" width="18" height="76" rx="3" fill="#7c3aed"/><rect x="228" y="80" width="56" height="7" rx="3.5" fill="#64748b"/><rect x="228" y="96" width="40" height="7" rx="3.5" fill="#475569"/><rect x="228" y="112" width="50" height="7" rx="3.5" fill="#475569"/><rect x="188" y="188" width="24" height="26" fill="#334155"/><rect x="150" y="212" width="100" height="10" rx="5" fill="#334155"/><rect x="110" y="236" width="150" height="22" rx="6" fill="#fff" stroke="#b7dfcb" stroke-width="2"/><rect x="276" y="236" width="26" height="34" rx="13" fill="#fff" stroke="#b7dfcb" stroke-width="2"/><path d="M36 236a30 30 0 0 1 60 0" fill="none" stroke="#0f172a" stroke-width="7" stroke-linecap="round"/><rect x="26" y="230" width="16" height="30" rx="7" fill="var(--p)"/><rect x="90" y="230" width="16" height="30" rx="7" fill="var(--p)"/><rect x="330" y="204" width="34" height="40" rx="6" fill="#f59e0b"/><path d="M364 214h8a8 8 0 0 1 0 16h-8" fill="none" stroke="#f59e0b" stroke-width="5"/></svg><figcaption>Built for practical lessons, in any room.</figcaption></figure>
-  <figure class="shot" data-pic="phones"><svg viewBox="0 0 400 300" role="img" aria-label="Drawing of a phone showing a lesson page and a QR code"><rect width="400" height="300" fill="#fff4e5"/><circle cx="330" cy="60" r="70" fill="#ffe3bd"/><rect x="60" y="34" width="132" height="232" rx="20" fill="#0f172a"/><rect x="70" y="48" width="112" height="204" rx="10" fill="#fff"/><rect x="82" y="62" width="64" height="9" rx="4.5" fill="var(--p)"/><rect x="82" y="84" width="88" height="6" rx="3" fill="#d7daf3"/><rect x="82" y="98" width="76" height="6" rx="3" fill="#d7daf3"/><g fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M84 130l5 5 9-10"/><path d="M84 156l5 5 9-10"/></g><rect x="82" y="176" width="16" height="16" rx="4" fill="none" stroke="#cbd5e1" stroke-width="2.5"/><rect x="108" y="126" width="60" height="7" rx="3.5" fill="#cbd5e1"/><rect x="108" y="152" width="52" height="7" rx="3.5" fill="#cbd5e1"/><rect x="108" y="180" width="58" height="7" rx="3.5" fill="#cbd5e1"/><rect x="82" y="214" width="88" height="24" rx="8" fill="var(--p)"/><rect x="232" y="92" width="120" height="120" rx="14" fill="#fff" stroke="#f5c98a" stroke-width="3"/><g fill="#0f172a"><rect x="246" y="106" width="30" height="30" rx="4"/><rect x="308" y="106" width="30" height="30" rx="4"/><rect x="246" y="168" width="30" height="30" rx="4"/><rect x="286" y="110" width="10" height="10"/><rect x="286" y="130" width="10" height="22"/><rect x="250" y="146" width="22" height="10"/><rect x="308" y="146" width="12" height="12"/><rect x="326" y="160" width="12" height="12"/><rect x="290" y="164" width="12" height="12"/><rect x="308" y="180" width="30" height="12"/><rect x="288" y="186" width="10" height="12"/></g><g fill="#fff"><rect x="254" y="114" width="14" height="14" rx="2"/><rect x="316" y="114" width="14" height="14" rx="2"/><rect x="254" y="176" width="14" height="14" rx="2"/></g><text x="292" y="240" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#92400e">Scan to open</text></svg><figcaption>Students open it on their own phone.</figcaption></figure>
-</div></section>
-
-<section class="band" id="roadmap"><div class="wrap">
-  <span class="kick">Next 18 months</span>
-  <h2>A roadmap its users vote on</h2>
-  <p class="sub">Crafticulum doesn't switch everything on at once. New tools and features arrive a few at a time, and the people who use it vote for what comes first. This is some of what's planned.</p>
-  <div class="grid">
-    <div class="card"><h3>Google Classroom, Teams and Discord</h3><p>Set a lesson and its quiz as an assignment where your classes already are, bring class lists in, and send reminders to the channels learners use.</p></div>
-    <div class="card"><h3>Video lessons from your slides</h3><p>Crafti presents your slides as a narrated video, talking through each one. For learners who were away, for cover and for revision.</p></div>
-    <div class="card"><h3>More AI tools</h3><p>Starters, homework, flashcards, revision guides, parent letters, EAL packs, behaviour plans and the leadership documents, released in the order people ask for them.</p></div>
-    <div class="card"><h3>A page for each learner</h3><p>Learners sign in to see their own lessons, quizzes, targets and feedback, with homework set and marked online.</p></div>
-    <div class="card"><h3>Reports and dashboards</h3><p>Progress reports for parents and carers from what's already recorded, and one page for leaders across every department.</p></div>
-    <div class="card"><h3>Your school or college's systems</h3><p>Class lists and attendance from your records system, your timetable from your calendar, and lessons sent into Moodle or Canvas.</p></div>
-  </div>
-  <p class="ai-note" style="color:inherit;opacity:.8">Sign in to see the whole roadmap, with dates, and vote. Dates are plans, not promises: the order follows the votes.</p>
-</div></section>
-<section class="band soft" id="how"><div class="wrap">
+<section class="band" id="how"><div class="wrap">
   <h2>How it works</h2>
-  <p class="sub">Four steps, and the first one you only do once.</p>
+  <p class="sub">Three steps, and the first one you only do once.</p>
   <ol class="steps">
-    <li><b>Add your subject</b><span>Upload the specification. Crafticulum reads the units and criteria, and you check what it found.</span></li>
-    <li><b>Describe the lesson</b><span>Write it in your own words, or pick the criteria. A full lesson comes back in a couple of minutes, and you can edit all of it.</span></li>
-    <li><b>Teach it and share it</b><span>Open the board in the classroom, give students the QR code, and download the documents you need.</span></li>
-    <li><b>Mark the work</b><span>If your head of department has switched on Second Marker, upload a learner's work and it's checked against the same criteria, with names and IDs hidden first.</span></li>
+    <li><b>Add your subject</b><span>Upload the specification and Crafticulum reads the units and criteria. No specification? Type your topics in.</span></li>
+    <li><b>Say what you're teaching</b><span>One sentence in your own words. The whole lesson comes back in about two minutes, and you can change any of it.</span></li>
+    <li><b>Teach it and share it</b><span>Put it on the board, download the PowerPoint, and give students a link or QR code.</span></li>
   </ol>
 </div></section>
 
+<section class="band soft" id="get-what"><div class="wrap">
+  <h2>What you get from one sentence</h2>
+  <p class="sub">Everything a lesson needs, ready to teach and yours to edit.</p>
+  <div class="duo">
+    <figure class="pic"><img src="assets/shot-board.webp?v=1" width="1600" height="1000" loading="lazy" alt="The classroom board showing a starter question with a five minute timer"><figcaption>A board for the classroom, with timers</figcaption></figure>
+    <figure class="pic"><img src="assets/shot-slide2.webp?v=1" width="1200" height="675" loading="lazy" alt="A PowerPoint slide of learning objectives made by Crafticulum"><figcaption>PowerPoint, on our template or yours</figcaption></figure>
+  </div>
+  <ul class="gets">
+    <li><b>A timed lesson plan</b><span>Starter, teaching, tasks and plenary, with timings.</span></li>
+    <li><b>Slides and documents</b><span>PowerPoint, worksheets and your lesson plan form.</span></li>
+    <li><b>Tasks at three levels</b><span>With success criteria and what to do if someone is stuck.</span></li>
+    <li><b>An exit quiz</b><span>Students answer on their phones. Share the results with made-up names.</span></li>
+    <li><b>A page for students</b><span>One link or QR code, no accounts.</span></li>
+    <li><b>The year planned</b><span>A sequence of lessons for each unit, and what's been taught.</span></li>
+  </ul>
+</div></section>
+
 <section class="band" id="who"><div class="wrap">
-  <div class="split"><div><h2>Who it's for</h2>
-  <p class="sub">Colleges, sixth forms, schools and training providers. If your course has a specification, it works.</p>
-  <p class="sub" style="margin-bottom:0">One person builds a lesson and the whole team can teach it, copy it and make it their own. Heads of department see what's planned, what's been taught and what's been marked.</p></div>
-  <figure class="shot" data-pic="team"><svg viewBox="0 0 400 300" role="img" aria-label="Drawing of three colleagues planning together around a laptop"><rect width="400" height="300" fill="#f3ecff"/><rect x="40" y="30" width="150" height="92" rx="10" fill="#fff" stroke="#d9c9fb" stroke-width="3"/><g fill="#e9defd"><rect x="54" y="46" width="26" height="20" rx="4"/><rect x="86" y="46" width="26" height="20" rx="4"/><rect x="118" y="46" width="26" height="20" rx="4"/><rect x="150" y="46" width="26" height="20" rx="4"/><rect x="54" y="74" width="26" height="20" rx="4"/><rect x="150" y="74" width="26" height="20" rx="4"/></g><rect x="86" y="74" width="26" height="20" rx="4" fill="var(--p)"/><rect x="118" y="74" width="26" height="20" rx="4" fill="#10b981"/><rect x="236" y="44" width="120" height="50" rx="14" fill="#fff" stroke="#d9c9fb" stroke-width="3"/><path d="M262 94l-6 16 22-16z" fill="#fff" stroke="#d9c9fb" stroke-width="3" stroke-linejoin="round"/><rect x="252" y="60" width="72" height="7" rx="3.5" fill="#c4b5fd"/><rect x="252" y="74" width="50" height="7" rx="3.5" fill="#ddd6fe"/><circle cx="90" cy="168" r="22" fill="#f2c9a5"/><path d="M52 262c0-38 16-60 38-60s38 22 38 60z" fill="#f59e0b"/><circle cx="200" cy="158" r="22" fill="#5b3a29"/><path d="M162 262c0-42 16-66 38-66s38 24 38 66z" fill="var(--p)"/><circle cx="310" cy="168" r="22" fill="#e0ac86"/><path d="M272 262c0-38 16-60 38-60s38 22 38 60z" fill="#10b981"/><rect x="20" y="246" width="360" height="54" rx="10" fill="#dccdfb"/><rect x="156" y="222" width="88" height="54" rx="6" fill="#0f172a"/><rect x="140" y="276" width="120" height="8" rx="4" fill="#334155"/><circle cx="200" cy="249" r="7" fill="#fff" opacity=".85"/></svg><figcaption>Plan the year as a team.</figcaption></figure></div>
+  <h2>Who it's for</h2>
   <div class="who">
-    <div class="card"><h3>Teachers</h3><ul><li>Open a lesson that's already built against the criteria</li><li>Teach from the board and share it with your class</li><li>Make your own copy and change it to suit your group</li></ul></div>
-    <div class="card"><h3>Heads of department and subject leaders</h3><ul><li>Add subjects from their specifications</li><li>Build lessons and plan the year</li><li>Sign off changes, and see what's been taught</li><li>Switch on Second Marker and set how it marks</li></ul></div>
-    <div class="card"><h3>Colleges and schools</h3><ul><li>Runs on your own web space, so your data stays with you</li><li>Sign in with Google, Microsoft or your own single sign-on</li><li>Your name, logo and colour, and a monthly limit on cost</li></ul></div>
-  </div>
-  <p class="note" style="margin-top:28px"><b>Good to know.</b> Lessons are written by Crafticulum AI. It is quick and usually right, but it can make mistakes, so a teacher should always read a lesson before teaching it. The same goes for marking: Second Marker suggests, and the assessor decides. Students don't have accounts, and you choose how long their names and answers are kept.</p>
-</div></section>
-
-<section class="band soft" id="faq"><div class="wrap">
-  <h2>Questions people ask</h2>
-  <div class="faq">
-    <details class="faq-i"><summary>Which subjects and levels does it work with?</summary><p>Any subject at any stage: early years, primary, secondary, sixth form, college, apprenticeships, adult learning, university or professional training, in England, Wales, Scotland or Northern Ireland. If there's a specification, upload it as a PDF and Crafticulum reads the units, learning aims and criteria from it for you to check before saving. If there isn't, add the subject and its topics by hand, so a lesson never needs an awarding organisation behind it.</p></details>
-    <details class="faq-i"><summary>Are the qualification details official?</summary><p>Units and criteria come from the specification you upload, and you check them before they're used. The lists of stages, levels and awarding organisations are a starting set, not an official register, and each subject shows as not verified until it has been matched to Ofqual's register (for England and Northern Ireland) or someone on your staff has recorded their own check.</p></details>
-    <details class="faq-i"><summary>Can learners be kept anonymous?</summary><p>Yes. Your institution's manager can switch on anonymous learners. Class lists then hold learner numbers, students handing in work give a number, and the server won't save a name.</p></details>
-    <details class="faq-i"><summary>What are AI Tools and Crafti?</summary><p>AI Tools is a set of tools for the everyday jobs around teaching, which grows as the roadmap is delivered: worksheets, quizzes, reports, emails, differentiated resources and leadership documents. Crafti is the assistant you can chat to. Both know your units and criteria, and everything they write is a draft for you to check and change. Your institution's manager chooses who can use each part.</p></details>
-<details class="faq-i"><summary>Who writes the lessons?</summary><p>Each lesson is drafted by Crafticulum AI against the criteria you picked. You can edit every part by hand, swap any part for a new idea, and run a fact check on the teaching content before you use it.</p></details>
-    <details class="faq-i"><summary>Where is our data kept?</summary><p>On your own web space. Lessons, planning, accounts and settings all stay on the server your college or school runs it on, with a daily backup.</p></details>
-    <details class="faq-i"><summary>Is learner work stored when it's marked?</summary><p>No. Second Marker never keeps learner work on the server. Names, IDs, email addresses, phone numbers and postcodes are swapped out before the work is checked, and you make every marking decision yourself.</p></details>
-    <details class="faq-i"><summary>How do students get their lessons?</summary><p>You share a link or a QR code. Students open the lesson page on a phone or a computer without an account, and each group can have a class page that collects everything you've shared with them.</p></details>
-    <details class="faq-i"><summary>How do staff sign in?</summary><p>With an email address and password, or with Google, Microsoft or your school or college's own single sign-on. Two-step codes from an authenticator app can be switched on for any account.</p></details>
-    <details class="faq-i"><summary>Can we use our own lesson plan and slides?</summary><p>Yes. Upload your lesson plan form and PowerPoint template once and every download is filled in on them.</p></details>
+    <div class="card"><h3>Teachers</h3><p>Build a lesson in minutes, then make it your own. Start free on your own.</p></div>
+    <div class="card"><h3>Heads of department</h3><p>Plan the year, share lessons with your team and see what's been taught.</p></div>
+    <div class="card"><h3>Schools and colleges</h3><p>Every department in one place, with your logo, your templates and your sign-in.</p></div>
   </div>
 </div></section>
 
-<section class="band" id="pricing" data-if-plans hidden><div class="wrap">
+<section class="band soft" id="pricing" data-if-plans hidden><div class="wrap">
   <h2>Pricing</h2>
-  <p class="sub">Start free and move up when you need more. Paid plans are monthly, with no contract: cancel whenever you like.</p>
+  <p class="sub">Start free and move up when you need more. Paid plans are monthly, with no contract.</p>
   <div class="plans" id="plans"></div>
   <p class="plans-note">A build is one thing Crafticulum AI writes for you: a lesson, a quiz, a set of slides or a fact check. Limits start again on the 1st of each month. Payments are taken securely by Stripe.</p>
 </div></section>
 
+<section class="band" id="faq"><div class="wrap">
+  <h2>Questions people ask</h2>
+  <div class="faq">
+    <details class="faq-i"><summary>Who writes the lessons?</summary><p>Crafticulum AI drafts each lesson against the criteria you picked. It is quick and usually right, but it can make mistakes, so read a lesson before you teach it. You can edit every part, swap any part for a new idea and run a fact check.</p></details>
+    <details class="faq-i"><summary>Which subjects and levels does it work with?</summary><p>Any subject at any stage, from primary to university, in England, Wales, Scotland or Northern Ireland. Upload the specification as a PDF and Crafticulum reads the units and criteria for you to check. If there isn't one, add your topics by hand.</p></details>
+    <details class="faq-i"><summary>What happens to learner data?</summary><p>Students don't have accounts. Class lists can hold learner numbers and no names, and learner names are never sent to the AI. When work is marked with Second Marker, names and IDs are swapped out first and the work isn't kept.</p></details>
+    <details class="faq-i"><summary>Can we use our own lesson plan and slides?</summary><p>Yes. Upload your lesson plan form and PowerPoint template once, and every download is filled in on them.</p></details>
+    <details class="faq-i" data-if-plans hidden><summary>Can I cancel?</summary><p>Yes, at any time from your Plan and billing page. You keep the plan until the end of the month you've paid for, then move to Free. Nothing you've made is deleted.</p></details>
+    <details class="faq-i"><summary>How do staff sign in?</summary><p>With an email address and password, or with Google or Microsoft. A whole school or college can use its own single sign-on.</p></details>
+  </div>
+</div></section>
+
 <section class="band" id="get"><div class="wrap"><div class="get">
-  <h2>How to get it</h2>
-  <p data-no-plans>Crafticulum is set up for your college or school on its own web space. Get in touch and we'll talk through what you teach and how to get your team started. If your organisation already has it, ask your head of department for an account, or register on the sign-in page.</p>
-  <p data-if-plans hidden>Sign up and you can build your first lesson in a couple of minutes, with no card needed. For a whole college or school, get in touch and we'll talk through what you teach and how to get your team started. If your organisation already has it, ask your head of department to add you.</p>
-  <div class="cta"><a class="btn btn-w" href="contact.html?about=enquiry">Get in touch</a><a class="btn btn-g" data-demo hidden href="#">Try the demo</a><a class="btn btn-g" href="app.html">Sign in or register</a></div>
+  <h2 data-if-plans hidden>Build your first lesson now</h2><h2 data-no-plans>Get Crafticulum for your team</h2>
+  <p data-if-plans hidden>Free to start, no card needed. For a whole school or college, get in touch and we'll help you set up your team.</p>
+  <p data-no-plans>Get in touch and we'll talk through what you teach and how to get your team started. If your organisation already has it, sign in or ask your head of department for an account.</p>
+  <div class="cta"><a class="btn btn-w btn-lg" data-no-plans href="contact.html?about=enquiry">Get in touch</a><a class="btn btn-w btn-lg" data-if-plans hidden href="app.html?start=free">Start free</a><a class="btn btn-g" data-if-plans hidden href="contact.html?about=enquiry">Talk to us about your school</a><a class="btn btn-g" data-no-plans href="app.html">Sign in or register</a></div>
 </div></div></section>
 </main>
 <footer><div class="wrap"><span>&copy; <span data-year></span> Crafticulum</span>
-<nav aria-label="Legal"><a href="./">About</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="contact.html">Contact</a><a href="app.html">Sign in</a></nav></div></footer>
+<nav aria-label="Legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="contact.html">Contact</a><a href="app.html">Sign in</a></nav></div></footer>
 <script src="pages.js?v=9"></script>
 </body>
 </html>
