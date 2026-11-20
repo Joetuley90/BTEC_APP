@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v123, 20 Nov 2026: Open lesson shows the lesson on its own, full width; share quiz results with the class under made-up names, with the questions most got wrong and tips for next time). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v123.zip` and `crafticulum-release.zip`: the same files as one zip (1,962,582 bytes).
+- `crafticulum/`: every file of the current release (v124, 20 Nov 2026: the super admin bar stays on screen and works with one institution, so the super admin can always step out and stands outside every institution; Open lesson on its own; quiz results for the class). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v124.zip` and `crafticulum-release.zip`: the same files as one zip (1,963,569 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

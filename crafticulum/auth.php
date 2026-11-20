@@ -592,7 +592,7 @@ if ($action === 'houseget' || $action === 'houseset') {
 if ($action === 'leave') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
     unset($_SESSION['inside'], $_SESSION['dept']);
-    if (isset($a['users'][$me['email']]['dept']) || isset($a['users'][$me['email']]['also'])) { unset($a['users'][$me['email']]['dept'], $a['users'][$me['email']]['also']); ccSaveAccounts($a); }
+    if (isset($a['users'][$me['email']]['dept']) || isset($a['users'][$me['email']]['also']) || empty($a['saOutside'])) { unset($a['users'][$me['email']]['dept'], $a['users'][$me['email']]['also']); $a['saOutside'] = true; ccSaveAccounts($a); }
     out(200, ['me' => ccPublic(ccMe())]);
 }
 $selfOk = $me['email'] !== 'admin@password';

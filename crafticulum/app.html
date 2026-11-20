@@ -1411,6 +1411,9 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v124: the super admin bar stays on screen while the page scrolls */
+html body.sa-in #saBar{position:sticky;top:0;z-index:1040;height:var(--demo-h,48px);overflow:hidden}
+html body.sa-in:not(.mnav-open) .side,html body.sa-in .topbar{top:var(--demo-h,48px)}
 /* v123: a lesson opened from Planning or the Library, on its own */
 @media (min-width:992px){ body.ls-focus .app-main > .row > .col-lg-5.col-xl-4{display:none!important} body.ls-focus .app-main > .row > .col-lg-7.col-xl-8{flex:0 0 100%;max-width:100%;width:100%} body.ls-focus .app-main{max-width:1180px;margin:0 auto} }
 .lsf-bar{display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem}
@@ -10698,7 +10701,7 @@ renderHome = function(){ const r = _renderHome35.apply(this, arguments);
 
 /* ===== round 33: the super admin stands outside every institution. They step inside one to work in it, and step back out again ===== */
 const saOut = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside === false;
-const saIn = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside !== false && typeof meInfo !== "undefined" && !!meInfo && (meInfo.colleges || []).length > 1;
+const saIn = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin" && me.inside !== false;
 function saGroups(){ try{ const g = k => ST_GROUPS.find(x => x[0] === k)[2], c = g("college"), s = g("site"); [c, s].forEach(a => { const i = a.indexOf("stUsage"); if(i >= 0) a.splice(i, 1); }); if(saOut()) s.splice(1, 0, "stUsage"); else c.splice(c.indexOf("stPlan") + 1, 0, "stUsage"); }catch{} }
 function saPaint(){
   const out = saOut(), inn = saIn(), b = document.body; b.classList.toggle("sa-out", out); b.classList.toggle("sa-in", inn); let bar = $("#saBar");
@@ -13861,6 +13864,17 @@ render = function(){ const r = _render73.apply(this, arguments);
   try{ const on = lsFocusOn(); document.body.classList.toggle("ls-focus", on); const o = $("#out"), old = $("#lsfBar"); if(old && (!on || old.parentElement !== o)) old.remove();
     if(on && o && !$("#lsfBar")) o.insertAdjacentHTML("afterbegin", `<div id="lsfBar" class="lsf-bar">${lsFrom === "seq" ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-nav="seq" id="lsfBack"><span aria-hidden="true">←</span> Back to Planning</button>` : ""}<button type="button" class="btn btn-sm btn-outline-primary ms-auto" data-lsf id="lsfNew">New lesson</button></div>`); }catch(e){ console.error(e); }
   return r; };
+
+/* ===== round 74 (v124): the super admin isn't one of an institution's people, so nothing on the page calls it theirs. Inside one, "Your institution" reads "This institution"
+   (the manager still sees "Your institution"). Only what's on screen is reworded; nothing is saved differently. ===== */
+const nmOn = () => { try{ return !window.claude && !!me && me.role === "superadmin"; }catch{ return false; } };
+function nmFix(root){ if(!root || !nmOn()) return; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hit = [];
+  while(w.nextNode()){ const n = w.currentNode; if(/your (institution|college)/i.test(n.nodeValue) && !(n.parentElement && n.parentElement.closest("textarea, [contenteditable='true'], script, style"))) hit.push(n); }
+  hit.forEach(n => { n.nodeValue = n.nodeValue.replace(/\bYour (institution|college)/g, "This $1").replace(/\byour (institution|college)/g, "this $1"); });
+  root.querySelectorAll("[placeholder*='our institution'], [aria-label*='our institution'], [title*='our institution']").forEach(el => ["placeholder", "aria-label", "title"].forEach(a => { const v = el.getAttribute(a); if(v && /your institution/i.test(v)) el.setAttribute(a, v.replace(/\bYour institution/g, "This institution").replace(/\byour institution/g, "this institution")); })); }
+(() => { let t = 0; const go = () => { t = 0; try{ nmFix(document.querySelector(".app") || document.body); }catch(e){ console.error(e); } };
+  const start = () => { const root = document.querySelector(".app") || document.body; if(!root) return; new MutationObserver(() => { if(!t && nmOn()) t = setTimeout(go, 60); }).observe(root, {childList: true, subtree: true, characterData: true}); go(); };
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else setTimeout(start, 0); })();
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

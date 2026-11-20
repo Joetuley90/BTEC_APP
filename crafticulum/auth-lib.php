@@ -244,7 +244,7 @@ function ccMe(): ?array {
     $u['email'] = $uid;
     if ($u['role'] === 'superadmin') {
         // the super admin belongs to no institution. With more than one institution on the site they stand outside all of them until they choose to work inside one
-        $u['inside'] = count(ccCollegeIds($a)) < 2 || !empty($_SESSION['inside']);
+        $u['inside'] = !empty($_SESSION['inside']) || (count(ccCollegeIds($a)) < 2 && empty($a['saOutside']));   /* a site with one institution starts with them inside it; once they step out, they stand outside like on any other site */
         $d = $u['inside'] ? (string) ($_SESSION['dept'] ?? ($u['dept'] ?? '')) : '';
         if (!isset($a['depts'][$d])) $d = (string) array_key_first($a['depts']);
         $u['dept'] = $d;
