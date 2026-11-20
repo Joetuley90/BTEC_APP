@@ -2094,4 +2094,22 @@ VERSION 129: ONE DEPARTMENT SWITCHER, AND RENAME A SUBJECT
   Built-in subjects can't be renamed.
 - Take a backup before the first rename on the live site.
 
+VERSION 130: THE TEAM LIVES WITH THE DEPARTMENT, AND PROFILE PAGES
+- Our team has left the menu. Settings, Department now opens with Our team:
+  the people in the department you're in, as photo tiles. "Everyone in the
+  institution" opens the full page with search and filters.
+- A profile is a page of its own, not a pop-up, at
+  /<institution>/team/<name>, for example /midkent/team/joetuley. The
+  address is made from the institution's name and the person's name.
+- Signed-in colleagues from the same institution see the profile with how to
+  reach the person. Anyone else sees "This profile is private" unless that
+  person has switched on "Make my profile public" (Settings, Department, Our
+  team). A public profile shows name, photo, role, departments, what they
+  teach and qualifications. It never shows email, phone, room or status.
+- Team: the department box is now a pick-several list. Tick every department
+  someone works in, choose which is their main one, and set their role in
+  the others. This replaces the "Also in" link.
+- Admin, Institutions: "Institutions set up twice" has been removed.
+- NEW FILE: profile.php, and two new lines in .htaccess. Upload .htaccess.
+
 NO CHANGES TO config.php

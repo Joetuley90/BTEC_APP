@@ -371,6 +371,16 @@ function ccPerms(array $u): array {
 /* with a client secret, Google sign-in goes to Google and comes back (the same round trip as Microsoft). Without one it uses Google's pop-up button. */
 function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) ccConf('GOOGLE_CLIENT_SECRET')) : ''; }
 /* a photo someone uploaded beats the one from their Google account */
+/* addresses for profile pages: /<institution>/team/<person>. Made from the names, so they read well, and kept unique */
+function ccSlugify(string $s): string { $s = strtolower((string) @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s)); return trim((string) preg_replace('/[^a-z0-9]+/', '-', $s), '-'); }
+function ccCollegeSlugs(array $a): array { $out = []; $used = []; $ids = ccCollegeIds($a); sort($ids);
+    foreach ($ids as $id) { $name = (string) (ccCollege($a, (string) $id)['name'] ?? ''); $full = ccSlugify($name); $short = trim((string) preg_replace('/(^|-)(the|college|school|academy|university|sixth-form|institute|of)(?=-|$)/', '', $full), '-'); $short = (string) preg_replace('/-+/', '-', $short);
+        $sl = $short !== '' ? $short : ($full !== '' ? $full : 'team'); if (in_array($sl, ['team', 'assets', 'quiz', 'marker', 'data', 's', 'r'], true)) $sl = $full !== '' && $full !== $sl ? $full : 'inst-' . $sl; $b = $sl; $n = 2; while (isset($used[$sl])) $sl = $b . '-' . $n++; $used[$sl] = 1; $out[(string) $id] = $sl; }
+    return $out; }
+function ccPersonSlugs(array $a, string $college): array { $out = []; $used = []; $sup = ccSupers(); $es = array_keys($a['users']); sort($es);
+    foreach ($es as $e) { $u = $a['users'][$e]; if (!is_array($u) || !ccActive($u) || !empty($u['demo']) || in_array((string) $e, $sup, true)) continue; $d = (string) ($u['dept'] ?? ''); if (!isset($a['depts'][$d]) || ccCollegeOf($a, $d) !== $college) continue;
+        $sl = str_replace('-', '', ccSlugify((string) (($u['name'] ?? '') ?: explode('@', (string) $e)[0]))); if ($sl === '') $sl = 'staff'; $b = $sl; $n = 2; while (isset($used[$sl])) $sl = $b . $n++; $used[$sl] = 1; $out[(string) $e] = $sl; }
+    return $out; }
 function ccPhotoFile(string $email): string { return ccDataDir() . '/u/' . sha1(strtolower($email)) . '/photo.jpg'; }
 function ccPhotoUrl(string $email, string $fallback = ''): string { $f = ccPhotoFile($email); return is_file($f) ? 'photo.php?u=' . sha1(strtolower($email)) . '&v=' . filemtime($f) : $fallback; }
 /* the other departments someone belongs to, beside their own: id => role there. Only ones in the same institution that still exist count */

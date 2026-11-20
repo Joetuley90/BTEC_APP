@@ -250,6 +250,7 @@ if ($action === 'mgrdash') {   // a manager's overview: each department's lesson
 }
 if ($action === 'directory') {   // everyone in the institution, as colleagues see them: no classes, lessons or verification here
     $col = ccCollegeOf($acc, (string) $dept); $boss = in_array($me['role'], ['superadmin', 'owner'], true); $ys = (date('n') >= 9 ? (int) date('Y') : (int) date('Y') - 1) . '-09-01';
+    $slugs = ccPersonSlugs($acc, $col); $cslug = ccCollegeSlugs($acc)[$col] ?? '';
     $people = []; $who = $acc['users']; foreach (ccSupers() as $e) unset($who[$e]);
     foreach ($who as $e => $u) { if (!is_array($u) || !ccActive($u) || !empty($u['demo'])) continue; $ud = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$ud]) || ccCollegeOf($acc, $ud) !== $col) continue;
         $ab = ccAboutOf($base, (string) $e, $u) ?? [];
@@ -257,10 +258,11 @@ if ($action === 'directory') {   // everyone in the institution, as colleagues s
         foreach (['headline', 'pronouns', 'status', 'room', 'phone', 'hours'] as $k) $row[$k] = (string) ($ab[$k] ?? '');
         foreach (['skills', 'held', 'campuses'] as $k) $row[$k] = array_values((array) ($ab[$k] ?? []));
         if ($boss || (!empty($me['isLead']) && $ud === (string) $dept)) { $h = 0; foreach ((array) ($ab['cpd'] ?? []) as $c) if (is_array($c) && (string) ($c['d'] ?? '') >= $ys) $h += (float) ($c['h'] ?? 0); $row['cpdHours'] = round($h, 1); }
+        $row['slug'] = (string) ($slugs[(string) $e] ?? ''); $row['also'] = array_map('strval', array_keys(ccAlso($acc, $u))); $row['public'] = !empty($ab['public']);
         $people[] = $row; }
     usort($people, fn($x, $y) => strcasecmp($x['name'], $y['name']));
     $depts = []; foreach (ccCollegeDepts($acc, $col) as $d) $depts[] = ['id' => (string) $d, 'name' => (string) ($acc['depts'][$d]['name'] ?? '')];
-    out(200, ['people' => $people, 'depts' => $depts, 'cpd' => $boss || !empty($me['isLead'])]);
+    out(200, ['people' => $people, 'depts' => $depts, 'cpd' => $boss || !empty($me['isLead']), 'cslug' => $cslug, 'mine' => (string) $dept]);
 }
 if ($action === 'staffme') {   // your own profile: the bits only you can say about yourself
     if (!empty($me['demo'])) out(403, ['error' => 'demo']);
@@ -272,8 +274,16 @@ if ($action === 'staffme') {   // your own profile: the bits only you can say ab
     $bio = mb_substr(trim(str_replace("\r", '', (string) ($body['bio'] ?? ''))), 0, 800);
     $ab = ['headline' => $t('headline', 80), 'pronouns' => $t('pronouns', 30), 'bio' => $bio, 'phone' => $t('phone', 40), 'room' => $t('room', 60), 'hours' => $t('hours', 140), 'campuses' => $list('campuses', 6, 40), 'skills' => $list('skills', 12, 40), 'held' => $list('held', 12, 60), 'link' => $link, 'status' => in_array((string) ($body['status'] ?? ''), ['in', 'class', 'away', 'wfh'], true) ? (string) $body['status'] : '', 'cpd' => $cpd, 'at' => time()];
     $d = $base . '/u/' . sha1($me['email']); if (!is_dir($d)) @mkdir($d, 0700, true);
+    $was = json_decode((string) @file_get_contents($d . '/_about.json'), true); if (is_array($was) && !empty($was['public'])) $ab['public'] = true;
     if (@file_put_contents($d . '/_about.json', json_encode($ab, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false) out(500, ['error' => 'write']);
     out(200, ['ok' => true, 'about' => $ab]);
+}
+if ($action === 'staffpublic') {   // your choice: can someone who isn't signed in see your profile page
+    if (!empty($me['demo']) || $me['role'] === 'superadmin') out(403, ['error' => 'noperm']);
+    $d = $base . '/u/' . sha1($me['email']); if (!is_dir($d)) @mkdir($d, 0700, true); $ab = json_decode((string) @file_get_contents($d . '/_about.json'), true); if (!is_array($ab)) $ab = [];
+    if (!empty($body['public'])) $ab['public'] = true; else unset($ab['public']);
+    if (@file_put_contents($d . '/_about.json', json_encode($ab, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false) out(500, ['error' => 'write']);
+    out(200, ['ok' => true, 'public' => !empty($ab['public'])]);
 }
 if ($action === 'staff') {
     $em = strtolower(trim((string) ($body['email'] ?? ''))) ?: $me['email']; $u = $acc['users'][$em] ?? null; $self = $em === $me['email'];

@@ -1411,6 +1411,19 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v130: our team on the Department page, and the pick-several department box */
+#out .ot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:0}
+#out .ot-card{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:16px 10px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);color:var(--bs-body-color);text-decoration:none;height:100%;transition:border-color .15s,transform .15s}
+#out .ot-card:hover{border-color:var(--cc-primary);transform:translateY(-2px)}#out .ot-card:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+#out .ot-av{width:72px;height:72px;font-size:1.4rem;margin-bottom:4px}
+#out .ot-name{font-weight:700;line-height:1.2;overflow-wrap:anywhere}#out .ot-role{font-size:.8rem;color:var(--cc-muted);line-height:1.25}
+#out .ot-pub{margin-top:16px;padding:12px 14px;border:1px solid var(--cc-line);border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 5%,var(--cc-surface))}
+#out .dm{position:relative;min-width:170px}#out .dm-btn{text-align:left;white-space:normal;height:auto;min-height:34px;cursor:pointer}
+#out .dm-panel{position:static;margin-top:6px;min-width:280px;max-width:min(92vw,380px);padding:12px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);box-shadow:0 16px 40px -12px rgba(15,23,42,.45)}
+#out .dm-h{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-muted);margin-bottom:6px}
+#out .dm-row{display:flex;gap:8px;align-items:center;min-height:40px;border-top:1px solid var(--cc-line);padding:4px 0}#out .dm-role{width:auto}
+#out .dm-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;border-top:1px solid var(--cc-line);padding-top:10px;margin-top:2px}#out .dm-foot span{flex:1 1 100%}
+@media (max-width:575.98px){ #out .dm-panel{position:static;min-width:0;box-shadow:none;margin-top:6px} }
 /* v129: the department switcher under the logo */
 .side .dept-switch{display:flex;flex-direction:column;gap:3px;margin:-8px 0 -6px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--cc-primary) 30%,var(--cc-line));border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 6%,var(--cc-surface))}
 .side .dept-switch .ds-l{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cc-muted);margin:0}
@@ -14158,6 +14171,77 @@ document.addEventListener("change", e => { if(!e.target || e.target.id !== "dsPi
   /* a lesson belongs to the department it was built in, so leave it for the list; every other page comes back as it was */
   try{ if(view === "lesson" && current && !current.example) history.replaceState(null, "", (CC_ROUTES && CC_ROUTES.seq) || location.pathname); }catch{}
   colSwitch(v); });
+
+/* ===== round 83 (v130): the team lives with the department. Our team is a section on Settings, Department (the page is still there for searching the whole institution);
+   a person's profile is a page of its own at /<institution>/team/<name>, not a pop-up, and each person chooses whether people who aren't signed in can see theirs.
+   In Team, the department box is a pick-several list for people who work across departments. Institutions set up twice has gone from Admin. ===== */
+/* ---------- Admin: Institutions set up twice is gone ---------- */
+(() => { try{ const g = AD_GROUPS.find(x => x[0] === "overview"); if(g) g[2] = g[2].filter(id => id !== "stMerge"); AD_IDS.add("stMerge"); }catch{} })();
+try{ if(typeof mgLoad === "function"){ mgLoad = function(){ mgInfo = {dupes: [], colleges: []}; }; mgInfo = {dupes: [], colleges: []}; } }catch{}
+const tpTourTidy = () => { try{ for(let i = TOUR.length - 1; i >= 0; i--) if(/stMerge|sideTeam/.test(TOUR[i].sel || "") || /set up twice/i.test(TOUR[i].h || "")) TOUR.splice(i, 1); }catch{} }; tpTourTidy(); setTimeout(tpTourTidy, 0); setTimeout(tpTourTidy, 1500);
+const _stLayout83a = stLayout;
+stLayout = function(){ try{ const m = $("#stMerge"); if(m) m.remove(); document.querySelectorAll('.st-subs a[href="#stMerge"], .st-subs [data-stgo="stMerge"]').forEach(x => x.remove()); }catch{} return _stLayout83a.apply(this, arguments); };
+/* ---------- profile pages ---------- */
+const tpUrl = p => (tmInfo && tmInfo.cslug && p && p.slug) ? ccRoot() + tmInfo.cslug + "/team/" + p.slug : "";
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest(".tm-open[data-sp], [data-tp]"); if(!b || window.claude) return; const em = b.dataset.tp || b.dataset.sp, p = ((tmInfo && tmInfo.people) || []).find(x => x.email === em), u = tpUrl(p); if(!u) return;
+  e.preventDefault(); e.stopPropagation(); location.href = u; }, true);
+/* ---------- Our team, on Settings, Department ---------- */
+try{ const t = ST_GROUPS.find(g => g[0] === "teaching"); if(t && !t[2].includes("stOurTeam")) t[2].unshift("stOurTeam"); }catch{}
+function otHtml(sec){ if(window.claude || !me || (typeof saOut === "function" && saOut())) return "";
+  if(!tmInfo){ try{ tmLoad(); }catch{} return sec("stOurTeam", "Our team", "The people in this department.", `<p class="small text-body-secondary mb-0">Loading the team...</p>`); }
+  const mine = tmInfo.mine || me.dept, P = (tmInfo.people || []).filter(p => p.dept === mine || (p.also || []).includes(mine)), dn = ((tmInfo.depts || []).find(d => d.id === mine) || {}).name || "this department", self = (tmInfo.people || []).find(p => p.email === me.email);
+  const order = {owner: 0, hod: 1, teacher: 2}; P.sort((a, b) => (order[a.role] ?? 3) - (order[b.role] ?? 3) || a.name.localeCompare(b.name));
+  const tile = p => { const init = (p.name || p.email).split(/\s+/).map(x => x[0]).slice(0, 2).join("").toUpperCase(), st = SP_STATUS[p.status];
+    return `<li><a class="ot-card" href="${esc(tpUrl(p))}" data-tp="${esc(p.email)}"><span class="sp-av ot-av">${spAvatar(p.picture, init)}</span><span class="ot-name">${esc(p.name)}</span><span class="ot-role">${esc(p.headline || SP_ROLE[p.role] || "Teacher")}</span>${st ? `<span class="sp-status sp-s-${st[1]}">${esc(st[0])}</span>` : ""}</a></li>`; };
+  return sec("stOurTeam", "Our team", `The people in ${esc(dn)}. Pick someone to open their profile page.`, `
+    ${P.length ? `<ul class="list-unstyled ot-grid">${P.map(tile).join("")}</ul>` : `<p class="small text-body-secondary">Nobody has been added to ${esc(dn)} yet.</p>`}
+    <div class="d-flex flex-wrap gap-2 align-items-center mt-3"><button type="button" class="btn btn-sm btn-outline-primary" data-ot="all">Everyone in the institution</button><button type="button" class="btn btn-sm btn-outline-secondary" data-sp="${esc(me.email)}">Edit my profile</button>${me.canTeam || me.isLead || me.role === "owner" || me.role === "superadmin" ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-stgo="stTeam">Add or change people</button>` : ""}</div>
+    ${self && self.slug ? `<div class="ot-pub"><div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" role="switch" id="otPublic" ${self.public ? "checked" : ""}><label class="form-check-label fw-semibold" for="otPublic">Make my profile public</label></div>
+      <div class="small text-body-secondary">Your profile page is <a href="${esc(tpUrl(self))}">${esc(location.host + tpUrl(self))}</a>. Colleagues who are signed in can always see it. Switched on, anyone with that address sees your name, photo, role, department, what you teach and your qualifications, and never your email, phone, room or where you are today.</div></div>` : ""}`); }
+const _accountSections83 = accountSections;
+accountSections = function(sec){ let h = _accountSections83.apply(this, arguments); try{ h += otHtml(sec); }catch(e){ console.error(e); } return h; };
+const _tmLoad83 = tmLoad;
+tmLoad = async function(){ const had = !!tmInfo, r = await _tmLoad83.apply(this, arguments); try{ if(!had && tmInfo && view === "settings" && stTab === "teaching") renderSettings(); }catch{} return r; };
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-ot]"); if(b && b.dataset.ot === "all") setView("team"); });
+document.addEventListener("change", async e => { if(!e.target || e.target.id !== "otPublic") return; const on = e.target.checked; e.target.disabled = true;
+  try{ const r = await storeCall("staffpublic", {public: on}); const s = (tmInfo.people || []).find(p => p.email === me.email); if(s) s.public = !!r.public; toast(r.public ? "Your profile is public." : "Your profile is for colleagues only."); }catch{ toast("Couldn't save that. Try again.", {bad: true}); }
+  renderSettings(); });
+/* the menu no longer has Our team: it is on Settings, Department, and search still finds it */
+const _syncShell83 = syncShell;
+syncShell = function(){ const r = _syncShell83.apply(this, arguments); try{ const b = $("#sideTeam"); if(b) b.hidden = true; }catch{} return r; };
+/* the team page says where it now lives, and has a way back */
+const _tmHtml83 = tmHtml;
+tmHtml = function(){ let h = _tmHtml83.apply(this, arguments); try{ h = h.replace('<div class="tm-head">', `<div class="mb-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-ot="dept"><span aria-hidden="true">←</span> Back to my department</button></div><div class="tm-head">`); }catch{} return h; };
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest('[data-ot="dept"]'); if(b) goSection("settings", "stOurTeam"); });
+/* ---------- Team: one box for every department someone works in ---------- */
+let dmOpen = "", dmSt = null;
+function dmDraw(){ const box = $("#stTeam"); if(!box || !team || !team.team || !me || (me.role !== "superadmin" && me.role !== "owner")) return; const depts = team.depts || [];
+  box.querySelectorAll('select[data-tm="dept"]').forEach(s => { const u = team.team.find(x => x.email === s.dataset.em); if(!u || u.role === "owner") return; const col = (depts.find(d => d.id === u.dept) || {}).college, D = depts.filter(d => d.college === col); if(D.length < 2) return;
+    const td = s.parentElement; td.querySelectorAll(".dm, .also").forEach(x => x.remove()); s.hidden = true; s.setAttribute("aria-hidden", "true");
+    const al = u.also || {}, names = [u.dept, ...Object.keys(al)].map(id => (D.find(d => d.id === id) || {}).name).filter(Boolean), open = dmOpen === u.email, st = open ? dmSt : null;
+    td.insertAdjacentHTML("beforeend", `<div class="dm" data-em="${esc(u.email)}"><button type="button" class="form-select form-select-sm dm-btn" data-dm="open" aria-expanded="${open}" aria-label="Departments for ${esc(u.name || u.email)}">${esc(names.join(", "))}</button>
+      ${open ? `<div class="dm-panel" role="group" aria-label="Departments"><div class="dm-h">Tick every department they work in</div>${D.map(d => { const on = st.in.has(d.id), main = st.main === d.id; return `<div class="dm-row"><label class="form-check mb-0 flex-grow-1"><input class="form-check-input" type="checkbox" data-dm-d="${esc(d.id)}" ${on ? "checked" : ""}><span class="form-check-label">${esc(d.name)}</span></label>${on ? (main ? `<span class="badge text-bg-primary">Main</span>` : `<select class="form-select form-select-sm dm-role" data-dm-r="${esc(d.id)}" aria-label="Role in ${esc(d.name)}"><option value="teacher" ${st.role[d.id] !== "hod" ? "selected" : ""}>Teacher</option><option value="hod" ${st.role[d.id] === "hod" ? "selected" : ""}>Head of dept</option></select><button type="button" class="btn btn-link btn-sm p-0" data-dm-main="${esc(d.id)}">Make main</button>`) : ""}</div>`; }).join("")}
+        <div class="dm-foot"><span class="small text-body-secondary">Main is where they start when they sign in.</span><button type="button" class="btn btn-sm btn-outline-secondary" data-dm="cancel">Cancel</button><button type="button" class="btn btn-sm btn-primary" data-dm="save">Save</button></div></div>` : ""}</div>`); }); }
+const _stLayout83 = stLayout;
+stLayout = function(){ const r = _stLayout83.apply(this, arguments); try{ dmDraw(); }catch(e){ console.error(e); } return r; };
+document.addEventListener("click", async e => { const t = e.target, w = t.closest && t.closest(".dm"); if(!w){ if(dmOpen && !(t.closest && t.closest(".dm-panel"))){ dmOpen = ""; dmSt = null; dmDraw(); } return; }
+  const em = w.dataset.em, u = team.team.find(x => x.email === em); if(!u) return;
+  if(t.closest('[data-dm="open"]')){ if(dmOpen === em){ dmOpen = ""; dmSt = null; } else { dmOpen = em; dmSt = {main: u.dept, in: new Set([u.dept, ...Object.keys(u.also || {})]), role: Object.assign({}, u.also || {})}; } return dmDraw(); }
+  if(t.closest('[data-dm="cancel"]')){ dmOpen = ""; dmSt = null; return dmDraw(); }
+  const mk = t.closest("[data-dm-main]"); if(mk && dmSt){ dmSt.main = mk.dataset.dmMain; return dmDraw(); }
+  if(t.closest('[data-dm="save"]') && dmSt){ const st = dmSt, also = {}; st.in.forEach(id => { if(id !== st.main) also[id] = st.role[id] === "hod" ? "hod" : "teacher"; });
+    try{ if(st.main !== u.dept) team = await authCall("userset", {email: em, dept: st.main}); const j = await authCall("useralso", {email: em, also}); if(j.team) team = j; toast("Departments saved."); dmOpen = ""; dmSt = null; try{ tmInfo = null; }catch{} }
+    catch(err){ toast((typeof TEAM_ERR !== "undefined" && TEAM_ERR[err && err.code]) || "Couldn't save that. Try again.", {bad: true}); }
+    renderSettings(); } });
+document.addEventListener("change", e => { const t = e.target; if(!dmSt || !t.dataset) return;
+  if(t.dataset.dmD){ const id = t.dataset.dmD; if(t.checked) dmSt.in.add(id); else { if(dmSt.in.size < 2){ t.checked = true; return toast("They need at least one department."); } dmSt.in.delete(id); if(dmSt.main === id) dmSt.main = [...dmSt.in][0]; } e.stopPropagation(); dmDraw(); }
+  else if(t.dataset.dmR){ dmSt.role[t.dataset.dmR] = t.value; e.stopPropagation(); } }, true);
+/* a profile page's "Open their staff record" and "Edit my profile" come back here: /our-team?who=<name> opens that person's record */
+const _tmLoad83b = tmLoad;
+tmLoad = async function(){ const r = await _tmLoad83b.apply(this, arguments); try{ const who = new URLSearchParams(location.search).get("who"); if(who && tmInfo){ const p = (tmInfo.people || []).find(x => x.slug === who); history.replaceState(history.state, "", location.pathname); if(p) spOpen(p.email); } }catch{} return r; };
+/* the guide re-adds the super admin's steps each time it starts: take the removed page's step out for good */
+const _tourGo83 = tourGo;
+tourGo = function(){ const r = _tourGo83.apply(this, arguments); try{ for(let i = TOUR.length - 1; i >= 0; i--) if(/stMerge|sideTeam/.test(TOUR[i].sel || "")){ TOUR[i].sa = 0; TOUR[i].acc = 0; TOUR.splice(i, 1); } if(typeof tourL !== "undefined" && Array.isArray(tourL)) for(let i = tourL.length - 1; i >= 0; i--) if(/stMerge|sideTeam/.test(tourL[i].sel || "") && i !== tourI) tourL.splice(i, 1); }catch{} return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
