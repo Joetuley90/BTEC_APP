@@ -42,6 +42,10 @@ AddType application/manifest+json .webmanifest
   # the app and its pages
   RewriteRule ^(app|signin|this-week|lessons|planning|results|second-marker|ai-tools|assistant|library|learners|roadmap|our-team|admin|settings)$ app.html [L]
 
+  # a member of staff's profile page, and the team it belongs to
+  RewriteRule ^([a-z0-9-]+)/team/([a-z0-9-]+)/?$ profile.php?c=$1&p=$2 [L,QSA]
+  RewriteRule ^([a-z0-9-]+)/team/?$ our-team [R=302,L]
+
   # a student's lesson or class page
   RewriteRule ^s/([A-Za-z0-9]+)$ page.php?p=student&id=$1 [L,QSA]
 </IfModule>
