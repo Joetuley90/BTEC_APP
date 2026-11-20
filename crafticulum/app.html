@@ -4556,7 +4556,7 @@ function srvRow(d){
 /* Task sheets as a Word document: one A4 page per task, standard or support version. */
 async function buildSheetsDocx(JSZip, d, version){
   const X = s => String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  const ACCENT = "5B3FD6", MUTED = "5D5878";
+  const ACCENT = "4F46E5", MUTED = "475569";
   const run = (t, o={}) => `<w:r><w:rPr>${o.bold?"<w:b/>":""}${o.italic?"<w:i/>":""}${o.color?`<w:color w:val="${o.color}"/>`:""}${o.size?`<w:sz w:val="${o.size*2}"/><w:szCs w:val="${o.size*2}"/>`:""}</w:rPr><w:t xml:space="preserve">${X(t)}</w:t></w:r>`;
   const para = (runs, o={}) => {
     const ppr = [
@@ -8734,7 +8734,7 @@ async function customPlanDoc(d){
   return zip.generateAsync({type: "blob", compression: "DEFLATE", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
 }
 async function customDeck(d, opts){
-  const zip = await JSZip.loadAsync(tplNow.pptx ? await tplBytes("pptx") : await (await fetch("assets/tpl-plain.pptx?v=1")).arrayBuffer()), vals = tplValues(d), NOF = {createFolders: false};
+  const zip = await JSZip.loadAsync(tplNow.pptx ? await tplBytes("pptx") : await (await fetch("assets/tpl-plain.pptx?v=2")).arrayBuffer()), vals = tplValues(d), NOF = {createFolders: false};
   const pres = await zip.file("ppt/presentation.xml").async("string"), prel = await zip.file("ppt/_rels/presentation.xml.rels").async("string");
   const relOf = {}; prel.replace(/<Relationship\b[^>]*>/g, m => { const id = (m.match(/Id="([^"]+)"/) || [])[1], tg = (m.match(/Target="([^"]+)"/) || [])[1]; if(id && /slides\/slide\d+\.xml$/.test(tg || "")) relOf[id] = tg.replace(/^\/?ppt\//, "").replace(/^\//, ""); return m; });
   const order = []; (pres.match(/<p:sldIdLst>[\s\S]*?<\/p:sldIdLst>/) || [""])[0].replace(/<p:sldId\b[^>]*r:id="([^"]+)"[^>]*\/>/g, (m, id) => { if(relOf[id]) order.push(relOf[id]); return m; });
@@ -8772,9 +8772,12 @@ document.addEventListener("click", async e => {   // the lesson plan form: the i
   catch(err){ console.error(err); toast(tplNow.docx ? "Couldn't fill in your institution's lesson plan form. Upload it again in Settings." : "Couldn't make the lesson plan. Reload the page and try again.", {bad: true}); }
 }, true);
 async function starterDocx(bare){
-  const P = (t, b) => `<w:p><w:r>${b ? "<w:rPr><w:b/></w:rPr>" : ""}<w:t xml:space="preserve">${xEsc(t)}</w:t></w:r></w:p>`, cell = (x, w) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr>${x}</w:tc>`;
+  /* Crafticulum's own lesson plan: its indigo, and the font the app uses (Word falls back to its own sans serif where that font isn't installed) */
+  const F = `<w:rFonts w:ascii="Plus Jakarta Sans" w:hAnsi="Plus Jakarta Sans" w:cs="Plus Jakarta Sans"/>`, R = (t, o = {}) => `<w:r><w:rPr>${F}${o.b ? "<w:b/>" : ""}${o.c ? `<w:color w:val="${o.c}"/>` : ""}<w:sz w:val="${(o.s || 10) * 2}"/><w:szCs w:val="${(o.s || 10) * 2}"/></w:rPr><w:t xml:space="preserve">${xEsc(t)}</w:t></w:r>`;
+  const P = (t, b, o = {}) => `<w:p><w:pPr>${o.ppr || ""}<w:spacing w:before="${o.before ?? 40}" w:after="${o.after ?? 40}"/></w:pPr>${Array.isArray(t) ? t.join("") : R(t, {b, c: o.c || (b ? "3730A3" : "334155"), s: o.s})}</w:p>`, cell = (x, w, shade) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${shade}"/>` : ""}</w:tcPr>${x}</w:tc>`;
+  const head = P([R("craft", {b: 1, c: "0F172A", s: 12}), R("iculum", {b: 1, c: "4F46E5", s: 12})], false, {after: 0}) + P("Lesson plan", true, {c: "0F172A", s: 24, before: 0, after: 160, ppr: `<w:pBdr><w:bottom w:val="single" w:sz="18" w:space="6" w:color="4F46E5"/></w:pBdr>`});
   const rows = [["Lesson", "{{TITLE}}"], ["Teacher", "{{TEACHER}}"], ["Date", "{{DATE}}"], ["Group", "{{GROUP}}"], ["Course and level", "{{COURSE}} {{LEVEL}}"], ["Unit", "{{UNIT}}"], ["Criteria", "{{CRITERIA}}"], ["Length", "{{LENGTH}}"], ["Objectives", "{{OBJECTIVES}}"], ["Starter", "{{STARTER}}"], ["Teaching content", "{{TEACHING}}"], ["Tasks", "{{TASKS}}"], ["Timed plan", "{{PLAN}}"], ["Exit quiz", "{{QUIZ}}"], ["Plenary", "{{PLENARY}}"], ["Stretch", "{{STRETCH}}"], ["Support", "{{SUPPORT}}"], ["Independent study", "{{STUDY}}"]];
-  const body = P("Lesson plan", true) + `<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(x => `<w:${x} w:val="single" w:sz="4" w:space="0" w:color="999999"/>`).join("")}</w:tblBorders></w:tblPr><w:tblGrid><w:gridCol w:w="2400"/><w:gridCol w:w="7200"/></w:tblGrid>${rows.map(([a, b]) => `<w:tr>${cell(P(a, true), 2400)}${cell(P(b), 7200)}</w:tr>`).join("")}</w:tbl>` + (bare ? "" : P("Change the layout, fonts and logo however you like. Keep the words in double curly brackets where you want each part to go."));
+  const body = head + `<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders>${["top", "left", "bottom", "right", "insideH", "insideV"].map(x => `<w:${x} w:val="single" w:sz="4" w:space="0" w:color="C7D2FE"/>`).join("")}</w:tblBorders><w:tblCellMar><w:top w:w="70" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="70" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid><w:gridCol w:w="2400"/><w:gridCol w:w="7200"/></w:tblGrid>${rows.map(([a, b]) => `<w:tr>${cell(P(a, true), 2400, "EEF2FF")}${cell(P(b), 7200)}</w:tr>`).join("")}</w:tbl>` + (bare ? "" : P("", false) + P("Change the layout, fonts and logo however you like. Keep the words in double curly brackets where you want each part to go."));
   const zip = new JSZip(), NOF = {createFolders: false};
   zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`, NOF);
   zip.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`, NOF);
@@ -13875,6 +13878,38 @@ function nmFix(root){ if(!root || !nmOn()) return; const w = document.createTree
 (() => { let t = 0; const go = () => { t = 0; try{ nmFix(document.querySelector(".app") || document.body); }catch(e){ console.error(e); } };
   const start = () => { const root = document.querySelector(".app") || document.body; if(!root) return; new MutationObserver(() => { if(!t && nmOn()) t = setTimeout(go, 60); }).observe(root, {childList: true, subtree: true, characterData: true}); go(); };
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else setTimeout(start, 0); })();
+
+/* ===== round 75 (v125): the super admin is Crafticulum, not a member of staff. Anything they built or edited reads "By Crafticulum" for everyone,
+   and what they build from now on is saved that way. The server sends a short tag for each super admin's address so the page can tell without being given the addresses. ===== */
+const NA_NAME = "Crafticulum";
+const naCrc = s => { let c, r = 0xFFFFFFFF; for(let i = 0; i < s.length; i++){ c = (r ^ s.charCodeAt(i)) & 0xFF; for(let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xEDB88320 : c >>> 1; r = (r >>> 8) ^ c; } return ((r ^ 0xFFFFFFFF) >>> 0).toString(16).padStart(8, "0"); };
+const naIs = email => { try{ return !!email && !!me && Array.isArray(me.saTags) && me.saTags.includes(naCrc(String(email).toLowerCase())); }catch{ return false; } };
+function naWho(a){ if(a && typeof a === "object" && naIs(a.email) && a.name !== NA_NAME) a.name = NA_NAME; }
+function naLesson(L){ try{ const m = L && L.meta; if(m){ naWho(m.author); naWho(m.editedBy); } }catch{} return L; }
+function naAll(){ try{ if(!me || !Array.isArray(me.saTags) || !me.saTags.length) return;
+    if(typeof lib !== "undefined" && Array.isArray(lib)) lib.forEach(x => { if(x && naIs(x.authorEmail) && x.author !== NA_NAME) x.author = NA_NAME; if(x && x._p) naLesson(x._p); });
+    if(typeof seqs !== "undefined" && seqs) Object.values(seqs).forEach(s => naWho(s && s.author));
+    if(typeof current !== "undefined" && current) naLesson(current); }catch(e){ console.error(e); } }
+const _authorNow75 = authorNow;
+authorNow = function(){ const a = _authorNow75.apply(this, arguments); if(a && me && me.role === "superadmin") a.name = NA_NAME; return a; };
+const _libItems75 = libItems;
+libItems = function(){ naAll(); return _libItems75.apply(this, arguments).map(it => { const l0 = it.load; if(typeof l0 === "function") it.load = () => naLesson(l0()); return it; }); };
+const _authorOf75 = authorOf;
+authorOf = function(){ naAll(); return _authorOf75.apply(this, arguments); };
+const _fetchLesson75 = fetchLesson;
+fetchLesson = async function(){ return naLesson(await _fetchLesson75.apply(this, arguments)); };
+const _showLesson75 = showLesson;
+showLesson = function(L){ naLesson(L); return _showLesson75.apply(this, arguments); };
+const _render75 = render;
+render = function(){ naAll(); return _render75.apply(this, arguments); };
+
+/* ===== round 76 (v125): Departments and Team live on the Institution page, for the institution's manager, heads of department and the super admin working inside it.
+   Admin, People keeps the list of everyone on the whole site. ===== */
+(() => { try{ const mv = ["stDepts", "stTeam"], g = k => ST_GROUPS.find(x => x[0] === k), pe = g("people"), co = g("college");
+  if(pe) pe[2] = pe[2].filter(id => !mv.includes(id));
+  if(co){ co[2] = co[2].filter(id => !mv.includes(id)); const at = co[2].indexOf("stSite"); co[2].splice(at >= 0 ? at + 1 : 0, 0, ...mv); }
+  const ap = AD_GROUPS.find(x => x[0] === "people"); if(ap) ap[2] = ap[2].filter(id => !mv.includes(id)); mv.forEach(id => AD_IDS.delete(id));
+  AD_HELP.people = "Everyone on the whole site. An institution's own team and departments are in its Settings, on the Institution page."; }catch(e){ console.error(e); } })();
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

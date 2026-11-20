@@ -2010,4 +2010,23 @@ VERSION 124: THE SUPER ADMIN STANDS OUTSIDE, ALWAYS
   exactly where they are, and the super admin still sees and edits everything
   after opening the institution.
 
+VERSION 125: CRAFTICULUM'S OWN TEMPLATES, AND A NEUTRAL AUTHOR
+- New default PowerPoint template (assets/tpl-plain.pptx) in Crafticulum's
+  indigo to violet and its font, Plus Jakarta Sans: a title slide, learning
+  objectives, starter, and a content slide that repeats for the plan, teaching,
+  tasks, quiz and plenary. Used by every institution that hasn't uploaded its
+  own template, and by the starter lesson. Where the font isn't installed,
+  PowerPoint and Word use their own sans serif.
+- The default lesson plan document matches: Crafticulum wordmark, indigo rule,
+  tinted label column. Worksheets use the same indigo.
+- An institution's own uploaded templates still win, and the original
+  department's built-in template is unchanged.
+- Team and Departments have moved to Settings, Institution, for the
+  institution's manager, heads of department and the super admin working
+  inside it. The People tab has gone. Admin, People is now just everyone on
+  the whole site.
+- Lessons the super admin built or edited read "By Crafticulum" for everyone,
+  and new ones are saved that way. Nothing stored is rewritten until a lesson
+  is next saved.
+
 NO CHANGES TO config.php
