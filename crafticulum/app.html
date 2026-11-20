@@ -1411,6 +1411,15 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v120: manager's overview */
+.tm-tabs{margin-bottom:4px}
+.md-tiles{margin-top:6px}
+.md-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:14px}
+.md-t th,.md-t td{white-space:nowrap}
+.md-sort{border:0;background:none;padding:0;font:inherit;font-weight:700;color:inherit;cursor:pointer}
+.md-sort.on{color:var(--cc-primary);text-decoration:underline}
+.md-sort:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+@media(max-width:767.98px){.md-cols{grid-template-columns:1fr}}
 /* v118: term dates summary */
 .cal-sum{display:grid;gap:10px;justify-items:start}
 .cal-sum-row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:baseline;width:100%}
@@ -13603,6 +13612,59 @@ document.addEventListener("click", e => { if(!e.target.closest("#calEdit")) retu
 /* the guide and links into term dates open the full calendar */
 const _goSection68 = goSection;
 goSection = function(v, id){ if(id === "stCal") calEditOpen = true; return _goSection68.apply(this, arguments); };
+
+/* ===== round 69 (v120): Crafti's replies can become a quiz or a worksheet; the Library has the Bin; and Our team has an Overview for managers and heads of department. ===== */
+/* ---------- Crafti: straight into a tool, with the topic and the reply filled in ---------- */
+function caTool(id, c, i){ const t = TK_BY[id]; if(!t || !tkLive(id)) return; const a = c.msgs[i], q = c.msgs.slice(0, i).reverse().find(m => m.r === "u");
+  const topic = tkScrub(String((q && q.t) || "").replace(/\s+/g, " ").trim().replace(/[.?!]+$/, "")).slice(0, 140), gist = tkScrub(String(a.t).replace(/\|[^\n]*\|/g, " ").replace(/[#*_`>]+/g, " ").replace(/\s+/g, " ").trim()).slice(0, 900);
+  tkVals[id] = {...(tkVals[id] || {}), topic, notes: "Base it on these ideas: " + gist}; tkDoc = null; tkErr = ""; tkOpen = id; tkTab = "tools";
+  if(typeof cfOpen !== "undefined" && cfOpen){ cfOpen = false; try{ cfDraw(); }catch{} } setView("tools"); setTimeout(() => { try{ tkDraw(); const f = document.querySelector("#out [data-f=topic], #out #tkF-topic, #out input"); if(f) f.focus(); }catch{} }, 60); }
+const CA_TOOLS = [["quiz", "Quiz from this"], ["worksheet", "Worksheet from this"]];
+const _cfMsgs69 = cfMsgs;
+cfMsgs = function(){ return _cfMsgs69.apply(this, arguments).replace(/<button type="button" class="cf-act" data-cf-do="doc" data-i="(\d+)">/g, (m, i) => CA_TOOLS.filter(x => tkLive(x[0])).map(x => `<button type="button" class="cf-act" data-cf-tool="${x[0]}" data-i="${i}">${x[1]}</button>`).join("") + m); };
+const _asHtml69 = asHtml;
+asHtml = function(){ return _asHtml69.apply(this, arguments).replace(/(<button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="(\d+)">)/g, (m, b, i) => CA_TOOLS.filter(x => tkLive(x[0])).map(x => `<button type="button" class="btn btn-sm btn-outline-primary" data-cf-tool="${x[0]}" data-as-chat="1" data-i="${i}">${x[1]}</button>`).join("") + b); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-cf-tool]"); if(!b) return; const c = b.dataset.asChat ? asChat() : cfChat(), i = +b.dataset.i; if(c && c.msgs[i]) caTool(b.dataset.cfTool, c, i); });
+/* ---------- the Library: deleted lessons are a filter here, not a card in Settings ---------- */
+const lbBinOk = () => { const a = acct(); return !!(a && a.isLead); };
+const _lbHtml69 = lbHtml;
+lbHtml = function(){ let h = _lbHtml69.apply(this, arguments).replace('<h1 class="h3 mb-1">Resource library</h1>', '<h1 class="h3 mb-1">Library</h1>').replace('<div class="tk-find">', '<div class="mb-2"><button type="button" class="btn btn-sm btn-outline-primary" id="libMine" data-canvas="libCanvas">My created lessons</button></div><div class="tk-find">'); if(!lbBinOk()) return h;
+  if(binData === null){ binData = []; sCall("bin").then(r => { binData = r.bin || []; if(view === "library") lbDraw(); }).catch(() => {}); }
+  h = h.replace(/(<div class="tk-chips" role="group" aria-label="What to show">[\s\S]*?)(<\/div><\/div>)/, (m, a, b) => `${a}<button type="button" class="${lbKind === "bin" ? "on" : ""}" data-lb="kind" data-k="bin">Bin <small>${binData.length}</small></button>${b}`);
+  if(lbKind !== "bin") return h;
+  const d = document.createElement("div"); d.innerHTML = h; const w = d.querySelector(".tk-wrap"); w.querySelectorAll(".tk-lib, .tk-empty").forEach(x => x.remove());
+  const q = lbQ.trim().toLowerCase(), list = binData.filter(x => !q || (x.title + " " + x.unit).toLowerCase().includes(q));
+  w.insertAdjacentHTML("beforeend", `<p class="small text-body-secondary">Deleted lessons wait here for 30 days. Restore one and it goes back to how it was.</p>` + (list.length ? `<ul class="list-unstyled tk-lib" id="lbBin">${list.map(x => `<li class="tk-lib-i"><span class="tk-lib-open"><span class="fw-semibold">${esc(x.title)}</span><span class="small text-body-secondary">${esc(x.unit)} · deleted ${esc(agoText(x.at * 1000))}${x.by ? " by " + esc(x.by) : ""} · ${Math.max(0, 30 - Math.floor((Date.now() / 1000 - x.at) / 86400))} days left</span></span><button type="button" class="btn btn-sm btn-outline-primary" data-bin="${esc(x.id)}">Restore</button></li>`).join("")}</ul>` : `<div class="tk-empty"><div class="fw-semibold">${q ? "Nothing matches" : "Nothing in the bin"}</div></div>`));
+  return d.innerHTML; };
+const _binSection69 = binSection;
+binSection = function(sec){ return ""; };   // it lives in the Library now
+try{ const t = ST_GROUPS.find(g => g[0] === "teaching"); if(t) t[2] = t[2].filter(id => id !== "stBin"); }catch{}
+/* ---------- Our team: an Overview for managers and heads of department ---------- */
+let tmTab = "people", mdInfo = null, mdBusy = false, mdErr = "", mdSort = "name", mdMsg = "";
+async function mdLoad(force){ if(mdBusy || (mdInfo && !force)) return; mdBusy = true; mdErr = ""; try{ mdInfo = await storeCall("mgrdash"); }catch{ mdErr = "Couldn't load the overview just now."; } finally{ mdBusy = false; if(view === "team") tmDraw(); } }
+function mdHtml(){ if(!mdInfo) return `<div class="tk-empty">${mdErr ? esc(mdErr) + ` <button type="button" class="btn btn-sm btn-outline-primary" data-md="retry">Try again</button>` : "Loading the overview..."}</div>`;
+  const D = mdInfo.depts, P = mdInfo.people, T = mdInfo.cpdTarget, sum = k => D.reduce((a, d) => a + (+d[k] || 0), 0), staff = sum("staff"), day = t => t ? new Date(t * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "short"}) : "Never";
+  const tile = (n, label, bad) => `<div class="ov-t${bad ? " lp-late" : ""}"><b>${n}</b><span>${label}</span></div>`;
+  const mk = Object.keys((D[0] || {}).months || {}), mTot = mk.map(m => D.reduce((a, d) => a + (d.months[m] || 0), 0)), mMax = Math.max(1, ...mTot);
+  const rows = [...P].sort((a, b) => mdSort === "cpd" ? a.cpd - b.cpd : mdSort === "lessons" ? b.lessons - a.lessons : mdSort === "last" ? (a.last || 0) - (b.last || 0) : mdSort === "late" ? b.late - a.late : a.name.localeCompare(b.name));
+  const th = (k, t, cls) => `<th scope="col" class="${cls || ""}" aria-sort="${mdSort === k ? "ascending" : "none"}"><button type="button" class="md-sort${mdSort === k ? " on" : ""}" data-md-sort="${k}">${t}</button></th>`;
+  return `<div class="ov-tiles md-tiles">${tile(sum("month"), "lessons built this month")}${tile(sum("waiting"), "waiting for sign-off", sum("waiting") > 0)}${tile(sum("quiet"), `of ${staff} staff not signed in for 30 days`, sum("quiet") > 0)}${tile(sum("late"), "resubmissions overdue", sum("late") > 0)}${tile(sum("ivOpen"), "verification actions open", sum("ivOpen") > 0)}${tile(T ? sum("under") : Math.round(sum("cpd")), T ? `staff under the ${T} hour CPD target` : "CPD hours logged this year", T ? sum("under") > 0 : false)}</div>
+    <div class="md-cols"><div class="sp-box"><h3 class="sp-bh">Lessons built, last six months</h3><div class="sp-bars" role="img" aria-label="${esc(mk.map((m, i) => new Date(m + "-15").toLocaleDateString("en-GB", {month: "long"}) + ": " + mTot[i]).join(", "))}">${mk.map((m, i) => `<div class="sp-bar" title="${mTot[i]} in ${esc(new Date(m + "-15").toLocaleDateString("en-GB", {month: "long", year: "numeric"}))}"><span class="sp-bv">${mTot[i] || ""}</span><i style="height:${Math.max(mTot[i] ? 6 : 2, Math.round(mTot[i] / mMax * 64))}px"></i><span class="sp-bm">${esc(new Date(m + "-15").toLocaleDateString("en-GB", {month: "short"}))}</span></div>`).join("")}</div></div>
+      <div class="sp-box"><h3 class="sp-bh">CPD target</h3>${mdInfo.canSet ? `<form class="d-flex gap-2 align-items-center flex-wrap" id="mdTarget"><label class="small" for="mdT">Hours each person should log a year</label><input type="number" class="form-control form-control-sm" id="mdT" min="0" max="500" value="${T}" style="width:90px"><button type="submit" class="btn btn-sm btn-outline-primary">Save</button></form><div class="form-text">0 switches the target off.</div>` : `<div class="small">${T ? `${T} hours each a year, set by your institution's manager.` : "No target set."}</div>`}<div class="idea-msg" role="status" id="mdMsg">${esc(mdMsg)}</div><div class="small text-body-secondary mt-1">Counting from ${esc(new Date(mdInfo.since + "T12:00:00").toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"}))}.</div></div></div>
+    ${D.length > 1 ? `<h2 class="h6 mt-4 mb-2">By department</h2><div class="table-responsive"><table class="table table-sm align-middle md-t"><thead><tr><th scope="col">Department</th><th scope="col" class="text-end">Staff</th><th scope="col" class="text-end">Lessons</th><th scope="col" class="text-end">This month</th><th scope="col" class="text-end">Waiting</th><th scope="col" class="text-end">Learners</th><th scope="col" class="text-end">Overdue</th><th scope="col" class="text-end">CPD hours</th></tr></thead><tbody>${D.map(d => `<tr><th scope="row">${esc(d.name)}</th><td class="text-end">${d.staff}${d.quiet ? ` <span class="text-body-secondary small">(${d.quiet} quiet)</span>` : ""}</td><td class="text-end">${d.lessons}</td><td class="text-end">${d.month}</td><td class="text-end">${d.waiting || ""}</td><td class="text-end">${d.learners}</td><td class="text-end${d.late ? " text-danger fw-semibold" : ""}">${d.late || ""}</td><td class="text-end">${d.cpd}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    <h2 class="h6 mt-4 mb-2">By person <span class="fw-normal text-body-secondary">(press a heading to sort)</span></h2>
+    <div class="table-responsive"><table class="table table-sm align-middle md-t" id="mdPeople"><thead><tr>${th("name", "Name")}${D.length > 1 ? `<th scope="col">Department</th>` : ""}${th("last", "Last signed in")}${th("lessons", "Lessons this year", "text-end")}${th("cpd", "CPD hours", "text-end")}${th("late", "Overdue", "text-end")}</tr></thead>
+      <tbody>${rows.map(p => `<tr><th scope="row"><button type="button" class="btn btn-link p-0 text-start" data-sp="${esc(p.email)}">${esc(p.name)}</button></th>${D.length > 1 ? `<td>${esc(p.deptName)}</td>` : ""}<td class="${p.quiet ? "text-danger" : ""}">${day(p.last)}</td><td class="text-end">${p.lessons}</td><td class="text-end${T && p.cpd < T ? " text-danger" : ""}">${p.cpd}${T ? ` <span class="text-body-secondary small">of ${T}</span>` : ""}</td><td class="text-end${p.late ? " text-danger fw-semibold" : ""}">${p.late || ""}</td></tr>`).join("")}</tbody></table></div>
+    <div class="form-text">Numbers only. Learners aren't named here. Red means it may need a look: not signed in for 30 days, under the CPD target, or resubmissions past their date.</div>`; }
+const _tmHtml69 = tmHtml;
+tmHtml = function(){ const h = _tmHtml69.apply(this, arguments); if(!tmInfo || !tmInfo.cpd) return h;
+  const tabs = `<div class="sp-tabs tm-tabs" role="tablist" aria-label="Our team">${[["people", "People"], ["overview", "Overview"]].map(([k, t]) => `<button type="button" role="tab" id="tmT-${k}" aria-selected="${tmTab === k}" tabindex="${tmTab === k ? 0 : -1}" data-tm-tab="${k}">${t}</button>`).join("")}</div>`;
+  const d = document.createElement("div"); d.innerHTML = h; const w = d.querySelector(".tm-wrap"), head = w.querySelector(".tm-head"); head.insertAdjacentHTML("afterend", tabs);
+  if(tmTab === "overview"){ [...w.children].forEach(x => { if(x !== head && !x.classList.contains("tm-tabs")) x.remove(); }); w.insertAdjacentHTML("beforeend", `<div id="mdWrap" role="tabpanel" aria-labelledby="tmT-overview" class="mt-3">${mdHtml()}</div>`); if(!mdInfo && !mdBusy) setTimeout(() => mdLoad(), 0); }
+  return d.innerHTML; };
+document.addEventListener("click", e => { if(view !== "team") return; const t = e.target.closest("[data-tm-tab]"); if(t){ tmTab = t.dataset.tmTab; mdMsg = ""; tmDraw(); const b = $("#tmT-" + tmTab); if(b) b.focus(); return; }
+  const s = e.target.closest("[data-md-sort]"); if(s){ mdSort = s.dataset.mdSort; return tmDraw(); } if(e.target.closest('[data-md="retry"]')) mdLoad(true); });
+document.addEventListener("submit", async e => { if(e.target.id !== "mdTarget") return; e.preventDefault(); try{ const j = await storeCall("mgrset", {cpdTarget: +$("#mdT").value || 0}); mdMsg = j.cpdTarget ? `Saved: ${j.cpdTarget} hours a year.` : "Target switched off."; await (mdInfo = null, mdLoad(true)); }catch{ mdMsg = "Couldn't save that."; tmDraw(); } });
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

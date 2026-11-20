@@ -166,6 +166,34 @@ if ($action === 'deptsubjects') {   // the departments someone can plan for, eac
         $out[] = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'mine' => (string) $d === (string) $dept, 'builtin' => !empty($di['legacy']) && (($c['builtin'] ?? true) !== false), 'list' => array_values(array_filter((array) ($c['list'] ?? []), 'is_array'))]; }
     out(200, ['depts' => $out]);
 }
+if ($action === 'mgrset') {   // the CPD hours each person is expected to log in a year
+    if (!in_array($me['role'], ['superadmin', 'owner'], true)) out(403, ['error' => 'noperm']);
+    $col = ccCollegeOf($acc, (string) $dept); $f = $base . '/_mgr.json'; $all = json_decode((string) @file_get_contents($f), true); if (!is_array($all)) $all = [];
+    $all[$col] = ['cpdTarget' => max(0, min(500, (int) ($body['cpdTarget'] ?? 0)))] + (array) ($all[$col] ?? []); @file_put_contents($f, json_encode($all), LOCK_EX); out(200, ['ok' => true, 'cpdTarget' => $all[$col]['cpdTarget']]);
+}
+if ($action === 'mgrdash') {   // a manager's overview: each department's lessons, people, CPD and overdue work, as numbers. Learners are never named
+    $boss = in_array($me['role'], ['superadmin', 'owner'], true); if (!$boss && empty($me['isLead'])) out(403, ['error' => 'noperm']);
+    $col = ccCollegeOf($acc, (string) $dept); $ids = $boss ? ccCollegeDepts($acc, $col) : [(string) $dept]; $today = date('Y-m-d'); $now = time(); $ys = (date('n') >= 9 ? (int) date('Y') : (int) date('Y') - 1) . '-09-01';
+    $mg = json_decode((string) @file_get_contents($base . '/_mgr.json'), true); $target = (int) ($mg[$col]['cpdTarget'] ?? 30);
+    $months = []; for ($i = 5; $i >= 0; $i--) $months[date('Y-m', strtotime(date('Y-m-01') . " -$i month"))] = 0;
+    $who = $acc['users']; foreach (ccSupers() as $e) unset($who[$e]); $depts = []; $people = [];
+    foreach ($ids as $d) { $di = $acc['depts'][$d] ?? null; if (!$di) continue; $dd = !empty($di['legacy']) ? $base : $base . '/d/' . $d;
+        $row = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'staff' => 0, 'quiet' => 0, 'lessons' => 0, 'month' => 0, 'waiting' => 0, 'months' => $months, 'learners' => 0, 'open' => 0, 'late' => 0, 'ivOpen' => 0, 'cpd' => 0, 'under' => 0]; $by = [];
+        foreach (glob($dd . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); if (!is_array($l)) continue;
+            $row['lessons']++; if ((string) ($l['meta']['status'] ?? '') === 'draft') $row['waiting']++; $at = (int) floor(((int) ($j['data']['updatedAt'] ?? 0)) / 1000); $m = $at ? date('Y-m', $at) : ''; if (isset($row['months'][$m])) $row['months'][$m]++; if ($m === date('Y-m')) $row['month']++;
+            $ae = strtolower((string) ($l['meta']['author']['email'] ?? '')); if ($ae !== '' && $at >= strtotime($ys)) $by[$ae] = ($by[$ae] ?? 0) + 1; }
+        $iv = json_decode((string) @file_get_contents($dd . '/_iv.json'), true); foreach ((array) $iv as $r) if (is_array($r) && ($r['decision'] ?? '') !== 'agreed' && empty($r['done'])) $row['ivOpen']++;
+        foreach ($who as $e => $u) { if (!is_array($u) || !ccActive($u) || !empty($u['demo']) || (string) ($u['dept'] ?? '') !== (string) $d) continue; $e = (string) $e; $row['staff']++; $last = (int) ($u['last'] ?? 0); $quiet = !$last || $now - $last > 30 * 86400; if ($quiet) $row['quiet']++;
+            $ab = ccAboutOf($base, $e, $u) ?? []; $h = 0; foreach ((array) ($ab['cpd'] ?? []) as $c) if (is_array($c) && (string) ($c['d'] ?? '') >= $ys) $h += (float) ($c['h'] ?? 0); $row['cpd'] += $h; if ($target > 0 && $h < $target) $row['under']++;
+            $open = 0; $late = 0; $ln = 0; foreach (glob($base . '/u/' . sha1($e) . '/' . $d . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue; $st = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($st) || !is_array($st['learners'] ?? null)) continue;
+                $lids = array_map(fn($l) => (string) ($l['id'] ?? ''), array_filter($st['learners'], 'is_array')); $ln += count($lids);
+                foreach ((array) ($st['subs'] ?? []) as $k => $m) foreach ((array) $m as $lid => $x) { if (!is_array($x) || empty($x['ra']) || !empty($x['ro']) || !in_array((string) $lid, $lids, true)) continue; $open++; if (empty($x['ri']) && !empty($x['rd']) && (string) $x['rd'] < $today) $late++; } }
+            $row['learners'] += $ln; $row['open'] += $open; $row['late'] += $late;
+            $people[] = ['email' => $e, 'name' => (string) (($u['name'] ?? '') ?: $e), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) $d, 'deptName' => $row['name'], 'last' => $last, 'quiet' => $quiet, 'lessons' => (int) ($by[$e] ?? 0), 'cpd' => round($h, 1), 'late' => $late, 'learners' => $ln]; }
+        $row['cpd'] = round($row['cpd'], 1); $depts[] = $row; }
+    usort($people, fn($x, $y) => strcasecmp($x['name'], $y['name']));
+    out(200, ['depts' => $depts, 'people' => $people, 'cpdTarget' => $target, 'canSet' => $boss, 'since' => $ys]);
+}
 if ($action === 'directory') {   // everyone in the institution, as colleagues see them: no classes, lessons or verification here
     $col = ccCollegeOf($acc, (string) $dept); $boss = in_array($me['role'], ['superadmin', 'owner'], true); $ys = (date('n') >= 9 ? (int) date('Y') : (int) date('Y') - 1) . '-09-01';
     $people = []; $who = $acc['users']; foreach (ccSupers() as $e) unset($who[$e]);

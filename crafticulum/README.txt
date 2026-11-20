@@ -1886,4 +1886,32 @@ GO BACK TO THE LAST VERSION (v119)
     v118, which has the phone layout fault, so there's no reason to use
     it until the next release.
 
+WHAT'S NEW IN v120
+
+CRAFTI TO A QUIZ OR WORKSHEET (v120)
+  Under each of Crafti's replies, in the chat window and on the Crafti
+  page: "Quiz from this" and "Worksheet from this". They open the tool
+  with the topic and Crafti's ideas already filled in, so one press
+  makes it.
+
+THE LIBRARY HAS THE BIN (v120)
+  - Resource library is now just "Library".
+  - Heads of department and managers get a Bin filter there: deleted
+    lessons, with how long is left, and Restore.
+  - The "Deleted lessons" card has gone from Settings.
+
+OVERVIEW FOR MANAGERS (v120)
+  - Our team has an Overview tab for institution managers (every
+    department) and heads of department (their own).
+  - Tiles: lessons built this month, waiting for sign-off, staff not
+    signed in for 30 days, resubmissions overdue, verification actions
+    open, and staff under the CPD target.
+  - Lessons built over the last six months as a chart, a table by
+    department, and a table by person you can sort (last signed in,
+    lessons this year, CPD hours, overdue). A name opens the profile.
+  - The CPD target (hours each person should log a year) is set by the
+    institution's manager. It starts at 30. 0 switches it off.
+  - Numbers only. Learners are never named.
+  - The target is kept in data/_mgr.json.
+
 NO CHANGES TO config.php
