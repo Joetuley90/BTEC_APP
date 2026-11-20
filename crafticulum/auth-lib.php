@@ -253,6 +253,10 @@ function ccMe(): ?array {
         $home = ccCollegeOf($a, (string) $u['dept']); $d = (string) ($_SESSION['dept'] ?? '');
         if ($d !== '' && isset($a['depts'][$d]) && $d !== CC_DEMO_DEPT && ccCollegeOf($a, $d) === $home) $u['dept'] = $d;
     }
+    else {   // someone who teaches in more than one department works in whichever they've switched to. Their role there is the one they were given for it
+        $d = (string) ($_SESSION['dept'] ?? ''); $al = ccAlso($a, $u); $u['home'] = (string) $u['dept'];
+        if ($d !== '' && $d !== $u['dept'] && isset($al[$d])) { $u['dept'] = $d; $u['role'] = $al[$d]; }
+    }
     $u['college'] = ccCollegeOf($a, (string) $u['dept']);
     if ($u['role'] !== 'superadmin' && $uid !== CC_DEMO_USER && ccCollege($a, $u['college'])['off']) return null;   // the institution has been switched off
     $p = ccPerms($u);
@@ -369,10 +373,12 @@ function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) c
 /* a photo someone uploaded beats the one from their Google account */
 function ccPhotoFile(string $email): string { return ccDataDir() . '/u/' . sha1(strtolower($email)) . '/photo.jpg'; }
 function ccPhotoUrl(string $email, string $fallback = ''): string { $f = ccPhotoFile($email); return is_file($f) ? 'photo.php?u=' . sha1(strtolower($email)) . '&v=' . filemtime($f) : $fallback; }
+/* the other departments someone belongs to, beside their own: id => role there. Only ones in the same institution that still exist count */
+function ccAlso(array $a, array $u): array { $o = []; $home = (string) ($u['home'] ?? $u['dept'] ?? ''); $col = ccCollegeOf($a, $home); foreach ((array) ($u['also'] ?? []) as $d => $r) { $d = (string) $d; if ($d === $home || $d === CC_DEMO_DEPT || !isset($a['depts'][$d]) || ccCollegeOf($a, $d) !== $col) continue; $o[$d] = $r === 'hod' ? 'hod' : 'teacher'; } return $o; }
 function ccPublic(array $u): array {
     return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => ccPhotoUrl((string) $u['email'], (string) ($u['picture'] ?? '')), 'role' => $u['role'], 'dept' => $u['dept'],
             'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
-            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'anon' => ccAnon(ccAccounts(), (string) ($u['college'] ?? '')), 'house' => empty($u['demo']) && ccHouseOn(ccAccounts(), (string) ($u['college'] ?? '')), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
+            'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'anon' => ccAnon(ccAccounts(), (string) ($u['college'] ?? '')), 'house' => empty($u['demo']) && ccHouseOn(ccAccounts(), (string) ($u['college'] ?? '')), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside']), 'home' => (string) ($u['home'] ?? $u['dept']), 'multi' => !in_array($u['role'], ['superadmin', 'owner'], true) && !empty($u['also']) && count(ccAlso(ccAccounts(), $u)) > 0];
 }
 
 /* ---------- rooms: the parts of the app that can be switched on and off.
