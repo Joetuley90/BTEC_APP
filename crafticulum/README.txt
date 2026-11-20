@@ -2180,4 +2180,13 @@ VERSION 136: THE COMPANY BEHIND CRAFTICULUM
   company number and registered office. The privacy notice also gives the
   ICO registration number.
 
+VERSION 137: DATA PROCESSING AGREEMENT
+- NEW PAGE: /dpa (dpa.html), the data processing agreement for schools,
+  colleges and training providers, with the list of sub-processors. It is
+  linked from the foot of every public page, the terms and the privacy
+  notice. .htaccess and page.php changed to serve it.
+- The privacy notice now says the site is hosted by Krystal in London,
+  backups are kept for 28 days with a remote copy on Amazon S3, and closed
+  accounts are deleted within 30 days.
+
 NO CHANGES TO config.php
