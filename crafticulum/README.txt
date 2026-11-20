@@ -1748,4 +1748,68 @@ PHONE FIX (v116)
   Long labels on a lesson (like a long "Follows:" line) now wrap, instead
   of making the whole page wider than the screen.
 
+WHAT'S NEW IN v117
+
+DEPARTMENTS IN THE LESSON PLANNER (v117)
+  - The planner's first row is now the institution's departments. Pick
+    one and you get its subjects, levels and units, from the
+    specifications that department uploaded.
+  - Teachers see their own department. Institution managers and super
+    admins see every department in the institution.
+  - Esports and IT belong to the original department only. New
+    departments no longer get them built in.
+  - A department with no subjects yet says so, and can't build until its
+    specification is added.
+
+ADMIN, FOR SUPER ADMINS (v117)
+  - Admin in the menu (and at /admin) opens on To do: people waiting for
+    approval, unconfirmed emails, messages, errors, an update ready and
+    institutions set up twice, each with a button that goes straight
+    there. The waiting count sits on Admin now.
+  - The rest is grouped as Institutions, People, Money, Features and
+    System.
+  - Settings is just your own preferences and the institution you're
+    working inside.
+
+OUR TEAM (v117)
+  - A page listing everyone in your institution as cards: photo, job
+    title, department, campus, specialisms, qualifications held, and
+    whether they're in today. Search and filter by department, campus or
+    qualification. A name opens their profile.
+  - Colleagues see who someone is and how to reach them, not their
+    classes, lessons or CPD. Heads of department and managers still see
+    the full profile.
+  - Managers and heads of department see CPD hours for this academic
+    year, and can download them as a spreadsheet (CSV).
+
+PROFILE PHOTOS AND ONE PROFILE (v117)
+  - Add your own photo from Edit profile. It's cropped to a square and
+    shrunk before it's sent, and only people signed in can see it. It
+    replaces your Google picture everywhere.
+  - One Edit profile form now covers your name, title, gender, job title,
+    pronouns and phone too. Settings shows what you teach and your staff
+    profile inside Your profile, instead of as two more sections.
+  - Photos are kept in data/u/<your folder>/photo.jpg and served by
+    photo.php (new file).
+
+CRAFTI DOES THINGS (v117)
+  - Under each of Crafti's replies: "Build a lesson from this" (for
+    people who can build) fills in the dashboard with the lesson and the
+    subject ready to check, so one press builds it. "Make it a resource"
+    turns the reply into a resource you can edit, save and download.
+  - The same buttons are on the Crafti page.
+
+VIDEO LESSONS AS MP4 (v117)
+  - The video lesson player has an MP4 button. It makes a 1280 x 720
+    video of the slides with the captions burned in, in the browser,
+    much faster than playing it through. Nothing is uploaded.
+  - It has no sound, because the device's voice can't be recorded.
+    Learners read along. Post it on Teams or Google Classroom like any
+    video.
+  - Works in Chrome, Edge and Safari.
+
+FRONT PAGE WORDING (v117)
+  The last "your college" lines on the front page now say "school or
+  college" or "institution".
+
 NO CHANGES TO config.php

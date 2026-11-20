@@ -366,8 +366,11 @@ function ccPerms(array $u): array {
 }
 /* with a client secret, Google sign-in goes to Google and comes back (the same round trip as Microsoft). Without one it uses Google's pop-up button. */
 function ccGoogleSecret(): string { return ccGoogleId() !== '' ? trim((string) ccConf('GOOGLE_CLIENT_SECRET')) : ''; }
+/* a photo someone uploaded beats the one from their Google account */
+function ccPhotoFile(string $email): string { return ccDataDir() . '/u/' . sha1(strtolower($email)) . '/photo.jpg'; }
+function ccPhotoUrl(string $email, string $fallback = ''): string { $f = ccPhotoFile($email); return is_file($f) ? 'photo.php?u=' . sha1(strtolower($email)) . '&v=' . filemtime($f) : $fallback; }
 function ccPublic(array $u): array {
-    return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => (string) ($u['picture'] ?? ''), 'role' => $u['role'], 'dept' => $u['dept'],
+    return ['email' => $u['email'], 'name' => (string) ($u['name'] ?? ''), 'picture' => ccPhotoUrl((string) $u['email'], (string) ($u['picture'] ?? '')), 'role' => $u['role'], 'dept' => $u['dept'],
             'deptName' => $u['deptName'], 'canGen' => $u['canGen'], 'canEdit' => $u['canEdit'], 'canTeam' => $u['canTeam'], 'canSubjects' => $u['canSubjects'], 'canDates' => $u['canDates'], 'isLead' => $u['isLead'], 'demo' => !empty($u['demo']),
             'college' => (string) ($u['college'] ?? ''), 'collegeName' => (string) ($u['collegeName'] ?? ''), 'admin' => !empty($u['admin']), 'rooms' => ccRooms(ccAccounts(), $u), 'anon' => ccAnon(ccAccounts(), (string) ($u['college'] ?? '')), 'house' => empty($u['demo']) && ccHouseOn(ccAccounts(), (string) ($u['college'] ?? '')), 'inside' => !array_key_exists('inside', $u) || !empty($u['inside'])];
 }
