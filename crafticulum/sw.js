@@ -1,6 +1,6 @@
 /* Crafticulum: keeps the app itself on this device so it opens without the internet.
    Lessons, planning and student links still come from your server when you're online. */
-const CACHE = "cc-shell-v55";
+const CACHE = "cc-shell-v56";
 const SHELL = ["app.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

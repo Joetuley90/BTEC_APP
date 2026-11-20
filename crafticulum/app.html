@@ -1411,6 +1411,45 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v121: the super admin bar */
+body #saBar{display:flex;flex-wrap:nowrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:7px 14px;background:linear-gradient(90deg,#312e81,#6d28d9);color:#fff;font-size:.86rem;text-align:left;min-height:var(--demo-h,48px)}
+body #saBar .sa-who{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;min-width:0;flex:1 1 auto;text-align:left}
+#saBar .sa-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:5px;background:#fde68a;color:#422006;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;flex:none}
+body #saBar .sa-in-t{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+body #saBar .sa-note{flex:0 1 auto;font-size:.76rem;opacity:.8;text-align:left}
+#saBar .sa-leave{flex:none;display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border:0;border-radius:6px;background:#fff;color:#312e81;font-weight:700;font-size:.86rem;cursor:pointer;white-space:nowrap}
+#saBar .sa-leave:hover{background:#ede9fe}#saBar .sa-leave:focus-visible{outline:3px solid #fde68a;outline-offset:2px}
+@media(max-width:991.98px){body #saBar .sa-note{display:none}}
+@media(max-width:575.98px){#saBar .sa-leave-more{display:none}body #saBar{padding:6px 10px}}
+.side-leave{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px;padding:9px 12px;border:1px solid #c4b5fd;border-radius:5px;background:color-mix(in srgb,#7c3aed 10%,var(--cc-surface));color:var(--cc-primary);font-weight:700;font-size:.86rem;cursor:pointer;text-align:left}
+.side-leave .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side-leave:hover{background:color-mix(in srgb,#7c3aed 18%,var(--cc-surface))}.side-leave:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+/* v121: Crafti's board */
+.cb-star{display:inline-flex;align-items:center;gap:5px}.cb-star.on{background:var(--cc-primary);color:#fff;border-color:var(--cc-primary)}
+#cfBoard{position:fixed;inset:0;z-index:2100;display:flex;flex-direction:column;background:#0f172a;color:#f8fafc}
+.cb-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+.cb-t{flex:1;min-width:120px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cb-n{font-size:.8rem;opacity:.8}
+.cb-b{min-width:44px;height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.2);border-radius:6px;background:rgba(255,255,255,.06);color:#fff;font-weight:600;cursor:pointer}
+.cb-b:hover{background:rgba(255,255,255,.16)}.cb-b:focus-visible{outline:2px solid #fff;outline-offset:2px}.cb-x{font-size:1.5rem;line-height:1}
+.cb-page{flex:1;overflow:auto;padding:clamp(18px,4vw,56px) clamp(18px,7vw,120px);line-height:1.5;outline:0;-webkit-user-select:text;user-select:text}
+.cb-page{--cb:clamp(1.25rem,2.4vw,2.2rem)}.cb-page>*{font-size:var(--cb)}.cb-page h1,.cb-page h2,.cb-page h3{font-size:calc(var(--cb) * 1.3);font-weight:800;color:#c4b5fd;margin:.8em 0 .4em}
+.cb-page li{margin:.3em 0}.cb-page table{width:100%;border-collapse:collapse}.cb-page th,.cb-page td{border:1px solid rgba(255,255,255,.25);padding:.4em .6em;text-align:left;color:inherit;background:none}
+.cb-page a{color:#a5b4fc}.cb-page code{color:#fde68a;background:rgba(255,255,255,.08)}
+.cb-foot{font-size:.76rem;opacity:.6;text-align:center;padding:6px}
+@media print{#cfBoard{position:static;background:#fff;color:#000}.cb-bar,.cb-foot{display:none}}
+/* v121: Crafti's button is the character on its own, a little higher; chat text can be selected; the box doesn't zoom on iPhone */
+#cfRoot.cf-root{right:max(14px,env(safe-area-inset-right,0px));bottom:calc(var(--cf-b,20px) + 10px)}
+#cfRoot .cf-btn{width:64px;height:64px;background:none;box-shadow:none;border-radius:8px}
+#cfRoot .cf-btn .cf-face{width:64px;height:64px;filter:drop-shadow(0 8px 12px rgba(49,46,129,.45))}
+#cfRoot.cf-on .cf-btn{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);box-shadow:0 10px 24px -10px rgba(79,70,229,.8)}
+#cfRoot .cf-log,#cfRoot .cf-b,#cfRoot .cf-b *{-webkit-user-select:text;user-select:text}
+#cfRoot .cf-b{-webkit-touch-callout:default;cursor:text}
+#cfRoot .cf-row textarea{font-size:16px}
+@media(max-width:575.98px){#cfRoot .cf-btn,#cfRoot .cf-btn .cf-face{width:58px;height:58px}#cfRoot.cf-on{right:0;bottom:0}}
+/* v121: more than one department, and the split */
+.also{margin-top:4px}.also-box{margin-top:6px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:6px;background:var(--cc-surface-2);display:grid;gap:6px;min-width:230px}
+.also-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.spl-plan{padding:12px 14px;border:1px solid var(--cc-line);border-radius:6px;background:var(--cc-surface-2)}.spl-plan ul{padding-left:18px}
 /* v120: manager's overview */
 .tm-tabs{margin-bottom:4px}
 .md-tiles{margin-top:6px}
@@ -10660,7 +10699,7 @@ function saGroups(){ try{ const g = k => ST_GROUPS.find(x => x[0] === k)[2], c =
 function saPaint(){
   const out = saOut(), inn = saIn(), b = document.body; b.classList.toggle("sa-out", out); b.classList.toggle("sa-in", inn); let bar = $("#saBar");
   if(!inn){ if(bar) bar.remove(); }
-  else { const t = `<span>You're working inside <b>${esc(me.collegeName || "an institution")}</b> as super admin. You aren't one of its people, and nothing you do here uses its allowance.</span><button type="button" class="btn btn-sm btn-light" data-sa-leave>&larr; Back to super admin</button>`;
+  else { const t = `<span class="sa-who"><span class="sa-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.500-3.400 8.300-8 9-4.600-.7-8-4.500-8-9V6z"/></svg>Super admin</span><span class="sa-in-t">Inside <b>${esc(me.collegeName || "an institution")}</b></span><span class="sa-note">You aren't one of its people, and nothing you do here uses its allowance.</span></span><button type="button" class="sa-leave" data-sa-leave><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></svg>Leave<span class="sa-leave-more"> and go back to Admin</span></button>`;
     if(!bar){ b.insertAdjacentHTML("afterbegin", `<div id="saBar" role="status"></div>`); bar = $("#saBar"); } if(bar.dataset.c !== me.collegeName){ bar.dataset.c = me.collegeName || ""; bar.innerHTML = t; } }
   const cap = document.querySelector(".side .side-sec .side-cap"); if(cap) cap.closest(".side-sec").hidden = out;
 }
@@ -13194,15 +13233,17 @@ function ccDeptLists(){ /* each department's subjects, its own taken live from t
     list.forEach(x => (x.u || []).forEach(u => { if(!u.a || typeof u.a !== "object") u.a = {}; }));   // a unit read without its learning aims still opens
     return {id: d.id, name: d.name, mine: !!d.mine, units: [...(bi ? BUILTIN_UNITS : []), ...list]}; }); }
 const _coursesApply61 = coursesApply;   // the original, kept for the Crafticulum AI version and until the departments arrive
-coursesApply = function(){ const r = _coursesApply61.apply(this, arguments); if(ccDepts && !window.claude) try{ ccDeptApply(); }catch(e){ console.error(e); } return r; };
+coursesApply = function(){ try{ (courseCfg.list || []).forEach(x => (x && x.u || []).forEach(u => { if(u && (!u.a || typeof u.a !== "object")) u.a = {}; })); }catch{}   // a unit read without its learning aims still opens
+  const r = _coursesApply61.apply(this, arguments); if(ccDepts && !window.claude) try{ ccDeptApply(); }catch(e){ console.error(e); } return r; };
 function ccDeptApply(){   /* after the usual set-up (briefs, branding and the rest), the subjects are swapped for the departments' own */
   let was = null; try{ was = {course: getCourse(), level: curLevel().l, unit: curUnit().t}; }catch{}
   const D = ccDeptLists(), seen = new Set(), all = [];
-  D.forEach(d => d.units.forEach(u => { const k = u.s + "\u0001" + u.l; if(seen.has(k)) return; seen.add(k); all.push(Object.assign(u, {_d: u._d || d.id})); }));
+  D.filter(d => d.mine || !D.some(x => x.mine)).forEach(d => d.units.forEach(u => {   // only the department you are working in: picking another one switches to it
+    const k = u.s + "\u0001" + u.l; if(seen.has(k)) return; seen.add(k); all.push(Object.assign(u, {_d: u._d || d.id})); }));
   UNITS.splice(0, UNITS.length, ...all); if(!UNITS.length) UNITS.push(NO_SUBJECT);
-  if(!D.find(d => d.id === hdDept)) hdDept = (D.find(d => d.mine) || D[0] || {}).id || "";
+  hdDept = (D.find(d => d.mine) || D[0] || {}).id || "";
   const subjOf = id => [...new Set(UNITS.filter(u => u._d === id).map(u => u.s))];
-  if(was && UNITS.find(u => u.s === was.course)){ const u = UNITS.find(x => x.s === was.course); if(u._d) hdDept = u._d; }
+  
   const names = [...new Set(UNITS.map(x => x.s))], inDept = subjOf(hdDept), on = was && inDept.includes(was.course) ? was.course : (inDept[0] || names[0]);
   $("#course").innerHTML = names.map(n => { const u = UNITS.find(x => x.s === n); return `<button type="button" class="btn btn-outline-primary" data-v="${esc(n)}" data-d="${esc((u && u._d) || "")}" aria-pressed="${n === on}" ${ccMulti() && u && u._d !== hdDept ? "hidden" : ""}>${esc(n)}</button>`; }).join("");
   $("#course").classList.toggle("many", inDept.length > 3);
@@ -13665,6 +13706,118 @@ tmHtml = function(){ const h = _tmHtml69.apply(this, arguments); if(!tmInfo || !
 document.addEventListener("click", e => { if(view !== "team") return; const t = e.target.closest("[data-tm-tab]"); if(t){ tmTab = t.dataset.tmTab; mdMsg = ""; tmDraw(); const b = $("#tmT-" + tmTab); if(b) b.focus(); return; }
   const s = e.target.closest("[data-md-sort]"); if(s){ mdSort = s.dataset.mdSort; return tmDraw(); } if(e.target.closest('[data-md="retry"]')) mdLoad(true); });
 document.addEventListener("submit", async e => { if(e.target.id !== "mdTarget") return; e.preventDefault(); try{ const j = await storeCall("mgrset", {cpdTarget: +$("#mdT").value || 0}); mdMsg = j.cpdTarget ? `Saved: ${j.cpdTarget} hours a year.` : "Target switched off."; await (mdInfo = null, mdLoad(true)); }catch{ mdMsg = "Couldn't save that."; tmDraw(); } });
+
+/* ===== round 70 (v121): people can belong to more than one department and switch between them; picking a department in the planner really works in it;
+   a department that teaches several subjects can be split in two by subject (preview, backup, undo); and the Crafti button is the character on its own. ===== */
+/* ---------- the planner's department row switches the department you're working in, so the lesson is saved where it belongs ---------- */
+const _ccDeptPick70 = ccDeptPick;
+ccDeptPick = function(id){ const mine = ccMine(); if(mine && id !== mine.id && typeof colSwitch === "function"){ const d = (ccDepts || []).find(x => x.id === id); toast(`Switching to ${d ? d.name : "that department"}...`); try{ lsSet("cc_hd_dept", id); }catch{} return colSwitch(id); } return _ccDeptPick70.apply(this, arguments); };
+/* after a switch the row starts on the department you're now in */
+(() => { try{ const m = (ccDepts || []).find(d => d.mine); if(m) hdDept = m.id; }catch{} })();
+const _ccDeptsLoad70 = ccDeptsLoad;
+ccDeptsLoad = async function(){ const r = await _ccDeptsLoad70.apply(this, arguments); try{ const m = ccMine(); if(m && hdDept !== m.id){ hdDept = m.id; lsSet("cc_hd_dept", hdDept); coursesApply(); if(view === "home") renderHome(); } }catch{} return r; };
+/* ---------- your departments, in Settings and in the menu's account card ---------- */
+const _accountSections70 = accountSections;
+accountSections = function(sec){ let h = _accountSections70.apply(this, arguments); try{ if(me && me.multi && (meInfo.depts || []).length > 1 && !/id="accDept"/.test(h)){
+    const pick = `<div class="d-flex flex-wrap gap-2 align-items-center mt-3"><label class="small fw-semibold" for="accDept">Department you're working in</label><select class="form-select form-select-sm w-auto" id="accDept">${meInfo.depts.map(d => `<option value="${esc(d.id)}" ${d.id === me.dept ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select><span class="small text-body-secondary">You teach in ${meInfo.depts.length} departments. Switching loads that department's lessons, units and classes.</span></div>`;
+    h = h.replace(/(<ul class="small text-body-secondary mt-3 mb-0">)/, pick + "$1"); } }catch(e){ console.error(e); } return h; };
+/* ---------- Team: which other departments someone teaches in ---------- */
+let alsoOpen = "";
+function alsoCell(u, depts){ const others = depts.filter(d => d.id !== u.dept && d.college === (depts.find(x => x.id === u.dept) || {}).college), al = u.also || {}, names = others.filter(d => al[d.id]).map(d => d.name);
+  if(!others.length || u.role === "owner") return "";
+  return `<div class="also"><button type="button" class="btn btn-link btn-sm p-0" data-also="${esc(u.email)}" aria-expanded="${alsoOpen === u.email}">${names.length ? "Also in " + esc(names.join(", ")) : "Add to another department"}</button>${alsoOpen === u.email ? `<div class="also-box">${others.map(d => `<div class="also-row"><label class="form-check mb-0"><input type="checkbox" class="form-check-input" data-also-d="${esc(d.id)}" data-em="${esc(u.email)}" ${al[d.id] ? "checked" : ""}> <span class="form-check-label small">${esc(d.name)}</span></label><select class="form-select form-select-sm w-auto" data-also-r="${esc(d.id)}" data-em="${esc(u.email)}" aria-label="Role in ${esc(d.name)}" ${al[d.id] ? "" : "disabled"}><option value="teacher">Teacher</option><option value="hod" ${al[d.id] === "hod" ? "selected" : ""}>Head of dept</option></select></div>`).join("")}<div class="form-text">They switch between their departments from the lesson planner or Settings.</div></div>` : ""}</div>`; }
+const _stLayout70 = stLayout;
+stLayout = function(){ try{ if(me && (me.role === "superadmin" || me.role === "owner") && typeof team !== "undefined" && team && team.team){ const depts = team.depts || []; document.querySelectorAll('#stTeam select[data-tm="dept"]').forEach(s => { if(s.parentElement.querySelector(".also")) return; const u = team.team.find(x => x.email === s.dataset.em); if(u) s.insertAdjacentHTML("afterend", alsoCell(u, depts)); }); } splitDraw(); }catch(e){ console.error(e); } return _stLayout70.apply(this, arguments); };
+document.addEventListener("click", e => { const b = e.target.closest("[data-also]"); if(!b) return; alsoOpen = alsoOpen === b.dataset.also ? "" : b.dataset.also; renderSettings(); });
+document.addEventListener("change", async e => { const t = e.target; if(!t.dataset || (!t.dataset.alsoD && !t.dataset.alsoR)) return; const em = t.dataset.em, box = t.closest(".also-box"), also = {};
+  box.querySelectorAll("[data-also-d]").forEach(c => { if(c.checked){ const r = box.querySelector(`[data-also-r="${c.dataset.alsoD}"]`); also[c.dataset.alsoD] = r && r.value === "hod" ? "hod" : "teacher"; } });
+  try{ const j = await authCall("useralso", {email: em, also}); if(j.team) team = j; toast("Departments saved."); }catch{ toast("Couldn't save that. Try again.", {bad: true}); } renderSettings(); });
+/* ---------- splitting a department by subject (super admin, on the department you're inside) ---------- */
+let spl = {open: false, subs: [], name: "", keep: "", plan: null, busy: false, msg: "", bad: false, arm: false};
+const splUnits = () => { const m = (typeof ccDeptLists === "function" && ccDepts ? ccDeptLists().find(d => d.mine) : null); return m ? m.units : UNITS.filter(u => !u.none); };
+function splitHtml(){ const names = [...new Set(splUnits().map(u => u.s))], canUndo = !!(meInfo && meInfo.splitUndo); if(names.length < 2 && !spl.msg && !canUndo) return "";
+  const rest = names.filter(n => !spl.subs.includes(n)), P = spl.plan;
+  return `<div class="dept-new mt-3" id="splitBox"><div class="fw-semibold small mb-1">Split ${esc(me.deptName || "this department")} by subject</div>
+    <div class="small text-body-secondary mb-2">${names.length > 1 ? `${esc(me.deptName || "This department")} teaches ${names.length} subjects: ${esc(names.join(", "))}. A new department can take some of them, with their lessons, plans and classes. Everyone stays in both, and you can undo it.` : `${esc(me.deptName || "This department")} teaches one subject now.`}</div>
+    ${names.length > 1 ? (spl.open ? `<div class="mb-2"><span class="small fw-semibold d-block mb-1">Subjects that move to the new department</span>${names.map(n => `<label class="sp-pick me-1"><input type="checkbox" class="form-check-input" data-spl-s="${esc(n)}" ${spl.subs.includes(n) ? "checked" : ""}> ${esc(n)}</label>`).join("")}</div>
+      <div class="row g-2 align-items-end"><div class="col-md-4"><label class="form-label small mb-1" for="splName">New department's name</label><input class="form-control form-control-sm" id="splName" maxlength="60" value="${esc(spl.name)}"></div>
+        <div class="col-md-4"><label class="form-label small mb-1" for="splKeep">This department becomes</label><input class="form-control form-control-sm" id="splKeep" maxlength="60" value="${esc(spl.keep)}"></div>
+        <div class="col-md-4 d-flex gap-2"><button type="button" class="btn btn-sm btn-outline-primary" data-spl="preview" ${spl.busy || !spl.subs.length || !rest.length ? "disabled" : ""}>Preview</button><button type="button" class="btn btn-sm btn-link" data-spl="close">Cancel</button></div></div>
+      ${P ? `<div class="spl-plan mt-3"><div class="fw-semibold small mb-1">What will happen</div><ul class="small mb-2"><li><b>${esc(P.newName)}</b> is created and takes ${esc(P.moving.join(", "))}. <b>${esc(P.keepName)}</b> keeps ${esc(P.staying.join(", "))}.</li><li>${P.lessons} shared ${P.lessons === 1 ? "lesson" : "lessons"}, ${P.plans} ${P.plans === 1 ? "plan" : "plans"} and ${P.classes} ${P.classes === 1 ? "class" : "classes"} move to ${esc(P.newName)}.${P.mixed ? ` ${P.mixed} ${P.mixed === 1 ? "class has" : "classes have"} marks in both subjects and ${P.mixed === 1 ? "stays" : "stay"} in ${esc(P.keepName)}.` : ""}</li><li>${P.people} ${P.people === 1 ? "person is" : "people are"} added to both departments, with the role they have now. You can change that in Team.</li><li>Term dates, rules and documents are copied, so ${esc(P.newName)} starts the same.</li><li>A copy of everything touched is kept, and "Undo the last split" puts it all back.</li></ul>
+        <button type="button" class="btn btn-sm ${spl.arm ? "btn-danger" : "btn-primary"}" data-spl="go" ${spl.busy ? "disabled" : ""}>${spl.busy ? "Splitting..." : spl.arm ? "Press again to split" : "Split the department"}</button></div>` : ""}`
+      : `<button type="button" class="btn btn-sm btn-outline-primary" data-spl="open">Split by subject</button>`) : ""}
+    ${canUndo ? `<button type="button" class="btn btn-sm btn-link text-danger${names.length > 1 && !spl.open ? " ms-2" : ""}" data-spl="undo" ${spl.busy ? "disabled" : ""}>Undo the last split (${esc(meInfo.splitUndo)})</button>` : ""}
+    <div class="idea-msg mt-2${spl.bad ? " err" : ""}" role="status" id="splMsg">${esc(spl.msg)}</div></div>`; }
+function splitDraw(){ const s = $("#stDepts"); if(!s || !me || me.role !== "superadmin" || me.inside === false || window.claude) return; const body = s.querySelector(".card-body"); if(!body) return; const old = body.querySelector("#splitBox"), h = splitHtml(); if(old) old.remove(); if(h) body.insertAdjacentHTML("beforeend", h); }
+function splRead(){ const n = $("#splName"), k = $("#splKeep"); if(n) spl.name = n.value.trim(); if(k) spl.keep = k.value.trim(); }
+document.addEventListener("change", e => { const t = e.target; if(!t.dataset || !t.dataset.splS) return; splRead(); const all = [...new Set(splUnits().map(u => u.s))]; spl.subs = [...document.querySelectorAll("[data-spl-s]:checked")].map(x => x.dataset.splS); const rest = all.filter(n => !spl.subs.includes(n));
+  if(!spl.name || all.includes(spl.name)) spl.name = spl.subs.length === 1 ? spl.subs[0] : spl.name; if(!spl.keep || all.includes(spl.keep) || spl.keep === me.deptName) spl.keep = rest.length === 1 ? rest[0] : (spl.keep || me.deptName || ""); spl.plan = null; spl.arm = false; splitDraw(); });
+document.addEventListener("click", async e => { const b = e.target.closest("[data-spl]"); if(!b || spl.busy) return; const k = b.dataset.spl; splRead();
+  if(k === "open"){ spl.open = true; spl.msg = ""; if(!spl.keep) spl.keep = me.deptName || ""; return splitDraw(); } if(k === "close"){ spl = {...spl, open: false, plan: null, arm: false, msg: ""}; return splitDraw(); }
+  const body = {dept: me.dept, subjects: spl.subs, name: spl.name, keepName: spl.keep, units: splUnits().map(u => ({s: u.s, l: u.l, u: u.u}))};
+  if(k === "go" && !spl.arm){ spl.arm = true; splitDraw(); setTimeout(() => { if(spl.arm){ spl.arm = false; splitDraw(); } }, 6000); return; }
+  spl.busy = true; spl.bad = false; spl.msg = k === "undo" ? "Putting it back..." : k === "go" ? "Splitting. Keep this page open." : "Working it out..."; splitDraw();
+  try{ if(k === "preview"){ if(!spl.name) throw {code: "name"}; const j = await authCall("deptsplit", body); spl.plan = j.plan; spl.msg = ""; }
+    else if(k === "go"){ const j = await authCall("deptsplit", {...body, go: true}); try{ ["cc_depts", "cc_hd_dept"].forEach(x => localStorage.removeItem(x)); ACCOUNT_KEYS.forEach(x => localStorage.removeItem(x)); }catch{} lsSet("cc_flash", `${j.plan.newName} is now its own department. ${j.plan.keepName} keeps ${j.plan.staying.join(", ")}.`); return location.reload(); }
+    else if(k === "undo"){ const j = await authCall("deptsplitundo"); try{ ["cc_depts", "cc_hd_dept"].forEach(x => localStorage.removeItem(x)); ACCOUNT_KEYS.forEach(x => localStorage.removeItem(x)); }catch{} lsSet("cc_flash", `Undone. ${j.undone} has been folded back in.`); return location.reload(); } }
+  catch(err){ const c = err && err.code; spl.bad = true; spl.msg = c === "none" ? "There's no split to undo." : c === "name" ? "Give the new department a name." : c === "all" ? "Leave at least one subject behind." : c === "subjects" ? "Pick the subjects that move." : "That didn't work. Nothing was changed."; }
+  spl.busy = false; spl.arm = false; splitDraw(); });
+/* ---------- Crafti's chat: don't redraw under a text selection ---------- */
+const _cfDraw70 = cfDraw;
+cfDraw = function(){ try{ const sel = getSelection(), root = $("#cfRoot"); if(root && sel && !sel.isCollapsed && sel.anchorNode && root.contains(sel.anchorNode) && cfOpen && !cfBusy && arguments[0] === false) return; }catch{} return _cfDraw70.apply(this, arguments); };
+/* the remembered department list belongs to the department you were in: drop it on any switch */
+const _colSwitch70 = colSwitch;
+colSwitch = function(){ try{ localStorage.removeItem("cc_depts"); }catch{} return _colSwitch70.apply(this, arguments); };
+document.addEventListener("change", e => { if(e.target.id === "accDept") try{ localStorage.removeItem("cc_depts"); lsSet("cc_hd_dept", e.target.value); }catch{} }, true);
+/* ---------- super admin inside an institution: Leave is always in the menu as well as on the bar ---------- */
+const _syncShell70 = syncShell;
+syncShell = function(){ const r = _syncShell70.apply(this, arguments); try{ const f = document.querySelector(".side .side-foot"), inn = typeof saIn === "function" && saIn(); let b = $("#sideLeave"); if(!inn){ if(b) b.remove(); } else if(f && !b){ f.insertAdjacentHTML("afterbegin", `<button type="button" class="side-leave" id="sideLeave" data-sa-leave title="Leave ${esc(me.collegeName || "this institution")} and go back to Admin"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></svg><span class="lbl">Leave ${esc(me.collegeName || "this institution")}</span></button>`); } else if(b){ const l = b.querySelector(".lbl"), t = "Leave " + (me.collegeName || "this institution"); if(l && l.textContent !== t) l.textContent = t; } }catch(e){ console.error(e); } return r; };
+/* Crafti stays off the build button: if it would sit over it, it hops above while that's on screen */
+const _cfPlace70 = cfPlace;
+cfPlace = function(){ _cfPlace70.apply(this, arguments); try{ const btn = $("#cfBtn"), s = document.querySelector("#hForm .send"); if(!btn || !s || cfOpen) return; const r = s.getBoundingClientRect(), b = btn.getBoundingClientRect(); if(!r.width || r.bottom < 0 || r.top > innerHeight) return;
+    if(!(b.right <= r.left - 6 || b.left >= r.right + 6 || b.bottom <= r.top - 6 || b.top >= r.bottom + 6)){ const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cf-b")) || 20; document.documentElement.style.setProperty("--cf-b", Math.round(cur + (b.bottom - r.top) + 14) + "px"); } }catch{} };
+let cfScrollT = 0; addEventListener("scroll", () => { if(cfScrollT) return; cfScrollT = requestAnimationFrame(() => { cfScrollT = 0; try{ cfPlace(); }catch{} }); }, {passive: true});
+/* ---------- the roadmap's "when" menus: the page used to redraw underneath an open menu and close it. It now waits until you've chosen ---------- */
+let rmHeld = false;
+const _rmDraw70 = rmDraw;
+rmDraw = function(){ try{ const a = document.activeElement; if(view === "roadmap" && a && a.matches && a.matches("#out select[data-rm-when]")){ rmHeld = true; return; } }catch{} rmHeld = false; return _rmDraw70.apply(this, arguments); };
+document.addEventListener("change", e => { const t = e.target; if(t && t.matches && t.matches("select[data-rm-when]")) try{ t.blur(); }catch{} }, true);
+document.addEventListener("focusout", e => { const t = e.target; if(t && t.matches && t.matches("select[data-rm-when]") && rmHeld) setTimeout(() => { if(rmHeld && view === "roadmap") rmDraw(); }, 150); });
+
+/* ===== round 71 (v121): star one of Crafti's replies and it goes onto a blank board: full screen, big type, ready for the class. It's copied as well,
+   and an Open the board button appears. The board can be typed on, made bigger or smaller, and keeps the last few things you starred. ===== */
+let cbList = [], cbAt = 0, cbSize = 1;
+try{ const j = JSON.parse(lsGet("cc_boards") || "[]"); if(Array.isArray(j)) cbList = j.filter(x => x && x.html).slice(0, 12); cbSize = +(lsGet("cc_board_size") || 1) || 1; }catch{}
+const cbKeep = () => { try{ lsSet("cc_boards", JSON.stringify(cbList.slice(0, 12))); }catch{} };
+const cbHas = key => cbList.some(x => x.key === key);
+const CB_STAR = on => `<svg viewBox="0 0 24 24" width="16" height="16" fill="${on ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.200 9.5l6.1-.9z"/></svg>`;
+function cbStar(c, i){ const m = c && c.msgs[i]; if(!m) return; const key = c.id + ":" + i, at = cbList.findIndex(x => x.key === key);
+  if(at >= 0){ cbList.splice(at, 1); cbKeep(); return false; }
+  const q = c.msgs.slice(0, i).reverse().find(x => x.r === "u"); cbList.unshift({key, title: String((q && q.t) || "From Crafti").replace(/\s+/g, " ").trim().slice(0, 90), html: tkClean(tkMd(m.t)), text: m.t, at: Date.now()}); cbList = cbList.slice(0, 12); cbAt = 0; cbKeep();
+  try{ navigator.clipboard.writeText(m.t).catch(() => {}); }catch{} return true; }
+function cbOpen(key){ if(!cbList.length) return; if(key){ const i = cbList.findIndex(x => x.key === key); if(i >= 0) cbAt = i; } cbAt = Math.max(0, Math.min(cbList.length - 1, cbAt)); let el = $("#cfBoard");
+  if(!el){ el = document.createElement("div"); el.id = "cfBoard"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Board"); document.body.appendChild(el); }
+  const b = cbList[cbAt], many = cbList.length > 1; el.dataset.from = el.dataset.from || "";
+  el.innerHTML = `<div class="cb-bar"><span class="cb-t">${esc(b.title)}</span>${many ? `<button type="button" class="cb-b" data-cb="prev" aria-label="Previous starred reply">&lsaquo;</button><span class="cb-n">${cbAt + 1} of ${cbList.length}</span><button type="button" class="cb-b" data-cb="next" aria-label="Next starred reply">&rsaquo;</button>` : ""}<button type="button" class="cb-b" data-cb="smaller" aria-label="Smaller text">A&minus;</button><button type="button" class="cb-b" data-cb="bigger" aria-label="Bigger text">A+</button><button type="button" class="cb-b" data-cb="copy">Copy</button><button type="button" class="cb-b" data-cb="clear">Clear</button><button type="button" class="cb-b cb-x" data-cb="close" aria-label="Close the board">&times;</button></div>
+    <div class="cb-page tk-body" id="cbPage" contenteditable="true" spellcheck="false" aria-label="Board. You can type on it." style="font-size:${cbSize}em">${b.html}</div><div class="cb-foot">You can type on the board. Escape closes it.</div>`;
+  document.documentElement.style.overflow = "hidden"; const x = el.querySelector('[data-cb="close"]'); if(x) x.focus(); }
+function cbClose(){ const el = $("#cfBoard"); if(!el) return; const p = $("#cbPage"), b = cbList[cbAt]; if(p && b){ b.html = tkClean(p.innerHTML); cbKeep(); } el.remove(); document.documentElement.style.overflow = ""; const o = document.querySelector("[data-cb-open]"); if(o) o.focus(); }
+document.addEventListener("click", e => { const t = e.target;
+  const st = t.closest("[data-cb-star]"); if(st){ const c = st.dataset.asChat ? asChat() : cfChat(), on = cbStar(c, +st.dataset.i); if(on === undefined) return; toast(on ? "On the board, and copied." : "Taken off the board."); if(st.dataset.asChat) asDraw(); else cfDraw(false); return; }
+  const op = t.closest("[data-cb-open]"); if(op) return cbOpen(op.dataset.cbOpen);
+  const b = t.closest("[data-cb]"); if(!b) return; const k = b.dataset.cb, p = $("#cbPage"), cur = cbList[cbAt];
+  if(k === "close") return cbClose();
+  if(k === "prev" || k === "next"){ if(p && cur){ cur.html = tkClean(p.innerHTML); cbKeep(); } cbAt = (cbAt + (k === "next" ? 1 : -1) + cbList.length) % cbList.length; return cbOpen(); }
+  if(k === "bigger" || k === "smaller"){ cbSize = Math.max(.7, Math.min(2.6, Math.round((cbSize + (k === "bigger" ? .15 : -.15)) * 100) / 100)); lsSet("cc_board_size", String(cbSize)); if(p) p.style.fontSize = cbSize + "em"; return; }
+  if(k === "copy"){ try{ navigator.clipboard.writeText(p ? p.innerText : "").then(() => { b.textContent = "Copied"; setTimeout(() => { b.textContent = "Copy"; }, 1500); }).catch(() => {}); }catch{} return; }
+  if(k === "clear"){ if(p){ p.innerHTML = "<p><br></p>"; p.focus(); } return; } });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && $("#cfBoard")){ e.preventDefault(); e.stopPropagation(); cbClose(); } }, true);
+/* the star and Open the board, under each reply: in the chat window and on the Crafti page */
+const cbBtns = (c, i, big) => { const on = c && cbHas(c.id + ":" + i), cls = big ? "btn btn-sm btn-outline-primary" : "cf-act", ex = big ? ' data-as-chat="1"' : ""; return `<button type="button" class="${cls} cb-star${on ? " on" : ""}" data-cb-star data-i="${i}"${ex} aria-pressed="${on}" title="Put this on a blank board for the class">${CB_STAR(on)} ${on ? "On the board" : "Board"}</button>${on ? `<button type="button" class="${cls} cb-open" data-cb-open="${esc(c.id + ":" + i)}">Open the board</button>` : ""}`; };
+const _cfMsgs71 = cfMsgs;
+cfMsgs = function(){ const c = cfChat(); return _cfMsgs71.apply(this, arguments).replace(/<button type="button" class="btn btn-link btn-sm p-0" data-cf-copy="(\d+)">/g, (m, i) => cbBtns(c, +i, false) + m); };
+const _asHtml71 = asHtml;
+asHtml = function(){ const c = asChat(); return _asHtml71.apply(this, arguments).replace(/(<button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="(\d+)">)/g, (m, b, i) => cbBtns(c, +i, true) + b); };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

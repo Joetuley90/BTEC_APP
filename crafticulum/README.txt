@@ -1914,4 +1914,65 @@ OVERVIEW FOR MANAGERS (v120)
   - Numbers only. Learners are never named.
   - The target is kept in data/_mgr.json.
 
+WHAT'S NEW IN v121
+
+MORE THAN ONE DEPARTMENT (v121)
+  - A person can now belong to more than one department in their
+    institution. In Admin (or Settings), People, Team: under someone's
+    department, "Add to another department", tick it and pick their
+    role there (teacher or head of department).
+  - They switch from the department row in the lesson planner, or from
+    Settings, You. Switching loads that department's subjects, lessons,
+    plans and classes, and what they make is saved in it.
+  - Picking a department in the planner now really works in that
+    department, for managers and super admins too.
+
+SPLIT A DEPARTMENT BY SUBJECT (v121)
+  For a department that teaches several subjects and should be two (the
+  original one on this site teaches Esports and IT).
+  - Super admin only. Work inside the institution, then Admin, People,
+    Departments, "Split by subject".
+  - Tick the subjects that move, name the new department and what this
+    one becomes, and press Preview. It says exactly what will move and
+    changes nothing.
+  - "Split the department" (two presses) then: makes the new department;
+    gives each department its own subjects as ordinary specifications
+    (nothing is "built in" any more); moves the shared lessons and plans
+    for the moving subjects; moves each person's own classes where all
+    the marks are in those subjects (a class with marks in both stays);
+    copies term dates, rules and documents; and puts everyone in both
+    departments with the role they have.
+  - A copy of everything touched is kept in data/_split, and "Undo the
+    last split" puts it all back, including anything made in the new
+    department since.
+  - Take a backup first all the same (Admin, System, Backup).
+
+CRAFTI'S CHAT (v121)
+  - The button is Crafti on its own, without the purple circle, and sits
+    a little higher.
+  - Text in the chat can be selected and copied, and the chat isn't
+    redrawn underneath a selection.
+  - The message box no longer makes an iPhone zoom in when you tap it.
+  - It moves out of the way of the build button on the dashboard.
+
+STAR A REPLY ONTO A BOARD (v121)
+  - Under each of Crafti's replies there's a Board button with a star.
+    Press it and the reply goes onto a blank board, and is copied too.
+    "Open the board" then appears beside it.
+  - The board is full screen with big type for the class. You can type
+    on it, make the text bigger or smaller, copy it or clear it. Escape
+    closes it. It keeps the last 12 things you starred, on this device.
+  - The same buttons are on the Crafti page.
+
+SUPER ADMIN (v121)
+  - Working inside an institution shows a clearer bar: a yellow "Super
+    admin" badge, which institution you're inside, and a white Leave
+    button. Leave is in the side menu too, so it's always to hand.
+  - The super admin belongs to no institution. Stepping inside one no
+    longer writes that department to the super admin's own account, it
+    only lasts for the session, and any old link is removed the next
+    time you step in or leave. Their own profile says "Whole site".
+  - The roadmap's "when" menus now stay open while you choose. The page
+    was redrawing underneath them and closing them.
+
 NO CHANGES TO config.php

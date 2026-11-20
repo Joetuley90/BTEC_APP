@@ -27,7 +27,7 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 $body = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : 20001); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : (($_GET['a'] ?? '') === 'deptsplit' ? 3000001 : 20001)); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
 /* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
 if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); $inst = 0; if (is_file(__DIR__ . '/inst-lib.php')) { require_once __DIR__ . '/inst-lib.php'; @file_put_contents(ccInstDir() . '/_cron.txt', (string) time()); try { $inst = ccInstAuto(); } catch (Throwable $e) { $inst = 0; } } $up = 0; if (is_file(__DIR__ . '/update-lib.php')) { require_once __DIR__ . '/update-lib.php'; try { $up = ccUpAuto(); } catch (Throwable $e) { $up = 0; } } out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge(), 'directory' => $inst, 'updated' => $up]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
@@ -484,17 +484,21 @@ if ($action === 'me') {
           'google' => ccGoogleId() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'mail' => ccMailReady(), 'passwordBackup' => ccPasswordAllowed(), 'prefs' => ccDeptPrefs($a, $me['dept']), 'marker' => ccMarker($a, $me['dept']) + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)], 'site' => !empty($me['demo']) ? ['plain' => true] + ccSitePublic($a) : (empty($me['inside'] ?? true) ? ccSitePublic($a) : ccSite($a, $me['college'])), 'url' => ccSiteUrl(), 'tempHost' => (string) parse_url(ccTempUrl(), PHP_URL_HOST)];
     $pl = ccPlanOf($a, (string) $me['college']); $o['billing'] = ccBillingOn(); $pu = ccPlanUsed((string) $me['college'], ccUsageRead()); $o['plan'] = ['id' => $pl['id'], 'name' => $pl['name'], 'builds' => $pl['builds'], 'checks' => $pl['checks'], 'usedBuilds' => $pu['builds'], 'usedChecks' => $pu['checks']];
     $o['needVerify'] = !empty($o['billing']) && !empty($a['colleges'][(string) $me['college']]['self']) && ccMailReady() && empty($a['users'][(string) $me['email']]['verified']); $o['selfStart'] = !empty($a['colleges'][(string) $me['college']]['self']);
-    if ($me['role'] === 'superadmin') { $o['depts'] = deptList($a); $o['inbox'] = ccInboxOpen(); $o['colleges'] = collegeList($a); }
+    if ($me['role'] === 'superadmin') { $o['depts'] = deptList($a); $o['inbox'] = ccInboxOpen(); $o['colleges'] = collegeList($a); foreach (glob(ccDataDir() . '/_split/*/manifest.json') ?: [] as $sf) { $sm = json_decode((string) @file_get_contents($sf), true); if (is_array($sm) && empty($sm['undone'])) $o['splitUndo'] = (string) ($sm['newName'] ?? ''); } }
     elseif ($me['role'] === 'owner') $o['depts'] = deptList($a, $me['college']);
+    else { $al = ccAlso($a, ['dept' => (string) ($mine['dept'] ?? ''), 'also' => $mine['also'] ?? []]); if ($al) { $ids = array_merge([(string) $mine['dept']], array_keys($al)); $o['depts'] = array_values(array_filter(deptList($a, $me['college']), fn($d) => in_array($d['id'], $ids, true))); } }
     if ($me['canTeam']) $o['pending'] = count(array_filter($a['users'], fn($u) => !ccActive($u) && canManage($u, $me, $a)));
     out(200, $o);
 }
 if ($action === 'dept') {
-    if (empty($me['admin'])) out(403, ['error' => 'noperm']);
     $id = (string) ($body['id'] ?? ''); if (!isset($a['depts'][$id])) out(404, ['error' => 'not_found']);
+    if (empty($me['admin'])) {   // someone in more than one department switches between their own
+        $home = (string) ($mine['dept'] ?? ''); $al = ccAlso($a, ['dept' => $home, 'also' => $mine['also'] ?? []]); if ($id !== $home && !isset($al[$id])) out(403, ['error' => 'noperm']);
+        if ($id === $home) unset($_SESSION['dept']); else $_SESSION['dept'] = $id; out(200, ['me' => ccPublic(ccMe())]); }
     if ($me['role'] === 'owner' && ($id === CC_DEMO_DEPT || ccCollegeOf($a, $id) !== ccCollegeOf($a, (string) ($mine['dept'] ?? '')))) out(403, ['error' => 'noperm']);   // a manager stays inside their own institution
     $_SESSION['dept'] = $id; if ($me['role'] === 'superadmin') $_SESSION['inside'] = 1;
-    if (isset($a['users'][$me['email']])) { $a['users'][$me['email']]['dept'] = $id; ccSaveAccounts($a); }
+    /* a manager's own department follows them. The super admin belongs to no institution, so nothing is written to their account: stepping inside lasts for the session only */
+    if (isset($a['users'][$me['email']])) { if ($me['role'] === 'superadmin') { if (isset($a['users'][$me['email']]['dept']) || isset($a['users'][$me['email']]['also'])) { unset($a['users'][$me['email']]['dept'], $a['users'][$me['email']]['also']); ccSaveAccounts($a); } } else { $a['users'][$me['email']]['dept'] = $id; ccSaveAccounts($a); } }
     out(200, ['me' => ccPublic(ccMe())]);
 }
 /* ---------- notifications on this person's own devices ---------- */
@@ -588,6 +592,7 @@ if ($action === 'houseget' || $action === 'houseset') {
 if ($action === 'leave') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
     unset($_SESSION['inside'], $_SESSION['dept']);
+    if (isset($a['users'][$me['email']]['dept']) || isset($a['users'][$me['email']]['also'])) { unset($a['users'][$me['email']]['dept'], $a['users'][$me['email']]['also']); ccSaveAccounts($a); }
     out(200, ['me' => ccPublic(ccMe())]);
 }
 $selfOk = $me['email'] !== 'admin@password';
@@ -732,6 +737,7 @@ if ($action === 'totp_off') {
 }
 
 /* ---------- colleges (super admin): add one with its first department and its manager, rename it, limit it, switch it off, remove it ---------- */
+function fileFor2(string $dir, string $p): string { return $dir . '/' . sha1($p) . '.json'; }
 function newDeptId(array $a, string $name): string { $id = trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($name)), '-') ?: 'dept'; $id = substr($id, 0, 24); $base = $id; $n = 2; while (isset($a['depts'][$id]) || $id === CC_DEMO_DEPT) $id = $base . '-' . $n++; return $id; }
 function collegeList(array $a): array { $o = [];
     foreach (ccCollegeIds($a) as $id) { $id = (string) $id; $c = ccCollege($a, $id); $depts = ccCollegeDepts($a, $id);
@@ -894,7 +900,7 @@ function teamData(array $a, array $me): array {
     foreach ($a['users'] as $email => $u) {
         if (in_array($email, ccSupers(), true) && ccActive($u)) continue;
         if (!canManage($u, $me, $a)) continue;
-        $row = ['email' => $email, 'name' => (string) ($u['name'] ?? ''), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($u['dept'] ?? ''), 'canEdit' => !empty($u['canEdit']), 'rooms' => ccRooms($a, ['email' => $email, 'role' => (string) ($u['role'] ?? 'teacher'), 'college' => ccCollegeOf($a, (string) ($u['dept'] ?? ''))]), 'roomsOpen' => ccRoomsCollege($a, ccCollegeOf($a, (string) ($u['dept'] ?? ''))), 'perms' => ccPerms($u),
+        $row = ['email' => $email, 'name' => (string) ($u['name'] ?? ''), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($u['dept'] ?? ''), 'also' => (object) ccAlso($a, $u), 'canEdit' => !empty($u['canEdit']), 'rooms' => ccRooms($a, ['email' => $email, 'role' => (string) ($u['role'] ?? 'teacher'), 'college' => ccCollegeOf($a, (string) ($u['dept'] ?? ''))]), 'roomsOpen' => ccRoomsCollege($a, ccCollegeOf($a, (string) ($u['dept'] ?? ''))), 'perms' => ccPerms($u),
                 'last' => (int) ($u['last'] ?? 0), 'methods' => (array) ($u['methods'] ?? []), 'hasPass' => !empty($u['pass']), 'totp' => !empty($u['totp']['on'])];
         if (ccActive($u)) $team[] = $row; else $pend[] = $row + ['verified' => !empty($u['verified']), 'via' => (string) ($u['via'] ?? 'password'), 'wantDept' => (string) ($u['wantDept'] ?? ''), 'wantRole' => (string) ($u['wantRole'] ?? 'teacher'), 'requested' => (int) ($u['requested'] ?? 0)];
     }
@@ -906,6 +912,79 @@ function teamData(array $a, array $me): array {
          + ($me['role'] === 'superadmin' ? ['colleges' => collegeList($a)] : []);
 }
 function teamOut(array $a, array $me): void { out(200, teamData($a, $me)); }
+/* ---------- more than one department. A manager says which other departments someone teaches in; that person then switches between them ---------- */
+if ($action === 'useralso') {
+    if (!$isAdmin) out(403, ['error' => 'noperm']);
+    $em = strtolower(trim((string) ($body['email'] ?? ''))); $u = $a['users'][$em] ?? null; if (!$u || in_array($em, ccSupers(), true)) out(404, ['error' => 'not_found']);
+    $home = (string) ($u['dept'] ?? ''); $col = ccCollegeOf($a, $home); if (!$isSuper && $col !== (string) $me['college']) out(403, ['error' => 'noperm']);
+    if (($u['role'] ?? '') === 'owner') out(400, ['error' => 'owner']);   // a manager already works in every department
+    $also = []; foreach ((array) ($body['also'] ?? []) as $d => $r) { $d = (string) $d; if ($d === $home || $d === CC_DEMO_DEPT || !isset($a['depts'][$d]) || ccCollegeOf($a, $d) !== $col) continue; $also[$d] = $r === 'hod' ? 'hod' : 'teacher'; if (count($also) >= 12) break; }
+    if ($also) $a['users'][$em]['also'] = $also; else unset($a['users'][$em]['also']);
+    ccSaveAccounts($a); ccLog($me['dept'], $me, 'set the departments for', $em); teamOut(ccAccounts(), $me);
+}
+/* ---------- splitting one department into two by subject. For a department that grew up teaching several subjects (the original one here):
+   a new department takes the subjects you name, with their lessons, plans and classes, and everyone stays in both. Preview first, a copy of
+   everything touched is kept, and it can be undone. ---------- */
+if ($action === 'deptsplit' || $action === 'deptsplitundo') {
+    if (!$isSuper) out(403, ['error' => 'noperm']); @set_time_limit(300);
+    $base = ccDataDir(); $bkRoot = $base . '/_split';
+    if ($action === 'deptsplitundo') {
+        $last = null; foreach (glob($bkRoot . '/*/manifest.json') ?: [] as $f) { $m = json_decode((string) @file_get_contents($f), true); if (is_array($m) && empty($m['undone']) && (!$last || $m['at'] > $last['at'])) $last = $m + ['file' => $f]; }
+        if (!$last) out(404, ['error' => 'none']);
+        foreach (array_reverse((array) $last['moves']) as [$from, $to]) { if (is_file($base . '/' . $to)) { if (!is_dir(dirname($base . '/' . $from))) @mkdir(dirname($base . '/' . $from), 0700, true); @rename($base . '/' . $to, $base . '/' . $from); } }
+        foreach ((array) $last['copies'] as $to) @unlink($base . '/' . $to); foreach ((array) ($last['made'] ?? []) as $to) @unlink($base . '/' . $to);
+        /* anything made in the new department since comes back too, so nothing is stranded */
+        $fromDir = !empty(ccAccounts()['depts'][$last['from']]['legacy']) || is_file(dirname($last['file']) . '/accounts.json') && !empty((json_decode((string) file_get_contents(dirname($last['file']) . '/accounts.json'), true)['depts'][$last['from']] ?? [])['legacy']) ? $base : $base . '/d/' . $last['from'];
+        foreach (glob($base . '/d/' . $last['new'] . '/*.json') ?: [] as $f) { $t = $fromDir . '/' . basename($f); if (!is_file($t)) @rename($f, $t); }
+        foreach (glob($base . '/u/*/' . $last['new'] . '/*.json') ?: [] as $f) { $t = dirname(dirname($f)) . '/' . $last['from'] . '/' . basename($f); if (!is_dir(dirname($t))) @mkdir(dirname($t), 0700, true); if (!is_file($t)) @rename($f, $t); }
+        foreach ((array) $last['saved'] as $rel) { $bk = dirname($last['file']) . '/saved/' . sha1($rel); if (is_file($bk)) @copy($bk, $base . '/' . $rel); }
+        $acc = json_decode((string) @file_get_contents(dirname($last['file']) . '/accounts.json'), true); if (is_array($acc)) {   // people and departments go back as they were, keeping anyone added since
+            $now = ccAccounts(); unset($now['depts'][$last['new']]); if (isset($acc['depts'][$last['from']])) $now['depts'][$last['from']] = $acc['depts'][$last['from']];
+            foreach ($now['users'] as $e => $u) { if (isset($u['also'][$last['new']])) { unset($now['users'][$e]['also'][$last['new']]); if (!$now['users'][$e]['also']) unset($now['users'][$e]['also']); } if (($u['dept'] ?? '') === $last['new']) $now['users'][$e]['dept'] = $last['from']; }
+            ccSaveAccounts($now); }
+        $m = json_decode((string) file_get_contents($last['file']), true); $m['undone'] = time(); file_put_contents($last['file'], json_encode($m));
+        ccLog($me['dept'], $me, 'undid the department split', (string) $last['newName']); out(200, ['ok' => true, 'undone' => $last['newName']]);
+    }
+    $from = (string) ($body['dept'] ?? ''); $di = $a['depts'][$from] ?? null; if (!$di || $from === CC_DEMO_DEPT) out(404, ['error' => 'not_found']);
+    $subs = array_values(array_unique(array_filter(array_map(fn($x) => trim((string) $x), (array) ($body['subjects'] ?? [])), 'strlen'))); if (!$subs) out(400, ['error' => 'subjects']);
+    $newName = cleanName((string) ($body['name'] ?? '')); $keepName = cleanName((string) ($body['keepName'] ?? '')); if ($newName === '') out(400, ['error' => 'name']);
+    $units = is_array($body['units'] ?? null) ? $body['units'] : [];   // every subject the department teaches now, as the page sees them, built-in ones included
+    $units = array_values(array_filter($units, fn($x) => is_array($x) && isset($x['s'], $x['l']) && is_array($x['u'] ?? null))); if (!$units) out(400, ['error' => 'units']);
+    $go = fn(array $x) => in_array((string) $x['s'], $subs, true); $moveU = array_values(array_filter($units, $go)); $keepU = array_values(array_filter($units, fn($x) => !$go($x)));
+    if (!$moveU) out(400, ['error' => 'subjects']); if (!$keepU) out(400, ['error' => 'all']);
+    $legacy = !empty($di['legacy']); $ddir = $legacy ? $base : $base . '/d/' . $from; $rel = fn(string $abs) => ltrim(substr($abs, strlen($base)), '/');
+    $isSub = fn(string $c) => in_array($c, $subs, true); $keyIs = fn(string $k) => $isSub((string) explode('|', $k)[0]);
+    /* what would move, and what would be copied so the new department starts with the same settings */
+    $moves = []; $copies = []; $n = ['lessons' => 0, 'plans' => 0, 'own' => 0, 'classes' => 0, 'mixed' => 0, 'people' => 0];
+    foreach (glob($ddir . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j)) continue; $p = (string) ($j['path'] ?? ''); if ($p === '') continue;
+        if (strpos($p, 'lessons/') === 0) { $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); $c = is_array($l) ? (string) ($l['meta']['course'] ?? ($j['data']['course'] ?? '')) : (string) ($j['data']['course'] ?? ''); if ($isSub($c)) { $moves[] = [$f, 'd']; $n['lessons']++; } continue; }
+        if (preg_match('#^data/users/[^/]+/seqs/#', $p)) { $sq = json_decode((string) ($j['data']['json'] ?? $j['data']['seq'] ?? ''), true); $c = is_array($sq) && !empty($sq['course']) ? (string) $sq['course'] : (string) explode('|', (string) ($j['data']['key'] ?? (is_array($sq) ? ($sq['key'] ?? '') : '')))[0]; if ($isSub($c)) { $moves[] = [$f, 'd']; $n['plans']++; } continue; }
+        if (preg_match('#^data/users/[^/]+/settings/courses$#', $p)) continue;   // written fresh for both, below
+        $copies[] = [$f, 'd']; }
+    $people = []; foreach ($a['users'] as $e => $u) { if (!is_array($u) || (string) ($u['dept'] ?? '') !== $from || in_array((string) $e, ccSupers(), true)) continue; $people[] = (string) $e; } $n['people'] = count($people);
+    foreach (glob($base . '/u/*/' . $from . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j)) continue; $p = (string) ($j['path'] ?? ''); $who = basename(dirname(dirname($f)));
+        if (preg_match('#^data/users/[^/]+/lessons/#', $p)) { $c = (string) ($j['data']['course'] ?? ''); if ($c === '') { $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); $c = is_array($l) ? (string) ($l['meta']['course'] ?? '') : ''; } if ($isSub($c)) { $moves[] = [$f, 'u/' . $who]; $n['own']++; } continue; }
+        if (preg_match('#^data/users/[^/]+/learners/#', $p)) { $st = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($st)) continue; $keys = []; foreach (['marks', 'subs'] as $k) foreach ((array) ($st[$k] ?? []) as $uk => $v) if ($v) $keys[(string) $uk] = 1; if (!$keys) continue;
+            $in = count(array_filter(array_keys($keys), $keyIs)); if ($in === count($keys)) { $moves[] = [$f, 'u/' . $who]; $n['classes']++; } elseif ($in > 0) $n['mixed']++; continue; }
+        if (preg_match('#^data/users/[^/]+/seqs/#', $p)) { $sq = json_decode((string) ($j['data']['json'] ?? $j['data']['seq'] ?? ''), true); $c = is_array($sq) && !empty($sq['course']) ? (string) $sq['course'] : (string) explode('|', (string) ($j['data']['key'] ?? (is_array($sq) ? ($sq['key'] ?? '') : '')))[0]; if ($isSub($c)) { $moves[] = [$f, 'u/' . $who]; $n['plans']++; } continue; }
+        $copies[] = [$f, 'u/' . $who]; }
+    $plan = ['from' => (string) $di['name'], 'keepName' => $keepName !== '' ? $keepName : (string) $di['name'], 'newName' => $newName, 'moving' => array_values(array_unique(array_map(fn($x) => (string) $x['s'], $moveU))), 'staying' => array_values(array_unique(array_map(fn($x) => (string) $x['s'], $keepU)))] + $n;
+    if (empty($body['go'])) out(200, ['plan' => $plan]);
+    /* do it: a copy of everything first */
+    $id = newDeptId($a, $newName); $bk = $bkRoot . '/' . date('Ymd-His'); if (!@mkdir($bk . '/saved', 0700, true)) out(500, ['error' => 'write']);
+    @copy($base . '/_accounts.json', $bk . '/accounts.json'); $newD = $base . '/d/' . $id; $dest = fn(string $f, string $where) => ($where === 'd' ? $newD : $base . '/' . $where . '/' . $id) . '/' . basename($f);
+    $man = ['at' => time(), 'by' => (string) $me['email'], 'from' => $from, 'new' => $id, 'newName' => $newName, 'moves' => [], 'copies' => [], 'saved' => []];
+    $cf = fileFor2($ddir, 'data/users/teacher/settings/courses'); if (is_file($cf)) { @copy($cf, $bk . '/saved/' . sha1($rel($cf))); $man['saved'][] = $rel($cf); } else $man['made'] = [$rel($cf)];
+    file_put_contents($bk . '/manifest.json', json_encode($man));
+    foreach ($moves as [$f, $w]) { $t = $dest($f, $w); if (!is_dir(dirname($t))) @mkdir(dirname($t), 0700, true); if (@rename($f, $t)) $man['moves'][] = [$rel($f), $rel($t)]; }
+    foreach ($copies as [$f, $w]) { $t = $dest($f, $w); if (!is_dir(dirname($t))) @mkdir(dirname($t), 0700, true); if (!is_file($t) && @copy($f, $t)) $man['copies'][] = $rel($t); }
+    $doc = fn(array $list) => json_encode(['path' => 'data/users/teacher/settings/courses', 'data' => ['json' => json_encode(['builtin' => false, 'list' => $list], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 'updatedAt' => (int) (microtime(true) * 1000)]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if (!is_dir($newD)) @mkdir($newD, 0700, true); $nf = fileFor2($newD, 'data/users/teacher/settings/courses'); file_put_contents($nf, $doc($moveU), LOCK_EX); $man['copies'][] = $rel($nf); file_put_contents($cf, $doc($keepU), LOCK_EX);
+    $a = ccAccounts(); $nd = $a['depts'][$from]; unset($nd['legacy'], $nd['legacyOwner']); $nd['name'] = $newName; $nd['created'] = time(); $nd['splitFrom'] = $from; $a['depts'][$id] = $nd; if ($keepName !== '') $a['depts'][$from]['name'] = $keepName;
+    foreach ($people as $e) { $r = (string) ($a['users'][$e]['role'] ?? 'teacher'); if ($r === 'owner') continue; $al = (array) ($a['users'][$e]['also'] ?? []); $al[$id] = $r === 'hod' ? 'hod' : 'teacher'; $a['users'][$e]['also'] = $al; }
+    ccSaveAccounts($a); file_put_contents($bk . '/manifest.json', json_encode($man));
+    ccLog($me['dept'], $me, 'split a department by subject:', $newName); out(200, ['ok' => true, 'plan' => $plan, 'newDept' => $id, 'depts' => deptList(ccAccounts()), 'colleges' => collegeList(ccAccounts())]);
+}
 if ($action === 'team') teamOut($a, $me);
 if (in_array($action, ['deptadd', 'deptset', 'deptdel'], true)) {
     if (!$isAdmin) out(403, ['error' => 'noperm']);
