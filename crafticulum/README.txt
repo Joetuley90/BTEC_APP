@@ -1996,4 +1996,18 @@ VERSION 123: OPEN LESSON, ON ITS OWN
 - A small bar above it has Back to Planning, and New lesson to bring the panel
   back. Lessons in the menu and Create a lesson work as before.
 
+VERSION 124: THE SUPER ADMIN STANDS OUTSIDE, ALWAYS
+- The super admin bar now stays at the top of the screen while you scroll, on
+  phones too, with Leave always in reach.
+- It also shows on a site with only one institution. Before, with one
+  institution the super admin was held inside it with no way out.
+- Press Leave once and the site remembers: from then on the super admin signs
+  in outside every institution, on Admin, and opens one to work inside it.
+- Inside an institution the super admin no longer reads "Your institution"
+  anywhere, in Settings or on the dashboard. It says "This institution". The
+  institution's own manager still sees "Your institution".
+- Nothing is moved or deleted. Lessons, PowerPoints, guides and plans stay
+  exactly where they are, and the super admin still sees and edits everything
+  after opening the institution.
+
 NO CHANGES TO config.php
