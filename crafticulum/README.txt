@@ -2073,4 +2073,25 @@ VERSION 128: WHICH DEPARTMENT, AND THE BUILT-IN SUBJECTS
   the ones you added, marked Built in. Each subject you added shows its
   awarding body, or says it isn't set.
 
+VERSION 129: ONE DEPARTMENT SWITCHER, AND RENAME A SUBJECT
+- Anyone in more than one department has a Department drop-down under the
+  logo in the menu, on every page (on a phone it is in the Menu). Managers
+  and the super admin get every department in the institution.
+- Pick a department and you stay on the page you were on: Planning, Learners,
+  Results, Second Marker, AI Tools or Settings, now showing that department's
+  subjects, plans, classes and marks. Each department's work stays its own.
+- People in one department see no switcher.
+- Settings, Subjects: every subject you added has Rename. It suggests a name
+  that says what the course is, for example "IT" with the level "Level 2 TLM
+  Cyber Security" becomes "IT (TLM Cyber Security)" at "Level 2". Change
+  either box to whatever you want.
+- The first press only checks and tells you how many lessons, plans and class
+  lists will change. The second press renames it everywhere.
+- A copy of every file it touches is kept first in data/_rename, and "Undo it"
+  under the list puts the last rename back. Undoing also loses any edits made
+  to those lessons and plans after the rename.
+- Heads of department, institution managers and the super admin can rename.
+  Built-in subjects can't be renamed.
+- Take a backup before the first rename on the live site.
+
 NO CHANGES TO config.php

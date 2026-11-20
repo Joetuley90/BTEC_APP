@@ -1411,6 +1411,16 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v129: the department switcher under the logo */
+.side .dept-switch{display:flex;flex-direction:column;gap:3px;margin:-8px 0 -6px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--cc-primary) 30%,var(--cc-line));border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 6%,var(--cc-surface))}
+.side .dept-switch .ds-l{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cc-muted);margin:0}
+.side .dept-switch select{font-weight:700;border:0;background-color:transparent;padding-left:0;box-shadow:none;min-height:30px}
+.side-min .side .dept-switch{display:none}
+@media (max-width:991.98px){ .side .dept-switch{display:none} body.mnav-open .side .dept-switch{display:flex;order:-1;flex:1 1 100%;margin:8px 0} }
+/* v129: rename a subject */
+#out #stCourses .st-group{flex-wrap:wrap}
+#out .rn-form{flex:1 1 100%;margin-top:8px;padding-top:10px;border-top:1px dashed var(--cc-line)}
+#out .rn-plan{margin-top:8px;padding:8px 10px;border-radius:6px;font-size:.84rem;background:color-mix(in srgb,var(--cc-primary) 8%,var(--cc-surface))}
 /* v128: which department a settings page is for */
 #out .dp-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;margin-bottom:16px;border:1px solid color-mix(in srgb,var(--cc-primary) 35%,var(--cc-line));border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 7%,var(--cc-surface))}
 #out .dp-bar-l{font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-muted);margin:0}
@@ -14088,6 +14098,66 @@ document.addEventListener("change", e => { if(!e.target || e.target.id !== "dpPi
 const _dpTiles80 = dpTiles;
 dpTiles = function(){ const r = _dpTiles80.apply(this, arguments); try{ const w = $("#dpTiles"); if(w && !w.querySelector(".dp-add") && $("#tmDeptNew")) w.insertAdjacentHTML("beforeend", `<button type="button" class="dp-tile dp-add" data-dpa="add"><span class="dp-plus" aria-hidden="true">+</span><span class="dp-name">Add a department</span><span class="dp-none">Give it a name and, if you have them, its specifications.</span></button>`); }catch{} return r; };
 document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('[data-dpa="add"]'); if(!a) return; const i = $("#tmDeptNew"); if(i){ i.scrollIntoView({block: "center", behavior: "smooth"}); i.focus({preventScroll: true}); } });
+
+/* ===== round 81 (v129): rename a subject so its name says what it is ("IT (TLM Cyber Security)", Level 2) and not just "IT" with the qualification squeezed into the level.
+   The server renames it everywhere it is used, lessons, plans, class marks and results, keeps a copy first, and the last rename can be undone. ===== */
+let rnOpen = -1, rnState = null, ccRenames = [];
+function rnSuggest(x){ const m = String(x.l || "").match(/^((?:Level|Entry Level|Year|Key Stage|KS|Grade)\s*\S+)\s+(.+)$/i); return m ? {s: `${x.s} (${m[2].replace(/^BTEC\s+/i, "BTEC ")})`, l: m[1]} : {s: x.s, l: x.l || ""}; }
+function rnDraw(){ const box = $("#stCourses"); if(!box || window.claude || !me || !["superadmin", "owner", "hod"].includes(me.role) || !me.canSubjects) return; const own = (courseCfg.list || []).filter(courseOk);
+  box.querySelectorAll(".st-group [data-crs='rm']").forEach(b => { const i = +b.dataset.i, x = own[i], row = b.closest(".st-group"); if(!x || !row) return;
+    if(!row.querySelector("[data-rn='open']")) b.insertAdjacentHTML("beforebegin", `<button type="button" class="btn btn-sm btn-link p-0" data-rn="open" data-i="${i}">Rename</button>`);
+    const old = row.querySelector(".rn-form"); if(old) old.remove(); if(rnOpen !== i) return; const st = rnState;
+    row.insertAdjacentHTML("beforeend", `<form class="rn-form" data-i="${i}"><div class="row g-2 align-items-end">
+      <div class="col-sm-6"><label class="form-label small fw-semibold mb-1" for="rnS">Subject name</label><input class="form-control form-control-sm" id="rnS" maxlength="80" value="${esc(st.s)}"></div>
+      <div class="col-sm-6"><label class="form-label small fw-semibold mb-1" for="rnL">Level</label><input class="form-control form-control-sm" id="rnL" maxlength="80" value="${esc(st.l)}"></div></div>
+      <div class="form-text">The name is what people pick in Lessons and Planning, so make it say what the course is. The level sits beside it.</div>
+      ${st.plan ? `<div class="rn-plan"><b>${esc(st.plan.from.join(" "))}</b> becomes <b>${esc(st.plan.to.join(" "))}</b> in ${st.plan.files ? [[st.plan.lessons, "lesson"], [st.plan.plans, "plan"], [st.plan.classes, "class list"], [st.plan.other, "other record"]].filter(a => a[0]).map(a => `${a[0]} ${a[1]}${a[0] === 1 ? "" : "s"}`).join(", ") : "the subjects list (nothing has been built for it yet)"}. A copy is kept first and you can undo it.</div>` : ""}
+      ${st.err ? `<div class="idea-msg err" role="alert">${esc(st.err)}</div>` : ""}
+      <div class="d-flex flex-wrap gap-2 mt-2"><button type="submit" class="btn btn-sm btn-primary" ${st.busy ? "disabled" : ""}>${st.busy ? "Working..." : st.plan ? "Rename it everywhere" : "Check what will change"}</button><button type="button" class="btn btn-sm btn-outline-secondary" data-rn="close">Cancel</button></div></form>`); });
+  let u = box.querySelector("#rnUndo"); const last = ccRenames[ccRenames.length - 1];
+  if(u) u.remove(); if(last){ const ft = [...box.querySelectorAll(".form-text")].find(x => /Removing a subject/.test(x.textContent)); const html = `<div id="rnUndo" class="small mt-2">Last rename: ${esc(last.from.join(" "))} became ${esc(last.to.join(" "))}. <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-rn="undo">Undo it</button></div>`; if(ft) ft.insertAdjacentHTML("afterend", html); else box.insertAdjacentHTML("beforeend", html); } }
+const rnErr = c => ({exists: "There's already a subject with that name and level. Change one of them.", same: "That's the name it has now.", name: "Give it a name and a level.", noperm: "Only the department's leaders can rename a subject.", not_found: "That subject has changed. Reload the page and try again."})[c] || "Couldn't do that just now. Nothing was changed. Try again.";
+function rnFresh(){ try{ ACCOUNT_KEYS.forEach(k => localStorage.removeItem(k)); localStorage.removeItem("cc_depts"); sessionStorage.setItem("cc_dp_go", "subjects"); }catch{} location.reload(); }
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-rn]"); if(!b) return; const k = b.dataset.rn;
+  if(k === "open"){ const i = +b.dataset.i, x = (courseCfg.list || []).filter(courseOk)[i]; if(!x) return; rnOpen = rnOpen === i ? -1 : i; rnState = Object.assign({x, plan: null, err: "", busy: false}, rnSuggest(x)); rnDraw(); const f = $("#rnS"); if(f) f.focus(); }
+  else if(k === "close"){ rnOpen = -1; rnState = null; rnDraw(); }
+  else if(k === "undo"){ if(b.dataset.arm !== "1"){ b.dataset.arm = "1"; b.textContent = "Press again to undo it"; return; } b.disabled = true; try{ await sCall("subjectrenameundo", {}); rnFresh(); }catch(err){ b.disabled = false; b.textContent = "Couldn't undo. Try again"; } } });
+document.addEventListener("input", e => { if(!rnState || !e.target) return; if(e.target.id === "rnS"){ rnState.s = e.target.value; rnState.plan = null; } if(e.target.id === "rnL"){ rnState.l = e.target.value; rnState.plan = null; } });
+document.addEventListener("submit", async e => { const f = e.target; if(!f || !f.classList || !f.classList.contains("rn-form")) return; e.preventDefault(); const st = rnState; if(!st || st.busy) return;
+  const to = {s: st.s.trim(), l: st.l.trim()}, from = {s: st.x.s, l: st.x.l || ""}, go = !!st.plan, taken = BUILTIN_UNITS.map(u => [u.s, u.l || ""]);
+  st.busy = true; st.err = ""; rnDraw();
+  try{ const r = await sCall("subjectrename", {from, to, taken, go}); if(go) return rnFresh(); st.plan = r.plan; }
+  catch(err){ st.err = rnErr(err && err.code); st.plan = null; }
+  st.busy = false; rnDraw(); const btn = document.querySelector(".rn-form button[type=submit]"); if(btn) btn.focus(); });
+const _stLayout81 = stLayout;
+stLayout = function(){ const r = _stLayout81.apply(this, arguments); try{ rnDraw(); }catch(e){ console.error(e); } return r; };
+/* the page learns about renames with the departments list: plans kept on this device under the old name are dropped, since the server now has them under the new one */
+const _ccDeptsLoad81 = ccDeptsLoad;
+ccDeptsLoad = async function(){ const r = await _ccDeptsLoad81.apply(this, arguments);
+  try{ const j = await storeCall("deptsubjects"); ccRenames = Array.isArray(j.renames) ? j.renames : []; let cut = false;
+    ccRenames.forEach(m => { const pre = m.from[0] + "|" + m.from[1] + "|"; if(UNITS.some(u => u.s === m.from[0] && (u.l || "") === m.from[1])) return; Object.keys(seqs).forEach(k => { if(k.startsWith(pre)){ delete seqs[k]; cut = true; } }); });
+    if(cut) try{ storeSeqs(); }catch{} if(view === "settings") rnDraw(); }catch{} return r; };
+
+/* ===== round 82 (v129): one department switcher, in the same place on every page. Anyone in more than one department (and managers and the super admin, who can work in
+   any of them) gets it under the logo in the menu. Pick a department and you stay on the page you were on, Planning, Learners, Results, Second Marker or Settings,
+   now showing that department's subjects, plans, classes and marks. ===== */
+function dsDepts(){ const D = (ccDepts || []).slice(); return D.length > 1 ? D : []; }
+function dsDraw(){ const side = document.querySelector(".side"), brand = side && side.querySelector(".brand"); if(!brand) return; let box = $("#deptSwitch"); const D = (window.claude || !me) ? [] : dsDepts();
+  if(!D.length || (typeof saOut === "function" && saOut())){ if(box) box.remove(); return; }
+  const cur = D.find(d => d.mine) || D[0], sig = D.map(d => d.id + ":" + d.name).join("|") + "@" + cur.id;
+  if(box && box.dataset.sig === sig) return;
+  const html = `<label class="ds-l" for="dsPick">Department</label><select class="form-select form-select-sm" id="dsPick" aria-label="The department you're working in">${D.map(d => `<option value="${esc(d.id)}" ${d.id === cur.id ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select>`;
+  if(!box){ brand.insertAdjacentHTML("afterend", `<div id="deptSwitch" class="dept-switch"></div>`); box = $("#deptSwitch"); } box.dataset.sig = sig; box.innerHTML = html; }
+const _syncShell82 = syncShell;
+syncShell = function(){ const r = _syncShell82.apply(this, arguments); try{ dsDraw(); }catch(e){ console.error(e); } return r; };
+const _ccDeptsLoad82 = ccDeptsLoad;
+ccDeptsLoad = async function(){ const r = await _ccDeptsLoad82.apply(this, arguments); try{ dsDraw(); }catch{} return r; };
+document.addEventListener("change", e => { if(!e.target || e.target.id !== "dsPick") return; const v = e.target.value, cur = (ccDepts || []).find(d => d.mine); if(cur && cur.id === v) return;
+  const d = (ccDepts || []).find(x => x.id === v); toast(`Switching to ${d ? d.name : "that department"}...`);
+  try{ lsSet("cc_hd_dept", v); if(view === "settings") sessionStorage.setItem("cc_dp_go", stTab === "subjects" ? "subjects" : stTab === "teaching" ? "teaching" : ""); }catch{}
+  /* a lesson belongs to the department it was built in, so leave it for the list; every other page comes back as it was */
+  try{ if(view === "lesson" && current && !current.example) history.replaceState(null, "", (CC_ROUTES && CC_ROUTES.seq) || location.pathname); }catch{}
+  colSwitch(v); });
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
