@@ -168,7 +168,57 @@ if ($action === 'deptsubjects') {   // the departments someone can plan for, eac
             if (!$in && !isset($al[$d])) continue; $staff++; $role = $in ? (string) ($u['role'] ?? '') : (string) $al[$d]; if ($role === 'hod') $leads[] = (string) (($u['name'] ?? '') !== '' ? $u['name'] : $e); }
         $out[] = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'mine' => (string) $d === (string) $dept, 'builtin' => !empty($di['legacy']) && (($c['builtin'] ?? true) !== false), 'list' => array_values(array_filter((array) ($c['list'] ?? []), 'is_array')),
                   'leads' => $leads, 'staff' => $staff, 'ctx' => is_array($c['ctx'] ?? null) ? $c['ctx'] : null]; }
-    out(200, ['depts' => $out]);
+    $ren = []; foreach (glob($base . '/_rename/*/manifest.json') ?: [] as $f) { $m = json_decode((string) @file_get_contents($f), true); if (is_array($m) && empty($m['undone']) && ($m['dept'] ?? '') === (string) $dept) $ren[] = ['at' => (int) $m['at'], 'from' => $m['from'], 'to' => $m['to']]; }
+    usort($ren, fn($x, $y) => $x['at'] <=> $y['at']);
+    out(200, ['depts' => $out, 'renames' => array_slice($ren, -20)]);
+}
+/* rename a subject (its name, its level or qualification, or both) everywhere it is used: the subjects list, lessons, plans, class marks, quiz results.
+   A copy of every file it touches is kept first, and the last rename can be undone. Preview unless 'go' is sent. */
+if ($action === 'subjectrename' || $action === 'subjectrenameundo') {
+    if (!$me['canSubjects'] || !$me['isLead']) out(403, ['error' => 'noperm']); @set_time_limit(300);
+    $bkRoot = $base . '/_rename'; $relOf = fn(string $abs) => ltrim(substr($abs, strlen($base)), '/');
+    if ($action === 'subjectrenameundo') {
+        $last = null; foreach (glob($bkRoot . '/*/manifest.json') ?: [] as $f) { $m = json_decode((string) @file_get_contents($f), true); if (is_array($m) && empty($m['undone']) && ($m['dept'] ?? '') === (string) $dept && (!$last || $m['at'] > $last['at'])) $last = $m + ['file' => $f]; }
+        if (!$last) out(404, ['error' => 'none']);
+        foreach ((array) $last['moved'] as [$old, $new]) @unlink($base . '/' . $new);
+        foreach ((array) $last['changed'] as $rel) { $bk = dirname($last['file']) . '/files/' . sha1($rel); if (is_file($bk)) @copy($bk, $base . '/' . $rel); }
+        $m = json_decode((string) file_get_contents($last['file']), true); $m['undone'] = time(); file_put_contents($last['file'], json_encode($m));
+        ccLog($dept, $me, 'undid a subject rename', $last['to'][0] . ' ' . $last['to'][1]); out(200, ['ok' => true, 'back' => $last['from']]);
+    }
+    $line = fn($x) => mb_substr(trim((string) preg_replace('/[\x00-\x1F\x7F|<>]+/u', ' ', (string) $x)), 0, 80);
+    $os = (string) ($body['from']['s'] ?? ''); $ol = (string) ($body['from']['l'] ?? ''); $ns = $line($body['to']['s'] ?? ''); $nl = $line($body['to']['l'] ?? '');
+    if ($os === '' || $ns === '' || $nl === '') out(400, ['error' => 'name']); if ($os === $ns && $ol === $nl) out(400, ['error' => 'same']);
+    $cdoc = readDoc($ddir, 'data/users/teacher/settings/courses'); $cc = $cdoc ? json_decode((string) ($cdoc['data']['json'] ?? ''), true) : null; $list = is_array($cc) ? (array) ($cc['list'] ?? []) : [];
+    $has = fn(string $a, string $b) => (bool) array_filter($list, fn($x) => is_array($x) && (string) ($x['s'] ?? '') === $a && (string) ($x['l'] ?? '') === $b);
+    if (!$has($os, $ol)) out(404, ['error' => 'not_found']); if ($has($ns, $nl)) out(409, ['error' => 'exists']);
+    foreach ((array) ($body['taken'] ?? []) as $t) if (is_array($t) && (string) ($t[0] ?? '') === $ns && (string) ($t[1] ?? '') === $nl) out(409, ['error' => 'exists']);   // the built-in subjects, as the page sees them
+    $pre = $os . '|' . $ol . '|'; $npre = $ns . '|' . $nl . '|'; $n = ['lessons' => 0, 'plans' => 0, 'classes' => 0, 'other' => 0];
+    $fixS = function (string $v) use ($pre, $npre, $os, $ol, $ns, $nl) { if (strncmp($v, $pre, strlen($pre)) === 0) return $npre . substr($v, strlen($pre)); if ($v === $os . '|' . $ol) return $ns . '|' . $nl; return $v; };
+    $walk = function ($v, &$hit) use (&$walk, $fixS, $os, $ol, $ns, $nl) {
+        if (is_string($v)) { $c = $v[0] ?? ''; if (($c === '{' || $c === '[') && strlen($v) > 1) { $d = json_decode($v); if (is_object($d) || is_array($d)) { $h = false; $d = $walk($d, $h); if ($h) { $hit = true; return json_encode($d, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); } return $v; } }
+            $f = $fixS($v); if ($f !== $v) $hit = true; return $f; }
+        if (is_array($v)) { foreach ($v as $k => $x) $v[$k] = $walk($x, $hit); return $v; }
+        if (is_object($v)) { $o = new stdClass();
+            foreach (get_object_vars($v) as $k => $x) { $nk = $fixS((string) $k); if ($nk !== (string) $k) $hit = true; $o->{$nk} = $walk($x, $hit); }
+            foreach ([['course', 'level'], ['s', 'l']] as [$a, $b]) if (isset($o->{$a}, $o->{$b}) && is_string($o->{$a}) && is_string($o->{$b}) && $o->{$a} === $os && $o->{$b} === $ol) { $o->{$a} = $ns; $o->{$b} = $nl; $hit = true; }
+            return $o; }
+        return $v; };
+    $seqId = fn(string $k) => substr(trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($k)), '-'), 0, 100);
+    $files = array_merge(array_filter(glob($ddir . '/*.json') ?: [], fn($f) => basename($f)[0] !== '_'), glob($base . '/u/*/' . $dept . '/*.json') ?: []); $todo = [];
+    foreach ($files as $f) { $raw = (string) @file_get_contents($f); if ($raw === '' || (!preg_match('/[^A-Za-z0-9 ]/', $os) && strpos($raw, $os) === false)) continue; $j = json_decode($raw); if (!is_object($j) || !isset($j->path) || !is_string($j->path)) continue;
+        $hit = false; $j2 = $walk($j, $hit); if (!$hit) continue; $p = (string) $j2->path; $to = $f;
+        if (preg_match('#^(.*/seqs/)[^/]+$#', $p, $mm) && isset($j2->data->key) && is_string($j2->data->key)) { $np = $mm[1] . $seqId($j2->data->key); if ($np !== $p) { $cand = fileFor(dirname($f), $np); if (!is_file($cand)) { $j2->path = $np; $to = $cand; } } }
+        if (strpos($p, '/seqs/') !== false) $n['plans']++; elseif (strpos($p, 'lessons/') !== false) $n['lessons']++; elseif (strpos($p, '/learners/') !== false) $n['classes']++; else $n['other']++;
+        $todo[] = [$f, $to, $j2]; }
+    $plan = ['from' => [$os, $ol], 'to' => [$ns, $nl]] + $n + ['files' => count($todo)];
+    if (empty($body['go'])) out(200, ['plan' => $plan]);
+    $stamp = date('Ymd-His') . '-' . bin2hex(random_bytes(3)); $bk = $bkRoot . '/' . $stamp; if (!@mkdir($bk . '/files', 0700, true)) out(500, ['error' => 'Could not make the safety copy, so nothing was changed. Check the data folder is writable.']);
+    @file_put_contents($bkRoot . '/.htaccess', "Require all denied\n"); $changed = []; $moved = [];
+    foreach ($todo as [$f, $to, $j2]) { if (!@copy($f, $bk . '/files/' . sha1($relOf($f)))) out(500, ['error' => 'Could not make the safety copy, so nothing was changed.']); }
+    foreach ($todo as [$f, $to, $j2]) { $tmp = $to . '.' . bin2hex(random_bytes(4)) . '.tmp'; if (@file_put_contents($tmp, json_encode($j2, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false || !@rename($tmp, $to)) { @unlink($tmp); continue; }
+        $changed[] = $relOf($f); if ($to !== $f) { @unlink($f); $moved[] = [$relOf($f), $relOf($to)]; } }
+    file_put_contents($bk . '/manifest.json', json_encode(['at' => time(), 'by' => $me['email'], 'dept' => (string) $dept, 'from' => [$os, $ol], 'to' => [$ns, $nl], 'changed' => $changed, 'moved' => $moved]));
+    ccLog($dept, $me, 'renamed a subject', "$os $ol to $ns $nl"); out(200, ['ok' => true, 'plan' => $plan]);
 }
 if ($action === 'mgrset') {   // the CPD hours each person is expected to log in a year
     if (!in_array($me['role'], ['superadmin', 'owner'], true)) out(403, ['error' => 'noperm']);
