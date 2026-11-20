@@ -141,6 +141,45 @@ if ($action === 'all') {
 /* every class list and set of marks in this department, for its leaders to look at. Each one still belongs to the teacher who made it */
 /* a member of staff on one page: what they teach, their classes (numbers only, never learners' names), the lessons they've written and the verification they've done and had.
    Anyone can open their own. A head of department can open people in their department, an institution manager anyone in the institution, the super admin anyone */
+/* someone's profile: what they wrote on their staff profile, with their account's job title, pronouns and phone filling any gaps */
+function ccAboutOf(string $base, string $em, array $u): ?array { $ab = json_decode((string) @file_get_contents($base . '/u/' . sha1($em) . '/_about.json'), true); if (!is_array($ab)) $ab = null;
+    $pf = (array) ($u['profile'] ?? []); foreach (['headline' => 'job', 'pronouns' => 'pronouns', 'phone' => 'phone'] as $k => $j) if (!empty($pf[$j]) && empty($ab[$k])) { $ab = $ab ?? []; $ab[$k] = (string) $pf[$j]; }
+    if (!empty($pf['site']) && empty($ab['campuses'])) { $ab = $ab ?? []; $ab['campuses'] = [(string) $pf['site']]; }
+    return $ab; }
+if ($action === 'staffphoto') {   // your own photo: a square JPEG the page has already cropped and shrunk
+    if (!empty($me['demo'])) out(403, ['error' => 'demo']);
+    $f = ccPhotoFile($me['email']);
+    if (!empty($body['remove'])) { @unlink($f); out(200, ['ok' => true, 'picture' => ccPhotoUrl($me['email'], (string) (($acc['users'][$me['email']]['picture'] ?? '') ?: ''))]); }
+    $img = (string) ($body['img'] ?? ''); if (!preg_match('#^data:image/jpeg;base64,([A-Za-z0-9+/=]+)$#', $img, $m)) out(400, ['error' => 'type']);
+    $bin = base64_decode($m[1], true); if ($bin === false || strlen($bin) > 400000) out(400, ['error' => 'size']);
+    $info = @getimagesizefromstring($bin); if (!$info || ($info['mime'] ?? '') !== 'image/jpeg' || $info[0] < 64 || $info[0] > 1024 || $info[1] < 64 || $info[1] > 1024) out(400, ['error' => 'type']);
+    if (function_exists('imagecreatefromstring')) { $im = @imagecreatefromstring($bin); if (!$im) out(400, ['error' => 'type']); ob_start(); imagejpeg($im, null, 86); $bin = (string) ob_get_clean(); imagedestroy($im); }   // re-saved, so nothing but the picture is kept
+    if (!is_dir(dirname($f))) @mkdir(dirname($f), 0700, true);
+    if (@file_put_contents($f, $bin, LOCK_EX) === false) out(500, ['error' => 'write']); clearstatcache();
+    out(200, ['ok' => true, 'picture' => ccPhotoUrl($me['email'])]);
+}
+if ($action === 'deptsubjects') {   // the departments someone can plan for, each with the subjects its specifications gave it
+    $col = ccCollegeOf($acc, (string) $dept); $all = in_array($me['role'], ['superadmin', 'owner'], true);
+    $ids = $all ? ccCollegeDepts($acc, $col) : [(string) $dept]; if (!in_array((string) $dept, $ids, true)) array_unshift($ids, (string) $dept);
+    $out = []; foreach ($ids as $d) { $di = $acc['depts'][$d] ?? null; if (!$di) continue; $dd = !empty($di['legacy']) ? $base : $base . '/d/' . $d;
+        $doc = readDoc($dd, 'data/users/teacher/settings/courses'); $c = $doc ? json_decode((string) ($doc['data']['json'] ?? ''), true) : null; if (!is_array($c)) $c = [];
+        $out[] = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'mine' => (string) $d === (string) $dept, 'builtin' => !empty($di['legacy']) && (($c['builtin'] ?? true) !== false), 'list' => array_values(array_filter((array) ($c['list'] ?? []), 'is_array'))]; }
+    out(200, ['depts' => $out]);
+}
+if ($action === 'directory') {   // everyone in the institution, as colleagues see them: no classes, lessons or verification here
+    $col = ccCollegeOf($acc, (string) $dept); $boss = in_array($me['role'], ['superadmin', 'owner'], true); $ys = (date('n') >= 9 ? (int) date('Y') : (int) date('Y') - 1) . '-09-01';
+    $people = []; $who = $acc['users']; foreach (ccSupers() as $e) unset($who[$e]);
+    foreach ($who as $e => $u) { if (!is_array($u) || !ccActive($u) || !empty($u['demo'])) continue; $ud = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$ud]) || ccCollegeOf($acc, $ud) !== $col) continue;
+        $ab = ccAboutOf($base, (string) $e, $u) ?? [];
+        $row = ['email' => (string) $e, 'name' => (string) (($u['name'] ?? '') ?: $e), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => $ud, 'deptName' => (string) ($acc['depts'][$ud]['name'] ?? ''), 'picture' => ccPhotoUrl((string) $e, (string) ($u['picture'] ?? '')), 'last' => (int) ($u['last'] ?? 0)];
+        foreach (['headline', 'pronouns', 'status', 'room', 'phone', 'hours'] as $k) $row[$k] = (string) ($ab[$k] ?? '');
+        foreach (['skills', 'held', 'campuses'] as $k) $row[$k] = array_values((array) ($ab[$k] ?? []));
+        if ($boss || (!empty($me['isLead']) && $ud === (string) $dept)) { $h = 0; foreach ((array) ($ab['cpd'] ?? []) as $c) if (is_array($c) && (string) ($c['d'] ?? '') >= $ys) $h += (float) ($c['h'] ?? 0); $row['cpdHours'] = round($h, 1); }
+        $people[] = $row; }
+    usort($people, fn($x, $y) => strcasecmp($x['name'], $y['name']));
+    $depts = []; foreach (ccCollegeDepts($acc, $col) as $d) $depts[] = ['id' => (string) $d, 'name' => (string) ($acc['depts'][$d]['name'] ?? '')];
+    out(200, ['people' => $people, 'depts' => $depts, 'cpd' => $boss || !empty($me['isLead'])]);
+}
 if ($action === 'staffme') {   // your own profile: the bits only you can say about yourself
     if (!empty($me['demo'])) out(403, ['error' => 'demo']);
     $t = fn($k, $n) => mb_substr(trim(preg_replace('/\s+/u', ' ', (string) ($body[$k] ?? ''))), 0, $n);
@@ -157,7 +196,12 @@ if ($action === 'staffme') {   // your own profile: the bits only you can say ab
 if ($action === 'staff') {
     $em = strtolower(trim((string) ($body['email'] ?? ''))) ?: $me['email']; $u = $acc['users'][$em] ?? null; $self = $em === $me['email'];
     if (!$self) { if (!$u || !ccActive($u) || !empty($u['demo'])) out(404, ['error' => 'not_found']); $td = (string) ($u['dept'] ?? ''); if (!isset($acc['depts'][$td])) out(404, ['error' => 'not_found']);
-        $ok = $me['role'] === 'superadmin' || ($me['role'] === 'owner' && ccCollegeOf($acc, $td) === ccCollegeOf($acc, (string) $dept)) || (!empty($me['isLead']) && $td === (string) $dept); if (!$ok) out(403, ['error' => 'noperm']); }
+        $ok = $me['role'] === 'superadmin' || ($me['role'] === 'owner' && ccCollegeOf($acc, $td) === ccCollegeOf($acc, (string) $dept)) || (!empty($me['isLead']) && $td === (string) $dept);
+        if (!$ok) { if (ccCollegeOf($acc, $td) !== ccCollegeOf($acc, (string) $dept)) out(403, ['error' => 'noperm']);   // a colleague in the same institution sees who they are, not their classes or records
+            $ab = ccAboutOf($base, $em, (array) $u); if (is_array($ab)) unset($ab['cpd']); require_once __DIR__ . '/inst-lib.php'; $pr = null; try { $pr = ccProfileGet($em); } catch (Throwable $e) {}
+            out(200, ['limited' => true, 'person' => ['email' => $em, 'name' => (string) ($u['name'] ?? ''), 'role' => (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($acc['depts'][$td]['name'] ?? ''), 'college' => (string) (ccCollege($acc, ccCollegeOf($acc, $td))['name'] ?? ''), 'last' => (int) ($u['last'] ?? 0), 'added' => (int) ($u['added'] ?? 0), 'picture' => ccPhotoUrl($em, (string) ($u['picture'] ?? '')), 'self' => false],
+                'about' => is_array($ab) ? $ab : null, 'teaches' => $pr ? ['role' => (string) $pr['role'], 'subjects' => $pr['subjects'], 'stages' => $pr['stages'], 'levels' => $pr['levels'], 'orgs' => $pr['orgs'], 'quals' => $pr['quals'], 'insts' => []] : null,
+                'lessons' => ['total' => 0, 'approved' => 0, 'draft' => 0, 'list' => []], 'classes' => [], 'iv' => ['did' => [], 'didTotal' => 0, 'had' => [], 'hadTotal' => 0, 'actions' => 0], 'months' => [], 'units' => [], 'unitsTotal' => 0]); } }
     $td = $self ? (string) $dept : (string) $u['dept']; $u = $u ?? []; $tdir = !empty($acc['depts'][$td]['legacy']) ? $base : $base . '/d/' . $td; $tcol = ccCollegeOf($acc, $td);
     require_once __DIR__ . '/inst-lib.php'; $pr = null; try { $pr = ccProfileGet($em); } catch (Throwable $e) {}
     $lessons = []; foreach (glob($tdir . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); if (!is_array($l) || strtolower((string) ($l['meta']['author']['email'] ?? '')) !== $em) continue;
@@ -165,7 +209,7 @@ if ($action === 'staff') {
     usort($lessons, fn($x, $y) => $y['at'] <=> $x['at']);
     $months = []; for ($i = 5; $i >= 0; $i--) $months[date('Y-m', strtotime(date('Y-m-01') . " -$i month"))] = 0; $unitsN = [];
     foreach ($lessons as $l) { $m = $l['at'] ? date('Y-m', $l['at']) : ''; if (isset($months[$m])) $months[$m]++; if ($l['unit'] !== '') $unitsN[$l['unit']] = ($unitsN[$l['unit']] ?? 0) + 1; }
-    arsort($unitsN); $about = json_decode((string) @file_get_contents($base . '/u/' . sha1($em) . '/_about.json'), true); if (!is_array($about)) $about = null;
+    arsort($unitsN); $about = ccAboutOf($base, $em, (array) $u);
     $classes = []; $today = date('Y-m-d'); foreach (glob($base . '/u/' . sha1($em) . '/' . $td . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || !preg_match('#^data/users/[^/]+/learners/#', (string) ($j['path'] ?? ''))) continue; $st = json_decode((string) ($j['data']['json'] ?? ''), true); if (!is_array($st) || !is_array($st['learners'] ?? null)) continue;
         $ids = array_map(fn($l) => (string) ($l['id'] ?? ''), array_filter($st['learners'], 'is_array')); $tot = 0; $ach = 0; $units = 0; $open = 0; $late = 0;
         foreach ((array) ($st['marks'] ?? []) as $k => $m) { $any = false; foreach ((array) $m as $lid => $cs) { if (!in_array((string) $lid, $ids, true)) continue; foreach ((array) $cs as $v) { if ($v === '' || $v === null) continue; $any = true; $tot++; if ($v === 'a') $ach++; } } if ($any) $units++; }
@@ -175,7 +219,7 @@ if ($action === 'staff') {
     $iv = json_decode((string) @file_get_contents($tdir . '/_iv.json'), true); if (!is_array($iv)) $iv = []; $row = fn($r) => ['at' => (int) ($r['at'] ?? 0), 'unit' => (string) (($r['unitName'] ?? '') ?: ($r['unit'] ?? '')), 'group' => (string) ($r['group'] ?? ''), 'decision' => (string) ($r['decision'] ?? ''), 'done' => !empty($r['done']), 'who' => ''];
     $did = []; $had = []; foreach ($iv as $r) { if (!is_array($r)) continue; if (($r['by'] ?? '') === $em) $did[] = ['who' => (string) ($r['ownerName'] ?? '')] + $row($r); if (($r['owner'] ?? '') === $em) $had[] = ['who' => (string) ($r['byName'] ?? '')] + $row($r); }
     usort($did, fn($x, $y) => $y['at'] <=> $x['at']); usort($had, fn($x, $y) => $y['at'] <=> $x['at']);
-    out(200, ['person' => ['email' => $em, 'name' => (string) (($u['name'] ?? '') ?: ($self ? ($me['name'] ?? '') : '')), 'role' => $self ? (string) $me['role'] : (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($acc['depts'][$td]['name'] ?? ''), 'college' => (string) (ccCollege($acc, $tcol)['name'] ?? ''), 'last' => (int) ($u['last'] ?? 0), 'added' => (int) ($u['added'] ?? 0), 'picture' => (string) ($u['picture'] ?? ''), 'self' => $self],
+    out(200, ['person' => ['email' => $em, 'name' => (string) (($u['name'] ?? '') ?: ($self ? ($me['name'] ?? '') : '')), 'role' => $self ? (string) $me['role'] : (string) ($u['role'] ?? 'teacher'), 'dept' => (string) ($acc['depts'][$td]['name'] ?? ''), 'college' => (string) (ccCollege($acc, $tcol)['name'] ?? ''), 'last' => (int) ($u['last'] ?? 0), 'added' => (int) ($u['added'] ?? 0), 'picture' => ccPhotoUrl($em, (string) ($u['picture'] ?? '')), 'self' => $self],
         'teaches' => $pr ? ['role' => (string) $pr['role'], 'subjects' => $pr['subjects'], 'stages' => $pr['stages'], 'levels' => $pr['levels'], 'orgs' => $pr['orgs'], 'quals' => $pr['quals'], 'insts' => array_map(fn($i) => (string) $i['name'], $pr['insts'])] : null,
         'lessons' => ['total' => count($lessons), 'approved' => count(array_filter($lessons, fn($l) => $l['status'] === 'approved')), 'draft' => count(array_filter($lessons, fn($l) => $l['status'] === 'draft')), 'list' => array_slice($lessons, 0, 30)],
         'about' => $about, 'months' => $months, 'units' => array_slice(array_map(fn($k, $v) => ['unit' => (string) $k, 'n' => $v], array_keys($unitsN), array_values($unitsN)), 0, 8), 'unitsTotal' => count($unitsN), 'classes' => $classes, 'iv' => ['did' => array_slice($did, 0, 20), 'didTotal' => count($did), 'had' => array_slice($had, 0, 20), 'hadTotal' => count($had), 'actions' => count(array_filter($had, fn($r) => !$r['done']))]]);

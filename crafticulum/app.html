@@ -1411,6 +1411,52 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v117: departments in the planner */
+#hDept .btn{white-space:nowrap}
+.hd-none{flex-basis:100%;padding:4px 2px}
+/* v117: profile photo */
+.sp-photo{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.sp2 .sp-av.sp-av-sm,.sp-av.sp-av-sm{width:64px;height:64px;font-size:1.2rem;border-width:2px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--cc-primary-soft);color:var(--cc-primary);font-weight:800;overflow:hidden}
+.sp-av-sm img,.tm-av img{width:100%;height:100%;object-fit:cover}
+/* v117: one profile in Settings */
+.st-sub{margin-top:18px;padding-top:16px;border-top:1px solid var(--cc-line)}
+.st-sub>.card-body{padding:0}
+.st-sub h2{font-size:1rem}
+/* v117: Our team */
+.tm-head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.tm-acts{display:flex;flex-wrap:wrap;gap:8px}
+.tm-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.tm-filters input[type=search]{flex:1 1 260px;min-width:0}
+.tm-filters select{width:auto;max-width:220px}
+.tm-in{display:flex;align-items:center;gap:6px;padding-left:2.6em}
+.tm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:0}
+.tm-card{border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tm-card:hover{border-color:var(--cc-primary)}
+.tm-open{display:flex;gap:12px;align-items:flex-start;border:0;background:none;padding:0;text-align:left;color:inherit;width:100%;position:relative}
+.tm-open:focus-visible{outline:2px solid var(--cc-primary);outline-offset:4px;border-radius:4px}
+.sp-av.tm-av{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--cc-primary-soft);color:var(--cc-primary);font-weight:800;overflow:hidden}
+.tm-who{display:flex;flex-direction:column;flex:1}
+.tm-name{font-weight:700}
+.tm-hl{font-size:.86rem}
+.tm-dept{font-size:.78rem;color:var(--cc-muted,#64748b)}
+.tm-st{position:absolute;right:0;top:0;margin:0!important;font-size:.7rem!important}
+.tm-card .sp-status{display:inline-flex;align-items:center;gap:5px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--cc-surface-2)}
+.tm-card .sp-status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.tm-tags{display:flex;flex-wrap:wrap}
+.tm-foot{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--cc-muted,#64748b);margin-top:auto;border-top:1px dashed var(--cc-line);padding-top:8px}
+.tm-cpd{margin-left:auto;font-weight:600;color:var(--cc-primary)}
+/* v117: Crafti chat actions */
+.cf-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.cf-act{border:1px solid var(--cc-primary);background:var(--cc-surface);color:var(--cc-primary);border-radius:6px;font-size:.78rem;font-weight:600;padding:4px 9px;cursor:pointer}
+.cf-act:hover{background:var(--cc-primary-soft)}
+/* v117: Admin */
+.ad-list{display:grid;gap:8px;margin:0}
+.ad-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface)}
+.ad-row.ad-warn{border-color:#f59e0b;background:color-mix(in srgb,#f59e0b 7%,var(--cc-surface))}
+.ad-n{min-width:48px;height:40px;padding:0 8px;border-radius:6px;display:grid;place-items:center;font-weight:800;font-size:1.1rem;background:var(--cc-primary-soft);color:var(--cc-primary)}
+.ad-clear{display:flex;gap:14px;align-items:center;padding:14px;border:1px dashed var(--cc-line);border-radius:5px}
+.ad-tick{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-weight:800;font-size:1.2rem}
+@media(max-width:575.98px){.ad-row{grid-template-columns:auto 1fr}.ad-row .btn{grid-column:1/-1}}
 /* v116: long badges wrap instead of pushing the page wider than the phone */
 #out .hero .badge{white-space:normal;text-align:left;max-width:100%;overflow-wrap:anywhere;line-height:1.35}
 #out .hero .card-body,#out .hero{min-width:0;overflow-wrap:anywhere}
@@ -9741,7 +9787,7 @@ setInterval(() => { if(markerSM && !mkN.timer && view === "marker") mkNativeStar
 /* ===== round 21: clean addresses. Each page of the app has its own address (/planning, /second-marker and so on),
    the back button moves between pages, and student links are short (/s/CODE). The server's .htaccess makes them work.
    If the host can't do that, none of this switches on and the old addresses carry on. ===== */
-const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", tools: "ai-tools", assistant: "assistant", library: "library", learners: "learners", roadmap: "roadmap", settings: "settings"};
+const CC_ROUTES = {home: "app", week: "this-week", lesson: "lessons", seq: "planning", results: "results", marker: "second-marker", tools: "ai-tools", assistant: "assistant", library: "library", learners: "learners", roadmap: "roadmap", team: "our-team", admin: "admin", settings: "settings"};
 const ccSlugNow = () => { const m = location.pathname.match(/\/([a-z-]+)$/); return m && (m[1] === "signin" || Object.values(CC_ROUTES).includes(m[1])) ? m[1] : ""; };
 /* the folder the site lives in. The app's own pages (/app, /planning ...) all sit directly in it */
 const ccRoot = () => { const s = ccSlugNow(); return s ? location.pathname.slice(0, -s.length) : location.pathname.replace(/[^/]*$/, ""); };
@@ -13063,7 +13109,7 @@ function cfStarters(){ if(view === "lesson" && current && !current.example) retu
 const CF_ICO = {send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>', stop: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>', big: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>', plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>', x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'};
 function cfMsgs(){ const c = cfChat();
   if(!c || !c.msgs.length) return `<div class="cf-hi">${CRAFTI("cf-hero", 1)}<p class="cf-hi-h">Hi${me && me.name ? " " + esc(String(me.name).trim().split(" ")[0]) : ""}! I'm Crafti.</p><p class="cf-hi-t">Ask me anything about your teaching. I can see which page you're on${view === "lesson" && current && !current.example ? ", and the lesson you've got open" : ""}.</p><div class="cf-sugs">${cfStarters().map(t => `<button type="button" class="cf-sug" data-cf-say="${esc(t)}">${esc(t)}</button>`).join("")}</div></div>`;
-  return c.msgs.slice(-40).map((m, i) => m.r === "u" ? `<div class="cf-m cf-u"><div class="cf-b">${esc(m.t).replace(/\n/g, "<br>")}</div></div>` : `<div class="cf-m cf-a">${CRAFTI("cf-av")}<div class="cf-b tk-body">${tkClean(tkMd(m.t))}<div class="cf-acts"><button type="button" class="btn btn-link btn-sm p-0" data-cf-copy="${c.msgs.length > 40 ? c.msgs.length - 40 + i : i}">Copy</button></div></div></div>`).join(""); }
+  return c.msgs.slice(-40).map((m, i) => m.r === "u" ? `<div class="cf-m cf-u"><div class="cf-b">${esc(m.t).replace(/\n/g, "<br>")}</div></div>` : `<div class="cf-m cf-a">${CRAFTI("cf-av")}<div class="cf-b tk-body">${tkClean(tkMd(m.t))}<div class="cf-acts">${(() => { const k = c.msgs.length > 40 ? c.msgs.length - 40 + i : i; return `${me && me.canGen ? `<button type="button" class="cf-act" data-cf-do="lesson" data-i="${k}">Build a lesson from this</button>` : ""}<button type="button" class="cf-act" data-cf-do="doc" data-i="${k}">Make it a resource</button><button type="button" class="btn btn-link btn-sm p-0" data-cf-copy="${k}">Copy</button>`; })()}</div></div></div>`).join(""); }
 function cfHtml(){ return `<div class="cf-panel" id="cfPanel" role="dialog" aria-modal="false" aria-labelledby="cfTitle">
   <div class="cf-head">${CRAFTI("cf-av cf-av-h")}<div class="min-w-0 flex-grow-1"><div class="cf-title" id="cfTitle">Crafti</div><div class="cf-sub"><span class="cf-dot" aria-hidden="true"></span>Crafticulum AI · replies in seconds</div></div>
     <button type="button" class="cf-ib" data-cf="new" title="New chat" aria-label="Start a new chat">${CF_ICO.plus}</button><button type="button" class="cf-ib" data-cf="big" title="Open on the Crafti page" aria-label="Open this chat on the Crafti page">${CF_ICO.big}</button><button type="button" class="cf-ib" data-cf="close" aria-label="Close the chat">${CF_ICO.x}</button></div>
@@ -13112,6 +13158,347 @@ const cfWant = () => cfOk() && view !== "assistant" && !document.querySelector("
 const _render60 = render;
 render = function(){ const r = _render60.apply(this, arguments); try{ if(!!$("#cfRoot") !== cfWant()) cfDraw(); else if(cfOpen && !cfChat()) cfDraw(false); else cfPlace(); }catch(e){ console.error(e); } return r; };
 setInterval(() => { try{ if(!!$("#cfRoot") !== cfWant()) cfDraw(); else cfPlace(); }catch{} }, 1500);
+
+/* ===== round 61 (v117): the planner's subjects come from the institution's departments. Pick a department, then one of its subjects, levels and units (from the specifications it uploaded).
+   Teachers see their own department; managers and super admins see every department in the institution. The built-in Esports and IT belong to the original department only. ===== */
+let ccDepts = null, hdDept = "";
+try{ const c = JSON.parse(lsGet("cc_depts") || "null"); if(Array.isArray(c)) ccDepts = c; hdDept = lsGet("cc_hd_dept") || ""; }catch{}
+const ccMulti = () => !!(ccDepts && ccDepts.length > 1);
+const ccMine = () => (ccDepts || []).find(d => d.mine) || null;
+function ccDeptLists(){ /* each department's subjects, its own taken live from the page so a new specification shows straight away */
+  const own = (courseCfg.list || []).filter(courseOk);
+  return (ccDepts || []).map(d => { const list = d.mine ? own : (d.list || []).filter(courseOk), bi = !plainSite() && d.builtin && (d.mine ? courseCfg.builtin !== false : true);
+    list.forEach(x => (x.u || []).forEach(u => { if(!u.a || typeof u.a !== "object") u.a = {}; }));   // a unit read without its learning aims still opens
+    return {id: d.id, name: d.name, mine: !!d.mine, units: [...(bi ? BUILTIN_UNITS : []), ...list]}; }); }
+const _coursesApply61 = coursesApply;   // the original, kept for the Crafticulum AI version and until the departments arrive
+coursesApply = function(){ const r = _coursesApply61.apply(this, arguments); if(ccDepts && !window.claude) try{ ccDeptApply(); }catch(e){ console.error(e); } return r; };
+function ccDeptApply(){   /* after the usual set-up (briefs, branding and the rest), the subjects are swapped for the departments' own */
+  let was = null; try{ was = {course: getCourse(), level: curLevel().l, unit: curUnit().t}; }catch{}
+  const D = ccDeptLists(), seen = new Set(), all = [];
+  D.forEach(d => d.units.forEach(u => { const k = u.s + "\u0001" + u.l; if(seen.has(k)) return; seen.add(k); all.push(Object.assign(u, {_d: u._d || d.id})); }));
+  UNITS.splice(0, UNITS.length, ...all); if(!UNITS.length) UNITS.push(NO_SUBJECT);
+  if(!D.find(d => d.id === hdDept)) hdDept = (D.find(d => d.mine) || D[0] || {}).id || "";
+  const subjOf = id => [...new Set(UNITS.filter(u => u._d === id).map(u => u.s))];
+  if(was && UNITS.find(u => u.s === was.course)){ const u = UNITS.find(x => x.s === was.course); if(u._d) hdDept = u._d; }
+  const names = [...new Set(UNITS.map(x => x.s))], inDept = subjOf(hdDept), on = was && inDept.includes(was.course) ? was.course : (inDept[0] || names[0]);
+  $("#course").innerHTML = names.map(n => { const u = UNITS.find(x => x.s === n); return `<button type="button" class="btn btn-outline-primary" data-v="${esc(n)}" data-d="${esc((u && u._d) || "")}" aria-pressed="${n === on}" ${ccMulti() && u && u._d !== hdDept ? "hidden" : ""}>${esc(n)}</button>`; }).join("");
+  $("#course").classList.toggle("many", inDept.length > 3);
+  let f = null; try{ f = JSON.parse(localStorage.getItem("lb_form") || "null"); }catch{}
+  if(!(was && inDept.includes(was.course) && presetForm(was.course, was.level, was.unit)) && !(f && inDept.includes(f.course) && presetForm(f.course, f.level, f.unit))){
+    $("#course").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === on)); fillLevels(); }
+  ccDeptRow(); }
+function ccDeptPick(id){ if(!ccDepts) return; hdDept = id; lsSet("cc_hd_dept", id); const first = UNITS.find(u => u._d === id);
+  $("#course").querySelectorAll("button").forEach(b => { b.hidden = ccMulti() && b.dataset.d !== id; b.setAttribute("aria-pressed", !!first && b.dataset.v === first.s); });
+  if(first) fillLevels(); try{ rememberForm(); }catch{} ccDeptRow(); if(view === "home") renderHome(); }
+/* the full form (Lessons, Create a lesson) gets the same department row above its subjects */
+function ccDeptRow(){ const c = $("#course"); if(!c) return; let row = $("#deptRow");
+  if(!ccMulti()){ if(row) row.remove(); return; }
+  const D = ccDeptLists(); const html = `<label class="form-label small fw-semibold mb-1" for="deptSel">Department</label><select class="form-select form-select-sm" id="deptSel">${D.map(d => `<option value="${esc(d.id)}" ${d.id === hdDept ? "selected" : ""}>${esc(d.name)}${d.units.length ? "" : " (no subjects yet)"}</option>`).join("")}</select>`;
+  if(!row){ c.insertAdjacentHTML("beforebegin", `<div id="deptRow" class="mb-2"></div>`); row = $("#deptRow"); } row.innerHTML = html; }
+const _renderHome61 = renderHome;
+renderHome = function(){ const r = _renderHome61.apply(this, arguments);
+  try{ if(!ccMulti()) return r; const bar = $("#hForm .composer-bar"); if(!bar) return r; const D = ccDeptLists(), cur = D.find(d => d.id === hdDept) || D[0];
+    const pick = D.length <= 3 ? `<div class="btn-group btn-group-sm" role="group" aria-label="Department" id="hDept">${D.map(d => `<button type="button" class="btn btn-outline-primary" data-hd="${esc(d.id)}" aria-pressed="${d.id === hdDept}">${esc(d.name)}</button>`).join("")}</div>` : `<select class="form-select form-select-sm" id="hDeptSel" aria-label="Department">${D.map(d => `<option value="${esc(d.id)}" ${d.id === hdDept ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select>`;
+    bar.insertAdjacentHTML("afterbegin", pick);
+    const subs = [...new Set(UNITS.filter(u => u._d === hdDept).map(u => u.s))];
+    document.querySelectorAll("#hCourse button").forEach(b => { b.hidden = !subs.includes(b.dataset.v); }); document.querySelectorAll("#hCourseSel option").forEach(o => { o.hidden = !subs.includes(o.value); });
+    const hc = $("#hCourse") || $("#hCourseSel"); if(hc && subs.length <= 1) hc.hidden = true;   // one subject: the department says it all
+    if(cur && !cur.units.length){ ["#hLevel", "#hUnit"].forEach(s => { const x = $(s); if(x) x.hidden = true; }); bar.insertAdjacentHTML("beforeend", `<div class="hd-none small text-body-secondary w-100" id="hdNone">${esc(cur.name)} has no subjects yet. ${me && (me.canSubjects || me.isLead) && cur.mine ? "Add its specification in Settings, Teaching, Subjects." : "Its head of department adds them from the specification."}</div>`); const s = $("#hForm .send"); if(s) s.disabled = true; } }
+  catch(e){ console.error(e); } return r; };
+document.addEventListener("click", e => { const b = e.target.closest("[data-hd]"); if(b && view === "home") ccDeptPick(b.dataset.hd); });
+document.addEventListener("change", e => { if(e.target.id === "hDeptSel" || e.target.id === "deptSel") ccDeptPick(e.target.value); });
+async function ccDeptsLoad(){ if(window.claude || !acct || !acct()) return; try{ const j = await storeCall("deptsubjects"); if(!Array.isArray(j.depts)) return; const same = JSON.stringify(j.depts) === JSON.stringify(ccDepts); ccDepts = j.depts; lsSet("cc_depts", JSON.stringify(ccDepts)); if(!same){ const fa = document.activeElement, fid = fa && fa.id, pos = fa && fa.selectionStart; coursesApply(); if(view === "home" || view === "seq") render(current); if(fid){ const x = document.getElementById(fid); if(x && x !== document.activeElement){ x.focus({preventScroll: true}); try{ if(pos != null) x.setSelectionRange(pos, pos); }catch{} } } } }catch(e){ console.error(e); } }
+(() => { let n = 0; const t = setInterval(() => { if(++n > 60) return clearInterval(t); try{ if(typeof acct === "function" && acct() && db && myId){ clearInterval(t); ccDeptsLoad(); } }catch{} }, 500); })();
+/* after a department's subjects change in Settings, everyone else's list catches up next load; your own updates now */
+const _coursesSave61 = coursesSave;
+coursesSave = function(){ const r = _coursesSave61.apply(this, arguments); try{ Promise.resolve(r).then(() => setTimeout(ccDeptsLoad, 300)); }catch{} return r; };
+
+/* ===== round 62 (v117): your own photo, and Our team: everyone in the institution on one page, with what they teach, what they hold, where they are and whether they're in.
+   Managers and heads of department also see CPD hours. A name opens the person's profile. ===== */
+const ccSave = (filename, data) => (typeof downloadsApi !== "undefined" && downloadsApi ? downloadsApi : {save: async ({filename, data}) => { const a = document.createElement("a"); a.href = URL.createObjectURL(data); a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }}).save({filename, data});
+/* ---------- the photo: cropped to a square and shrunk in the page, so only a small JPEG is sent ---------- */
+function ccSquare(file, size){ return new Promise((ok, bad) => { if(!file || !/^image\//.test(file.type)) return bad({code: "type"}); if(file.size > 15 * 1048576) return bad({code: "big"});
+  const url = URL.createObjectURL(file), im = new Image(); im.onload = () => { const s = Math.min(im.naturalWidth, im.naturalHeight); if(s < 64){ URL.revokeObjectURL(url); return bad({code: "small"}); } const c = document.createElement("canvas"); c.width = c.height = size; const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, size, size); g.drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, size, size); URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.86)); };
+  im.onerror = () => { URL.revokeObjectURL(url); bad({code: "type"}); }; im.src = url; }); }
+function ccPhotoSet(pic){ try{ if(me) me.picture = pic; if(spInfo && spInfo.person && spInfo.person.self) spInfo.person.picture = pic; if(typeof applyRole === "function") applyRole(); }catch(e){ console.error(e); } }
+const spAvatar = (pic, init) => pic && (/^https:\/\//.test(pic) || /^photo\.php\?u=[0-9a-f]{40}&v=\d+$/.test(pic)) ? `<img src="${esc(pic)}" alt="" referrerpolicy="no-referrer">` : esc(init);
+const _spEditHtml62 = spEditHtml;
+spEditHtml = function(){ const P = spInfo.person, init = (P.name || P.email).split(/\s+/).map(x => x[0]).slice(0, 2).join("").toUpperCase(), own = /^photo\.php/.test(P.picture || "");
+  return _spEditHtml62.apply(this, arguments).replace('<div class="row g-3">', `<div class="sp-photo"><div class="sp-av sp-av-sm">${spAvatar(P.picture, init)}</div><div><div class="small fw-semibold mb-1">Photo</div><label class="btn btn-sm btn-outline-primary mb-0" for="spfPhoto">${P.picture ? "Change photo" : "Add a photo"}</label><input type="file" id="spfPhoto" accept="image/*" class="visually-hidden">${own ? ` <button type="button" class="btn btn-sm btn-link text-danger" data-spf="nophoto">Remove</button>` : ""}<div class="form-text">A clear head and shoulders works best. It's cropped to a square. Only people signed in to Crafticulum see it.</div></div></div><div class="row g-3">`); };
+document.addEventListener("change", async e => { if(e.target.id !== "spfPhoto") return; const f = e.target.files && e.target.files[0], m = $("#spfMsg"); if(!f) return;
+  try{ m.className = "idea-msg mt-2"; m.textContent = "Uploading your photo..."; const img = await ccSquare(f, 320), j = await storeCall("staffphoto", {img}); spEdit = spGather(); ccPhotoSet(j.picture); spRedraw("#spfHead"); const mm = $("#spfMsg"); if(mm) mm.textContent = "Photo saved."; }
+  catch(err){ m.className = "idea-msg mt-2 err"; m.textContent = err && err.code === "big" ? "That picture is over 15 MB. Try a smaller one." : err && err.code === "small" ? "That picture is too small. Use one at least 64 pixels across." : err && err.code === "type" ? "That isn't a picture Crafticulum can use. Try a JPEG or PNG." : "Couldn't save the photo just now."; } });
+document.addEventListener("click", async e => { if(!e.target.closest('[data-spf="nophoto"]')) return; try{ const j = await storeCall("staffphoto", {remove: true}); spEdit = spGather(); ccPhotoSet(j.picture); spRedraw("#spfHead"); }catch{ const m = $("#spfMsg"); if(m){ m.className = "idea-msg mt-2 err"; m.textContent = "Couldn't remove it just now."; } } });
+/* the profile banner shows an uploaded photo too, and colleagues get a slimmer profile: who they are, not their classes or records */
+const _spHtml62 = spHtml;
+spHtml = function(){ let h = _spHtml62.apply(this, arguments); const S = spInfo; if(!S || !S.person) return h;
+  const P = S.person, init = (P.name || P.email).split(/\s+/).map(x => x[0]).slice(0, 2).join("").toUpperCase(); h = h.replace(/<div class="sp-av">[\s\S]*?<\/div><div class="min-w-0 flex-grow-1 sp-who">/, `<div class="sp-av">${spAvatar(P.picture, init)}</div><div class="min-w-0 flex-grow-1 sp-who">`);
+  if(S.limited){ const d = document.createElement("div"); d.innerHTML = h; d.querySelectorAll(".sp-tabs, .sp-tiles, .sp-nudge, #spP-classes, #spP-lessons, #spP-iv, #spP-cpd").forEach(x => x.remove()); d.querySelectorAll(".sp-box").forEach(x => { if(/Lessons written|On Crafticulum/.test(x.textContent)) x.remove(); }); const ov = d.querySelector("#spP-overview"); if(ov){ ov.hidden = false; ov.removeAttribute("role"); ov.removeAttribute("aria-labelledby"); } h = d.innerHTML; }
+  return h; };
+/* ---------- Our team ---------- */
+let tmInfo = null, tmBusy = false, tmQ = "", tmDept = "", tmCamp = "", tmHeld = "", tmIn = false, tmErr = "";
+const TM_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.5 6-5.5s5.4 2.1 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.6c2.6.2 4.4 2 5 4.9"/></svg>`;
+const tmOk = () => !window.claude && !!(me && me.email) && !me.demo && !(typeof saOut === "function" && saOut());
+try{ CC_ROUTES.team = "our-team"; }catch{}
+async function tmLoad(force){ if(tmBusy || (tmInfo && !force)) return; tmBusy = true; tmErr = ""; try{ tmInfo = await storeCall("directory"); }catch(e){ tmErr = "Couldn't load the team just now."; } finally{ tmBusy = false; if(view === "team") tmDraw(); } }
+function tmRows(){ const P = (tmInfo && tmInfo.people) || [], q = tmQ.trim().toLowerCase();
+  return P.filter(p => (!tmDept || p.dept === tmDept) && (!tmCamp || (p.campuses || []).includes(tmCamp)) && (!tmHeld || (p.held || []).includes(tmHeld)) && (!tmIn || p.status === "in" || p.status === "class") && (!q || [p.name, p.email, p.headline, p.deptName, ...(p.skills || []), ...(p.held || [])].join(" ").toLowerCase().includes(q))); }
+function tmHtml(){ if(!tmInfo) return `<div class="tk-wrap"><div class="tk-empty">${tmErr ? esc(tmErr) + ` <button type="button" class="btn btn-sm btn-outline-primary" data-tm2="retry">Try again</button>` : "Loading the team..."}</div></div>`;
+  const P = tmInfo.people || [], rows = tmRows(), camps = [...new Set(P.flatMap(p => p.campuses || []))].sort(), held = [...new Set(P.flatMap(p => p.held || []))].sort(), inNow = P.filter(p => p.status === "in" || p.status === "class").length, cpd = !!tmInfo.cpd;
+  const card = p => { const init = (p.name || p.email).split(/\s+/).map(x => x[0]).slice(0, 2).join("").toUpperCase(), st = SP_STATUS[p.status];
+    return `<li class="tm-card"><button type="button" class="tm-open" data-sp="${esc(p.email)}" aria-label="Open ${esc(p.name)}'s profile"><span class="sp-av tm-av">${spAvatar(p.picture, init)}</span><span class="min-w-0 tm-who"><span class="tm-name">${esc(p.name)}</span><span class="tm-hl">${esc(p.headline || SP_ROLE[p.role] || "Teacher")}</span><span class="tm-dept">${esc(p.deptName)}${(p.campuses || []).length ? " · " + esc(p.campuses.join(", ")) : ""}</span></span>${st ? `<span class="sp-status sp-s-${st[1]} tm-st">${esc(st[0])}</span>` : ""}</button>
+      ${(p.skills || []).length || (p.held || []).length ? `<div class="tm-tags">${spTags([...(p.skills || []).slice(0, 3), ...(p.held || []).slice(0, 2)])}</div>` : ""}
+      <div class="tm-foot">${p.room ? `<span>${esc(p.room)}</span>` : ""}<a href="mailto:${esc(p.email)}">Email</a>${cpd && p.cpdHours !== undefined ? `<span class="tm-cpd" title="CPD hours this academic year">${p.cpdHours} CPD ${p.cpdHours === 1 ? "hour" : "hours"}</span>` : ""}</div></li>`; };
+  return `<div class="tk-wrap tm-wrap"><div class="tm-head"><div><h1 class="h3 mb-1">Our team</h1><p class="text-body-secondary mb-0">${P.length} ${P.length === 1 ? "person" : "people"}${tmInfo.depts.length > 1 ? ` in ${tmInfo.depts.length} departments` : ""}${inNow ? `, ${inNow} in today` : ""}. Fill in your own profile so colleagues know what you teach and how to reach you.</p></div>
+      <div class="tm-acts"><button type="button" class="btn btn-sm btn-primary" data-sp="${esc(me.email)}">My profile</button>${cpd ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-tm2="csv">CPD hours (CSV)</button>` : ""}${me && (me.canTeam || me.isLead) ? `<button type="button" class="btn btn-sm btn-outline-secondary" data-tm2="manage">Manage the team</button>` : ""}</div></div>
+    <div class="tm-filters"><input type="search" class="form-control form-control-sm" id="tmQ" value="${esc(tmQ)}" placeholder="Search names, subjects, specialisms" aria-label="Search the team">
+      ${tmInfo.depts.length > 1 ? `<select class="form-select form-select-sm" id="tmDept" aria-label="Department"><option value="">All departments</option>${tmInfo.depts.map(d => `<option value="${esc(d.id)}" ${d.id === tmDept ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select>` : ""}
+      ${camps.length > 1 ? `<select class="form-select form-select-sm" id="tmCamp" aria-label="Campus"><option value="">All campuses</option>${camps.map(c => `<option ${c === tmCamp ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>` : ""}
+      ${held.length ? `<select class="form-select form-select-sm" id="tmHeld" aria-label="Qualification held"><option value="">Any qualification</option>${held.map(c => `<option ${c === tmHeld ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>` : ""}
+      <label class="form-check form-switch mb-0 tm-in"><input class="form-check-input" type="checkbox" role="switch" id="tmIn" ${tmIn ? "checked" : ""}><span class="form-check-label small">In today</span></label></div>
+    <div class="small text-body-secondary mb-2" role="status" id="tmCount">${rows.length === P.length ? "" : `${rows.length} of ${P.length} shown`}</div>
+    ${rows.length ? `<ul class="list-unstyled tm-grid">${rows.map(card).join("")}</ul>` : `<div class="tk-empty">Nobody matches that.</div>`}</div>`; }
+function tmDraw(){ const o = $("#out"); if(!o || view !== "team") return; const a = document.activeElement, id = a && a.id, pos = a && a.selectionStart; o.innerHTML = tmHtml(); if(id){ const x = document.getElementById(id); if(x){ x.focus({preventScroll: true}); if(pos != null) try{ x.setSelectionRange(pos, pos); }catch{} } } }
+function tmNavAdd(){ if($("#sideTeam") || !tmOk()) return; const s = $("#sideLearn"); if(!s) return; s.insertAdjacentHTML("afterend", `<button type="button" class="side-link" id="sideTeam" data-x-nav="team" aria-label="Our team">${TM_ICO}<span class="lbl">Our team</span></button>`); }
+const _render62 = render;
+render = function(){ if(view === "team"){ if(!tmOk()){ view = "home"; return _render62.apply(this, arguments); } if(typeof markerShow === "function") try{ markerShow(false); }catch{} tmDraw(); tmLoad(); syncShell(); try{ ccUrlSync(); }catch{} return; } return _render62.apply(this, arguments); };
+const _syncShell62 = syncShell;
+syncShell = function(){ const r = _syncShell62.apply(this, arguments); try{ tmNavAdd(); const b = $("#sideTeam"), on = view === "team"; if(b){ b.hidden = !tmOk(); b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
+    if(on){ document.querySelectorAll('.side-link.active:not(#sideTeam),.bnav [data-nav].active').forEach(x => { x.classList.remove("active"); x.removeAttribute("aria-current"); }); const pt = $("#pageTitle"); if(pt) pt.textContent = "Our team"; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = "Our team"; document.title = "Our team · Crafticulum"; const fb = $("#fabBoard"); if(fb) fb.hidden = true; const sh = $("#appShell"); if(sh){ sh.classList.remove("home-view"); sh.classList.add("wide-view"); } } }catch{} return r; };
+document.addEventListener("input", e => { if(view === "team" && e.target.id === "tmQ"){ tmQ = e.target.value; tmDraw(); } });
+document.addEventListener("change", e => { if(view !== "team") return; const t = e.target; if(t.id === "tmDept") tmDept = t.value; else if(t.id === "tmCamp") tmCamp = t.value; else if(t.id === "tmHeld") tmHeld = t.value; else if(t.id === "tmIn") tmIn = t.checked; else return; tmDraw(); });
+document.addEventListener("click", e => { if(view !== "team") return; const b = e.target.closest("[data-tm2]"); if(!b) return; const k = b.dataset.tm2;
+  if(k === "retry") return tmLoad(true);
+  if(k === "manage"){ try{ stTab = "people"; }catch{} return setView("settings"); }
+  if(k === "csv"){ const cell = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`, rows = tmRows(); const csv = [["Name", "Email", "Department", "Job title", "CPD hours this academic year", "Qualifications held"].map(cell).join(","), ...rows.map(p => [p.name, p.email, p.deptName, p.headline, p.cpdHours ?? "", (p.held || []).join("; ")].map(cell).join(","))].join("\r\n");
+    ccSave("CPD hours " + new Date().toISOString().slice(0, 10) + ".csv", new Blob(["﻿" + csv], {type: "text/csv"})); } });
+/* a saved profile or photo shows on the team page straight away */
+const _spSave62 = spSave;
+spSave = async function(){ const r = await _spSave62.apply(this, arguments); tmInfo = null; return r; };
+
+/* ===== round 63 (v117): Crafti does things, not just talks. Under each reply: build a lesson from it, or turn it into a resource you can edit, save and download.
+   The same buttons are on the Crafti page. Building opens the dashboard with the lesson described and the subject ready to check, so one press builds it. ===== */
+function caLessonText(c, i){ const a = c.msgs[i], q = c.msgs.slice(0, i).reverse().find(m => m.r === "u");
+  const gist = String(a.t).replace(/\|[^\n]*\|/g, " ").replace(/[#*_`>]+/g, " ").replace(/\s+/g, " ").trim();
+  return tkScrub(((q ? q.t.trim().replace(/[.?!]*$/, ". ") : "") + "Use these ideas: " + gist).slice(0, 1150)); }
+function caBuild(c, i){ homeText = caLessonText(c, i); homeAuto = true; homeMsg = "Crafti has written the lesson description. Check the department, subject and level, then press the arrow to build it."; homeBad = false;
+  if(typeof cfOpen !== "undefined" && cfOpen){ cfOpen = false; try{ cfDraw(); }catch{} } setView("home"); setTimeout(() => { const t = $("#hText"); if(t){ t.focus(); t.scrollIntoView({block: "center"}); } }, 80); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-cf-do]"); if(!b) return; const c = cfChat(), i = +b.dataset.i; if(!c || !c.msgs[i]) return;
+  if(b.dataset.cfDo === "lesson") return caBuild(c, i);
+  if(b.dataset.cfDo === "doc"){ cfOpen = false; try{ cfDraw(); }catch{} asToDoc(c, i); } });
+/* the Crafti page gets "Build a lesson from this" beside "Make this a resource" */
+const _asHtml63 = asHtml;
+asHtml = function(){ const h = _asHtml63.apply(this, arguments); if(!(me && me.canGen)) return h; return h.replace(/(<button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="(\d+)">Make this a resource<\/button>)/g, `$1<button type="button" class="btn btn-sm btn-outline-primary" data-as63="lesson" data-i="$2">Build a lesson from this</button>`); };
+document.addEventListener("click", e => { const b = e.target.closest('[data-as63="lesson"]'); if(!b) return; const c = asChat(), i = +b.dataset.i; if(c && c.msgs[i]) caBuild(c, i); });
+
+/* ===== round 64 (v117): a video lesson downloads as an MP4. The slides and captions are drawn and encoded in the browser (WebCodecs, H.264), much faster than playing it through,
+   and packed into an MP4 here, so nothing leaves the device. It has captions burned in and no sound: the device's voice can't be recorded. ===== */
+const MP4_W = 1280, MP4_H = 720, MP4_FPS = 10;
+/* ---------- a small MP4 writer: one H.264 track, every frame the same length ---------- */
+function mp4Pack(chunks, avcC, w, h, fps){
+  const u8 = n => [n & 255], u16 = n => [(n >> 8) & 255, n & 255], u32 = n => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255], str = s => [...s].map(c => c.charCodeAt(0));
+  const box = (type, ...parts) => { const body = parts.flat(Infinity), len = 8 + body.length; return [...u32(len), ...str(type), ...body]; };
+  const full = (type, v, flags, ...parts) => box(type, u8(v), u8(flags >> 16), u16(flags & 0xffff), ...parts);
+  const matrix = [...u32(0x00010000), ...u32(0), ...u32(0), ...u32(0), ...u32(0x00010000), ...u32(0), ...u32(0), ...u32(0), ...u32(0x40000000)];
+  const ts = 1000, dt = Math.round(ts / fps), n = chunks.length, dur = n * dt, sizes = chunks.map(c => c.byteLength), keys = chunks.map((c, i) => c.key ? i + 1 : 0).filter(Boolean);
+  const moov = off => box("moov",
+    full("mvhd", 0, 0, u32(0), u32(0), u32(ts), u32(dur), u32(0x00010000), u16(0x0100), u16(0), u32(0), u32(0), matrix, Array(24).fill(0), u32(2)),
+    box("trak",
+      full("tkhd", 0, 3, u32(0), u32(0), u32(1), u32(0), u32(dur), u32(0), u32(0), u16(0), u16(0), u16(0), u16(0), matrix, u32(w << 16), u32(h << 16)),
+      box("mdia",
+        full("mdhd", 0, 0, u32(0), u32(0), u32(ts), u32(dur), u16(0x55c4), u16(0)),
+        full("hdlr", 0, 0, u32(0), str("vide"), u32(0), u32(0), u32(0), str("VideoHandler"), u8(0)),
+        box("minf",
+          full("vmhd", 0, 1, u16(0), u16(0), u16(0), u16(0)),
+          box("dinf", full("dref", 0, 0, u32(1), full("url ", 0, 1))),
+          box("stbl",
+            full("stsd", 0, 0, u32(1), box("avc1", Array(6).fill(0), u16(1), u16(0), u16(0), Array(12).fill(0), u16(w), u16(h), u32(0x00480000), u32(0x00480000), u32(0), u16(1), Array(32).fill(0), u16(0x0018), u16(0xffff), box("avcC", [...avcC]))),
+            full("stts", 0, 0, u32(1), u32(n), u32(dt)),
+            full("stss", 0, 0, u32(keys.length), keys.map(k => u32(k))),
+            full("stsc", 0, 0, u32(1), u32(1), u32(n), u32(1)),
+            full("stsz", 0, 0, u32(0), u32(n), sizes.map(s => u32(s))),
+            full("stco", 0, 0, u32(1), u32(off)))))));
+  const ftyp = box("ftyp", str("isom"), u32(0x200), str("isom"), str("iso2"), str("avc1"), str("mp41"));
+  const m0 = moov(0), off = ftyp.length + m0.length + 8, total = sizes.reduce((a, b) => a + b, 0);
+  return new Blob([new Uint8Array(ftyp), new Uint8Array(moov(off)), new Uint8Array([...u32(8 + total), ...str("mdat")]), ...chunks.map(c => c.data)], {type: "video/mp4"}); }
+/* ---------- what happens when: each slide's sentences, the thinking time on a question, a pause on each task ---------- */
+const mp4Sent = t => (String(t || "").replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || []).map(x => x.trim()).filter(Boolean);
+function mp4Plan(L, script){ const S = ccVideo.slides(L), segs = []; const secs = t => Math.max(1.6, t.split(/\s+/).length / 2.6);
+  S.forEach((s, i) => { const said = mp4Sent((script && script[s.id]) || ccVideo.say(s, s.id === "intro"));
+    (said.length ? said : [""]).forEach(t => segs.push({i, s, cap: t, sec: t ? secs(t) : 3}));
+    if(s.kind === "quiz" && s.answer >= 0){ segs.push({i, s, cap: "Think about it...", sec: 4, think: true}); mp4Sent(ccVideo.reveal(s)).forEach(t => segs.push({i, s, cap: t, sec: secs(t), shown: true})); }
+    if(s.pause) segs.push({i, s, cap: "Pause the video and have a go. Press play when you're ready.", sec: 5, pause: true}); });
+  return {slides: S, segs}; }
+/* ---------- drawing one frame ---------- */
+const MP4_FONT = '"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif';
+function mp4Wrap(g, text, maxW){ const words = String(text || "").split(/\s+/).filter(Boolean), lines = []; let cur = ""; words.forEach(w => { const t = cur ? cur + " " + w : w; if(g.measureText(t).width > maxW && cur){ lines.push(cur); cur = w; } else cur = t; }); if(cur) lines.push(cur); return lines; }
+function mp4Text(g, text, x, y, maxW, size, weight, color, maxLines, lh){ g.font = `${weight} ${size}px ${MP4_FONT}`; g.fillStyle = color; let lines = mp4Wrap(g, text, maxW); if(maxLines && lines.length > maxLines){ lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S*$/, "") + "..."; } lines.forEach((l, k) => g.fillText(l, x, y + k * (lh || size * 1.25))); return y + lines.length * (lh || size * 1.25); }
+function mp4Round(g, x, y, w, h, r, fill, stroke){ g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, r) : g.rect(x, y, w, h); if(fill){ g.fillStyle = fill; g.fill(); } if(stroke){ g.strokeStyle = stroke; g.lineWidth = 2; g.stroke(); } }
+function mp4Frame(g, seg, n, total, crafti, title){ const s = seg.s, k = s.kind, X = 96, W = MP4_W - 2 * X; g.textBaseline = "alphabetic";
+  g.fillStyle = "#ffffff"; g.fillRect(0, 0, MP4_W, MP4_H); const gr = g.createLinearGradient(0, 0, MP4_W, 0); gr.addColorStop(0, "#4f46e5"); gr.addColorStop(.5, "#a855f7"); gr.addColorStop(1, "#ec4899"); g.fillStyle = gr; g.fillRect(0, 0, MP4_W, 12);
+  const kick = (t) => { g.font = `800 20px ${MP4_FONT}`; g.fillStyle = "#6d28d9"; g.fillText(t.toUpperCase(), X, 92); };
+  let y = 150;
+  if(k === "intro"){ kick("Video lesson"); y = mp4Text(g, s.title, X, 160, W, 58, 800, "#111827", 2, 66); if(s.unit) y = mp4Text(g, s.unit, X, y + 14, W, 26, 500, "#475569", 1); y += 30;
+    s.obj.forEach(o => { const c = o[0] === "Most" ? ["#fef3c7", "#92400e"] : o[0] === "Some" ? ["#f3e8ff", "#6b21a8"] : ["#dcfce7", "#166534"]; mp4Round(g, X, y - 26, 96, 36, 6, c[0]); g.font = `800 17px ${MP4_FONT}`; g.fillStyle = c[1]; g.fillText(o[0].toUpperCase(), X + 14, y - 2); y = mp4Text(g, String(o[1]), X + 120, y, W - 120, 26, 500, "#1e293b", 2, 32) + 18; }); }
+  else if(k === "starter"){ kick("Starter"); y = mp4Text(g, s.title, X, 150, W, 50, 800, "#111827", 1); const lines = (g.font = `600 32px ${MP4_FONT}`, mp4Wrap(g, s.prompt, W - 60)).slice(0, 4), bh = lines.length * 42 + 36; mp4Round(g, X, y + 10, W, bh, 10, "#eef0ff"); g.fillStyle = "#6366f1"; g.fillRect(X, y + 10, 8, bh); mp4Text(g, s.prompt, X + 34, y + 58, W - 60, 32, 600, "#1e1b4b", 4, 42); y += bh + 50; s.list.slice(0, 3).forEach(t => { y = mp4Text(g, "•  " + t, X, y, W, 26, 500, "#1e293b", 2, 32) + 8; }); }
+  else if(k === "teach" || k === "task"){ kick(k === "teach" ? `Learn${s.of > 1 ? " · " + s.n + " of " + s.of : ""}` : `Your task${s.of > 1 ? " · " + s.n + " of " + s.of : ""}`); y = mp4Text(g, s.title, X, 150, W, 50, 800, "#111827", 2, 58);
+    if(k === "task" && s.goal) y = mp4Text(g, s.goal, X, y + 6, W, 24, 500, "#475569", 2, 30);
+    y += 24; const items = s.list.length ? s.list.slice(0, k === "task" ? 6 : 5) : [s.explain]; items.forEach((t, j) => { if(y > 520) return; g.font = `800 26px ${MP4_FONT}`; g.fillStyle = "#7c3aed"; g.fillText(k === "task" ? (j + 1) + "." : "•", X, y); y = mp4Text(g, t, X + 44, y, W - 44, 27, 500, "#1e293b", 2, 34) + 10; });
+    if(k === "task" && s.mins){ mp4Round(g, X, 548, 230, 40, 8, "#e0e7ff"); g.font = `700 20px ${MP4_FONT}`; g.fillStyle = "#3730a3"; g.fillText(`About ${s.mins} minutes`, X + 18, 575); } }
+  else if(k === "quiz"){ kick(`Quick check · ${s.n} of ${s.of}`); y = mp4Text(g, s.q, X, 150, W, 40, 800, "#111827", 2, 48) + 10; const cw = (W - 24) / 2;
+    s.opts.slice(0, 4).forEach((o, j) => { const cx = X + (j % 2) * (cw + 24), cy = y + Math.floor(j / 2) * 110, ok = seg.shown && j === s.answer, dim = seg.shown && j !== s.answer; g.globalAlpha = dim ? .45 : 1; mp4Round(g, cx, cy, cw, 92, 12, ok ? "#f0fdf4" : "#ffffff", ok ? "#16a34a" : "#e2e8f0"); g.beginPath(); g.arc(cx + 46, cy + 46, 22, 0, 7); g.fillStyle = ok ? "#16a34a" : "#eef0ff"; g.fill(); g.font = `800 22px ${MP4_FONT}`; g.fillStyle = ok ? "#fff" : "#4338ca"; g.textAlign = "center"; g.fillText("ABCD"[j], cx + 46, cy + 54); g.textAlign = "left"; mp4Text(g, o, cx + 84, cy + 40, cw - 100, 24, 600, "#1e293b", 2, 28); g.globalAlpha = 1; });
+    if(seg.think){ mp4Round(g, MP4_W - 300, 60, 210, 44, 22, "#fef3c7"); g.font = `700 20px ${MP4_FONT}`; g.fillStyle = "#92400e"; g.fillText("Think about it...", MP4_W - 280, 89); } }
+  else { const r = g.createRadialGradient(MP4_W / 2, 0, 10, MP4_W / 2, 0, 700); r.addColorStop(0, "#ede9fe"); r.addColorStop(1, "#ffffff"); g.fillStyle = r; g.fillRect(0, 12, MP4_W, MP4_H); g.textAlign = "center"; g.font = `800 22px ${MP4_FONT}`; g.fillStyle = "#6d28d9"; g.fillText("WELL DONE", MP4_W / 2, 250); g.font = `800 56px ${MP4_FONT}`; g.fillStyle = "#111827"; mp4Wrap(g, s.title || "That's the lesson", W).slice(0, 2).forEach((l, j) => g.fillText(l, MP4_W / 2, 330 + j * 64)); if(s.recap){ g.font = `500 26px ${MP4_FONT}`; g.fillStyle = "#475569"; mp4Wrap(g, s.recap, W - 160).slice(0, 3).forEach((l, j) => g.fillText(l, MP4_W / 2, 470 + j * 34)); } g.textAlign = "left"; }
+  if(crafti) g.drawImage(crafti, 28, MP4_H - 250, 96, 96);
+  if(seg.cap){ g.font = `600 28px ${MP4_FONT}`; const lines = mp4Wrap(g, seg.cap, MP4_W - 320).slice(0, 2), bh = lines.length * 36 + 26, bw = Math.max(...lines.map(l => g.measureText(l).width)) + 48; mp4Round(g, (MP4_W - bw) / 2, MP4_H - 46 - bh, bw, bh, 8, seg.pause ? "rgba(17,24,39,.94)" : "rgba(0,0,0,.72)"); g.fillStyle = seg.pause ? "#fde68a" : "#ffffff"; g.textAlign = "center"; lines.forEach((l, j) => g.fillText(l, MP4_W / 2, MP4_H - 46 - bh + 44 + j * 36)); g.textAlign = "left"; }
+  g.fillStyle = "#e2e8f0"; g.fillRect(0, MP4_H - 8, MP4_W, 8); g.fillStyle = "#8b5cf6"; g.fillRect(0, MP4_H - 8, MP4_W * (n + 1) / total, 8);
+  g.font = `600 16px ${MP4_FONT}`; g.fillStyle = "#94a3b8"; g.textAlign = "right"; g.fillText(`${title} · Crafticulum`, MP4_W - 40, 46); g.textAlign = "left"; }
+/* ---------- the whole video ---------- */
+const MP4_CRAFTI = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#4f46e5"/></linearGradient></defs><path d="M30 18h44l22 22v54a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V28a10 10 0 0 1 10-10z" fill="url(#g)"/><path d="M74 18v22h22z" fill="#c4b5fd"/><circle cx="46" cy="56" r="9" fill="#fff"/><circle cx="72" cy="56" r="9" fill="#fff"/><circle cx="48" cy="57" r="4" fill="#1e1b4b"/><circle cx="74" cy="57" r="4" fill="#1e1b4b"/><path d="M48 76q11 10 22 0" fill="#fff" stroke="#fff" stroke-width="3"/><circle cx="36" cy="70" r="4" fill="#f472b6" opacity=".6"/><circle cx="84" cy="70" r="4" fill="#f472b6" opacity=".6"/></svg>`;
+const mp4Can = () => typeof VideoEncoder !== "undefined" && typeof VideoFrame !== "undefined";
+async function mp4Make(L, script, onProg, signal){ if(!mp4Can()) throw {code: "nocodec"};
+  const codec = "avc1.42001f", cfg = {codec, width: MP4_W, height: MP4_H, bitrate: 1500000, framerate: MP4_FPS, avc: {format: "avc"}};
+  const sup = await VideoEncoder.isConfigSupported(cfg).catch(() => null); if(!sup || !sup.supported) throw {code: "nocodec"};
+  const crafti = await new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(MP4_CRAFTI); });
+  try{ await document.fonts.ready; }catch{}
+  const plan = mp4Plan(L, script), frames = [], title = String(L.title || "Lesson").slice(0, 60);
+  plan.segs.forEach((sg, j) => { const nf = Math.max(1, Math.round(sg.sec * MP4_FPS)); for(let f = 0; f < nf; f++) frames.push(j); });
+  const cv = typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(MP4_W, MP4_H) : Object.assign(document.createElement("canvas"), {width: MP4_W, height: MP4_H}), g = cv.getContext("2d");
+  const chunks = []; let avcC = null, fail = null;
+  const enc = new VideoEncoder({output: (c, meta) => { if(meta && meta.decoderConfig && meta.decoderConfig.description && !avcC) { const d = meta.decoderConfig.description; avcC = d instanceof ArrayBuffer ? new Uint8Array(d.slice(0)) : new Uint8Array(d.buffer, d.byteOffset, d.byteLength).slice(); } const b = new Uint8Array(c.byteLength); c.copyTo(b); chunks.push({data: b, byteLength: c.byteLength, key: c.type === "key"}); }, error: e => { fail = e; }});
+  enc.configure(cfg);
+  let last = -1; const total = frames.length;
+  for(let f = 0; f < total; f++){ if(signal && signal.aborted){ try{ enc.close(); }catch{} throw {code: "aborted"}; } if(fail) throw fail;
+    if(frames[f] !== last){ last = frames[f]; mp4Frame(g, plan.segs[last], plan.segs[last].i, plan.slides.length, crafti, title); }
+    const vf = new VideoFrame(cv, {timestamp: Math.round(f * 1e6 / MP4_FPS), duration: Math.round(1e6 / MP4_FPS)}); enc.encode(vf, {keyFrame: f % (MP4_FPS * 3) === 0}); vf.close();
+    while(enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 0));
+    if(f % 20 === 0){ onProg && onProg(f / total); await new Promise(r => setTimeout(r, 0)); } }
+  await enc.flush(); enc.close(); if(fail) throw fail; if(!avcC || !chunks.length) throw {code: "empty"};
+  onProg && onProg(1); return {blob: mp4Pack(chunks, avcC, MP4_W, MP4_H, MP4_FPS), secs: total / MP4_FPS}; }
+/* ---------- the button in the player ---------- */
+let mp4Abort = null;
+const _vdOpen64 = vdOpen;
+vdOpen = function(L){ const api = _vdOpen64.apply(this, arguments); if(!api) return api; L = L || current;
+  const bar = api.root.querySelector(".vd-ctl"); if(bar && mp4Can()) bar.insertAdjacentHTML("beforeend", `<button type="button" class="vd-b" data-vd="mp4" title="Download this video lesson as an MP4 file, with captions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>MP4</span></button>`);
+  api.root.addEventListener("click", async e => { const b = e.target.closest('[data-vd="mp4"], [data-vd="mp4stop"]'); if(!b) return; e.stopPropagation();
+    if(b.dataset.vd === "mp4stop"){ if(mp4Abort) mp4Abort.abort(); return; } if(mp4Abort) return; if(api.state().playing) api.play();
+    const btn = api.root.querySelector('[data-vd="mp4"]'); btn.disabled = true; mp4Abort = new AbortController(); const script = (L.video && L.video.script) || {};
+    api.note(`Making the video... <span id="mp4Pct">0%</span> <button type="button" data-vd="mp4stop">Stop</button>`);
+    try{ const r = await mp4Make(L, script, p => { const x = document.getElementById("mp4Pct"); if(x) x.textContent = Math.round(p * 100) + "%"; }, mp4Abort.signal);
+      await ccSave((String(L.title || "Video lesson").replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 80) || "Video lesson") + ".mp4", r.blob);
+      api.note(`Saved the MP4 (${Math.floor(r.secs / 60)} min ${Math.round(r.secs % 60)} s, ${(r.blob.size / 1048576).toFixed(1)} MB). It has captions but no sound, so learners read along. Post it on Teams or Google Classroom like any video.`); }
+    catch(err){ api.note(err && err.code === "aborted" ? "Stopped. Nothing was saved." : err && err.code === "nocodec" ? "This browser can't make MP4 files. Try Chrome, Edge or Safari." : "Couldn't make the video this time. Try again."); console.error(err); }
+    finally{ mp4Abort = null; btn.disabled = false; } }, true);
+  return api; };
+
+/* ===== round 65 (v117): Admin, the super admin's own area. It opens on a To do list (people waiting, unconfirmed emails, messages, errors, an update, institutions set up twice),
+   then Institutions, People, Money, Features and System. Settings goes back to being the super admin's own preferences and the institution they're inside. ===== */
+const AD_GROUPS = [["todo", "To do", ["stAdminTodo", "stInbox"]], ["overview", "Institutions", ["stOverview", "stColleges", "stMerge"]], ["people", "People", ["stAllUsers", "stTeam", "stDepts"]],
+  ["money", "Money", ["stPlans", "stUsage"]], ["features", "Features", ["stRooms"]], ["site", "System", ["stSetup", "stUpdate", "stErrors", "stInst", "stData", "stAuto", "stPriv"]]];
+const AD_HELP = {todo: "What needs you right now, across the whole site.", overview: "Every institution on the site. Open one to work inside it.", people: "Everyone on the site, and the team of the institution you're in.", money: "Plans, prices, payments and what each institution has used.", features: "What's switched on for every institution. Releases from the roadmap are on the Roadmap page.", site: "Sign-in, email, Crafticulum AI, updates, errors, backups and the school lists."};
+const adIs = () => !window.claude && typeof me !== "undefined" && !!me && me.role === "superadmin";
+const adKeys = AD_GROUPS.map(g => g[0]);
+const adOn = () => adIs() && adKeys.includes(stTab);
+const AD_IDS = new Set(AD_GROUPS.flatMap(g => g[2]));
+function adTodoHtml(sec){ if(!adIs()) return "";
+  if(!auInfo) auLoad(); if(errLog === null) errLoad(); if(!upInfo) upLoad(); if(!mgInfo) mgLoad();
+  const users = (auInfo && auInfo.users) || [], wait = users.filter(u => u.pending).length, unc = users.filter(auUnc).length, msgs = (meInfo && meInfo.inbox) || 0, errs = Array.isArray(errLog) ? errLog.length : 0, upd = upInfo && upInfo.newer ? upInfo.latest : null, dup = mgInfo && Array.isArray(mgInfo.dupes) ? mgInfo.dupes.length : 0, loading = !auInfo || errLog === null || !upInfo || !mgInfo;
+  const row = (n, what, btn, go, tone) => `<li class="ad-row${tone ? " ad-" + tone : ""}"><span class="ad-n">${n}</span><span class="ad-what">${what}</span><button type="button" class="btn btn-sm btn-primary" data-ad-go="${go}">${btn}</button></li>`;
+  const rows = [wait ? row(wait, `${wait === 1 ? "person is" : "people are"} waiting for you to approve ${wait === 1 ? "their account" : "their accounts"}`, "Review", "wait", "warn") : "",
+    unc ? row(unc, `${unc === 1 ? "account hasn't" : "accounts haven't"} confirmed ${unc === 1 ? "its" : "their"} email address`, "See who", "email") : "",
+    msgs ? row(msgs, `new ${msgs === 1 ? "message" : "messages"} from the contact page`, "Read", "inbox", "warn") : "",
+    upd ? row("v" + esc(upd.v), `is ready to install${upd.note ? `: ${esc(upd.note).slice(0, 120)}` : ""}`, "Update", "update") : "",
+    errs ? row(errs, `${errs === 1 ? "error" : "errors"} in the log`, "Look", "errors", errs > 20 ? "warn" : "") : "",
+    dup ? row(dup, `${dup === 1 ? "institution looks" : "institutions look"} set up twice`, "Sort it out", "dupes") : ""].filter(Boolean);
+  return sec("stAdminTodo", "To do", "Anything that needs you shows here, with a button that takes you straight to it.", rows.length ? `<ul class="list-unstyled ad-list">${rows.join("")}</ul>` : `<div class="ad-clear"><span class="ad-tick" aria-hidden="true">&#10003;</span><div><div class="fw-semibold">${loading ? "Checking..." : "Nothing needs you right now."}</div><div class="small text-body-secondary">${loading ? "" : "New accounts, messages, errors and updates will show up here."}</div></div></div>`); }
+const _accountSections65 = accountSections;
+accountSections = function(sec){ return _accountSections65.apply(this, arguments) + adTodoHtml(sec); };
+/* the layout: Admin's groups when you're in Admin, Settings without the site-wide parts otherwise */
+stLayout = function(){
+  const out = $("#out"), nav = out && out.querySelector("nav.st-jump"); if(!nav || view !== "settings") return;
+  const adm = adOn(), G = adm ? AD_GROUPS : ST_GROUPS.map(([k, t, ids]) => [k, t, adIs() ? ids.filter(id => !AD_IDS.has(id)) : ids]).filter(g => !(adIs() && (g[0] === "site" || g[0] === "overview" || g[0] === "people" || g[0] === "data")));
+  const secs = [...out.querySelectorAll("section.st-sec")], shown = s => s && getComputedStyle(s).display !== "none", known = new Set((adIs() ? [...ST_GROUPS, ...AD_GROUPS] : ST_GROUPS).flatMap(g => g[2]));
+  secs.forEach(s => { s.hidden = false; });
+  const GG = !adm && adIs() && stTab === "all" ? [...G, ...AD_GROUPS.map(([k, t, ids]) => ["ad-" + k, t, ids])] : G;   // Everything really is everything
+  const groups = GG.map(([k, t, ids]) => [k, t, ids.filter(id => { const s = document.getElementById(id); return s && s.classList.contains("st-sec") && shown(s); })]).filter(g => g[2].length);
+  const other = adm ? [] : secs.filter(s => !known.has(s.id) && shown(s)).map(s => s.id); if(other.length) groups.push(["other", "More", other]);
+  if(!groups.length) return;
+  if(stTab !== "all" && !groups.some(g => g[0] === stTab)) stTab = groups[0][0];
+  let at = nav; groups.forEach(g => g[2].forEach(id => { const s = document.getElementById(id); at.after(s); at = s; }));
+  const active = stTab === "all" ? groups.flatMap(g => g[2]) : groups.find(g => g[0] === stTab)[2];
+  secs.forEach(s => { if(!active.includes(s.id)) s.hidden = true; });
+  const title = id => { const h = document.getElementById(id + "H"); return h ? h.textContent.trim() : id; }, inbox = (typeof meInfo !== "undefined" && meInfo && meInfo.inbox) || 0;
+  const help = adm ? AD_HELP : ST_HELP;
+  nav.classList.add("st-grouped"); nav.setAttribute("aria-label", adm ? "Admin" : "Settings");
+  nav.innerHTML = `<div class="st-tabs" role="tablist" aria-label="${adm ? "Parts of Admin" : "Kinds of setting"}">${[...groups.filter(g => !/^ad-/.test(g[0])), ...(adm ? [] : [["all", "Everything", []]])].map(([k, t]) => `<button type="button" role="tab" class="st-tab${k === stTab ? " on" : ""}" aria-selected="${k === stTab}" data-sttab="${k}">${t}${k === "todo" && inbox ? ` <span class="badge text-bg-danger rounded-pill">${inbox}</span>` : ""}</button>`).join("")}</div>
+    <div class="st-subs"><span class="st-help">${help[stTab] || ""}</span>${active.length > 1 ? active.map(id => `<a href="#${id}" data-stgo="${id}">${esc(title(id))}</a>`).join("") : ""}</div>`;
+  const h1 = out.querySelector(".hero h1"), hp = out.querySelector(".hero h1 + p"); if(h1) h1.textContent = adm ? "Admin" : "Settings"; if(hp) hp.textContent = adm ? "Running the whole site: institutions, people, money and the system." : adIs() ? "Your own preferences, and the institution you're working inside." : "Things that apply to every unit, all in one place.";
+  out.classList.toggle("ad-mode", adm);
+  try{ if(typeof inboxBadge === "function") inboxBadge(); }catch{} };
+/* a section's group, for links and the guide, now knows about Admin */
+const _stShow65 = stShow;
+stShow = function(id){ if(adIs() && AD_IDS.has(id)){ const g = AD_GROUPS.find(x => x[2].includes(id))[0]; if(stTab !== g){ stTab = g; if(view === "settings") renderSettings(); } return; } if(adIs() && adKeys.includes(stTab)){ stTab = "you"; } return _stShow65.apply(this, arguments); };
+/* the To do buttons */
+document.addEventListener("click", e => { const b = e.target.closest("[data-ad-go]"); if(!b) return; const k = b.dataset.adGo, go = (tab, id) => { stTab = tab; renderSettings(); if(id) setTimeout(() => { const s = document.getElementById(id); if(s) s.scrollIntoView({block: "start"}); }, 30); };
+  if(k === "wait" || k === "email"){ auF = k; return go("people", "stAllUsers"); }
+  if(k === "inbox") return go("todo", "stInbox");
+  if(k === "update") return go("site", "stUpdate");
+  if(k === "errors") return go("site", "stErrors");
+  if(k === "dupes") return go("overview", "stMerge"); });
+/* the menu: Admin for super admins, above Settings. Settings takes you to your own settings, Admin to the site's */
+const AD_ICO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>`;
+function adNavAdd(){ const s = document.querySelector('.side .side-link[data-nav="settings"]'); let b = $("#sideAdmin"); if(!adIs()){ if(b) b.remove(); return; } if(!s || b) return; s.insertAdjacentHTML("beforebegin", `<button type="button" class="side-link" id="sideAdmin" data-ad-nav aria-label="Admin">${AD_ICO}<span class="lbl">Admin</span></button>`); }
+function adOpen(tab){ stTab = tab || "todo"; lsSet("cc_st_tab", stTab); if(view === "settings") renderSettings(); else setView("settings"); try{ document.querySelectorAll(".offcanvas.show").forEach(o => { try{ closeCanvas(o.id); }catch{} }); }catch{} window.scrollTo({top: 0}); }
+document.addEventListener("click", e => { if(e.target.closest("[data-ad-nav]")){ e.preventDefault(); return adOpen("todo"); }
+  const s = e.target.closest('[data-nav="settings"], [data-x-nav="settings"]'); if(s && adIs() && adKeys.includes(stTab) && !(typeof saOut === "function" && saOut())){ stTab = "you"; lsSet("cc_st_tab", stTab); } }, true);
+const _syncShell65 = syncShell;
+syncShell = function(){ const r = _syncShell65.apply(this, arguments); try{ adNavAdd(); const b = $("#sideAdmin"), on = view === "settings" && adOn();
+    if(b){ b.classList.toggle("active", on); if(on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
+    if(on){ const st = document.querySelector('.side .side-link[data-nav="settings"]'); if(st){ st.classList.remove("active"); st.removeAttribute("aria-current"); } const pt = $("#pageTitle"); if(pt) pt.textContent = "Admin"; const cr = document.querySelector(".crumbs span"); if(cr) cr.textContent = "Admin"; document.title = "Admin · Crafticulum"; } }catch{} return r; };
+/* its own address, /admin, which opens Admin; and outside every institution the super admin lands on To do */
+try{ CC_ROUTES.admin = "admin"; }catch{}
+const _setView65 = setView;
+setView = function(v){ if(v === "admin"){ if(!adIs()) v = "home"; else { if(!adKeys.includes(stTab)) stTab = "todo"; v = "settings"; } } return _setView65.call(this, v); };
+const _ccUrlSync65 = ccUrlSync;
+ccUrlSync = function(){ const keep = CC_ROUTES.settings; if(view === "settings" && adOn()) CC_ROUTES.settings = "admin"; try{ return _ccUrlSync65.apply(this, arguments); }finally{ CC_ROUTES.settings = keep; } };
+const _applyRole65 = applyRole;
+applyRole = function(){ const r = _applyRole65.apply(this, arguments); try{ if(typeof saOut === "function" && saOut() && view === "settings" && !adKeys.includes(stTab)){ stTab = "todo"; renderSettings(); } }catch(e){ console.error(e); } return r; };
+/* accounts waiting for approval: the count sits on Admin for a super admin, where the To do list is */
+const _paintPending65 = paintPending;
+paintPending = function(){ const r = _paintPending65.apply(this, arguments); try{ if(!adIs()) return r; adNavAdd(); const s = document.querySelector('.side-link[data-nav="settings"] .count'), a = $("#sideAdmin"); if(!a) return r; let c = a.querySelector(".count"); if(s){ if(!c){ a.insertAdjacentHTML("beforeend", `<span class="count badge rounded-pill" title="Waiting for you in To do"></span>`); c = a.querySelector(".count"); } c.textContent = s.textContent; s.remove(); } else if(c && !((meInfo && meInfo.pending) || 0)) c.remove(); }catch(e){ console.error(e); } return r; };
+
+/* ===== round 66 (v117): one profile. Your name, title and contact details, what you teach and your staff profile used to be three separate places, two of them with their own
+   "Edit profile". Now there's one form (the staff profile's), it saves your account details too, and Settings shows the three together. ===== */
+const OP_TITLES = ["", "Mr", "Mrs", "Miss", "Ms", "Mx", "Dr", "Prof"];
+const opAcct = () => { const p = (me && me.profile) || {}, parts = String((me && me.name) || "").trim().split(/\s+/); return {title: p.title || "", first: p.first || parts[0] || "", last: p.last || parts.slice(1).join(" "), gender: p.gender || "", job: p.job || "", pronouns: p.pronouns || "", phone: p.phone || "", site: p.site || ""}; };
+const _spEditHtml66 = spEditHtml;
+spEditHtml = function(){ const P = spInfo.person, a = (spEdit && spEdit._acct) || opAcct(), A = spEdit || {};
+  if(!A.headline && a.job) A.headline = a.job; if(!A.pronouns && a.pronouns) A.pronouns = a.pronouns; if(!A.phone && a.phone) A.phone = a.phone; if(!(A.campuses || []).length && a.site) A.campuses = [a.site];
+  const html = _spEditHtml66.apply(this, arguments);
+  if(!P.self || me.email === "admin@password") return html;
+  return html.replace('<div class="row g-3">', `<div class="row g-3 mb-3"><div class="col-4 col-md-2"><label class="form-label small fw-semibold" for="spfTitle">Title</label><select class="form-select form-select-sm" id="spfTitle">${OP_TITLES.map(t => `<option ${t === a.title ? "selected" : ""} value="${t}">${t || "None"}</option>`).join("")}</select></div>
+    <div class="col-8 col-md-4"><label class="form-label small fw-semibold" for="spfFirst">First name</label><input class="form-control form-control-sm" id="spfFirst" maxlength="40" value="${esc(a.first)}" required></div>
+    <div class="col-md-4"><label class="form-label small fw-semibold" for="spfLast">Last name</label><input class="form-control form-control-sm" id="spfLast" maxlength="40" value="${esc(a.last)}"></div>
+    <div class="col-md-2"><label class="form-label small fw-semibold" for="spfGender">Gender</label><select class="form-select form-select-sm" id="spfGender">${[["", "Not saying"], ["female", "Female"], ["male", "Male"], ["other", "Other"], ["undisclosed", "Prefer not to say"]].map(g => `<option value="${g[0]}" ${g[0] === a.gender ? "selected" : ""}>${g[1]}</option>`).join("")}</select></div></div><div class="row g-3">`); };
+const _spGather66 = spGather;
+spGather = function(){ const A = _spGather66.apply(this, arguments), v = id => { const x = $("#" + id); return x ? x.value.trim() : null; };
+  if(v("spfFirst") !== null) A._acct = {title: v("spfTitle") || "", first: v("spfFirst"), last: v("spfLast") || "", gender: v("spfGender") || ""}; return A; };
+const _spSave66 = spSave;
+spSave = async function(A){ const acctBits = A && A._acct; if(A) delete A._acct;
+  if(acctBits && !acctBits.first){ throw {code: "first"}; }
+  const r = await _spSave66.call(this, A);
+  if(acctBits){ const body = {...acctBits, pronouns: A.pronouns || "", job: A.headline || "", site: (A.campuses || [])[0] || "", phone: A.phone || ""};
+    try{ await authCall("profile", body); me.profile = {...(me.profile || {}), ...body}; me.name = [body.first, body.last].filter(Boolean).join(" "); if(spInfo && spInfo.person && spInfo.person.self) spInfo.person.name = me.name; try{ applyRole(); }catch{} try{ if(view === "settings") renderSettings(); }catch{} }catch(e){ console.error(e); } }
+  return r; };
+/* the first name is the one thing the form needs */
+document.addEventListener("submit", e => { if(e.target.id !== "spEditForm") return; const f = $("#spfFirst"); if(f && !f.value.trim()){ e.preventDefault(); e.stopImmediatePropagation(); const m = $("#spfMsg"); if(m){ m.className = "idea-msg mt-2 err"; m.textContent = "Add your first name."; } f.focus(); } }, true);
+/* Settings' Edit profile opens the one form */
+async function opEdit(){ await spOpen(me.email); if(spInfo && spInfo.person){ spEdit = JSON.parse(JSON.stringify(spInfo.about || {})); spRedraw("#spfFirst"); } }
+document.addEventListener("click", e => { const b = e.target.closest('#stProfile [data-prof="edit"]'); if(!b || window.claude || !me || me.email === "admin@password") return; e.preventDefault(); e.stopImmediatePropagation(); opEdit(); }, true);
+/* and shows what you teach and your staff profile inside Your profile, not as two more sections */
+const _stLayout66 = stLayout;
+stLayout = function(){ try{ const p = $("#stProfile"), body = p && p.querySelector(".card-body"); if(body && !(typeof adOn === "function" && adOn())) ["stEduProfile", "stStaff"].forEach(id => { const s = document.getElementById(id); if(s && s.classList.contains("st-sec")){ s.classList.remove("st-sec", "card", "shadow-sm"); s.classList.add("st-sub"); body.appendChild(s); } }); }catch(e){ console.error(e); }
+  return _stLayout66.apply(this, arguments); };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
