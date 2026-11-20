@@ -634,3 +634,59 @@ function ccCarryLessons(array $a, string $email, string $from, string $to): int 
         $tmp = $t . '.' . bin2hex(random_bytes(4)) . '.tmp'; if (@file_put_contents($tmp, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), LOCK_EX) === false || !@rename($tmp, $t)) { @unlink($tmp); continue; }
         $n++; }
     return $n; }
+
+/* ---------- money: what each institution pays a month, and every time that changed ----------
+   data/_money.json is a list of changes: when, which institution, what its monthly amount became (pence), and why.
+   Everything on the Business dashboard (monthly recurring revenue, new, lost, the twelve-month line) is worked out from this list. */
+const CC_INV_GRACE = 14 * 86400;    // how long after an invoice-paid term ends before the plan goes back to Free
+function ccMoneyFile(): string { return ccDataDir() . '/_money.json'; }
+function ccMoneyRead(): array { $j = json_decode((string) @file_get_contents(ccMoneyFile()), true); return is_array($j) ? array_values(array_filter($j, 'is_array')) : []; }
+function ccMoneyLast(array $ledger, string $college, int $at = PHP_INT_MAX): int { $m = 0; foreach ($ledger as $e) if (($e['c'] ?? '') === $college && (int) ($e['t'] ?? 0) <= $at) $m = (int) ($e['mrr'] ?? 0); return $m; }
+/* what an institution pays a month right now, in pence: a live card subscription, or a paid invoice spread over its term */
+function ccMoneyNow(array $a, string $college): int { $c = (array) ($a['colleges'][$college] ?? []); $b = (array) ($c['bill'] ?? []);
+    if (!empty($b['sub']) && in_array((string) ($b['status'] ?? ''), ['active', 'trialing', 'past_due'], true)) { if (isset($b['mrr'])) return max(0, (int) $b['mrr']); $p = ccPlans($a)[(string) ($c['plan'] ?? '')] ?? null; return $p && $p['price'] > 0 ? (int) $p['price'] : 0; }
+    if (($b['method'] ?? '') === 'invoice' && ($b['status'] ?? '') === 'active' && (int) ($b['periodEnd'] ?? 0) + CC_INV_GRACE > time()) return max(0, (int) ($b['mrr'] ?? 0));
+    return 0; }
+/* write a line in the list whenever what an institution pays has changed */
+function ccMoneySync(array $a, string $college = '', string $src = ''): void {
+    $fh = @fopen(ccMoneyFile(), 'c+'); if (!$fh) return; if (!flock($fh, LOCK_EX)) { fclose($fh); return; }
+    $raw = (string) stream_get_contents($fh); $first = trim($raw) === ''; $L = json_decode($raw, true); if (!is_array($L)) $L = []; $n = count($L);
+    foreach ($college !== '' ? [$college] : ccCollegeIds($a) as $id) { $id = (string) $id; if (!isset($a['colleges'][$id])) continue; $now = ccMoneyNow($a, $id); $was = ccMoneyLast($L, $id); if ($now === $was) continue;
+        $b = (array) ($a['colleges'][$id]['bill'] ?? []); $ever = false; foreach ($L as $e) if (($e['c'] ?? '') === $id && (int) ($e['mrr'] ?? 0) > 0) { $ever = true; break; }
+        $L[] = ['t' => $first ? ((int) ($b['at'] ?? 0) ?: time()) : time(), 'c' => $id, 'k' => $was === 0 ? ($ever ? 'back' : 'new') : ($now === 0 ? 'lost' : ($now > $was ? 'up' : 'down')), 'plan' => (string) ($a['colleges'][$id]['plan'] ?? ''), 'mrr' => $now, 'src' => $src !== '' ? $src : ((($b['method'] ?? '') === 'invoice') ? 'invoice' : 'card')]; }
+    if ($college === '') { $seenC = []; foreach ($L as $e) $seenC[(string) ($e['c'] ?? '')] = true; foreach (array_keys($seenC) as $id) if (!isset($a['colleges'][$id]) && ccMoneyLast($L, (string) $id) > 0) $L[] = ['t' => time(), 'c' => (string) $id, 'k' => 'lost', 'plan' => '', 'mrr' => 0, 'src' => 'removed']; }   // an institution that was removed while paying
+    if (count($L) !== $n || $first) { usort($L, fn($x, $y) => ($x['t'] ?? 0) <=> ($y['t'] ?? 0)); ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($L)); fflush($fh); }
+    flock($fh, LOCK_UN); fclose($fh); }
+/* ---------- invoices, for institutions that pay by bank transfer against a purchase order ---------- */
+function ccInvFile(): string { return ccDataDir() . '/_invoices.json'; }
+function ccInvRead(): array { $j = json_decode((string) @file_get_contents(ccInvFile()), true); return is_array($j) ? $j : []; }
+function ccInvChange(callable $fn): bool { $fh = @fopen(ccInvFile(), 'c+'); if (!$fh) return false; if (!flock($fh, LOCK_EX)) { fclose($fh); return false; }
+    $j = json_decode((string) stream_get_contents($fh), true); if (!is_array($j)) $j = []; $j = $fn($j); $ok = is_array($j); if ($ok) { ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); fflush($fh); } flock($fh, LOCK_UN); fclose($fh); return $ok; }
+function ccInvSet(?array $a = null): array { $s = (array) ((($a ?? ccAccounts())['site'] ?? [])['invoice'] ?? []);
+    return ['from' => (string) ($s['from'] ?? "Next Level Labs Ltd\ntrading as Crafticulum\n4th Floor Office, 205 Regent Street\nLondon W1B 4HB\nCompany number 16390028"), 'bank' => (string) ($s['bank'] ?? ''), 'terms' => max(0, min(120, (int) ($s['terms'] ?? 30))), 'vat' => max(0, min(30, (float) ($s['vat'] ?? 0))), 'vatNo' => (string) ($s['vatNo'] ?? ''), 'prefix' => (string) ($s['prefix'] ?? 'CR'), 'email' => (string) ($s['email'] ?? '')]; }
+function ccInvUrl(array $inv): string { return ccSiteUrl() . 'money.php?a=view&i=' . rawurlencode((string) ($inv['token'] ?? '')); }
+function ccPounds(int $pence): string { return '£' . number_format($pence / 100, 2); }
+/* ---------- things that happen by themselves, at most once an hour, when someone opens the app ---------- */
+function ccTick(): void {
+    $f = ccDataDir() . '/_tick'; if (is_file($f) && time() - (int) @filemtime($f) < 3600) return; @touch($f);
+    $a = ccAccounts(); $dirty = false; $now = time(); $mail = ccMailReady();
+    /* a term paid by invoice: a reminder a month before it ends, and back to Free two weeks after if nothing new has been paid */
+    foreach (ccCollegeIds($a) as $id) { $id = (string) $id; $b = (array) ($a['colleges'][$id]['bill'] ?? []); if (($b['method'] ?? '') !== 'invoice' || ($b['status'] ?? '') !== 'active') continue; $end = (int) ($b['periodEnd'] ?? 0); if ($end <= 0) continue; $name = (string) ($a['colleges'][$id]['name'] ?? ''); $when = date('j F Y', $end);
+        if ($end - $now < 30 * 86400 && empty($b['reminded'])) { $a['colleges'][$id]['bill']['reminded'] = $now; $dirty = true;
+            ccCollegeMail($a, $id, "Your Crafticulum plan runs until $when", "The term your institution has paid for ends on $when.\n\nTo carry on without a break, ask for the next invoice in Settings, Plan and billing, or reply to this email.");
+            foreach (ccSupers() as $s) ccNotify((string) $s, 'people', "$name: paid term ends $when", 'Open Admin, Money, Invoices to raise the next one.'); }
+        if ($end + CC_INV_GRACE < $now) { $a['colleges'][$id]['bill']['status'] = 'ended'; $a['colleges'][$id]['bill']['at'] = $now; $a['colleges'][$id]['plan'] = 'free'; $dirty = true;
+            ccCollegeMail($a, $id, 'Your plan has ended', "The term your institution paid for ended on $when, so the account is now on the Free plan. Lessons, planning and people are all still there.\n\nTo pick a plan again, go to Settings, Plan and billing."); } }
+    /* a nudge for someone who signed up on their own a few days ago and has made fewer than two lessons */
+    if ($mail) { $sent = 0; foreach ($a['users'] as $e => $u) { if ($sent >= 15) break; if (!empty($u['nudged']) || !empty($u['demo']) || !ccActive($u) || ($u['role'] ?? '') !== 'owner' || empty($u['verified'])) continue; $at = (int) ($u['added'] ?? 0); if ($at <= 0 || $now - $at < 3 * 86400 || $now - $at > 14 * 86400) continue;
+            $d = (string) ($u['dept'] ?? ''); $cid = $d !== '' && isset($a['depts'][$d]) ? ccCollegeOf($a, $d) : ''; if ($cid === '' || empty($a['colleges'][$cid]['self']) || in_array((string) $e, ccSupers(), true)) continue;
+            $a['users'][$e]['nudged'] = $now; $dirty = true; if (count(glob(ccDataDir() . '/d/' . $d . '/lessons/*.json') ?: []) >= 2) continue;
+            $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]);
+            if (ccMail((string) $e, 'Your next lesson takes about a minute', 'Hello' . ($hi !== '' ? " $hi" : '') . ",\n\nYou set up Crafticulum a few days ago. If you haven't had the chance to try it properly yet, here's the quickest way in:\n\n1. Open Crafticulum: " . ccAppUrl() . "\n2. Type the subject, the level and one sentence about tomorrow's lesson.\n3. Press Build. You get the timed plan, the teaching content, tasks, an exit quiz and the slides.\n\nEverything can be edited, and nothing is shared with anyone until you choose to.\n\nIf something got in the way, reply to this email and tell us. A real person reads it.\n\nCrafticulum")) $sent++; } }
+    if ($dirty) { ccSaveAccounts($a); ccMoneySync($a); }
+}
+/* when each person last opened the app, kept apart from the accounts file so it can be written often */
+function ccSeenFile(): string { return ccDataDir() . '/_seen.json'; }
+function ccSeenRead(): array { $j = json_decode((string) @file_get_contents(ccSeenFile()), true); return is_array($j) ? $j : []; }
+function ccSeen(string $email): void { if ($email === '') return; $fh = @fopen(ccSeenFile(), 'c+'); if (!$fh) return; if (flock($fh, LOCK_EX)) { $j = json_decode((string) stream_get_contents($fh), true); if (!is_array($j)) $j = [];
+        if (time() - (int) ($j[$email] ?? 0) > 3600) { $j[$email] = time(); ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($j)); fflush($fh); } flock($fh, LOCK_UN); } fclose($fh); }

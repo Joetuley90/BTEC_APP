@@ -27,7 +27,7 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 $body = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : (($_GET['a'] ?? '') === 'deptsplit' ? 3000001 : 20001)); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : (($_GET['a'] ?? '') === 'deptsplit' ? 3000001 : (($_GET['a'] ?? '') === 'report' ? 900001 : 20001))); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
 /* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
 if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); $inst = 0; if (is_file(__DIR__ . '/inst-lib.php')) { require_once __DIR__ . '/inst-lib.php'; @file_put_contents(ccInstDir() . '/_cron.txt', (string) time()); try { $inst = ccInstAuto(); } catch (Throwable $e) { $inst = 0; } } $up = 0; if (is_file(__DIR__ . '/update-lib.php')) { require_once __DIR__ . '/update-lib.php'; try { $up = ccUpAuto(); } catch (Throwable $e) { $up = 0; } } out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge(), 'directory' => $inst, 'updated' => $up]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
@@ -149,6 +149,9 @@ if ($action === 'report') {
     $kind = ($body['kind'] ?? '') === 'feedback' ? 'feedback' : 'problem'; $id = bin2hex(random_bytes(6)); $name = (string) ($who['name'] ?? '') !== '' ? (string) $who['name'] : (string) $who['email'];
     $row = ['id' => $id, 'at' => time(), 'kind' => $kind, 'name' => $line($name, 80), 'email' => (string) $who['email'], 'org' => $line((string) ($who['collegeName'] ?? ''), 100), 'msg' => $msg, 'page' => $line($body['page'] ?? '', 120), 'browser' => $line($body['browser'] ?? '', 120),
             'who' => (CC_ROLE_NAMES[$who['role']] ?? '') . ', ' . (string) ($who['deptName'] ?? ''), 'done' => false, 'from' => 'app'];
+    /* a screenshot they chose to attach: a JPEG or PNG, kept beside the inbox and only ever shown to the super admin */
+    $shot = (string) ($body['shot'] ?? ''); if (preg_match('#^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$#', $shot, $sm)) { $bin = base64_decode($sm[2], true); $info = is_string($bin) && strlen($bin) < 650000 ? @getimagesizefromstring($bin) : false;
+        if ($info && in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) { $sd = ccDataDir() . '/_shots'; if (!is_dir($sd)) { @mkdir($sd, 0700, true); @file_put_contents($sd . '/.htaccess', "Require all denied\n"); } if (@file_put_contents($sd . '/' . $id . ($info[2] === IMAGETYPE_PNG ? '.png' : '.jpg'), $bin) !== false) $row['shot'] = $info[2] === IMAGETYPE_PNG ? 'png' : 'jpg'; } }
     if (!ccInboxChange(function ($j) use ($row, $id) { $j[$id] = $row; return $j; })) out(500, ['error' => 'save']);
     $label = $kind === 'problem' ? 'Problem reported' : 'Idea sent';
     foreach (ccSupers() as $t) if ($t !== $who['email']) ccNotify((string) $t, 'people', "$label by $name", 'Sent from the chat button. Open Admin, To do to read it.');
@@ -467,6 +470,11 @@ if ($action === 'errlog') {
     ccErr('browser', $msg, ['where' => (string) ($body['where'] ?? ''), 'page' => (string) ($body['page'] ?? ''), 'role' => $me['role'], 'dept' => !empty($me['demo']) ? 'demo' : (string) $me['deptName'], 'browser' => (string) ($body['browser'] ?? '')]);
     out(200, ['ok' => true, 'kept' => true]);
 }
+if ($action === 'shot') {   // the screenshot sent with a report
+    if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']); $id = (string) ($_GET['id'] ?? ''); if (!preg_match('/^[a-f0-9]{12}$/', $id)) out(404, ['error' => 'gone']);
+    foreach (['jpg' => 'image/jpeg', 'png' => 'image/png'] as $ext => $type) { $f = ccDataDir() . '/_shots/' . $id . '.' . $ext; if (is_file($f)) { header('Content-Type: ' . $type); header('Cache-Control: private, max-age=600'); header('X-Content-Type-Options: nosniff'); readfile($f); exit; } }
+    out(404, ['error' => 'gone']);
+}
 if ($action === 'inbox' || $action === 'inboxset' || $action === 'inboxreply') {
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']);
     /* answer a message from here: it's emailed to the person, and kept under their message */
@@ -496,7 +504,8 @@ if ($action === 'errors' || $action === 'errclear') {
 /* the demo account can look around and save lessons in its own department. It can't touch settings, people, email or sign-in */
 if (!empty($me['demo']) && !in_array($action, ['me', 'team', 'log', 'usage'], true)) out(403, ['error' => 'demo']);
 if ($action === 'me') {
-    register_shutdown_function(function () { try { if (session_status() === PHP_SESSION_ACTIVE) session_write_close(); if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); ccPushDaily(); ccDeletedPurge(); ccHandinPurge(); } catch (\Throwable $x) {} });
+    $GLOBALS['ccSeenWho'] = empty($me['demo']) ? (string) $me['email'] : '';
+    register_shutdown_function(function () { try { if (session_status() === PHP_SESSION_ACTIVE) session_write_close(); if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); ccPushDaily(); ccDeletedPurge(); ccHandinPurge(); ccSeen((string) ($GLOBALS['ccSeenWho'] ?? '')); ccTick(); } catch (\Throwable $x) {} });
     $o = ['me' => ccPublic($me) + ['methods' => (array) ($mine['methods'] ?? []), 'hasPass' => !empty($mine['pass']), 'totp' => !empty($mine['totp']['on']), 'recoveryLeft' => count((array) ($mine['totp']['recovery'] ?? [])), 'profile' => (object) (is_array($mine['profile'] ?? null) ? $mine['profile'] : []), 'added' => (int) ($mine['added'] ?? 0), 'lastSeen' => (int) ($mine['last'] ?? 0)],
           'google' => ccGoogleId() !== '', 'microsoft' => ccMsId() !== '', 'oidc' => ccOidcOn() ? ccOidcName() : null, 'mail' => ccMailReady(), 'passwordBackup' => ccPasswordAllowed(), 'prefs' => ccDeptPrefs($a, $me['dept']), 'marker' => ccMarker($a, $me['dept']) + ['can' => ccMarkerCan($me, $a), 'ns' => '.' . substr(sha1((string) $me['email']), 0, 10)], 'site' => !empty($me['demo']) ? ['plain' => true] + ccSitePublic($a) : (empty($me['inside'] ?? true) ? ccSitePublic($a) : ccSite($a, $me['college'])), 'url' => ccSiteUrl(), 'tempHost' => (string) parse_url(ccTempUrl(), PHP_URL_HOST)];
     $pl = ccPlanOf($a, (string) $me['college']); $o['billing'] = ccBillingOn(); $pu = ccPlanUsed((string) $me['college'], ccUsageRead()); $o['plan'] = ['id' => $pl['id'], 'name' => $pl['name'], 'builds' => $pl['builds'], 'checks' => $pl['checks'], 'usedBuilds' => $pu['builds'], 'usedChecks' => $pu['checks']];

@@ -28,14 +28,14 @@ AddType application/manifest+json .webmanifest
   RewriteEngine On
 
   # old addresses move to the new ones (only when someone asks for the old one directly)
-  RewriteCond %{THE_REQUEST} \s(/[^?\s]*?)(terms|privacy|cookies|dpa|contact|app)\.html[?\s]
-  RewriteRule ^(terms|privacy|cookies|dpa|contact|app)\.html$ %1%2 [R=301,L]
+  RewriteCond %{THE_REQUEST} \s(/[^?\s]*?)(terms|privacy|cookies|dpa|sample|security|contact|app)\.html[?\s]
+  RewriteRule ^(terms|privacy|cookies|dpa|sample|security|contact|app)\.html$ %1%2 [R=301,L]
   RewriteCond %{THE_REQUEST} \s(/[^?\s]*?)(about\.html|about|index\.html)[?\s]
   RewriteRule ^(about\.html|about|index\.html)$ %1 [R=301,L]
 
   # the front page, and the other public pages, with their search engine details filled in
   RewriteRule ^$ page.php?p=home [L,QSA]
-  RewriteRule ^(terms|privacy|cookies|dpa|contact)$ page.php?p=$1 [L,QSA]
+  RewriteRule ^(terms|privacy|cookies|dpa|sample|security|contact)$ page.php?p=$1 [L,QSA]
   RewriteRule ^sitemap\.xml$ page.php?p=sitemap [L]
   RewriteRule ^robots\.txt$ page.php?p=robots [L]
 
