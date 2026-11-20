@@ -13818,6 +13818,26 @@ const _cfMsgs71 = cfMsgs;
 cfMsgs = function(){ const c = cfChat(); return _cfMsgs71.apply(this, arguments).replace(/<button type="button" class="btn btn-link btn-sm p-0" data-cf-copy="(\d+)">/g, (m, i) => cbBtns(c, +i, false) + m); };
 const _asHtml71 = asHtml;
 asHtml = function(){ const c = asChat(); return _asHtml71.apply(this, arguments).replace(/(<button type="button" class="btn btn-sm btn-outline-primary" data-as="doc" data-i="(\d+)">)/g, (m, b, i) => cbBtns(c, +i, true) + b); };
+
+/* ===== round 72 (v122): the class results on the board show every question that caught the class out (up to three), the answer most hands went to by mistake,
+   and tips for getting them all right. Hands up is counts only, so nobody is named. The quiz room (initials on phones) has its own class view with made-up names. ===== */
+function qsMissed(d){ const qz = (d && d.quiz) || [], out = [];
+  qz.forEach((q, i) => { const c = (tally[i] || []).slice(0, q.options.length); while(c.length < q.options.length) c.push(0); const tot = c.reduce((a, b) => a + b, 0); if(!tot) return;
+    let slip = -1; c.forEach((n, j) => { if(j !== q.answer && n > 0 && (slip < 0 || n > c[slip])) slip = j; });
+    const pct = Math.round(c[q.answer] / tot * 100); if(pct < 100) out.push({i, q, c, tot, slip, pct}); });
+  return out.sort((a, b) => a.pct - b.pct || a.i - b.i); }
+function qsTips(m){ const t = m.slice(0, 3).filter(p => p.q.why).map(p => `Q${p.i + 1}: ${p.q.why}`);
+  if(m.some(p => p.slip >= 0 && p.c[p.slip] >= Math.max(2, p.tot / 3))) t.push("Where lots of us picked the same wrong answer, two options were close. Read all of them before you choose, and look for the one word that makes an answer wrong.");
+  t.push("Cover the options, say the answer in your own words, then find the option that matches.");
+  return t.slice(0, 5); }
+const _showSlide72 = showSlide;
+showSlide = function(s){ const r = _showSlide72.apply(this, arguments);
+  try{ if(s === "quiz" && quizView === "results"){ const B = $("#bBody"), grid = B && B.querySelector(".res-grid"); if(grid && !B.querySelector("#qsTips")){ const m = qsMissed(current), LT = "ABCD";
+      const old = B.querySelector(".res-call"); if(old) old.remove();
+      const html = (m.length ? `<div id="qsMiss">${m.slice(0, 3).map(p => `<div class="res-call"><b>Q${p.i + 1} caught us out (${p.pct}% right):</b> ${esc(p.q.q)}<br>${p.slip >= 0 ? `<span style="color:var(--chalk-dim)">Most common slip: ${LT[p.slip]}) ${esc(p.q.options[p.slip])}</span><br>` : ""}Answer: <span style="color:var(--chalk-g)">${LT[p.q.answer]}) ${esc(p.q.options[p.q.answer])}</span>${p.q.why ? ` · ${esc(p.q.why)}` : ""}</div>`).join("")}</div>` : `<div class="res-call" id="qsMiss" style="border-color:var(--chalk-g)"><b style="color:var(--chalk-g)">Full marks:</b> every hand went to the right answer.</div>`)
+        + `<div class="res-call" id="qsTips" style="border-color:var(--chalk-y)"><b style="color:var(--chalk-y)">How to get them all right next time</b><ol style="margin:.3em 0 0;padding-left:1.3em">${qsTips(m).map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>`;
+      grid.insertAdjacentHTML("beforebegin", html); fitBoard($("#bFrame")); } } }catch(e){ console.error(e); }
+  return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
