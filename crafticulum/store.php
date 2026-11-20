@@ -163,7 +163,11 @@ if ($action === 'deptsubjects') {   // the departments someone can plan for, eac
     $ids = $all ? ccCollegeDepts($acc, $col) : [(string) $dept]; if (!$all) { $mu = $acc['users'][$me['email']] ?? []; $hm = (string) ($mu['dept'] ?? $dept); $ids = array_map('strval', array_merge([$hm], array_keys(ccAlso($acc, ['dept' => $hm, 'also' => $mu['also'] ?? []])))); } if (!in_array((string) $dept, $ids, true)) array_unshift($ids, (string) $dept);
     $out = []; foreach ($ids as $d) { $di = $acc['depts'][$d] ?? null; if (!$di) continue; $dd = !empty($di['legacy']) ? $base : $base . '/d/' . $d;
         $doc = readDoc($dd, 'data/users/teacher/settings/courses'); $c = $doc ? json_decode((string) ($doc['data']['json'] ?? ''), true) : null; if (!is_array($c)) $c = [];
-        $out[] = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'mine' => (string) $d === (string) $dept, 'builtin' => !empty($di['legacy']) && (($c['builtin'] ?? true) !== false), 'list' => array_values(array_filter((array) ($c['list'] ?? []), 'is_array'))]; }
+        /* who leads it and how many people are in it, for the department tiles. Super admins are nobody's staff */
+        $leads = []; $staff = 0; $sup = ccSupers(); foreach ($acc['users'] as $e => $u) { if (!is_array($u) || !ccActive($u) || !empty($u['demo']) || in_array((string) $e, $sup, true)) continue; $al = ccAlso($acc, $u); $in = (string) ($u['dept'] ?? '') === (string) $d;
+            if (!$in && !isset($al[$d])) continue; $staff++; $role = $in ? (string) ($u['role'] ?? '') : (string) $al[$d]; if ($role === 'hod') $leads[] = (string) (($u['name'] ?? '') !== '' ? $u['name'] : $e); }
+        $out[] = ['id' => (string) $d, 'name' => (string) ($di['name'] ?? 'Department'), 'mine' => (string) $d === (string) $dept, 'builtin' => !empty($di['legacy']) && (($c['builtin'] ?? true) !== false), 'list' => array_values(array_filter((array) ($c['list'] ?? []), 'is_array')),
+                  'leads' => $leads, 'staff' => $staff, 'ctx' => is_array($c['ctx'] ?? null) ? $c['ctx'] : null]; }
     out(200, ['depts' => $out]);
 }
 if ($action === 'mgrset') {   // the CPD hours each person is expected to log in a year

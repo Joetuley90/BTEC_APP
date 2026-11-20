@@ -1411,6 +1411,49 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v128: department tiles */
+#out .dp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+#out .dp-tile{display:flex;flex-direction:column;gap:8px;text-align:left;padding:14px 16px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface);color:var(--bs-body-color);cursor:pointer;min-height:150px;transition:border-color .15s,box-shadow .15s}
+#out .dp-tile:hover{border-color:var(--cc-primary)}
+#out .dp-tile.on{border-color:var(--cc-primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--cc-primary) 35%,transparent);background:color-mix(in srgb,var(--cc-primary) 6%,var(--cc-surface))}
+#out .dp-tile:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+#out .dp-top{display:flex;gap:8px;align-items:center;justify-content:space-between}
+#out .dp-name{font-weight:800;font-size:1.05rem;letter-spacing:-.01em;overflow-wrap:anywhere}
+#out .dp-lead,#out .dp-org{font-size:.84rem;color:var(--cc-muted)}
+#out .dp-lead b,#out .dp-org b{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--cc-muted);font-weight:700}
+#out .dp-lead,#out .dp-org{color:var(--bs-body-color)}#out .dp-staff{color:var(--cc-muted)}
+#out .dp-subs{display:flex;flex-wrap:wrap;gap:5px;flex:1 1 auto;align-content:flex-start}
+#out .dp-chip{font-size:.76rem;font-weight:600;padding:.15rem .5rem;border-radius:5px;background:color-mix(in srgb,var(--cc-primary) 12%,transparent);color:var(--cc-primary-text)}
+#out .dp-chip.more{background:var(--cc-surface-2);color:var(--cc-muted)}#out .dp-none{font-size:.84rem;color:var(--cc-muted)}
+#out .st-groups.dp-src{display:none}
+#out .dp-detail{margin-top:12px;padding:14px 16px;border:1px solid var(--cc-line);border-radius:5px;background:var(--cc-surface)}
+#out .dp-detail .st-group{max-width:none;border:0;padding:0;margin-bottom:12px}
+#out .dp-h{font-weight:700;font-size:.9rem;margin-bottom:6px}
+#out .dp-t th{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--cc-muted)}
+/* v127: the lesson's tabs are bigger buttons that wrap on to a second row, so nothing hides off the side */
+html body #out .lesson-tabs{flex-wrap:wrap;overflow:visible;padding:8px;gap:6px}
+html body #out .lesson-tabs .nav-link{padding:.6rem .95rem!important;border-radius:6px!important;font-size:.92rem;min-height:44px;display:inline-flex;align-items:center;gap:.4rem;color:var(--bs-body-color)!important;opacity:.82}
+html body #out .lesson-tabs .nav-link:hover{background:color-mix(in srgb,var(--cc-primary) 8%,transparent)!important;opacity:1}
+html body #out .lesson-tabs .nav-link.active{background:color-mix(in srgb,var(--cc-primary) 14%,transparent)!important;color:var(--cc-primary-text)!important;opacity:1}
+html body #out .lesson-tabs .nav-link.active::after{display:none}
+html body #out .lesson-tabs .nav-link:focus-visible{outline:2px solid var(--cc-primary);outline-offset:1px}
+@media (max-width:575.98px){ html body #out .lesson-tabs{position:static;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:6px;gap:4px} html body #out .lesson-tabs .nav-item{min-width:0} html body #out .lesson-tabs .nav-link{width:100%;justify-content:center;text-align:center;white-space:normal;line-height:1.15;padding:.45rem .3rem!important;font-size:.84rem;min-height:46px} }
+/* the same for Settings' tabs and the AI Tools filters: they wrap, nothing hides off the side */
+html body .st-tabs,html body .st-subs{flex-wrap:wrap;overflow:visible;row-gap:6px}
+html body .st-tabs .st-tab{min-height:40px;padding-inline:.9rem}
+@media (max-width:575.98px){ html body .tk-v2 .tk-chips{flex-wrap:wrap;overflow:visible;margin:0;padding:0 0 4px} }
+/* Planning and This week: the small links under a lesson's main button are proper buttons */
+html body #out .seq-links{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;align-items:center}
+html body #out .seq-links .btn-link{text-decoration:none;border:1px solid var(--cc-line);border-radius:6px;padding:.3rem .65rem;font-size:.8rem;font-weight:600;color:var(--bs-body-color);background:var(--cc-surface);min-height:32px}
+html body #out .seq-links .btn-link:hover{border-color:var(--cc-primary);color:var(--cc-primary-text)}
+/* phones: fingers need bigger targets, and 16px text in boxes stops the iPhone zooming in when you tap one */
+@media (max-width:767.98px){
+  html body #out .btn-sm,html body .offcanvas .btn-sm{min-height:40px;padding-inline:.85rem}
+  html body #out .seq-links .btn-link{min-height:38px}
+  html body input.form-control,html body select.form-select,html body textarea.form-control,html body #cfIn,html body #cfrMsg{font-size:16px!important}
+  html body #out .form-select-sm,html body #out .form-control-sm{min-height:42px}
+  html body #cfRoot:not(.cf-on) .cf-btn{width:54px;height:54px}
+}
 /* v126: report a problem, in the Crafti chat */
 #cfRoot .cfr{display:block;padding:14px;overflow-y:auto}
 #cfRoot .cfr-meta{font-size:.74rem;line-height:1.45;color:var(--cc-muted,#64748b);background:color-mix(in srgb,var(--cc-primary) 6%,var(--cc-surface));border-radius:6px;padding:8px 10px;margin-top:8px;overflow-wrap:anywhere}
@@ -8773,8 +8816,8 @@ async function customDeck(d, opts){
   return zip.generateAsync({type: (opts && opts.type) || "uint8array", compression: "DEFLATE", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation"});
 }
 const _buildLessonDeck19 = buildLessonDeck;
-/* v126: every department, the original one included, gets Crafticulum's own PowerPoint unless its institution has uploaded one. Set to false to give the original department its old built-in deck back. */
-var CC_OWN_DECK = true;
+/* v127: the original department keeps its own built-in PowerPoint. Set to true to give it Crafticulum's template like every other department. */
+var CC_OWN_DECK = false;
 buildLessonDeck = async function(JZ, tpl, d, opts){ if(acct() && (tplNow.pptx || plainSite() || CC_OWN_DECK)){ try{ return await customDeck(d, opts); }catch(e){ console.error(e); if(!tplNow.pptx){ if(plainSite()) throw e; return _buildLessonDeck19.apply(this, arguments); } toast("Your institution's PowerPoint template couldn't be filled in, so the built-in one was used. Check it has a slide with {{HEADING}} and {{CONTENT}}.", {bad: true}); } } return _buildLessonDeck19.apply(this, arguments); };
 document.addEventListener("click", async e => {   // the lesson plan form: the institution's own, if there is one
   const o = e.target.closest("[data-lp-open]"); if(!o || !acct() || !(tplNow.docx || plainSite())) return; e.stopPropagation(); e.preventDefault();
@@ -13288,7 +13331,7 @@ renderHome = function(){ const r = _renderHome61.apply(this, arguments);
     const subs = [...new Set(UNITS.filter(u => u._d === hdDept).map(u => u.s))];
     document.querySelectorAll("#hCourse button").forEach(b => { b.hidden = !subs.includes(b.dataset.v); }); document.querySelectorAll("#hCourseSel option").forEach(o => { o.hidden = !subs.includes(o.value); });
     const hc = $("#hCourse") || $("#hCourseSel"); if(hc && subs.length <= 1) hc.hidden = true;   // one subject: the department says it all
-    if(cur && !cur.units.length){ ["#hLevel", "#hUnit"].forEach(s => { const x = $(s); if(x) x.hidden = true; }); bar.insertAdjacentHTML("beforeend", `<div class="hd-none small text-body-secondary w-100" id="hdNone">${esc(cur.name)} has no subjects yet. ${me && (me.canSubjects || me.isLead) && cur.mine ? "Add its specification in Settings, Teaching, Subjects." : "Its head of department adds them from the specification."}</div>`); const s = $("#hForm .send"); if(s) s.disabled = true; } }
+    if(cur && !cur.units.length){ ["#hLevel", "#hUnit"].forEach(s => { const x = $(s); if(x) x.hidden = true; }); bar.insertAdjacentHTML("beforeend", `<div class="hd-none small text-body-secondary w-100" id="hdNone">${esc(cur.name)} has no subjects yet. ${me && (me.canSubjects || me.isLead) && cur.mine ? "Add its specification in Settings, Subjects." : "Its head of department adds them from the specification."}</div>`); const s = $("#hForm .send"); if(s) s.disabled = true; } }
   catch(e){ console.error(e); } return r; };
 document.addEventListener("click", e => { const b = e.target.closest("[data-hd]"); if(b && view === "home") ccDeptPick(b.dataset.hd); });
 document.addEventListener("change", e => { if(e.target.id === "hDeptSel" || e.target.id === "deptSel") ccDeptPick(e.target.value); });
@@ -13960,6 +14003,56 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
 /* closing the chat puts the report away once it's been sent */
 const _cfToggle77 = cfToggle;
 cfToggle = function(){ const r = _cfToggle77.apply(this, arguments); if(!cfOpen && cfRep && cfRep.sent){ cfRep = null; } return r; };
+
+/* ===== round 78 (v127): small things that make it easier to use. The big Show on board button on a phone belongs to the lesson you're looking at, so it only shows on a lesson
+   (Planning and This week have their own button on every lesson, and it was sitting on top of them). Left and right arrow keys move between a lesson's tabs. ===== */
+const _render78 = render;
+render = function(){ const r = _render78.apply(this, arguments); try{ const fb = $("#fabBoard"); if(fb && !fb.hidden && view !== "lesson") fb.hidden = true; }catch{} return r; };
+document.addEventListener("keydown", e => { if(e.key !== "ArrowRight" && e.key !== "ArrowLeft") return; const t = e.target && e.target.closest && e.target.closest(".lesson-tabs .nav-link"); if(!t) return;
+  const all = [...t.closest(".lesson-tabs").querySelectorAll(".nav-link")].filter(x => x.offsetParent), i = all.indexOf(t), n = all[(i + (e.key === "ArrowRight" ? 1 : -1) + all.length) % all.length]; if(!n) return; e.preventDefault(); const k = n.dataset.tab; n.click(); const again = document.querySelector(`.lesson-tabs [data-tab="${k}"]`); if(again) again.focus(); });
+
+/* ===== round 79 (v128): Subjects have their own tab in Settings, and Departments are tiles. A tile says who leads the department, what subjects are in it and who awards them;
+   pick one to rename it, work in it, open its subjects or remove it. Subjects stay the one place units and criteria come from, so a change there shows in lessons,
+   planning, Second Marker, the tools and results. ===== */
+(() => { try{ const t = ST_GROUPS.find(g => g[0] === "teaching"); if(t) t[2] = t[2].filter(id => id !== "stCourses");
+  if(!ST_GROUPS.find(g => g[0] === "subjects")) ST_GROUPS.splice(ST_GROUPS.indexOf(t) + 1, 0, ["subjects", "Subjects", ["stCourses"]]); }catch(e){ console.error(e); } })();
+let dpSel = "";
+const dpOrgOf = c => c && c.org && c.org !== EDU.orgNone ? (c.org === EDU.orgUni || c.org === EDU.orgOwn ? (c.orgName || "") : c.org) : "";
+function dpInfo(d){ const own = d.mine ? (courseCfg.list || []).filter(courseOk) : (d.list || []).filter(courseOk), bi = !plainSite() && d.builtin && (d.mine ? courseCfg.builtin !== false : true);
+  const row = (x, extra) => Object.assign({s: x.s, l: x.l || "", n: (x.u || []).length, crit: (x.u || []).reduce((a, u) => a + ((u.c || []).length), 0)}, extra);
+  const subs = [...own.map(x => row(x, {org: dpOrgOf(x.ctx) || dpOrgOf(d.mine ? courseCfg.ctx : d.ctx) || (x.awarding || "")})), ...(bi ? BUILTIN_UNITS.map(x => row(x, {org: "Pearson", builtin: true})) : [])];
+  return {subs, orgs: [...new Set(subs.map(x => x.org).filter(Boolean))]}; }
+function dpTiles(){ const box = $("#stDepts"); if(!box || !ccDepts || !ccDepts.length) return; const old = box.querySelector(".st-groups"); if(!old) return;
+  const rows = {}; box.querySelectorAll(".st-groups .st-group, #dpRow .st-group").forEach(r => { const i = r.querySelector("[data-dn]"); if(i) rows[i.dataset.dn] = r; });
+  const D = ccDepts.filter(d => rows[d.id]); if(!D.length) return; if(!D.some(d => d.id === dpSel)) dpSel = "";
+  let wrap = box.querySelector("#dpTiles"); if(!wrap){ old.insertAdjacentHTML("beforebegin", `<div id="dpTiles" class="dp-tiles" role="list"></div><div id="dpDetail"></div>`); wrap = box.querySelector("#dpTiles"); }
+  old.classList.add("dp-src");
+  wrap.innerHTML = D.map(d => { const I = dpInfo(d), leads = d.leads || [];
+    return `<button type="button" role="listitem" class="dp-tile${d.id === dpSel ? " on" : ""}" data-dp="${esc(d.id)}" aria-pressed="${d.id === dpSel}">
+      <span class="dp-top"><span class="dp-name">${esc(d.name)}</span>${d.mine ? `<span class="badge text-bg-primary">You're here</span>` : ""}</span>
+      <span class="dp-lead">${leads.length ? `<b>${leads.length > 1 ? "Led by" : "Head of department"}</b> ${esc(leads.join(", "))}` : `<b>No head of department yet</b>`}<span class="dp-staff"> · ${d.staff || 0} staff</span></span>
+      <span class="dp-subs">${I.subs.length ? I.subs.slice(0, 5).map(x => `<span class="dp-chip">${esc(x.s)}${x.l ? " " + esc(x.l) : ""}</span>`).join("") + (I.subs.length > 5 ? `<span class="dp-chip more">+${I.subs.length - 5}</span>` : "") : `<span class="dp-none">No subjects yet</span>`}</span>
+      <span class="dp-org">${I.orgs.length ? `<b>Awarding ${I.orgs.length > 1 ? "bodies" : "body"}</b> ${esc(I.orgs.join(", "))}` : `<b>Awarding body</b> not set`}</span></button>`; }).join("");
+  const det = box.querySelector("#dpDetail"), d = D.find(x => x.id === dpSel);
+  Object.values(rows).forEach(r => { if(r.parentElement !== old) old.appendChild(r); });
+  if(!d){ det.innerHTML = `<p class="small text-body-secondary mb-0 mt-2">Pick a department to rename it, see its subjects or work in it.</p>`; return; }
+  const I = dpInfo(d);
+  det.innerHTML = `<div class="dp-detail"><div class="dp-row" id="dpRow"></div>
+    <div class="dp-h">Subjects in ${esc(d.name)}</div>
+    ${I.subs.length ? `<div class="table-responsive"><table class="table table-sm align-middle mb-0 dp-t"><thead><tr><th>Subject</th><th>Level or qualification</th><th>Awarding body</th><th class="text-end">Units</th></tr></thead><tbody>${I.subs.map(x => `<tr><td class="fw-semibold">${esc(x.s)}</td><td>${esc(x.l || (x.builtin ? "Built in" : ""))}</td><td>${esc(x.org || "Not set")}</td><td class="text-end">${x.n}${x.crit ? ` <span class="text-body-secondary">· ${x.crit} criteria</span>` : ""}</td></tr>`).join("")}</tbody></table></div>` : `<p class="small text-body-secondary mb-0">No subjects yet. Add one from its specification, or by hand, on the Subjects tab.</p>`}
+    <div class="d-flex flex-wrap gap-2 mt-3">${d.mine ? `<button type="button" class="btn btn-sm btn-primary" data-dpa="subjects">Manage its subjects</button>` : `<button type="button" class="btn btn-sm btn-primary" data-dpa="go">Work in ${esc(d.name)}</button><span class="small text-body-secondary align-self-center">Step into it to add or change its subjects.</span>`}</div></div>`;
+  const row = rows[d.id]; if(row) det.querySelector("#dpRow").appendChild(row); }
+const _stLayout79 = stLayout;
+stLayout = function(){ const r = _stLayout79.apply(this, arguments); try{ dpTiles(); }catch(e){ console.error(e); } return r; };
+document.addEventListener("click", e => { const t = e.target.closest && e.target.closest("[data-dp]"); if(t){ dpSel = dpSel === t.dataset.dp ? "" : t.dataset.dp; dpTiles(); const dd = $("#dpDetail"); if(dpSel && dd) dd.scrollIntoView({block: "nearest", behavior: "smooth"}); return; }
+  const a = e.target.closest && e.target.closest("[data-dpa]"); if(!a) return;
+  if(a.dataset.dpa === "subjects") goSection("settings", "stCourses");
+  else if(a.dataset.dpa === "go" && dpSel){ try{ sessionStorage.setItem("cc_dp_go", "1"); }catch{} colSwitch(dpSel); } });
+/* after stepping into a department from its tile, land on its subjects */
+(() => { let n = 0; const t = setInterval(() => { if(++n > 40) return clearInterval(t); try{ if(typeof me !== "undefined" && me && me.email && typeof ccDepts !== "undefined"){ clearInterval(t); let go = ""; try{ go = sessionStorage.getItem("cc_dp_go") || ""; sessionStorage.removeItem("cc_dp_go"); }catch{} if(go) setTimeout(() => goSection("settings", "stCourses"), 600); } }catch{} }, 400); })();
+/* the departments list arrives after the page: draw the tiles when it does */
+const _ccDeptsLoad79 = ccDeptsLoad;
+ccDeptsLoad = async function(){ const r = await _ccDeptsLoad79.apply(this, arguments); try{ if(view === "settings") dpTiles(); }catch{} return r; };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

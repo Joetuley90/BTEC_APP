@@ -2041,4 +2041,25 @@ VERSION 126: REPORT A PROBLEM, AND ONE POWERPOINT TEMPLATE FOR EVERYONE
   The quiz QR slide isn't on this template yet. To go back, set CC_OWN_DECK
   to false.
 
+VERSION 127: EASIER TO USE, AND THE ORIGINAL POWERPOINT BACK
+- Departments (Settings, Institution) are tiles. Each shows who leads it, how
+  many staff, the subjects inside and the awarding body. Pick a tile to rename
+  it, see its subjects in a table, work in it or open its subjects.
+- Subjects has its own tab in Settings: add a subject from its specification
+  or by hand, set where you teach, and manage the briefs. It is still the one
+  place units and criteria come from, so a change there shows in Lessons,
+  Planning, Second Marker, AI Tools and Results.
+- A lesson's tabs are bigger buttons that wrap on to a second row, so none
+  hide off the side. On a phone they sit in a neat grid of three. Left and
+  right arrow keys move between them.
+- Settings' tabs and the AI Tools filters wrap the same way.
+- Planning and This week: PowerPoint, Worksheet and the other small links
+  under a lesson are proper buttons.
+- Phones: bigger buttons and boxes, 16px text in boxes so the iPhone doesn't
+  zoom in when you tap one, and the big Show on board bar only shows on a
+  lesson (it was covering Planning and This week).
+- The original department's PowerPoint downloads use its own built-in
+  template again, with the quiz QR slide. Every other department still gets
+  Crafticulum's template. Report a problem is unchanged.
+
 NO CHANGES TO config.php
