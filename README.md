@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v137, 20 Nov 2026: a data processing agreement page at /dpa, and the privacy notice says where data is kept and for how long; v136 named the company on the legal pages; v135 added the 30-day refund; v134 added a first lesson with no setting up, a voice on video lessons, Classroom and Teams sharing, and public profiles for a whole institution). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v137.zip` and `crafticulum-release.zip`: the same files as one zip (2,602,403 bytes).
+- `crafticulum/`: every file of the current release (v138, 20 Nov 2026: the full ICO number and the backup location on the legal pages; v137 added a data processing agreement page at /dpa and where data is kept; v136 named the company on the legal pages; v135 added the 30-day refund; v134 added a first lesson with no setting up, a voice on video lessons, Classroom and Teams sharing, and public profiles for a whole institution). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v138.zip` and `crafticulum-release.zip`: the same files as one zip (2,602,478 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

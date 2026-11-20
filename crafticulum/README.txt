@@ -2189,4 +2189,8 @@ VERSION 137: DATA PROCESSING AGREEMENT
   backups are kept for 28 days with a remote copy on Amazon S3, and closed
   accounts are deleted within 30 days.
 
+VERSION 138: ICO NUMBER AND BACKUP LOCATION
+- The privacy notice gives the ICO registration number as Z92242123, and it
+  and the data processing agreement say the remote backups are in London.
+
 NO CHANGES TO config.php
