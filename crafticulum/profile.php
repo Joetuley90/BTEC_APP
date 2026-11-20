@@ -15,7 +15,8 @@ $u = $em !== '' ? ($a['users'][$em] ?? null) : null; $inst = $col !== '' ? (stri
 $ab = []; if ($u) { $ab = json_decode((string) @file_get_contents(ccDataDir() . '/u/' . sha1($em) . '/_about.json'), true); if (!is_array($ab)) $ab = [];
     $pf = (array) ($u['profile'] ?? []); if (empty($ab['headline']) && !empty($pf['job'])) $ab['headline'] = (string) $pf['job']; if (empty($ab['pronouns']) && !empty($pf['pronouns'])) $ab['pronouns'] = (string) $pf['pronouns']; if (empty($ab['campuses']) && !empty($pf['site'])) $ab['campuses'] = [(string) $pf['site']]; }
 $colleague = $me && empty($me['demo']) && $u && ($me['role'] === 'superadmin' || (string) ($me['college'] ?? '') === $col);
-$show = $u && ($colleague || !empty($ab['public']));
+$pub = $u && (array_key_exists('public', $ab) ? !empty($ab['public']) : !empty($a['colleges'][$col]['profilesPublic']));   /* the person's own choice first, then the institution's */
+$show = $u && ($colleague || $pub);
 header('Content-Type: text/html; charset=utf-8'); header('X-Robots-Tag: noindex'); header('Cache-Control: private, no-store'); if (!$show) http_response_code($u || $col !== '' ? 403 : 404);
 $name = $show ? (string) (($u['name'] ?? '') ?: 'Member of staff') : ''; $title = $show ? $name . ' · ' . $inst : 'Profile';
 $deptIds = $show ? array_merge([(string) ($u['dept'] ?? '')], array_map('strval', array_keys(ccAlso($a, $u)))) : []; $depts = array_values(array_filter(array_map(fn($d) => (string) ($a['depts'][$d]['name'] ?? ''), $deptIds), 'strlen'));
@@ -91,7 +92,7 @@ h2{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--mu
         <?php if (!empty($status[$ab['status'] ?? ''])): ?><div><b>Today</b><?= $h($status[$ab['status']]) ?></div><?php endif; ?></div></section><?php endif; ?>
       <?php if (!empty($ab['link']) && preg_match('#^https://#i', (string) $ab['link'])): ?><section><h2>Link</h2><a href="<?= $h($ab['link']) ?>" rel="noopener nofollow" target="_blank"><?= $h($ab['link']) ?></a></section><?php endif; ?>
     </div></article>
-  <p class="note"><?= $colleague ? (!empty($ab['public']) ? 'This profile is public. People who aren\'t signed in see it without the contact details.' : 'Only people signed in at ' . $h($inst) . ' can see this page.') : 'Shared by ' . $h($name) . '. Contact details are only shown to colleagues.' ?></p>
+  <p class="note"><?= $colleague ? ($pub ? 'This profile is public. People who aren\'t signed in see it without the contact details.' : 'Only people signed in at ' . $h($inst) . ' can see this page.') : 'Shared by ' . $h($name) . '. Contact details are only shown to colleagues.' ?></p>
 <?php endif; ?>
 </main>
 </body>

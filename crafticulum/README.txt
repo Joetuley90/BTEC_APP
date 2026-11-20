@@ -2145,4 +2145,26 @@ VERSION 133: NO QUESTIONS ON THE FRONT PAGE
 - The questions section has gone from the front page. It is now the headline,
   How it works, What you get, Pricing and the sign-up panel.
 
+VERSION 134: FIRST LESSON, A VOICE, CLASSROOM AND TEAMS, PUBLIC PROFILES
+- A first lesson with no setting up. Someone who signs up on their own now
+  sees three boxes: subject, year or level, and what the lesson is about.
+  One button builds the lesson. The subject is saved for them and can be
+  filled in properly later, or from a specification.
+- A real voice on video lessons. In Admin, System, Site setup there is a new
+  section, A voice for video lessons. Add a Google Cloud Text-to-Speech API
+  key and the MP4 download gets a spoken voice as well as captions. Each
+  caption stays on screen for as long as it takes to say. With no key the
+  MP4 is as before. Google gives a million characters a month free on these
+  voices (about 80 video lessons); the ceiling in the same section stops the
+  site going past it. The key stays on the server, each sentence is only
+  paid for once, and only signed-in staff can use it.
+  NEW FILE: speak.php. Sound is saved under data/tts.
+- Post to Google Classroom or Microsoft Teams. Share, on a lesson, unit,
+  quiz or test, now has two buttons under the link. They open Classroom or
+  Teams with the student link and the lesson's name filled in.
+- Public profiles for the whole institution. Settings, Department, Our team
+  has a new switch for the institution's manager: Make everyone's profile
+  public. Each person can still switch their own off. Nothing but name,
+  photo, role, departments, subjects and qualifications is shown.
+
 NO CHANGES TO config.php
