@@ -2133,4 +2133,12 @@ VERSION 131: A SHORTER FRONT PAGE, AND THE QUIZ CODE SLIDE
   answer on your phone") just before the questions, when a deck is downloaded
   with the quiz room or phone quiz open.
 
+VERSION 132: THE FRONT PAGE, SHORTER AGAIN
+- The front page is now five parts: the headline, How it works, What you get,
+  Pricing and four questions, then the sign-up panel. Who it's for and the
+  strip of facts have gone, the ticks are one line each, and there is less
+  space between sections.
+- Under the headline it says how to say the name: kraf-TIK-yuh-luhm, craft +
+  curriculum.
+
 NO CHANGES TO config.php
