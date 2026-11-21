@@ -3,6 +3,34 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.51 · 21 November 2026
+
+**Fix: the invoice PDF file was missing from 1.50**
+
+- 1.50 left out `invoice-lib.php`, the file that makes invoice PDFs. Without it, Admin, Money (the Business dashboard and invoices) wouldn't load, and the PDFs and reminders couldn't be made.
+- It's included now. The release script also checks, before anything is pushed, that every file a page needs is in the zip and that nothing in the build is left out.
+
+**After updating:** nothing to do. If you updated to 1.50, update again straight away.
+
+**Tested:** pw150 9, pwmoney 14, and the new completeness check (every required file present, nothing left out).
+
+### What was pushed
+
+- Commit `088a85c` on `main` (2 added, 5 changed, 1 removed).
+- Zip: `crafticulum-v1.51.zip`, 3,702,446 bytes, no `config.php` inside.
+- Build number: 151 (shown to people as 1.51).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.50.zip` |
+| added | `crafticulum-v1.51.zip` |
+| changed | `crafticulum/README.txt` |
+| added | `crafticulum/invoice-lib.php` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.50 · 21 November 2026
 
 **Invoice PDFs and reminders, the funnel, tips, your data, alerts, accessibility, subject pages, Next Level Labs credit**
