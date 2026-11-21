@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.51, 21 Nov 2026: puts back invoice-lib.php, which 1.50 left out; 1.50 added invoice PDFs and reminders, the funnel, tips, data requests, alerts, accessibility fixes and four subject pages). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.51.zip` and `crafticulum-release.zip`: the same files as one zip (3,702,446 bytes).
+- `crafticulum/`: every file of the current release (1.52, 21 Nov 2026: the links under Settings and Admin match the front page footer, with the Created by credit; 1.51 restored the invoice PDF file). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.52.zip` and `crafticulum-release.zip`: the same files as one zip (3,703,026 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
