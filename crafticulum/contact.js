@@ -25,12 +25,18 @@
     if(msg.length < 10) return fail("Tell us a little more so we can help.", $("cfMsg"));
     var b = $("cfSend"); b.disabled = true; b.textContent = "Sending...";
     fetch("auth.php?a=contact", {method: "POST", headers: {"Content-Type": "application/json"}, credentials: "same-origin",
-      body: JSON.stringify({kind: kind(), name: name, email: email, org: $("cfOrg").value.trim(), msg: msg, website: $("cfWeb").value, took: Date.now() - opened, page: from, browser: browser()})})
+      body: JSON.stringify({kind: kind(), name: name, email: email, org: $("cfOrg").value.trim(), msg: msg, website: $("cfWeb").value, took: Date.now() - opened, page: from, browser: browser(), shot: shot || undefined})})
       .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok: r.ok, status: r.status, j: j}; }); })
       .then(function(x){ b.disabled = false; b.textContent = "Send message";
         if(!x.ok) return fail(x.status === 429 ? "That's a lot of messages in a short time. Try again in an hour." : x.j.error === "email" ? "That email address doesn't look right. Check it so we can reply." : x.j.error === "short" ? "Tell us a little more so we can help." : "That didn't send. Check your connection and try again.");
         f.hidden = true; $("cfDone").hidden = false; $("cfDoneText").textContent = "We'll reply to " + email + "."; $("cfDone").scrollIntoView({block: "center"}); })
       .catch(function(){ b.disabled = false; b.textContent = "Send message"; fail("That didn't send. Check your connection and try again."); });
   });
-  $("cfAgain").addEventListener("click", function(){ $("cfMsg").value = ""; opened = Date.now(); $("cfDone").hidden = true; f.hidden = false; $("cfMsg").focus(); });
+  /* a screenshot: made smaller on the device before it is sent */
+  var shot = "", pick = $("cfShot");
+  function shrink(file, done){ var u = URL.createObjectURL(file), im = new Image(); im.onload = function(){ try{ var w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, 1500 / Math.max(w, h)), q = .78, out = ""; w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+        for(var i = 0; i < 4; i++){ var c = document.createElement("canvas"); c.width = w; c.height = h; var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h); out = c.toDataURL("image/jpeg", q); if(out.length < 600000) break; w = Math.round(w * .75); h = Math.round(h * .75); q -= .08; }
+        URL.revokeObjectURL(u); done(out.length < 800000 ? out : ""); }catch(e){ done(""); } }; im.onerror = function(){ URL.revokeObjectURL(u); done(""); }; im.src = u; }
+  if(pick) pick.addEventListener("change", function(){ var fl = pick.files && pick.files[0], hint = $("cfShotHint"); shot = ""; if(!fl) return; hint.textContent = "Getting it ready..."; shrink(fl, function(d){ shot = d; hint.textContent = d ? "Added. It will be sent with your message." : "That picture couldn't be read. Try a PNG or JPEG."; if(!d) pick.value = ""; }); });
+  $("cfAgain").addEventListener("click", function(){ $("cfMsg").value = ""; shot = ""; if(pick){ pick.value = ""; $("cfShotHint").textContent = "A picture of what you saw. Please make sure it doesn't show a learner's name."; } opened = Date.now(); $("cfDone").hidden = true; f.hidden = false; $("cfMsg").focus(); });
 })();

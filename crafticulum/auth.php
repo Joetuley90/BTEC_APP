@@ -27,7 +27,7 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 $body = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : (($_GET['a'] ?? '') === 'deptsplit' ? 3000001 : (($_GET['a'] ?? '') === 'report' ? 900001 : 20001))); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { $raw = file_get_contents('php://input', false, null, 0, ($_GET['a'] ?? '') === 'siteset' ? 400001 : (($_GET['a'] ?? '') === 'deptsplit' ? 3000001 : (in_array($_GET['a'] ?? '', ['report', 'contact'], true) ? 900001 : 20001))); $body = json_decode($raw ?: '{}', true); if (!is_array($body)) $body = []; }
 /* the daily reminders, for a scheduled job on the server: auth.php?a=pushcron&k=<the key shown in Settings, Notifications> */
 if (($_GET['a'] ?? '') === 'pushcron') { if (!hash_equals(substr(hash('sha256', 'cron|' . ccSiteId()), 0, 32), (string) ($_GET['k'] ?? ''))) out(403, ['error' => 'key']); $inst = 0; if (is_file(__DIR__ . '/inst-lib.php')) { require_once __DIR__ . '/inst-lib.php'; @file_put_contents(ccInstDir() . '/_cron.txt', (string) time()); try { $inst = ccInstAuto(); } catch (Throwable $e) { $inst = 0; } } $up = 0; if (is_file(__DIR__ . '/update-lib.php')) { require_once __DIR__ . '/update-lib.php'; try { $up = ccUpAuto(); } catch (Throwable $e) { $up = 0; } } out(200, ['sent' => ccPushDaily(), 'purged' => ccDeletedPurge(), 'handin' => ccHandinPurge(), 'directory' => $inst, 'updated' => $up]); }
 if (($_GET['a'] ?? '') === 'ping') out(200, ['site' => hash('sha256', ccSiteId())]);   // lets the site check that its main address reaches this same site
@@ -150,15 +150,19 @@ if ($action === 'report') {
     $kind = ($body['kind'] ?? '') === 'feedback' ? 'feedback' : 'problem'; $id = bin2hex(random_bytes(6)); $name = (string) ($who['name'] ?? '') !== '' ? (string) $who['name'] : (string) $who['email'];
     $row = ['id' => $id, 'at' => time(), 'kind' => $kind, 'name' => $line($name, 80), 'email' => (string) $who['email'], 'org' => $line((string) ($who['collegeName'] ?? ''), 100), 'msg' => $msg, 'page' => $line($body['page'] ?? '', 120), 'browser' => $line($body['browser'] ?? '', 120),
             'who' => (CC_ROLE_NAMES[$who['role']] ?? '') . ', ' . (string) ($who['deptName'] ?? ''), 'done' => false, 'from' => 'app'];
-    /* a screenshot they chose to attach: a JPEG or PNG, kept beside the inbox and only ever shown to the super admin */
-    $shot = (string) ($body['shot'] ?? ''); if (preg_match('#^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$#', $shot, $sm)) { $bin = base64_decode($sm[2], true); $info = is_string($bin) && strlen($bin) < 650000 ? @getimagesizefromstring($bin) : false;
-        if ($info && in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) { $sd = ccDataDir() . '/_shots'; if (!is_dir($sd)) { @mkdir($sd, 0700, true); @file_put_contents($sd . '/.htaccess', "Require all denied\n"); } if (@file_put_contents($sd . '/' . $id . ($info[2] === IMAGETYPE_PNG ? '.png' : '.jpg'), $bin) !== false) $row['shot'] = $info[2] === IMAGETYPE_PNG ? 'png' : 'jpg'; } }
+    $sh = ccShotSave($id, (string) ($body['shot'] ?? '')); if ($sh !== '') $row['shot'] = $sh;   // a screenshot they chose to attach
     if (!ccInboxChange(function ($j) use ($row, $id) { $j[$id] = $row; return $j; })) out(500, ['error' => 'save']);
     $label = $kind === 'problem' ? 'Problem reported' : 'Idea sent';
     foreach (ccSupers() as $t) if ($t !== $who['email']) ccNotify((string) $t, 'people', "$label by $name", 'Sent from the chat button. Open Admin, To do to read it.');
     $a = ccAccounts(); $to = (string) (ccSite($a)['contact'] ?? ''); $tos = $to !== '' ? [$to] : array_values(array_filter(ccSupers(), fn($e) => (bool) filter_var($e, FILTER_VALIDATE_EMAIL)));
     if (ccMailReady()) foreach (array_slice($tos, 0, 3) as $t) ccMail($t, "$label by $name", "$label, sent from inside Crafticulum.\n\nFrom: $name <{$row['email']}>" . ($row['org'] !== '' ? "\nInstitution: {$row['org']}" : '') . "\nSigned in as: {$row['who']}\nThey were on: {$row['page']}\nUsing: {$row['browser']}\n\n$msg\n\nReply to this email to answer them.", (string) $row['email']);
     out(200, ['ok' => true]);
+}
+/* a screenshot sent with a message: a JPEG or PNG, kept beside the inbox and only ever shown to the super admin */
+function ccShotSave(string $id, string $shot): string {
+    if (!preg_match('#^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$#', $shot, $sm)) return ''; $bin = base64_decode($sm[2], true); $info = is_string($bin) && strlen($bin) < 650000 ? @getimagesizefromstring($bin) : false;
+    if (!$info || !in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG], true)) return ''; $sd = ccDataDir() . '/_shots'; if (!is_dir($sd)) { @mkdir($sd, 0700, true); @file_put_contents($sd . '/.htaccess', "Require all denied\n"); }
+    $ext = $info[2] === IMAGETYPE_PNG ? 'png' : 'jpg'; return @file_put_contents($sd . '/' . $id . '.' . $ext, $bin) !== false ? $ext : '';
 }
 if ($action === 'contact') {
     $clean = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $s)), 0, $n);
@@ -173,6 +177,7 @@ if ($action === 'contact') {
     $who = ccMe(); $id = bin2hex(random_bytes(6));
     $row = ['id' => $id, 'at' => time(), 'kind' => $kind, 'name' => $name, 'email' => $email, 'org' => $line($body['org'] ?? '', 100), 'msg' => $msg, 'page' => $line($body['page'] ?? '', 30), 'browser' => $line($body['browser'] ?? '', 60),
             'who' => $who && empty($who['demo']) ? (CC_ROLE_NAMES[$who['role']] ?? '') . ', ' . (string) $who['deptName'] : ($who ? 'Demo visitor' : ''), 'done' => false];
+    $sh = ccShotSave($id, (string) ($body['shot'] ?? '')); if ($sh !== '') $row['shot'] = $sh;
     if (!ccInboxChange(function ($j) use ($row, $id) { $j[$id] = $row; return $j; })) out(500, ['error' => 'save']);
     $a = ccAccounts(); $to = (string) (ccSite($a)['contact'] ?? ''); $tos = $to !== '' ? [$to] : array_values(array_filter(ccSupers(), fn($e) => (bool) filter_var($e, FILTER_VALIDATE_EMAIL)));
     $label = ['support' => 'Help needed', 'problem' => 'Problem reported', 'feedback' => 'Feedback', 'enquiry' => 'Enquiry'][$kind];
@@ -499,7 +504,16 @@ if ($action === 'inbox' || $action === 'inboxset' || $action === 'inboxreply') {
         ccInboxChange(function ($j) use ($id, $text, $me, $body) { if (!isset($j[$id])) return $j; $j[$id]['replies'] = array_merge((array) ($j[$id]['replies'] ?? []), [['at' => time(), 'by' => (string) $me['name'], 'text' => $text]]); if (!empty($body['done'])) $j[$id]['done'] = true; return $j; });
     }
     if ($action === 'inboxset') { $id = preg_replace('/[^0-9a-f]/', '', (string) ($body['id'] ?? ''));
-        ccInboxChange(function ($j) use ($id, $body) { if (!isset($j[$id])) return $j; if (!empty($body['del'])) unset($j[$id]); else $j[$id]['done'] = !empty($body['done']); return $j; }); }
+        if (!empty($body['del'])) foreach (['jpg', 'png'] as $x) @unlink(ccDataDir() . '/_shots/' . $id . '.' . $x);
+        ccInboxChange(function ($j) use ($id, $body) { if (!isset($j[$id])) return $j; if (!empty($body['del'])) { unset($j[$id]); return $j; }
+            if (array_key_exists('done', $body)) $j[$id]['done'] = !empty($body['done']);
+            /* lining a report up to go to Claude to be fixed: waiting, sent or fixed, with a note on what is wanted and whether the screenshot goes too */
+            if (array_key_exists('fix', $body)) { $f = in_array($body['fix'], ['queued', 'sent', 'fixed'], true) ? (string) $body['fix'] : ''; if ($f === '') unset($j[$id]['fix'], $j[$id]['fixAt']); else { $j[$id]['fix'] = $f; $j[$id]['fixAt'] = time(); if ($f === 'fixed') $j[$id]['done'] = true; } }
+            if (array_key_exists('fixNote', $body)) $j[$id]['fixNote'] = mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $body['fixNote'])), 0, 800);
+            if (array_key_exists('fixShot', $body)) $j[$id]['fixShot'] = !empty($body['fixShot']);
+            if (array_key_exists('fixMsg', $body)) { $fm = mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $body['fixMsg'])), 0, 4000); if ($fm === '' || $fm === trim((string) ($j[$id]['msg'] ?? ''))) unset($j[$id]['fixMsg']); else $j[$id]['fixMsg'] = $fm; }
+            return $j; }); }
+    if ($action === 'inboxset' && !empty($body['sentAll'])) ccInboxChange(function ($j) { foreach ($j as $k => $m) if (is_array($m) && ($m['fix'] ?? '') === 'queued') { $j[$k]['fix'] = 'sent'; $j[$k]['fixAt'] = time(); } return $j; });
     $l = array_values(ccInbox()); usort($l, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
     out(200, ['inbox' => $l, 'mail' => ccMailReady(), 'to' => (string) (ccSite($a)['contact'] ?? '')]);
 }

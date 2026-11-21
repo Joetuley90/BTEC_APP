@@ -34,7 +34,7 @@
       if(r2.status === 202){ S.work = r2.j.work; S.msg = "Teams is still handing the work out to the class. Wait a minute, then press Send again."; return draw(); }
       if(!r2.ok){ S.msg = why(r2); return draw(); } S.sent = r2.j.sent; S.missed = (r2.j.missed || []).length; S.step = "done"; return draw(); } });
   document.addEventListener("change", function(ev){ var t = ev.target; if(!S || !t || !t.getAttribute || t.getAttribute("data-mk-row") === null) return; S.rows[+t.getAttribute("data-mk-row")].pick = t.value; draw(); });
-  window.addEventListener("message", function(ev){ if(ev.origin !== location.origin || !ev.data || !("ccIntegration" in ev.data) || !S || S.step !== "connect") return; if(ev.data.ccIntegration){ S.info.providers[S.p].connected = true; classes(); } else { S.msg = "That didn't connect. Try again, or ask your manager to check the keys."; draw(); } });
+  window.addEventListener("message", function(ev){ if(ev.origin !== location.origin || !ev.data || typeof ev.data !== "object" || !("ccIntegration" in ev.data) || !S || S.step !== "connect") return; if(ev.data.ccIntegration){ S.info.providers[S.p].connected = true; classes(); } else { S.msg = "That didn't connect. Try again, or ask your manager to check the keys."; draw(); } });
   window.ccMarks = async function(e, score){ var box = document.getElementById("marksBox"); if(!box || !e || !e.responses || !e.responses.length) return; var info;
     try{ var r = await fetch("../integrate.php?a=info", {method: "POST", credentials: "same-origin"}); if(!r.ok) return; info = await r.json(); }catch(err){ return; }
     if(!info || !info.providers || !Object.keys(info.providers).some(function(k){ return info.providers[k].on; })) return;
