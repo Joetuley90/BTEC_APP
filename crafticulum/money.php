@@ -85,7 +85,50 @@ if ($action === 'request') {
     out(200, ['ok' => true, 'invoice' => $pub($inv)]);
 }
 
+/* ---------- give a month, get a month: an institution's own link and what it has earned ---------- */
+if ($action === 'refer') {
+    if (!in_array($me['role'], ['owner', 'superadmin'], true) || $cid === '' || !isset($a['colleges'][$cid])) out(403, ['error' => 'noperm']);
+    $had = (string) ($a['colleges'][$cid]['refCode'] ?? ''); $code = ccRefCode($a, $cid); if ($had === '') ccSaveAccounts($a);
+    $signed = 0; $paying = 0; foreach ($a['colleges'] as $id => $c) if (($c['ref'] ?? '') === $cid) { $signed++; if (!empty($c['refDone'])) $paying++; }
+    out(200, ['code' => $code, 'url' => ccSiteUrl() . '?ref=' . $code, 'signed' => $signed, 'paying' => $paying, 'waiting' => (int) ($a['colleges'][$cid]['credits'] ?? 0), 'used' => (int) ($a['colleges'][$cid]['creditsUsed'] ?? 0), 'on' => ccBillingOn()]);
+}
 if (!$super) out(403, ['error' => 'noperm']);
+function mzStripeBase(): string { return rtrim(defined('STRIPE_API_BASE') ? (string) STRIPE_API_BASE : 'https://api.stripe.com', '/'); }
+function mzStripe(string $method, string $path, array $params = []): array {
+    $key = trim((string) ccConf('STRIPE_SECRET_KEY')); if ($key === '' || !function_exists('curl_init')) return ['ok' => false, 'error' => 'Stripe is not set up.'];
+    $url = mzStripeBase() . $path; $q = http_build_query($params);
+    $ch = curl_init($method === 'GET' && $q !== '' ? $url . '?' . $q : $url);
+    $opt = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 25, CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_CUSTOMREQUEST => $method, CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $key, 'Stripe-Version: 2024-06-20']];
+    if ($method !== 'GET') $opt[CURLOPT_POSTFIELDS] = $q;
+    curl_setopt_array($ch, $opt); $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); $err = curl_error($ch); curl_close($ch);
+    $j = is_string($res) ? json_decode($res, true) : null;
+    if ($res === false || !is_array($j)) { ccErr('payment', 'Could not reach Stripe. ' . $err); return ['ok' => false, 'error' => 'Could not reach Stripe. Try again in a minute.']; }
+    if ($code >= 400) { $m = (string) ($j['error']['message'] ?? 'Stripe said no.'); ccErr('payment', 'Stripe: ' . $m); return ['ok' => false, 'error' => $m, 'code' => $code]; }
+    return ['ok' => true, 'data' => $j];
+}
+
+/* ---------- the super admin: card payments, refunds and credit ---------- */
+if (in_array($action, ['payments', 'refund', 'credit'], true)) {
+    $col = (string) ($body['college'] ?? ''); if (!isset($a['colleges'][$col])) out(404, ['error' => 'gone']); $cus = (string) ($a['colleges'][$col]['bill']['customer'] ?? ''); $cn = (string) ($a['colleges'][$col]['name'] ?? '');
+    $note = function (array $row) { @file_put_contents(ccDataDir() . '/_refunds.jsonl', json_encode($row + ['t' => time()]) . "\n", FILE_APPEND | LOCK_EX); };
+    if ($action === 'credit') {   // money off their next bills, or a free month banked for later
+        $months = max(0, min(12, (int) ($body['months'] ?? 0))); $amt = max(0, min(10000000, (int) ($body['amount'] ?? 0)));
+        if ($months > 0) { $a['colleges'][$col]['credits'] = (int) ($a['colleges'][$col]['credits'] ?? 0) + $months; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']); $note(['college' => $col, 'kind' => 'months', 'months' => $months, 'by' => $me['email']]); $b = (array) ($a['colleges'][$col]['bill'] ?? []); $per = (int) ($b['mrr'] ?? 0);
+            if ($cus !== '' && !empty($b['sub']) && in_array((string) ($b['status'] ?? ''), ['active', 'trialing'], true) && $per > 0) { $n = (int) $a['colleges'][$col]['credits']; for ($i = 0; $i < min($n, 12); $i++) { $r = mzStripe('POST', '/v1/customers/' . rawurlencode($cus) . '/balance_transactions', ['amount' => -$per, 'currency' => 'gbp', 'description' => 'A free month from Crafticulum']); if (!$r['ok']) break; $a['colleges'][$col]['credits']--; $a['colleges'][$col]['creditsUsed'] = (int) ($a['colleges'][$col]['creditsUsed'] ?? 0) + 1; } ccSaveAccounts($a); } ccLog($me['dept'], $me, "gave $cn $months free month" . ($months === 1 ? '' : 's')); }
+        elseif ($amt > 0) { if ($cus === '') out(400, ['error' => 'nocard']); $r = mzStripe('POST', '/v1/customers/' . rawurlencode($cus) . '/balance_transactions', ['amount' => -$amt, 'currency' => 'gbp', 'description' => $line($body['note'] ?? '', 120) ?: 'Credit from Crafticulum']); if (!$r['ok']) out(502, ['error' => 'stripe', 'why' => (string) ($r['error'] ?? '')]); $note(['college' => $col, 'kind' => 'credit', 'amount' => $amt, 'by' => $me['email']]); ccLog($me['dept'], $me, "gave $cn " . ccPounds($amt) . ' credit'); }
+        else out(400, ['error' => 'amount']);
+    }
+    if ($cus === '' && $action === 'refund') out(400, ['error' => 'nocard']);
+    if ($cus === '') out(200, ['charges' => [], 'credits' => (int) ($a['colleges'][$col]['credits'] ?? 0), 'card' => false]);
+    if ($action === 'refund') { $ch = (string) ($body['charge'] ?? ''); if (!preg_match('/^(ch|py)_[A-Za-z0-9_]+$/', $ch)) out(400, ['error' => 'charge']);
+        $list = mzStripe('GET', '/v1/charges', ['customer' => $cus, 'limit' => 24]); $mine = null; foreach ((array) ($list['data']['data'] ?? []) as $c) if (($c['id'] ?? '') === $ch) $mine = $c; if (!$mine) out(404, ['error' => 'charge']);   // only ever a payment that belongs to this institution
+        $left = (int) $mine['amount'] - (int) ($mine['amount_refunded'] ?? 0); $amt = (int) ($body['amount'] ?? 0) ?: $left; if ($amt <= 0 || $amt > $left) out(400, ['error' => 'amount']);
+        $r = mzStripe('POST', '/v1/refunds', ['charge' => $ch, 'amount' => $amt, 'reason' => 'requested_by_customer']); if (!$r['ok']) out(502, ['error' => 'stripe', 'why' => (string) ($r['error'] ?? '')]);
+        $note(['college' => $col, 'kind' => 'refund', 'amount' => $amt, 'charge' => $ch, 'by' => $me['email']]); ccLog($me['dept'], $me, 'refunded ' . ccPounds($amt) . " to $cn");
+        ccCollegeMail($a, $col, 'Your refund is on its way', 'We have refunded ' . ccPounds($amt) . ' to the card you paid with. It usually shows within 5 to 10 working days.'); }
+    $list = mzStripe('GET', '/v1/charges', ['customer' => $cus, 'limit' => 12]); if (!$list['ok']) out(502, ['error' => 'stripe', 'why' => (string) ($list['error'] ?? '')]);
+    out(200, ['card' => true, 'credits' => (int) (ccAccounts()['colleges'][$col]['credits'] ?? 0), 'charges' => array_values(array_map(fn($c) => ['id' => (string) $c['id'], 'amount' => (int) $c['amount'], 'refunded' => (int) ($c['amount_refunded'] ?? 0), 'at' => (int) ($c['created'] ?? 0), 'paid' => !empty($c['paid'])], array_filter((array) ($list['data']['data'] ?? []), fn($c) => !empty($c['paid']))))]);
+}
 /* ---------- the super admin: invoices ---------- */
 $mail = function (array $inv, string $subject, string $text) use ($a) { $to = (string) ($inv['to']['email'] ?? ''); return ccMailReady() && filter_var($to, FILTER_VALIDATE_EMAIL) ? ccMail($to, $subject, $text, ccInvSet($a)['email']) : false; };
 if ($action === 'settingsset') {
@@ -141,6 +184,7 @@ if ($action === 'invoices') { $all = array_map($pub, $sorted(ccInvRead())); $set
     out(200, ['invoices' => $all, 'set' => $set, 'mail' => ccMailReady(), 'sentTo' => $GLOBALS['sentTo'] ?? null, 'colleges' => array_map(fn($id) => ['id' => (string) $id, 'name' => (string) ($a['colleges'][$id]['name'] ?? ''), 'plan' => ccCollege($a, (string) $id)['plan']], ccCollegeIds($a)), 'plans' => array_map(fn($k, $p) => ['id' => $k, 'name' => $p['name'], 'price' => $p['price']], array_keys(ccPlans($a)), array_values(ccPlans($a)))]); }
 
 /* ---------- the super admin: the business at a glance ---------- */
+if ($action === 'backupcheck') out(200, ['check' => ccBackupCheck(true)]);
 if ($action === 'overview') {
     ccMoneySync($a); $L = ccMoneyRead(); $now = time(); $supers = ccSupers(); $plans = ccPlans($a); $u = ccUsageRead(); $uset = ccUsageSet($a); $seen = ccSeenRead();
     $m0 = strtotime(date('Y-m-01 00:00:00')); $ids = array_map('strval', ccCollegeIds($a));
@@ -155,7 +199,7 @@ if ($action === 'overview') {
         if ($m > 0) { $paying++; $mrr += $m; if ($status === 'cancelling' || $status === 'renewal_due') $risk += $m; if ($status === 'past_due') { $pastDue += $m; $pastDueN++; } } elseif ($c['plan'] === 'free') $free++;
         $mix[$c['plan']] = ['n' => (int) ($mix[$c['plan']]['n'] ?? 0) + 1, 'mrr' => (int) ($mix[$c['plan']]['mrr'] ?? 0) + $m];
         $rows[] = ['id' => $id, 'name' => $c['name'], 'plan' => $c['plan'], 'planName' => $plans[$c['plan']]['name'], 'mrr' => $m, 'method' => $method, 'status' => $status, 'since' => $first, 'renews' => $m > 0 ? (int) ($b['periodEnd'] ?? 0) : 0, 'created' => $c['created'], 'people' => $people, 'active' => $act, 'last' => $last, 'manager' => $mgr,
-                   'builds' => $used['builds'], 'buildsMax' => (int) $plans[$c['plan']]['builds'], 'checks' => $used['checks'], 'calls' => $calls, 'ai' => round($ai, 2), 'voice' => (int) ($ttsBy[$id] ?? 0), 'self' => !empty($a['colleges'][$id]['self'])]; }
+                   'card' => !empty($b['customer']), 'credits' => (int) ($a['colleges'][$id]['credits'] ?? 0), 'builds' => $used['builds'], 'buildsMax' => (int) $plans[$c['plan']]['builds'], 'checks' => $used['checks'], 'calls' => $calls, 'ai' => round($ai, 2), 'voice' => (int) ($ttsBy[$id] ?? 0), 'self' => !empty($a['colleges'][$id]['self'])]; }
     /* this month: what moved the monthly figure */
     $mv = ['new' => 0, 'back' => 0, 'up' => 0, 'down' => 0, 'lost' => 0, 'newN' => 0, 'lostN' => 0]; $startMrr = 0; $startN = 0;
     foreach ($ids as $id) { $was = ccMoneyLast($L, $id, $m0 - 1); $is = ccMoneyNow($a, $id); if ($was > 0) { $startMrr += $was; $startN++; } if ($was === $is) continue;
@@ -179,11 +223,25 @@ if ($action === 'overview') {
     $builders = 0; foreach ((array) ($u['users'] ?? []) as $e => $r) if (!in_array((string) $e, $supers, true) && (int) ($r['calls'] ?? 0) > 0) $builders++;
     $aiTotal = round(ccUsageCost((array) $u['total'], $uset), 2); $inv = array_values(array_filter(ccInvRead(), 'is_array')); $owed = 0; $owedN = 0; $overN = 0; $asked = 0; $paidMonth = 0;
     foreach ($inv as $i) { $t = $invTotals($i); if (($i['status'] ?? '') === 'sent') { $owed += $t['total']; $owedN++; if (!empty($i['due']) && $i['due'] < $now) $overN++; } if (($i['status'] ?? '') === 'requested') $asked++; if (($i['status'] ?? '') === 'paid' && (int) ($i['paidAt'] ?? 0) >= $m0) $paidMonth += $t['total']; }
+    /* the next three months: what is expected if nothing changes, and how much of it needs someone to renew or is already cancelling */
+    $fc = []; $renew = []; for ($i = 1; $i <= 3; $i++) { $end = strtotime("+$i months", $m0) + (int) date('t', strtotime("+$i months", $m0)) * 86400 - 1; $sure = 0; $risk = 0;
+        foreach ($ids as $id) { $x = ccMoneyNow($a, $id); if ($x <= 0) continue; $b = (array) ($a['colleges'][$id]['bill'] ?? []); $inv2 = ($b['method'] ?? '') === 'invoice'; $stop = !empty($b['cancelAt']) ? (int) $b['cancelAt'] : 0;
+            if ($stop && $stop <= $end) continue; if ($inv2 && (int) ($b['periodEnd'] ?? 0) <= $end) $risk += $x; elseif (($b['status'] ?? '') === 'past_due') $risk += $x; else $sure += $x; }
+        $fc[] = ['label' => date('F', strtotime("+$i months", $m0)), 'sure' => $sure, 'risk' => $risk]; }
+    foreach ($rows as $r) { if ($r['mrr'] > 0 && $r['renews'] > 0 && $r['renews'] < $now + 90 * 86400 && ($r['method'] === 'invoice' || $r['status'] !== 'active')) $renew[] = ['name' => $r['name'], 'at' => $r['renews'], 'mrr' => $r['mrr'], 'method' => $r['method'], 'status' => $r['status']]; }
+    usort($renew, fn($x, $y) => $x['at'] <=> $y['at']);
+    /* what people said about what was built for them, last 30 days */
+    $fb = ['n' => 0, 'good' => 0, 'why' => [], 'recent' => []]; foreach (array_reverse(@file(ccFeedbackFile(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []) as $l) { $j = json_decode($l, true); if (!is_array($j) || (int) ($j['t'] ?? 0) < $now - 30 * 86400) continue; $fb['n']++; if (!empty($j['good'])) $fb['good']++; else { $w = (string) ($j['why'] ?? '') ?: 'other'; $fb['why'][$w] = (int) ($fb['why'][$w] ?? 0) + 1; if (count($fb['recent']) < 8) $fb['recent'][] = ['t' => (int) $j['t'], 'why' => $w, 'note' => (string) ($j['note'] ?? ''), 'subject' => (string) ($j['subject'] ?? ''), 'level' => (string) ($j['level'] ?? ''), 'name' => (string) ($a['colleges'][(string) ($j['college'] ?? '')]['name'] ?? '')]; } }
+    $fb['pct'] = $fb['n'] > 0 ? (int) round($fb['good'] / $fb['n'] * 100) : null;
+    $bk = json_decode((string) @file_get_contents(ccDataDir() . '/backups/check.json'), true); $zs = array_values(array_filter(glob(ccDataDir() . '/backups/*.zip') ?: [], fn($f) => preg_match('/\/\d{4}-\d{2}-\d{2}\.zip$/', $f))); rsort($zs);
+    $backup = ['last' => $zs ? (int) @filemtime($zs[0]) : 0, 'count' => count($zs), 'check' => is_array($bk) ? $bk : null];
+    $refunded = 0; foreach (@file(ccDataDir() . '/_refunds.jsonl', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $l) { $j = json_decode($l, true); if (is_array($j) && ($j['kind'] ?? '') === 'refund' && (int) ($j['t'] ?? 0) >= $m0) $refunded += (int) ($j['amount'] ?? 0); }
+    $refs = 0; $refPaid = 0; foreach ($a['colleges'] as $c) { if (!empty($c['ref'])) $refs++; if (!empty($c['refDone'])) $refPaid++; }
     $accounts = count($ids); $ltv = $churn !== null && $churn > 0 ? (int) round($arpa / ($churn / 100)) : null;
     out(200, ['on' => ccBillingOn(), 'cur' => '£', 'at' => $now, 'month' => date('F Y'), 'mrr' => $mrr, 'arr' => $mrr * 12, 'paying' => $paying, 'arpa' => $arpa, 'free' => $free, 'accounts' => $accounts, 'conversion' => $accounts > 0 ? round($paying / $accounts * 100, 1) : 0,
               'risk' => $risk, 'pastDue' => $pastDue, 'pastDueN' => $pastDueN, 'moves' => $mv, 'startMrr' => $startMrr, 'churn' => $churn, 'ltv' => $ltv, 'series' => $series, 'days' => array_values($days),
               'people' => ['total' => $pt, 'active7' => $a7, 'active30' => $a30, 'new30' => $new30, 'builders' => $builders], 'ai' => ['cost' => $aiTotal, 'calls' => (int) ($u['total']['calls'] ?? 0), 'rates' => $uset['in'] > 0 || $uset['out'] > 0, 'cur' => $uset['cur']], 'voice' => ['chars' => $ttsAll, 'cap' => (int) ccConf('TTS_CAP') ?: 900000, 'on' => trim((string) ccConf('TTS_KEY')) !== ''],
-              'margin' => $mrr > 0 ? round(($mrr / 100 - $aiTotal) / ($mrr / 100) * 100, 1) : null, 'invoices' => ['owed' => $owed, 'owedN' => $owedN, 'overdue' => $overN, 'asked' => $asked, 'paidMonth' => $paidMonth], 'mix' => array_map(fn($k, $v) => ['id' => $k, 'name' => $plans[$k]['name'] ?? $k] + $v, array_keys($mix), array_values($mix)), 'rows' => $rows,
+              'margin' => $mrr > 0 ? round(($mrr / 100 - $aiTotal) / ($mrr / 100) * 100, 1) : null, 'invoices' => ['owed' => $owed, 'owedN' => $owedN, 'overdue' => $overN, 'asked' => $asked, 'paidMonth' => $paidMonth], 'forecast' => $fc, 'renewals' => array_slice($renew, 0, 12), 'feedback' => $fb, 'backup' => $backup, 'refunded' => $refunded, 'referrals' => ['signed' => $refs, 'paying' => $refPaid], 'mix' => array_map(fn($k, $v) => ['id' => $k, 'name' => $plans[$k]['name'] ?? $k] + $v, array_keys($mix), array_values($mix)), 'rows' => $rows,
               'events' => array_map(fn($e) => $e + ['name' => (string) ($a['colleges'][(string) ($e['c'] ?? '')]['name'] ?? 'An institution that has gone')], array_slice(array_reverse($L), 0, 12))]);
 }
 out(400, ['error' => 'Unknown action.']);

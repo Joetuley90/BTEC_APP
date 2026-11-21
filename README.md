@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v139, 20 Nov 2026: a Business dashboard with monthly recurring revenue, invoices for institutions that pay against a purchase order, a sample lesson and a security page, screenshots on problem reports, adding several people at once, and a What's new note; v135 to v138 were the legal pages; v134 added the first lesson with no setting up, a voice on video lessons, and Classroom and Teams sharing). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v139.zip` and `crafticulum-release.zip`: the same files as one zip (2,636,007 bytes).
+- `crafticulum/`: every file of the current release (v140, 21 Nov 2026: an institution-wide lesson library, feedback on every build, versions of a lesson for learners who need them, offline working, refunds and a forecast in Admin, referrals, subject pages, a status page and a weekly summary for managers; v139 added the Business dashboard and invoices). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v140.zip` and `crafticulum-release.zip`: the same files as one zip (3,331,719 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

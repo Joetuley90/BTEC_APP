@@ -36,6 +36,16 @@ function stripe(string $method, string $path, array $params = []): array {
     return ['ok' => true, 'data' => $j];
 }
 /* what Stripe says about a subscription becomes the institution's plan */
+/* a referral: the first time the new account pays, both sides are owed a month. Whatever is owed is taken off the next card bill as account credit. */
+function billReward(string $college, bool $first): void {
+    $a = ccAccounts(); $c = (array) ($a['colleges'][$college] ?? []); $dirty = false; $from = (string) ($c['ref'] ?? '');
+    if ($first && $from !== '' && empty($c['refDone']) && isset($a['colleges'][$from]) && $from !== $college) { $a['colleges'][$college]['refDone'] = time(); $a['colleges'][$college]['credits'] = (int) ($c['credits'] ?? 0) + 1; $a['colleges'][$from]['credits'] = (int) ($a['colleges'][$from]['credits'] ?? 0) + 1; $a['colleges'][$from]['refEarned'] = (int) ($a['colleges'][$from]['refEarned'] ?? 0) + 1; $dirty = true;
+        ccCollegeMail($a, $from, 'You earned a free month', 'Someone you invited to Crafticulum has started a paid plan, so your next month is on us. It comes off your next bill by itself. If you are on the Free plan it is kept for when you pick a plan.'); }
+    foreach (array_unique(array_filter([$college, $first ? $from : ''])) as $id) { $b = (array) ($a['colleges'][$id]['bill'] ?? []); $n = (int) ($a['colleges'][$id]['credits'] ?? 0); $amt = (int) ($b['mrr'] ?? 0);
+        if ($n <= 0 || empty($b['customer']) || empty($b['sub']) || !in_array((string) ($b['status'] ?? ''), ['active', 'trialing'], true) || $amt <= 0) continue;
+        for ($i = 0; $i < min($n, 12); $i++) { $r = stripe('POST', '/v1/customers/' . rawurlencode((string) $b['customer']) . '/balance_transactions', ['amount' => -$amt, 'currency' => 'gbp', 'description' => 'A free month for inviting a colleague']); if (!$r['ok']) break; $a['colleges'][$id]['credits']--; $a['colleges'][$id]['creditsUsed'] = (int) ($a['colleges'][$id]['creditsUsed'] ?? 0) + 1; $dirty = true; } }
+    if ($dirty) ccSaveAccounts($a);
+}
 function billApply(string $college, array $sub): bool {
     $a = ccAccounts(); if (!isset($a['colleges'][$college])) return false;
     $c = $a['colleges'][$college]; $bill = (array) ($c['bill'] ?? []); $status = (string) ($sub['status'] ?? '');
@@ -51,6 +61,7 @@ function billApply(string $college, array $sub): bool {
     $a['colleges'][$college]['plan'] = $live ? $plan : 'free';
     if (!ccSaveAccounts($a)) return false;
     try { ccMoneySync($a, $college, 'card'); } catch (\Throwable $e) {}
+    try { billReward($college, $live && $old === ''); } catch (\Throwable $e) {}
     if ($live && $old !== '' && $old !== $id) stripe('DELETE', '/v1/subscriptions/' . rawurlencode($old));    // they changed plan: the earlier subscription stops
     /* tell whoever manages the institution, once, when something changes */
     $pl = ccPlans($a); $name = $live ? (string) $pl[$plan]['name'] : ''; $when = $end ? date('j F Y', $end) : ''; $where = "Settings, Plan and billing:\n" . ccAppUrl();

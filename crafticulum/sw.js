@@ -1,11 +1,19 @@
 /* Crafticulum: keeps the app itself on this device so it opens without the internet.
    Lessons, planning and student links still come from your server when you're online. */
-const CACHE = "cc-shell-v74";
+const CACHE = "cc-shell-v75";
 const SHELL = ["app.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
-self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== OFFLINE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+/* Offline: the last answer to "who am I" and "what is in my department" is kept on this device (and wiped when you sign out).
+   With no internet those are given back, so the lessons, planning and slides you had open before are all still there to teach from. Nothing can be saved until you're back online. */
+const OFFLINE = "cc-offline-v1", KEEP = /^(auth\.php\?a=me|store\.php\?a=(all|deptsubjects|directory|tplinfo|library))$/;
+async function keepPost(r){ const body = await r.clone().text(); let h = 0; for(let i = 0; i < body.length; i++) h = (h * 31 + body.charCodeAt(i)) | 0; const key = new Request(r.url + "&_b=" + (h >>> 0));
+  try{ const res = await fetch(r); if(res.ok){ const c = await caches.open(OFFLINE); c.put(key, res.clone()); } return res; }
+  catch(err){ const m = await caches.match(key, {cacheName: OFFLINE}); if(!m) throw err; const hd = new Headers(m.headers); hd.set("X-CC-Offline", "1"); return new Response(await m.blob(), {status: 200, headers: hd}); } }
 self.addEventListener("fetch", e => {
-  const r = e.request; if(r.method !== "GET") return;
+  const r = e.request;
+  if(r.method === "POST"){ const u = new URL(r.url); if(u.origin === location.origin && KEEP.test(u.pathname.split("/").pop() + u.search)) e.respondWith(keepPost(r)); return; }
+  if(r.method !== "GET") return;
   const u = new URL(r.url);
   if(u.origin === location.origin){
     if(/\.php$/.test(u.pathname) || u.pathname.includes("/data/")) return;          // live data always comes from the server
