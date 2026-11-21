@@ -25,7 +25,7 @@ echo "7. No real college named"
 ! grep -rliE 'mid ?kent|maidstone|medway' "$R" --include=*.html --include=*.js --include=*.php --include=*.txt --include=*.json || fail "a real college is named in the release"
 echo "8. The site starts and answers"
 tmp=$(mktemp -d); cp -r "$R"/. "$tmp/"; cp "$tmp/config.example.php" "$tmp/config.php"; mkdir -p "$tmp/data"
-(cd "$tmp" && php -S 127.0.0.1:8123 >/tmp/php.log 2>&1 &) ; sleep 1.5
+php -S 127.0.0.1:8123 -t "$tmp" >/tmp/php.log 2>&1 </dev/null & PHPPID=$!; trap 'kill $PHPPID 2>/dev/null || true' EXIT; sleep 1.5
 for u in "" "app.html" "terms.html" "accessibility.html" "$src"; do c=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:8123/$u"); [ "$c" = 200 ] || fail "/$u answered $c"; done
 h=$(curl -s "http://127.0.0.1:8123/auth.php?a=health"); echo "$h" | php -r 'exit(is_array(json_decode(stream_get_contents(STDIN),true))?0:1);' || fail "the health check didn't answer: $h"
 echo "All checks passed."
