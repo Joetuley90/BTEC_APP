@@ -293,8 +293,20 @@ function ccErr(string $kind, string $msg, array $extra = []): void {
         foreach (['where', 'page', 'role', 'dept', 'browser'] as $k) if (isset($extra[$k]) && $extra[$k] !== '') $row[$k] = $clean($extra[$k], 160);
         if (is_file($f) && filesize($f) > 400000) { $l = @file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []; @file_put_contents($f, implode("\n", array_slice($l, -500)) . "\n", LOCK_EX); }
         @file_put_contents($f, json_encode($row, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+        ccErrAlert((string) $row['kind']);
     } catch (Throwable $e) {}
 }
+/* when the AI, the voice, email or the server keeps failing, the super admin is told by email: three of the same kind inside fifteen minutes, at most once every six hours for each kind */
+function ccErrAlert(string $kind): void {
+    static $busy = false; if ($busy || !in_array($kind, ['claude', 'voice', 'email', 'server', 'payment'], true)) return; $busy = true;
+    try { $now = time(); $n = 0; foreach (ccErrRead(60) as $e) if (($e['kind'] ?? '') === $kind && (int) ($e['at'] ?? 0) > $now - 900) $n++;
+        if ($n < 3) return; $f = ccDataDir() . '/_alerts.json'; $j = json_decode((string) @file_get_contents($f), true); $j = is_array($j) ? $j : [];
+        if ((int) ($j[$kind] ?? 0) > $now - 6 * 3600) return; $j[$kind] = $now; @file_put_contents($f, json_encode($j), LOCK_EX);
+        $what = ['claude' => 'Crafticulum AI is not answering', 'voice' => 'The voice for video lessons is failing', 'email' => 'Email is not sending', 'server' => 'The server is hitting errors', 'payment' => 'Payments are failing'][$kind];
+        $last = ''; foreach (ccErrRead(10) as $e) if (($e['kind'] ?? '') === $kind) { $last = (string) ($e['msg'] ?? ''); break; }
+        $text = "$what: $n times in the last 15 minutes.\n\nThe latest: $last\n\nThe error log is in Admin, To do. The status page: " . ccSiteUrl() . "status\n\nYou'll hear about this again in six hours at the earliest if it carries on.";
+        foreach (ccSupers() as $s) { if ($kind !== 'email' && ccMailReady()) @ccMail((string) $s, "Crafticulum: $what", $text); try { if (function_exists('ccNotify')) ccNotify((string) $s, 'people', "Crafticulum: $what", "$n times in 15 minutes. Open the error log."); } catch (\Throwable $x) {} }
+    } catch (\Throwable $x) {} finally { $busy = false; } }
 function ccErrRead(int $n = 200): array { $f = ccDataDir() . '/_errors.jsonl'; if (!is_file($f)) return [];
     $o = []; foreach (array_slice(@file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [], -$n) as $l) { $j = json_decode($l, true); if (is_array($j)) $o[] = $j; } return array_reverse($o); }
 /* anything PHP itself trips over on any page is written down too */
@@ -560,12 +572,17 @@ function ccMailHtml(string $subject, string $text): string {
         . '</td></tr></table></td></tr></table></body></html>';
 }
 /* the two versions of one email, plain words first, and the header that says so */
-function ccMailParts(string $subject, string $text): array {
+function ccMailParts(string $subject, string $text, array $files = []): array {
     $bd = 'cc' . bin2hex(random_bytes(12)); $plain = str_replace("\n", "\r\n", str_replace(["\r\n", "\r"], "\n", $text));
     $body = "--$bd\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: 8bit\r\n\r\n$plain\r\n\r\n--$bd\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode(ccMailHtml($subject, $text)), 76, "\r\n") . "--$bd--\r\n";
-    return ["Content-Type: multipart/alternative; boundary=\"$bd\"", $body];
+    if (!$files) return ["Content-Type: multipart/alternative; boundary=\"$bd\"", $body];
+    /* with files attached (an invoice as a PDF): the two versions of the words first, then each file */
+    $mx = 'cm' . bin2hex(random_bytes(12)); $out = "--$mx\r\nContent-Type: multipart/alternative; boundary=\"$bd\"\r\n\r\n$body\r\n";
+    foreach ($files as $f) { $name = preg_replace('/[^A-Za-z0-9 ._-]/', '', (string) ($f['name'] ?? 'file')) ?: 'file'; $type = preg_match('#^[a-z]+/[a-z0-9.+-]+$#', (string) ($f['type'] ?? '')) ? (string) $f['type'] : 'application/octet-stream';
+        $out .= "--$mx\r\nContent-Type: $type; name=\"$name\"\r\nContent-Disposition: attachment; filename=\"$name\"\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode((string) ($f['data'] ?? '')), 76, "\r\n"); }
+    return ["Content-Type: multipart/mixed; boundary=\"$mx\"", $out . "--$mx--\r\n"];
 }
-function ccMail(string $to, string $subject, string $text, string $replyTo = ''): bool {
+function ccMail(string $to, string $subject, string $text, string $replyTo = '', array $files = []): bool {
     $rt = $replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n<>]/', $replyTo) ? "Reply-To: <$replyTo>\r\n" : '';
     $GLOBALS['ccMailErr'] = '';
     try { ccPushForMail($to, $subject, $text); } catch (\Throwable $x) {}
@@ -575,7 +592,7 @@ function ccMail(string $to, string $subject, string $text, string $replyTo = '')
     $from = ccConf('MAIL_FROM') ? (string) ccConf('MAIL_FROM') : (string) ccConf('SMTP_USER');
     if (!filter_var($from, FILTER_VALIDATE_EMAIL)) return $fail('The Send from address isn\'t an email address. Use the mailbox\'s own address.');
     $subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    [$ctype, $body] = ccMailParts($subject, $text);
+    [$ctype, $body] = ccMailParts($subject, $text, $files);
     if (!ccConf('SMTP_HOST')) return @mail($to, $subj, $body, "From: Crafticulum <$from>\r\n{$rt}MIME-Version: 1.0\r\n$ctype") ?: $fail('The web host\'s own mail() refused it. Add a mail server instead.');
     $host = trim((string) ccConf('SMTP_HOST')); $port = (int) ccConf('SMTP_PORT') ?: 587; $secure = strtolower(trim((string) ccConf('SMTP_SECURE')));
     // the port decides the security when they disagree: 465 is always SSL from the first byte, 587 and 25 start plain and upgrade
@@ -667,6 +684,10 @@ function ccInvSet(?array $a = null): array { $s = (array) ((($a ?? ccAccounts())
 function ccInvUrl(array $inv): string { return ccSiteUrl() . 'money.php?a=view&i=' . rawurlencode((string) ($inv['token'] ?? '')); }
 function ccPounds(int $pence): string { return '£' . number_format($pence / 100, 2); }
 /* ---------- things that happen by themselves, at most once an hour, when someone opens the app ---------- */
+/* how many lessons a department has saved (each saved thing is one file, and a lesson's starts with its path, lessons/...) */
+function ccDeptLessons(array $a, string $dept, int $stop = 0): int { $dir = !empty($a['depts'][$dept]['legacy']) ? ccDataDir() : ccDataDir() . '/d/' . $dept; $n = 0;
+    foreach (glob($dir . '/*.json') ?: [] as $f) { if (($b = basename($f)) !== '' && $b[0] === '_') continue; $h = @fopen($f, 'rb'); if (!$h) continue; $head = (string) fread($h, 40); fclose($h); if (strpos($head, '{"path":"lessons/') === 0) { $n++; if ($stop && $n >= $stop) break; } }
+    return $n; }
 function ccTick(): void {
     $f = ccDataDir() . '/_tick'; if (is_file($f) && time() - (int) @filemtime($f) < 3600) return; @touch($f);
     $a = ccAccounts(); $dirty = false; $now = time(); $mail = ccMailReady();
@@ -678,9 +699,9 @@ function ccTick(): void {
         if ($end + CC_INV_GRACE < $now) { $a['colleges'][$id]['bill']['status'] = 'ended'; $a['colleges'][$id]['bill']['at'] = $now; $a['colleges'][$id]['plan'] = 'free'; $dirty = true;
             ccCollegeMail($a, $id, 'Your plan has ended', "The term your institution paid for ended on $when, so the account is now on the Free plan. Lessons, planning and people are all still there.\n\nTo pick a plan again, go to Settings, Plan and billing."); } }
     /* a nudge for someone who signed up on their own a few days ago and has made fewer than two lessons */
-    if ($mail) { $sent = 0; foreach ($a['users'] as $e => $u) { if ($sent >= 15) break; if (!empty($u['nudged']) || !empty($u['demo']) || !ccActive($u) || ($u['role'] ?? '') !== 'owner' || empty($u['verified'])) continue; $at = (int) ($u['added'] ?? 0); if ($at <= 0 || $now - $at < 3 * 86400 || $now - $at > 14 * 86400) continue;
+    if ($mail) { $sent = 0; foreach ($a['users'] as $e => $u) { if ($sent >= 15) break; if (!empty($u['nudged']) || !empty($u['tipsOff']) || !empty($u['demo']) || !ccActive($u) || ($u['role'] ?? '') !== 'owner' || empty($u['verified'])) continue; $at = (int) ($u['added'] ?? 0); if ($at <= 0 || $now - $at < 3 * 86400 || $now - $at > 14 * 86400) continue;
             $d = (string) ($u['dept'] ?? ''); $cid = $d !== '' && isset($a['depts'][$d]) ? ccCollegeOf($a, $d) : ''; if ($cid === '' || empty($a['colleges'][$cid]['self']) || in_array((string) $e, ccSupers(), true)) continue;
-            $a['users'][$e]['nudged'] = $now; $dirty = true; if (count(glob(ccDataDir() . '/d/' . $d . '/lessons/*.json') ?: []) >= 2) continue;
+            $a['users'][$e]['nudged'] = $now; $dirty = true; if (ccDeptLessons($a, $d, 2) >= 2) continue;
             $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]);
             if (ccMail((string) $e, 'Your next lesson takes about a minute', 'Hello' . ($hi !== '' ? " $hi" : '') . ",\n\nYou set up Crafticulum a few days ago. If you haven't had the chance to try it properly yet, here's the quickest way in:\n\n1. Open Crafticulum: " . ccAppUrl() . "\n2. Type the subject, the level and one sentence about tomorrow's lesson.\n3. Press Build. You get the timed plan, the teaching content, tasks, an exit quiz and the slides.\n\nEverything can be edited, and nothing is shared with anyone until you choose to.\n\nIf something got in the way, reply to this email and tell us. A real person reads it.\n\nCrafticulum")) $sent++; } }
     /* Monday morning: a short summary for each institution's managers of the week just gone */
@@ -696,6 +717,34 @@ function ccTick(): void {
                 . ($quiet ? "\nNot been in for two weeks or more: " . implode(', ', array_slice($quiet, 0, 12)) . (count($quiet) > 12 ? ' and ' . (count($quiet) - 12) . ' more' : '') . ". A quick word, or ten minutes at a team meeting, usually does it.\n" : "\nEveryone has been in during the last two weeks.\n")
                 . "\nOpen the manager's view: " . ccAppUrl() . "\n\nYou get this each Monday because you manage $name on Crafticulum. To stop it, switch off Weekly summary in Settings, Institution.";
             foreach ($mgrs as $m) ccMail($m, "Your week on Crafticulum: $built lesson" . ($built === 1 ? '' : 's') . ", $active of " . count($people) . ' active', $text); $done++; } }
+    /* an invoice that hasn't been paid: a polite reminder, with the PDF, 7 and 14 days after it was due */
+    if ($mail) { try { require_once __DIR__ . '/invoice-lib.php'; $set = ccInvSet($a); $contact = (string) (ccSite()['contact'] ?? '');
+        foreach (ccInvRead() as $iid => $inv) { if (!is_array($inv) || ($inv['status'] ?? '') !== 'sent' || empty($inv['due'])) continue; $late = (int) floor(($now - (int) $inv['due']) / 86400);
+            $step = $late >= 14 && empty($inv['rem14']) ? 14 : ($late >= 7 && empty($inv['rem7']) && $late < 14 ? 7 : 0); if (!$step) continue;
+            $to = (string) ($inv['to']['email'] ?? ''); if (!filter_var($to, FILTER_VALIDATE_EMAIL)) continue;
+            $t = ccInvTotals($inv); $num = (string) $inv['number']; $was = date('j F Y', (int) $inv['due']);
+            $text = "Hello,\n\n" . ($step === 7 ? "A quick reminder that invoice $num for " . ccPounds($t['total']) . " was due on $was and we haven't received payment yet. If it's already on its way, thank you, and please ignore this." : "Invoice $num for " . ccPounds($t['total']) . " was due on $was, two weeks ago, and is still unpaid. Could you let us know when it will be paid, or if there's a problem with it?")
+                . "\n\nThe invoice is attached. You can also open it here:\n" . ccInvUrl($inv) . "\n\nPlease quote $num with your payment.\n\nThank you,\nCrafticulum";
+            $ok = ccMail($to, ($step === 7 ? 'Reminder' : 'Second reminder') . ": invoice $num", $text, (string) ($set['email'] ?? ''), [['name' => ccInvPdfName($inv), 'type' => 'application/pdf', 'data' => ccInvPdf($inv, $set, $contact)]]);
+            ccInvChange(function ($j) use ($iid, $step, $now, $ok) { if (isset($j[$iid])) { $j[$iid]['rem' . $step] = $now; $j[$iid]['remOk' . $step] = $ok; } return $j; });
+            foreach (ccSupers() as $su) try { ccNotify((string) $su, 'people', "Invoice $num is $late days overdue", $ok ? "A reminder has gone to $to." : "The reminder to $to didn't send. Check email in Site setup."); } catch (\Throwable $x) {} }
+    } catch (\Throwable $e) { ccErr('server', 'Invoice reminders: ' . $e->getMessage()); } }
+    /* tips for someone trying it on their own: day 1 if they haven't built a lesson, day 7 how to plan a unit, and once a month when the free builds are nearly used.
+       Each email says how to stop them, and they stop as soon as the institution pays. */
+    if ($mail) { $sent = 0; $usage = ccUsageRead(); $plansAll = ccPlans($a);
+        foreach ($a['users'] as $e => $u) { if ($sent >= 20) break; if (!empty($u['tipsOff']) || !empty($u['demo']) || !ccActive($u) || ($u['role'] ?? '') !== 'owner' || empty($u['verified']) || in_array((string) $e, ccSupers(), true)) continue;
+            $d = (string) ($u['dept'] ?? ''); $cid = $d !== '' && isset($a['depts'][$d]) ? ccCollegeOf($a, $d) : ''; if ($cid === '' || empty($a['colleges'][$cid]['self'])) continue;
+            $pl = ccPlanOf($a, $cid); if (($pl['id'] ?? '') !== 'free') continue;
+            $age = $now - (int) ($u['added'] ?? 0); $tips = (array) ($u['tips'] ?? []); $lessons = ccDeptLessons($a, $d, 1); $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]); $hello = 'Hello' . ($hi !== '' ? " $hi" : '') . ",\n\n";
+            $off = "\n\nYou're getting tips because you started Crafticulum on your own. To stop them: " . ccSiteUrl() . 'auth.php?a=tipsoff&e=' . rawurlencode((string) $e) . '&t=' . substr(hash_hmac('sha256', 'tips|' . strtolower((string) $e), ccSiteId()), 0, 24);
+            $send = null;
+            if (empty($tips['d1']) && $age >= 86400 && $age < 5 * 86400) { $tips['d1'] = $now; if ($lessons === 0) $send = ['Your first lesson takes about two minutes', $hello . "You've set up Crafticulum but haven't built a lesson yet. Here's the quickest way in:\n\n1. Open Crafticulum: " . ccAppUrl() . "\n2. Type what you're teaching in one sentence, for example \"Using match data to spot what's costing a team games\".\n3. Press Build. The plan, starter, teaching, tasks, quiz and slides come back together, and you can change any of it.\n\nCrafticulum"]; }
+            elseif (empty($tips['d7']) && $age >= 7 * 86400 && $age < 14 * 86400) { $tips['d7'] = $now; $send = ['Plan a whole unit in one go', $hello . "Once you've tried a lesson, the biggest time saver is Planning. Pick a unit, and Crafticulum lays it out week by week against its criteria, with the assignment dates. Then build every lesson in the unit with one press.\n\nOpen Planning: " . ccAppUrl() . "\n\nCrafticulum"]; }
+            else { $ym = date('Y-m'); $used = ccPlanUsed($cid, $usage)['builds']; $max = (int) ($pl['builds'] ?? 0);
+                if ($max > 0 && $used >= (int) ceil($max * 0.8) && ($tips['lim'] ?? '') !== $ym) { $tips['lim'] = $ym; $nxt = ''; foreach ($plansAll as $k => $p2) if ($k !== 'free' && (int) ($p2['price'] ?? 0) > 0) { $nxt = (string) $p2['name']; break; }
+                    $send = ["You've used $used of your $max free builds this month", $hello . "You've used $used of the $max builds that come free each month. They start again on the 1st.\n\n" . ($nxt !== '' ? "If you need more before then, the $nxt plan has plenty, and paying for 12 months gets you 2 of them free. " : '') . "See the plans in Settings, Plan and billing: " . ccAppUrl() . "\n\nCrafticulum"]; } }
+            if ($tips !== (array) ($u['tips'] ?? [])) { $a['users'][$e]['tips'] = $tips; $dirty = true; }
+            if ($send) { if (ccMail((string) $e, $send[0], $send[1] . $off)) $sent++; } } }
     /* once a month: open the newest backup and read every file in it, so a backup that can't be restored is found now and not on the day it's needed */
     try { ccBackupCheck(); } catch (\Throwable $e) {}
     if ($dirty) { ccSaveAccounts($a); ccMoneySync($a); }

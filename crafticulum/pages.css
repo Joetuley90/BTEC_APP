@@ -235,3 +235,23 @@ footer p.subjects a{color:inherit}
 .plan-year button span{display:inline-block;margin-left:6px;font-size:.74rem;font-weight:800;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#166534}.plan-year button.on span{background:rgba(255,255,255,.25);color:#fff}
 .plan-save{margin:0 0 6px;font-size:.9rem;color:#166534;background:#dcfce7;border-radius:8px;padding:6px 10px}.plan-save-q{background:none;padding:0;color:var(--mut)}
 @media (max-width:480px){.plan-year{display:flex}.plan-year button{flex:1;padding:9px 8px}.plan-year button span{display:block;margin:3px 0 0}}
+
+/* accessibility: targets at least 24 pixels, buttons that read on light pages too */
+footer nav a{display:inline-flex;align-items:center;min-height:28px}
+.subj-cta .btn-g{color:#4338ca;border-color:currentColor}
+.subj-cta .btn-g:hover{background:rgba(79,70,229,.08)}
+input[type=radio],input[type=checkbox]{width:18px;height:18px}
+/* who made it */
+.made-by{margin:14px 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.86rem;color:var(--mut)}
+.made-by a{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;min-height:44px;border-radius:12px}
+.made-by a:hover span,.made-by a:focus-visible span{text-decoration:underline}.made-by img{height:24px;width:auto;display:block}.made-by picture{display:block}
+
+/* dark mode: the sample and subject pages kept light boxes with light text */
+@media (prefers-color-scheme:dark){
+.sample .sm-card,.sample .sm-q,.sample .sm-o{background:var(--card)}
+.sample .sm-terms span,.demo .outs span{background:#232a44;color:var(--ink)}
+.sample .sm-cta,.subj .subj-ideas li{background:var(--soft)}
+.sm-kicker,.sample .sm-kicker,.subj .sm-kicker,.sample .sm-tag{color:#a5b4fc}
+.sample .sm-ask{background:var(--soft)}
+.subj-cta .btn-g{color:#c7d2fe}
+}

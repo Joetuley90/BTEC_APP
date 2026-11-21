@@ -34,7 +34,7 @@ $aboutAtRoot = true;                    // the page about Crafticulum is the sit
 /* this file is only reached through the clean addresses, so getting here proves they work: emails can then use /app */
 if ($ready && strpos((string) ($_SERVER['REQUEST_URI'] ?? ''), 'page.php') === false && !is_file($dir . '/data/_pretty')) { @mkdir($dir . '/data', 0700, true); @file_put_contents($dir . '/data/_pretty', '1'); }
 $base = baseUrl();
-$PAGES = ['about' => 'index.html', 'contact' => 'contact.html', 'terms' => 'terms.html', 'privacy' => 'privacy.html', 'cookies' => 'cookies.html', 'dpa' => 'dpa.html', 'sample' => 'sample.html', 'security' => 'security.html', 'btec-it-lesson-plans' => 'btec-it-lesson-plans.html', 'btec-esports-lesson-plans' => 'btec-esports-lesson-plans.html', 't-level-digital-lesson-plans' => 't-level-digital-lesson-plans.html', 'gcse-computer-science-lesson-plans' => 'gcse-computer-science-lesson-plans.html', 'functional-skills-lesson-plans' => 'functional-skills-lesson-plans.html'];
+$PAGES = ['about' => 'index.html', 'contact' => 'contact.html', 'terms' => 'terms.html', 'privacy' => 'privacy.html', 'cookies' => 'cookies.html', 'dpa' => 'dpa.html', 'sample' => 'sample.html', 'security' => 'security.html', 'btec-it-lesson-plans' => 'btec-it-lesson-plans.html', 'btec-esports-lesson-plans' => 'btec-esports-lesson-plans.html', 't-level-digital-lesson-plans' => 't-level-digital-lesson-plans.html', 'gcse-computer-science-lesson-plans' => 'gcse-computer-science-lesson-plans.html', 'functional-skills-lesson-plans' => 'functional-skills-lesson-plans.html', 'btec-business-lesson-plans' => 'btec-business-lesson-plans.html', 'btec-health-and-social-care-lesson-plans' => 'btec-health-and-social-care-lesson-plans.html', 'btec-sport-lesson-plans' => 'btec-sport-lesson-plans.html', 'a-level-computer-science-lesson-plans' => 'a-level-computer-science-lesson-plans.html', 'accessibility' => 'accessibility.html'];
 $urlOf = fn(string $k) => $k === 'about' && $aboutAtRoot ? $base : $base . $k;
 
 /* ---------- robots.txt and sitemap.xml ---------- */
@@ -110,7 +110,7 @@ $head = "\n" . '<link rel="canonical" href="' . h($url) . '">' . "\n"
     . '<link rel="sitemap" type="application/xml" href="' . h($base . 'sitemap.xml') . '">' . "\n"
     . '<script type="application/ld+json">' . $ld . '</script>' . "\n";
 /* links between the pages use the clean addresses */
-$html = preg_replace_callback('#href="(terms|privacy|cookies|dpa|sample|security|btec-it-lesson-plans|btec-esports-lesson-plans|t-level-digital-lesson-plans|gcse-computer-science-lesson-plans|functional-skills-lesson-plans|contact|app)\.html([?\#][^"]*)?"#', fn($m) => 'href="' . $m[1] . ($m[2] ?? '') . '"', $html);
+$html = preg_replace_callback('#href="(terms|privacy|cookies|dpa|sample|security|btec-it-lesson-plans|btec-esports-lesson-plans|t-level-digital-lesson-plans|gcse-computer-science-lesson-plans|functional-skills-lesson-plans|btec-business-lesson-plans|btec-health-and-social-care-lesson-plans|btec-sport-lesson-plans|a-level-computer-science-lesson-plans|accessibility|contact|app)\.html([?\#][^"]*)?"#', fn($m) => 'href="' . $m[1] . ($m[2] ?? '') . '"', $html);
 $html = str_replace('location.replace("app.html"+q+h)', 'location.replace("app"+q+h)', $html);
 $html = preg_replace('#</head>#i', $head . '</head>', $html, 1);
 header('Content-Type: text/html; charset=utf-8'); header('Cache-Control: no-cache');

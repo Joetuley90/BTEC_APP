@@ -2449,4 +2449,45 @@ VERSION 1.49: INVOICE NUMBERS
   shows on the email, the invoice page and the PDF saved from it.
 - Invoices already sent keep their numbers.
 
+VERSION 1.50: PDFS, REMINDERS, THE FUNNEL, TIPS, YOUR DATA, ALERTS, ACCESSIBILITY
+- Invoices: the email now has the invoice attached as a PDF, made on the
+  server with nothing to install. The invoice page has Download the PDF,
+  and Admin, Money, Invoices has a PDF button on each one.
+- Overdue invoices: a polite reminder with the PDF goes 7 days after the
+  pay-by date, and a second at 14 days. Each goes once. You get a
+  notification, and the invoice list shows when they were reminded.
+- Business dashboard: "From looking to paying, last 30 days". Visitors to
+  the public pages, accounts started, those that built a lesson, and those
+  paying. Visitors are counted once a day each, with no cookies, and only
+  the daily total is kept. Robots aren't counted.
+- Tips for people who start on their own (Free plan only): day 1 if they
+  haven't built a lesson, day 7 about Planning, and once a month when
+  they've used 80% of their free builds. Every tip has a one-click link to
+  stop them, and they stop when the institution pays.
+- Settings, Data and backups, for managers: "Your institution's data".
+  Download everything as one zip (people, every department's work, what
+  each person keeps, invoices), or ask for it all to be deleted. A request
+  needs the institution's name typed, emails you, and shows in Admin, To
+  do with how many days are left of the month you have to do it.
+- Alerts: if the AI, the voice, email, payments or the server fail three
+  times in fifteen minutes, you're emailed and notified (at most every six
+  hours for each). Admin, System has a new Uptime monitor section with an
+  address (auth.php?a=health) to give a free service like UptimeRobot, so
+  you're texted if the whole site goes down.
+- The scheduled job (auth.php?a=pushcron) now runs the hourly jobs too, so
+  reminders and tips go out even on a quiet day.
+- Accessibility: colours that failed contrast (green and orange buttons,
+  criteria codes, buttons and badges in dark mode, the sample and subject
+  pages in dark mode) are fixed, small targets are bigger, and the heading
+  order in Planning is right. There's a new Accessibility statement page,
+  linked from every footer.
+- Four new subject pages: BTEC Business, BTEC Health and Social Care,
+  BTEC Sport and A Level Computer Science, in the sitemap and footers.
+- Settings: when part of the page finished loading, the whole page
+  redrew and closed any box you had opened. Open boxes now stay open.
+- Every public page's footer says "Created by" with the Next Level Labs
+  logo, linking to visualize.agency. The logo is the one-line version from
+  the Next Level Labs pack: assets/nll-logo.svg on light pages and
+  assets/nll-logo-white.svg in dark mode.
+
 NO CHANGES TO config.php
