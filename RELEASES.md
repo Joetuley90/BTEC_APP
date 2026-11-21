@@ -3,6 +3,36 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.49 · 21 November 2026
+
+**Invoice numbers end with a random code**
+
+- When an invoice is sent, its number ends with a random six-character code instead of a count. For example `CR-2026-7KQ4XM` rather than `CR-2026-0003`, so nobody can tell from their invoice how many have gone out before it.
+- The prefix and year work as before (Admin, Money, invoice settings). Letters and digits that look alike (0/O, 1/I/L) are left out.
+- Each number is checked against every earlier one, so it's never used twice.
+- The same number is on the email, the invoice page and the PDF saved from it.
+- Invoices already sent keep their numbers.
+
+**After updating:** nothing to do.
+
+**Tested:** pwmoney 14 (an invoice is sent and gets a number in the new format), pw107 45, pwpolish 10.
+
+### What was pushed
+
+- Commit `0081cca` on `main` (6 changed).
+- Zip: `crafticulum-v1.49.zip`, 3,667,922 bytes, no `config.php` inside.
+- Build number: 149 (shown to people as 1.49).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| R099 | `crafticulum-v1.49.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/money.php` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.48 · 21 November 2026
 
 **No college's own forms, 12 month pricing on the front page, versions with a point**
