@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v144, 21 Nov 2026: on a phone the board has one row of controls, Settings has a section menu, lessons can be swiped and planning buttons are colour coded; reporters can be emailed when a fix is in; an invitation link asks before saving its cookie; v143 added the fix pack). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v144.zip` and `crafticulum-release.zip`: the same files as one zip (3,730,917 bytes).
+- `crafticulum/`: every file of the current release (v145, 21 Nov 2026: video lessons speak with the Google voice in the player too, and staff can pick the voice by type and accent; v144 reworked the phone board, Settings menu and planning buttons). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v145.zip` and `crafticulum-release.zip`: the same files as one zip (3,734,546 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

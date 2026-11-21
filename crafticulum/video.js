@@ -75,6 +75,7 @@
   function pickVoice(list, want){ if(want){ const v = list.find(x => x.voiceURI === want); if(v) return v; } return list.find(v => /en-GB/i.test(v.lang) && /female|serena|kate|libby|sonia|google uk english female/i.test(v.name)) || list.find(v => /en-GB/i.test(v.lang)) || list[0] || null; }
   function store(k, v){ try{ if(v === undefined) return localStorage.getItem("cc_vd_" + k); localStorage.setItem("cc_vd_" + k, v); }catch{ return null; } }
   function open(L, opts){ if(cur) cur.close(); opts = opts || {}; if(!document.getElementById("vdCss")){ const st = document.createElement("style"); st.id = "vdCss"; st.textContent = CSS; document.head.appendChild(st); }
+    const ccv = !opts.silent && window.ccVoice && typeof window.ccVoice.say === "function" ? window.ccVoice : null; let ccvOn = false, ccvList = []; const aud = ccv ? new Audio() : null; if(aud){ aud.preload = "auto"; aud.setAttribute("playsinline", ""); }
     const S = slides(L, opts), script = opts.script || {}, hasTTS = typeof speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined" && !opts.silent;
     const st = {i: 0, playing: false, line: 0, lines: [], shown: false, thinking: false, timer: 0, gen: 0, rate: +(store("rate") || 1) || 1, cap: store("cap") !== "0", stops: store("stops") !== "0", voice: store("voice") || "", waiting: false, from: document.activeElement};
     const root = document.createElement("div"); root.className = "vd" + (st.cap ? "" : " nocap"); root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Video lesson: " + (T(L.title) || "lesson"));
@@ -84,16 +85,19 @@
       <div class="vd-bar" id="vdBar" role="group" aria-label="Slides">${S.map((s, i) => `<button type="button" class="vd-seg" data-vd="go" data-i="${i}" aria-label="Go to slide ${i + 1}: ${E(s.kind === "quiz" ? "question " + s.n : s.title || s.kind)}"></button>`).join("")}</div>
       <div class="vd-ctl"><button type="button" class="vd-b" data-vd="prev" aria-label="Previous slide">${I.prev}</button><button type="button" class="vd-b vd-play" data-vd="play" id="vdPlay">${I.play}<span>Play</span></button><button type="button" class="vd-b" data-vd="next" aria-label="Next slide">${I.next}</button>
         <select class="vd-sel" id="vdRate" aria-label="Speed">${[0.8, 0.9, 1, 1.15, 1.3].map(r => `<option value="${r}" ${r === st.rate ? "selected" : ""}>${r === 1 ? "Normal speed" : r + "x"}</option>`).join("")}</select>
-        ${hasTTS ? `<select class="vd-sel" id="vdVoice" aria-label="Voice"></select>` : ""}
+        ${hasTTS || ccv ? `<select class="vd-sel" id="vdVoice" aria-label="Voice"></select>` : ""}
         <button type="button" class="vd-b" data-vd="cap" aria-pressed="${st.cap}" aria-label="Captions">${I.cc}<span>Captions</span></button>
         <button type="button" class="vd-b" data-vd="stops" aria-pressed="${st.stops}" aria-label="Pause at tasks"><span>Pause at tasks</span></button></div>
       <p class="vd-note" id="vdNote">${opts.note || ""}</p>`;
     document.body.appendChild(root); document.documentElement.style.overflow = "hidden";
     const $ = s => root.querySelector(s);
-    const fillVoices = () => { const sel = $("#vdVoice"); if(!sel) return; const vs = voices(); if(!vs.length){ sel.hidden = true; return; } sel.hidden = false; const v = pickVoice(vs, st.voice); sel.innerHTML = vs.map(x => `<option value="${E(x.voiceURI)}" ${v && x.voiceURI === v.voiceURI ? "selected" : ""}>${E(x.name.replace(/^(Microsoft|Google)\s+/, "").replace(/\s*-\s*English.*$/, ""))}</option>`).join(""); };
+    const useCc = () => ccvOn && (!st.voice || /^cc(:|$)/.test(st.voice)), ccvPick = () => /^cc:/.test(st.voice) && ccvList.some(x => x.id === st.voice.slice(3)) ? st.voice.slice(3) : "";
+    const fillVoices = () => { const sel = $("#vdVoice"); if(!sel) return; const vs = hasTTS ? voices() : []; if(!vs.length && !ccvOn){ sel.hidden = true; return; } sel.hidden = false; const v = useCc() ? null : pickVoice(vs, st.voice); const SEX = {F: "female", M: "male"}, groups = []; ccvList.forEach(x => { const k = x.model + " · " + x.accent; let g = groups.find(y => y[0] === k); if(!g) groups.push(g = [k, []]); g[1].push(x); });
+      sel.innerHTML = (ccvOn ? `<optgroup label="${E(ccv.name || "Crafticulum voice")}"><option value="cc" ${useCc() && !ccvPick() ? "selected" : ""}>${E(ccv.name || "Crafticulum voice")} (the site's choice)</option></optgroup>` + groups.map(([k, l]) => `<optgroup label="${E(k)}">${l.map(x => `<option value="cc:${E(x.id)}" ${useCc() && ccvPick() === x.id ? "selected" : ""}>${E(x.name)}, ${SEX[x.sex] || ""}</option>`).join("")}</optgroup>`).join("") : "") + (vs.length && ccvOn ? `<optgroup label="This device's voices">` : "") + vs.map(x => `<option value="${E(x.voiceURI)}" ${v && x.voiceURI === v.voiceURI ? "selected" : ""}>${E(x.name.replace(/^(Microsoft|Google)\s+/, "").replace(/\s*-\s*English.*$/, ""))}</option>`).join("") + (vs.length && ccvOn ? `</optgroup>` : ""); };
     if(hasTTS){ fillVoices(); try{ speechSynthesis.addEventListener("voiceschanged", fillVoices); }catch{} }
+    if(ccv) Promise.resolve(ccv.ready ? ccv.ready() : true).then(ok => { if(!ok || !root.isConnected) return; ccvOn = true; fillVoices(); return ccv.list ? ccv.list().then(l => { ccvList = l || []; if(root.isConnected) fillVoices(); }) : null; }).catch(() => {});
     const textFor = s => T(script[s.id]) || say(s, s.id === "intro");
-    const stopVoice = () => { st.gen++; clearTimeout(st.timer); if(hasTTS) try{ speechSynthesis.cancel(); }catch{} root.classList.remove("talking"); };
+    const stopVoice = () => { st.gen++; clearTimeout(st.timer); if(hasTTS) try{ speechSynthesis.cancel(); }catch{} if(aud) try{ aud.onended = aud.onerror = null; aud.pause(); }catch{} root.classList.remove("talking"); };
     const caption = t => { $("#vdCap").innerHTML = t ? `<span>${E(t)}</span>` : ""; };
     const progress = () => { const s = S[st.i]; root.querySelectorAll(".vd-seg").forEach((b, j) => { b.classList.toggle("done", j < st.i); b.classList.toggle("on", j === st.i); if(j === st.i){ b.style.setProperty("--p", st.lines.length ? Math.round(st.line / st.lines.length * 100) + "%" : "0%"); b.setAttribute("aria-current", "step"); } else b.removeAttribute("aria-current"); }); $("#vdPos").textContent = `Slide ${st.i + 1} of ${S.length}`; };
     const drawSlide = () => { $("#vdSlide").innerHTML = slideHtml(S[st.i], st); progress(); };
@@ -101,6 +105,11 @@
     const pauseBox = html => { $("#vdPauseBox").innerHTML = html ? `<div class="vd-pause" role="status">${html}</div>` : ""; };
     /* one sentence at a time, so captions keep up and pausing is instant. If the device won't speak, captions are timed instead */
     function speak(text, done){ const g = st.gen; caption(text); if(!st.playing) return;
+      const timed = () => { root.classList.add("talking"); st.timer = setTimeout(() => { if(g !== st.gen) return; root.classList.remove("talking"); done(); }, ccVideo.fast ? 25 : Math.max(1200, text.split(/\s+/).length / (2.6 * st.rate) * 1000)); };
+      if(useCc()){ const next = st.lines[st.line + 1]; ccv.say(text, ccvPick()).then(url => { if(g !== st.gen || !st.playing) return; aud.onended = () => { if(g !== st.gen) return; root.classList.remove("talking"); done(); }; aud.onerror = () => { if(g === st.gen) timed(); };
+          aud.src = url; aud.playbackRate = st.rate; const p = aud.play(); root.classList.add("talking"); if(p && p.catch) p.catch(() => { if(g === st.gen) timed(); }); if(next) ccv.say(next, ccvPick()).catch(() => {}); }).catch(() => { if(g === st.gen) device(text, done); }); return; }
+      device(text, done); }
+    function device(text, done){ const g = st.gen;
       const timed = () => { root.classList.add("talking"); st.timer = setTimeout(() => { if(g !== st.gen) return; root.classList.remove("talking"); done(); }, ccVideo.fast ? 25 : Math.max(1200, text.split(/\s+/).length / (2.6 * st.rate) * 1000)); };
       if(!hasTTS || !voices().length) return timed();
       let started = false; const u = new SpeechSynthesisUtterance(text), v = pickVoice(voices(), st.voice); if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-GB"; u.rate = st.rate; u.pitch = 1.02;
@@ -117,6 +126,7 @@
     function advance(){ if(st.i >= S.length - 1){ st.playing = false; playBtn(); caption(""); pauseBox(""); return; } go(st.i + 1, true); }
     function go(i, keep){ stopVoice(); st.i = Math.max(0, Math.min(S.length - 1, i)); st.shown = false; st.thinking = false; st.waiting = false; st.lines = sentences(textFor(S[st.i])); st.line = 0; pauseBox(""); drawSlide(); caption(""); if(keep && st.playing) runLines(slideDone); else { st.playing = false; playBtn(); } }
     function play(){ if(st.playing){ st.playing = false; stopVoice(); playBtn(); return; }
+      if(aud && !aud.dataset.ok){ aud.dataset.ok = "1"; try{ aud.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="; const p = aud.play(); if(p && p.catch) p.catch(() => {}); }catch{} }
       if(st.waiting){ st.waiting = false; pauseBox(""); st.playing = true; playBtn(); return advance(); }
       if(st.i === S.length - 1 && st.lines.length && st.line >= st.lines.length){ st.playing = true; go(0, true); playBtn(); return; }
       st.playing = true; playBtn(); if(S[st.i].kind === "quiz" && st.shown && st.line >= st.lines.length) return advance(); runLines(slideDone); }

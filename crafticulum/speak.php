@@ -16,7 +16,9 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 function out(int $code, array $data): void { http_response_code($code); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
-const TTS_VOICES = ['en-GB-Chirp3-HD-Charon' => 'Charon (British, male)', 'en-GB-Chirp3-HD-Kore' => 'Kore (British, female)', 'en-GB-Chirp3-HD-Puck' => 'Puck (British, male, brighter)', 'en-GB-Chirp3-HD-Aoede' => 'Aoede (British, female, warmer)'];
+const TTS_CAT = [['en-GB-Chirp3-HD-Aoede', 'Aoede', 'Chirp 3 HD', 'British', 'F'], ['en-GB-Chirp3-HD-Kore', 'Kore', 'Chirp 3 HD', 'British', 'F'], ['en-GB-Chirp3-HD-Leda', 'Leda', 'Chirp 3 HD', 'British', 'F'], ['en-GB-Chirp3-HD-Zephyr', 'Zephyr', 'Chirp 3 HD', 'British', 'F'], ['en-GB-Chirp3-HD-Charon', 'Charon', 'Chirp 3 HD', 'British', 'M'], ['en-GB-Chirp3-HD-Fenrir', 'Fenrir', 'Chirp 3 HD', 'British', 'M'], ['en-GB-Chirp3-HD-Orus', 'Orus', 'Chirp 3 HD', 'British', 'M'], ['en-GB-Chirp3-HD-Puck', 'Puck', 'Chirp 3 HD', 'British', 'M'], ['en-US-Chirp3-HD-Kore', 'Kore', 'Chirp 3 HD', 'American', 'F'], ['en-US-Chirp3-HD-Charon', 'Charon', 'Chirp 3 HD', 'American', 'M'], ['en-AU-Chirp3-HD-Aoede', 'Aoede', 'Chirp 3 HD', 'Australian', 'F'], ['en-AU-Chirp3-HD-Charon', 'Charon', 'Chirp 3 HD', 'Australian', 'M'], ['en-GB-Studio-B', 'Studio B', 'Studio', 'British', 'M'], ['en-GB-Studio-C', 'Studio C', 'Studio', 'British', 'F'], ['en-GB-Neural2-A', 'Neural2 A', 'Neural2', 'British', 'F'], ['en-GB-Neural2-B', 'Neural2 B', 'Neural2', 'British', 'M'], ['en-GB-Neural2-C', 'Neural2 C', 'Neural2', 'British', 'F'], ['en-GB-Neural2-D', 'Neural2 D', 'Neural2', 'British', 'M'], ['en-GB-Neural2-F', 'Neural2 F', 'Neural2', 'British', 'F'], ['en-GB-Wavenet-A', 'WaveNet A', 'WaveNet', 'British', 'F'], ['en-GB-Wavenet-B', 'WaveNet B', 'WaveNet', 'British', 'M'], ['en-GB-Wavenet-C', 'WaveNet C', 'WaveNet', 'British', 'F'], ['en-GB-Wavenet-D', 'WaveNet D', 'WaveNet', 'British', 'M'], ['en-GB-Wavenet-F', 'WaveNet F', 'WaveNet', 'British', 'F'], ['en-GB-Standard-A', 'Standard A', 'Standard', 'British', 'F'], ['en-GB-Standard-B', 'Standard B', 'Standard', 'British', 'M'], ['en-GB-Standard-C', 'Standard C', 'Standard', 'British', 'F'], ['en-GB-Standard-D', 'Standard D', 'Standard', 'British', 'M'], ['en-GB-Standard-F', 'Standard F', 'Standard', 'British', 'F']];
+function ttsVoices(): array { $o = []; foreach (TTS_CAT as $v) $o[$v[0]] = $v[1] . ' (' . $v[3] . ', ' . ($v[4] === 'F' ? 'female' : 'male') . ', ' . $v[2] . ')'; return $o; }
+define('TTS_VOICES', ttsVoices());
 $me = ccMe(); session_write_close();
 if (!$me) out(401, ['error' => 'login']);
 $action = (string) ($_GET['a'] ?? '');
@@ -24,12 +26,13 @@ $key = trim((string) ccConf('TTS_KEY')); $voice = trim((string) ccConf('TTS_VOIC
 $cap = (int) ccConf('TTS_CAP'); if ($cap <= 0) $cap = 900000;   /* Google's free allowance for these voices is a million characters a month */
 $dir = ccDataDir() . '/tts'; $meter = $dir . '/_used.json'; $month = date('Y-m');
 $used = function () use ($meter, $month): int { $j = json_decode((string) @file_get_contents($meter), true); return is_array($j) && ($j['m'] ?? '') === $month ? (int) ($j['n'] ?? 0) : 0; };
-if ($action === 'info') out(200, ['on' => $key !== '' && empty($me['demo']), 'voice' => $voice, 'voices' => TTS_VOICES, 'used' => !empty($me['admin']) ? $used() : null, 'cap' => $cap]);
+$choose = (string) ccConf('TTS_LOCK') !== '1';   /* staff may pick their own voice from the list unless the super admin has locked it */
+if ($action === 'info') out(200, ['on' => $key !== '' && empty($me['demo']), 'voice' => $voice, 'voices' => TTS_VOICES, 'cat' => array_map(fn($v) => ['id' => $v[0], 'name' => $v[1], 'model' => $v[2], 'accent' => $v[3], 'sex' => $v[4]], TTS_CAT), 'choose' => $choose || $me['role'] === 'superadmin', 'used' => !empty($me['admin']) ? $used() : null, 'cap' => $cap]);
 if ($action !== 'say' || $_SERVER['REQUEST_METHOD'] !== 'POST') out(404, ['error' => 'not_found']);
 if (!empty($me['demo'])) out(403, ['error' => 'noperm']);
 if ($key === '' || !function_exists('curl_init')) out(503, ['error' => 'off']);
 $body = json_decode((string) file_get_contents('php://input', false, null, 0, 20000), true); if (!is_array($body)) out(400, ['error' => 'json']);
-if ($me['role'] === 'superadmin' && isset(TTS_VOICES[(string) ($body['voice'] ?? '')])) $voice = (string) $body['voice'];   // the super admin trying a voice before saving it
+if (($choose || $me['role'] === 'superadmin') && isset(TTS_VOICES[(string) ($body['voice'] ?? '')])) $voice = (string) $body['voice'];   // a voice picked from the list (the super admin can always try one before saving it)
 $text = trim((string) preg_replace('/\s+/u', ' ', (string) ($body['text'] ?? ''))); $text = (string) preg_replace('/[<>{}\x00-\x1F]/u', '', $text);
 if ($text === '' || mb_strlen($text) > 900) out(400, ['error' => 'text']);
 if (!is_dir($dir)) { @mkdir($dir, 0700, true); @file_put_contents($dir . '/.htaccess', "Require all denied\n"); }
