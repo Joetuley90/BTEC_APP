@@ -3,6 +3,52 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.53 · 21 November 2026
+
+**Faster, works offline, lesson sign-off, quality report, learners' progress, checked releases**
+
+- **Faster.** The app's code is now its own file (`app.js`). The page is a fifth of its old size, and browsers keep the code for a year, so after the first visit the app opens much faster. The code gets a new address whenever it changes, so nobody runs an old copy.
+- **Offline.** With no internet you can open and teach your saved lessons. Anything you change is kept on the device: it shows straight away, survives a reload, and saves to the server by itself when the internet is back. A note at the bottom says how many changes are waiting. Building with Crafticulum AI still needs the internet.
+- **Sign-off.** Under every lesson there are two buttons:
+  - **Sign it off.** A teacher can sign their own lesson off, with no approval needed.
+  - **Ask for a review.** A head of department sees the lessons waiting on their start page and can Approve them or Ask for changes with a note. The lesson stays the teacher's.
+  The department setting that holds teachers' changes until a leader accepts them is unchanged.
+- **Quality report.** Planning has "Quality report for (course and level)". It shows every unit against its criteria: lessons built, weeks planned, weeks taught, lessons signed off, exit quiz results and learners achieved. Criteria that aren't covered are flagged, grouped by unit. Print it, save it as a PDF, or download it as Word. Learners aren't named.
+- **Learners' progress.** "Progress across units" shows each learner's share of criteria achieved in every unit marked for the group, what they've achieved in the last two weeks, and who is well behind the group. Marks now record when they changed, so the two-week figure fills in from today.
+- **Checked releases.** GitHub checks every release before the live site is told to fetch it:
+  - no settings file
+  - the zip matches the folder
+  - every PHP and JavaScript file is valid
+  - nothing a page needs is missing
+  - no real college is named
+  - the site starts and answers its health check
+  If any check fails, the deploy doesn't run.
+
+**After updating:** nothing to do. The first open after updating downloads the new code once.
+
+**Tested:** pw153 6 (new: separate code file, offline change kept and saved later, sign-off, review and approval, quality report and Word download, progress across units). Also pw150, pwmoney, pwforms, pwtidy, pw107, pwpolish, pwfix, pwfilm, pwnext, pwsite, pwcontact, pwplain, pwreport, pwteach, pwmore, pwphone, pwroles, pwvideo, pwvoice, pwvoice2, pwg, pw50, pw52, pw53, pw144, pwtabs, pwinteg, pwmarker and pwbrand, and the new GitHub check run locally. None of it has been tried on the live site yet.
+
+### What was pushed
+
+- Commit `fff0f38` on `main` (3 added, 8 changed, 1 removed).
+- Zip: `crafticulum-v1.53.zip`, 3,713,234 bytes, no `config.php` inside.
+- Build number: 153 (shown to people as 1.53).
+
+| | File |
+|---|---|
+| added | `.github/check-release.sh` |
+| changed | `.github/workflows/deploy.yml` |
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.52.zip` |
+| added | `crafticulum-v1.53.zip` |
+| changed | `crafticulum/.htaccess` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| added | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.52 · 21 November 2026
 
 **The same footer inside the app**
