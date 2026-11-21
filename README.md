@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v145, 21 Nov 2026: video lessons speak with the Google voice in the player too, and staff can pick the voice by type and accent; v144 reworked the phone board, Settings menu and planning buttons). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v145.zip` and `crafticulum-release.zip`: the same files as one zip (3,734,546 bytes).
+- `crafticulum/`: every file of the current release (v146, 21 Nov 2026: a new six-step how-to film on the front page, with a voice-over the super admin makes from Site setup; v145 put the Google voice in the video player). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v146.zip` and `crafticulum-release.zip`: the same files as one zip (4,248,130 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
