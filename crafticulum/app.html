@@ -1411,6 +1411,11 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* v141: integrations */
+#out .ig-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px;margin-bottom:12px}
+#out .ig-card{border:1px solid var(--cc-line);border-radius:8px;padding:14px 16px;min-width:0}#out .ig-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}#out .ig-top b{display:block}#out .ig-top span{font-size:.86rem;color:var(--bs-secondary-color)}
+#out .ig-top .form-check-input{width:2.6em;height:1.4em;cursor:pointer}#out .ig-state{margin:8px 0}#out .ig-card summary{font-size:.88rem;font-weight:700;cursor:pointer;color:var(--bs-primary)}#out .ig-how{font-size:.86rem;padding-left:1.2rem;margin:8px 0 12px}#out .ig-how li{margin-bottom:4px}#out .ig-how code{word-break:break-all}
+#out .ig-link{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:6px;margin-top:6px}
 /* v140: offline */
 .off-chip{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:1090;max-width:min(640px,calc(100vw - 24px));background:#1e1b4b;color:#fff;font-size:.86rem;padding:9px 16px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center}@media (max-width:560px){.off-chip{border-radius:8px}}
 /* v140: refunds and credit */
@@ -14619,6 +14624,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [141, "Send quiz marks to Google Classroom or Teams", "Off until your manager switches it on in Settings, Institution, Integrations, with your institution's own keys."],
   [140, "Find a lesson another department already made", "Library, then Search every department. The ones used most come first."],
   [140, "Make a version of a lesson for learners who need it", "Under any lesson: Make a version for... dyslexia, EAL, low literacy and more."],
   [140, "Take a lesson offline", "Offline copy under any lesson saves a page that works with no internet, plus the slides."],
@@ -14799,6 +14805,51 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
 function offChip(){ let c = document.getElementById("offChip"); const off = navigator.onLine === false; if(!off){ if(c) c.remove(); return; } if(c || window.claude) return; document.body.insertAdjacentHTML("beforeend", `<div class="off-chip" id="offChip" role="status">No internet. You're seeing what was on this device last time. You can teach from it; changes won't save until you're back online.</div>`); }
 addEventListener("offline", offChip); addEventListener("online", offChip); setTimeout(offChip, 1500);
 { const _authCall89 = authCall; authCall = async function(a){ if(a === "logout"){ try{ if(window.caches) await caches.delete("cc-offline-v1"); }catch{} } return _authCall89.apply(this, arguments); }; }
+/* ===== round 90 (v141): Integrations. Each institution switches on what it wants and puts in its own keys and links: Google Classroom and
+   Microsoft Teams (marks from a phone quiz go into the class gradebook), and its own links shown when a lesson is shared. Everything is off until
+   a manager turns it on. ===== */
+let igCfg = null, igBusy = false, igInfo = null;
+const igCall = async (a, body) => { const r = await fetch("integrate.php?a=" + a, {method: "POST", credentials: "same-origin", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body || {})}); const j = await r.json().catch(() => ({})); if(!r.ok) throw {status: r.status, j}; return j; };
+const IG_HELP = {
+  google: p => `<ol class="ig-how"><li>In <b>Google Cloud</b> (console.cloud.google.com), make a project and switch on the <b>Google Classroom API</b>.</li><li>Under Credentials, make an <b>OAuth client ID</b> of type Web application.</li><li>Add this as an authorised redirect address: <code>${esc(p.redirect)}</code> <button type="button" class="btn btn-sm btn-link p-0 align-baseline" data-ig="copy" data-v="${esc(p.redirect)}">Copy</button></li><li>Paste the client ID and the client secret below. Your Google Workspace admin may need to mark the app as trusted.</li></ol>`,
+  teams: p => `<ol class="ig-how"><li>In <b>Microsoft Entra</b> (entra.microsoft.com), register an app.</li><li>Add this as a Web redirect address: <code>${esc(p.redirect)}</code> <button type="button" class="btn btn-sm btn-link p-0 align-baseline" data-ig="copy" data-v="${esc(p.redirect)}">Copy</button></li><li>Give it the delegated permissions <b>EduAssignments.ReadWrite</b> and <b>EduRoster.ReadBasic</b>, and grant admin consent.</li><li>Make a client secret. Paste the application ID, the directory (tenant) ID and the secret below.</li></ol>`};
+function igPaint(){ const el = document.getElementById("stIntegr"); if(!el) return; const t = document.createElement("div"); t.innerHTML = integSection(mzSec); if(t.firstElementChild) el.innerHTML = t.firstElementChild.innerHTML; }
+function integSection(sec){ if(window.claude || typeof me === "undefined" || !me || me.demo || !["owner", "superadmin"].includes(me.role) || me.inside === false || !mzTab("college")) return "";
+  const head = "Connect Crafticulum to what your institution already uses. Everything here is off until you switch it on, and it only applies to your institution. Keys are kept encrypted and are never shown again once saved.";
+  if(!igCfg){ if(!igBusy){ igBusy = true; igCall("config").then(j => { igCfg = j; }).catch(() => { igCfg = {failed: true}; }).finally(() => { igBusy = false; igPaint(); }); } return sec("stIntegr", "Integrations", head, `<p class="small text-body-secondary mb-0">Loading...</p>`); }
+  if(igCfg.failed) return sec("stIntegr", "Integrations", head, `<p class="small text-body-secondary mb-0">Couldn't load the integrations. Try again in a moment.</p>`);
+  const card = (k, what) => { const p = igCfg.providers[k]; return `<div class="ig-card" data-igp="${k}"><div class="ig-top"><div><b>${esc(p.name)}</b><span>${what}</span></div><div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" id="igOn_${k}" ${p.on ? "checked" : ""} aria-label="Switch ${esc(p.name)} on or off"></div></div>
+      <div class="ig-state">${p.on ? (p.ready ? mzBadge("ok", "On") : mzBadge("warn", "On, but the keys are missing")) : mzBadge("mut", "Off")}</div>
+      <details ${p.on || p.id ? "open" : ""}><summary>Set it up</summary>${IG_HELP[k](p)}
+        <div class="row g-2"><div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="igId_${k}">${k === "google" ? "Client ID" : "Application (client) ID"}</label><input class="form-control form-control-sm" id="igId_${k}" value="${esc(p.id)}" autocomplete="off" spellcheck="false"></div>
+        ${k === "teams" ? `<div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="igTenant_${k}">Directory (tenant) ID</label><input class="form-control form-control-sm" id="igTenant_${k}" value="${esc(p.tenant)}" autocomplete="off" spellcheck="false"></div>` : ""}
+        <div class="col-md-6"><label class="form-label small fw-semibold mb-1" for="igSecret_${k}">Client secret</label><input class="form-control form-control-sm" id="igSecret_${k}" type="password" autocomplete="new-password" placeholder="${p.secretSet ? "Saved. Type a new one to replace it" : "Paste it here"}"></div></div>
+        <button type="button" class="btn btn-sm btn-primary mt-2" data-ig="save" data-p="${k}">Save</button></details></div>`; };
+  const links = (igCfg.links || []).concat([{name: "", url: ""}]).slice(0, 4);
+  return sec("stIntegr", "Integrations", head, `${igCfg.curl ? "" : `<div class="alert alert-warning small py-2">This server is missing something these need (curl or OpenSSL). Ask whoever hosts the site.</div>`}
+    <div class="ig-grid">${card("google", "After a phone quiz, send each learner's score into the class's Google Classroom gradebook.")}${card("teams", "After a phone quiz, send each learner's score into the class's Assignments in Teams.")}</div>
+    <div class="ig-card"><div class="ig-top"><div><b>Your own links</b><span>Places your staff post work, like Moodle, Canvas or a SharePoint site. They show as buttons under the link when a lesson is shared.</span></div></div>
+      <div id="igLinks">${links.map((l, i) => `<div class="ig-link"><input class="form-control form-control-sm" data-igl="${i}:name" value="${esc(l.name || "")}" placeholder="Name, like Moodle" aria-label="Name of the link"><input class="form-control form-control-sm" data-igl="${i}:url" value="${esc(l.url || "")}" placeholder="https://" aria-label="Address of the link" type="url"></div>`).join("")}</div>
+      <button type="button" class="btn btn-sm btn-primary mt-2" data-ig="links">Save the links</button></div>
+    <p class="small text-body-secondary mb-0 mt-3">How the marks work: the phone quiz only knows initials. After the quiz, the teacher picks the class, matches each set of initials to a learner on the class list, and presses send. Learners' names come from your own Classroom or Teams and are not kept by Crafticulum.</p>`); }
+const _accountSections90 = accountSections;
+accountSections = function(sec){ let h = _accountSections90.apply(this, arguments); try{ const add = integSection(sec); if(add){ const at = h.indexOf('<section class="card shadow-sm st-sec" id="stInstOpt"'), at2 = at >= 0 ? at : h.indexOf('<section class="card shadow-sm st-sec" id="stSite"'); if(at2 >= 0){ const end = h.indexOf("</section>", at2) + 10; h = h.slice(0, end) + add + h.slice(end); } else h += add; } }catch(e){ console.error(e); } return h; };
+{ const g = ST_GROUPS.find(x => x[2].includes("stSite")); if(g && !g[2].includes("stIntegr")) g[2].splice(g[2].indexOf(g[2].includes("stInstOpt") ? "stInstOpt" : "stSite") + 1, 0, "stIntegr"); }
+const IG_ERR = e => ({keys: "Put the keys in first, then switch it on.", link: "A link has to start with https://", noperm: "Only your institution's manager can change this."})[e && e.j && e.j.error] || "Couldn't save that. Try again.";
+document.addEventListener("change", async e => { const t = e.target; if(!t || !t.id || t.id.indexOf("igOn_") !== 0) return; const k = t.id.slice(5), on = t.checked; t.disabled = true;
+  const c = t.closest(".ig-card"), set = {on, id: c.querySelector("#igId_" + k).value}; const s = c.querySelector("#igSecret_" + k).value; if(s) set.secret = s; const tn = c.querySelector("#igTenant_" + k); if(tn) set.tenant = tn.value;
+  try{ igCfg = await igCall("configset", {set: {[k]: set}}); igInfo = null; toast(on ? igCfg.providers[k].name + " is on for your institution." : igCfg.providers[k].name + " is off."); }catch(err){ toast(IG_ERR(err), {bad: true}); } igPaint(); });
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-ig]"); if(!b) return; const k = b.dataset.ig;
+  if(k === "copy"){ try{ await navigator.clipboard.writeText(b.dataset.v); toast("Copied."); }catch{ toast("Select it and press Ctrl and C."); } return; }
+  if(k === "save"){ const p = b.dataset.p, c = b.closest(".ig-card"), set = {id: c.querySelector("#igId_" + p).value}; const s = c.querySelector("#igSecret_" + p).value; if(s) set.secret = s; const tn = c.querySelector("#igTenant_" + p); if(tn) set.tenant = tn.value; b.disabled = true;
+    try{ igCfg = await igCall("configset", {set: {[p]: set}}); igInfo = null; toast(igCfg.providers[p].on ? "Saved." : "Saved. Switch it on when you're ready."); }catch(err){ toast(IG_ERR(err), {bad: true}); } return igPaint(); }
+  if(k === "links"){ const rows = {}; document.querySelectorAll("#igLinks [data-igl]").forEach(el => { const [i, f] = el.dataset.igl.split(":"); (rows[i] = rows[i] || {})[f] = el.value.trim(); }); b.disabled = true;
+    try{ igCfg = await igCall("configset", {set: {links: Object.values(rows).filter(l => l.url)}}); igInfo = null; igLoadInfo(); toast("Saved."); }catch(err){ toast(IG_ERR(err), {bad: true}); } return igPaint(); } });
+/* ---------- the institution's own links, under the link when something is shared ---------- */
+function igLoadInfo(){ if(window.claude || typeof me === "undefined" || !me || me.demo) return; igCall("info").then(j => { igInfo = j; }).catch(() => { igInfo = {links: [], providers: {}}; }); }
+{ let n = 0; const go = () => { if(typeof me !== "undefined" && me && me.email) return igLoadInfo(); if(++n < 60) setTimeout(go, 500); }; setTimeout(go, 1500); }
+if(typeof gcLinks === "function"){ const _gcLinks90 = gcLinks; gcLinks = function(url){ let h = _gcLinks90.apply(this, arguments); try{ const ls = (igInfo && igInfo.links) || []; if(ls.length && h.includes("</div>")){ const i = h.lastIndexOf("</div>"); h = h.slice(0, i) + ls.map(l => `<a class="btn btn-sm btn-outline-secondary ig-own" href="${esc(l.url)}" target="_blank" rel="noopener" data-copy-first="${esc(url)}">Open ${esc(l.name)}</a>`).join("") + h.slice(i); } }catch{} return h; }; }
+document.addEventListener("click", e => { const a = e.target.closest && e.target.closest("a.ig-own"); if(!a) return; try{ navigator.clipboard.writeText(a.dataset.copyFirst).then(() => toast("Link copied, ready to paste in.")).catch(() => {}); }catch{} });
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

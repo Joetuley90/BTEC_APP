@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Figtree:wght@400;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="marks.js?v=1" defer></script>
 <style>
 :root{--slate:#26382e;--slate-2:#1f2f26;--wood:#7a5233;--wood-2:#5a3a22;--chalk:#f1eee4;--dim:#c9cfc3;--y:#f6e7a1;--p:#f5b0c4;--b:#aedcf2;--g:#c3ecb0;
   --chalkf:"Kalam","Comic Sans MS","Segoe Print",cursive;--body:"Figtree",system-ui,sans-serif}
@@ -342,6 +343,7 @@ function report(e){
     try{ await navigator.clipboard.writeText(txt); b.textContent = "Copied"; }catch{ b.textContent = "Copy blocked"; }
     setTimeout(()=>b.textContent="Copy report", 1800);
   };
+  try{ if(window.ccMarks){ let mb = document.getElementById("marksBox"); if(!mb){ mb = document.createElement("div"); mb.id = "marksBox"; $app.appendChild(mb); } window.ccMarks(e, score); } }catch(err){}
 }
 
 const room = (params.get("r") || "").toLowerCase();
