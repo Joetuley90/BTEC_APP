@@ -158,7 +158,8 @@ if (in_array($action, ['invoicesend', 'invoicepaid', 'invoicevoid', 'invoicedel'
         if (in_array($st, ['paid', 'void'], true)) out(400, ['error' => 'closed']); if ($invTotals($inv)['total'] <= 0) out(400, ['error' => 'zero']);
         $sentTo = '';
         ccInvChange(function ($j) use ($id, $set, &$inv) { $x = $j[$id];
-            if (($x['number'] ?? '') === '') { $y = date('Y'); $n = 0; foreach ($j as $o) if (is_array($o) && preg_match('/-' . $y . '-(\d+)$/', (string) ($o['number'] ?? ''), $m)) $n = max($n, (int) $m[1]); $x['number'] = $set['prefix'] . '-' . $y . '-' . str_pad((string) ($n + 1), 4, '0', STR_PAD_LEFT); }
+            if (($x['number'] ?? '') === '') { $y = date('Y'); $used = []; foreach ($j as $o) if (is_array($o) && ($o['number'] ?? '') !== '') $used[(string) $o['number']] = true;   /* the end is random, so an invoice doesn't show how many have been sent before it */
+                $abc = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; do { $tail = ''; for ($k = 0; $k < 6; $k++) $tail .= $abc[random_int(0, strlen($abc) - 1)]; $num = $set['prefix'] . '-' . $y . '-' . $tail; } while (isset($used[$num])); $x['number'] = $num; }
             if (empty($x['issued'])) { $x['issued'] = time(); $x['due'] = strtotime('+' . $set['terms'] . ' days', $x['issued']); }
             $x['status'] = 'sent'; $x['sentAt'] = time(); $j[$id] = $x; $inv = $x; return $j; });
         $t = $invTotals($inv);

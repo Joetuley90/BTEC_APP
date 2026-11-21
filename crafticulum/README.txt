@@ -2440,4 +2440,13 @@ VERSION 1.48: NO COLLEGE'S OWN FORMS IN CRAFTICULUM
 - The GitHub repository has RELEASES.md: every release, what changed and
   exactly which files were pushed.
 
+VERSION 1.49: INVOICE NUMBERS
+- When an invoice is sent, its number now ends with a random code instead
+  of a count: CR-2026-7KQ4XM rather than CR-2026-0003, so nobody can tell
+  from their invoice how many have gone out before it. The prefix and year
+  are as before (Admin, Money, invoice settings). Each number is checked
+  against every earlier one so it is never used twice. The same number
+  shows on the email, the invoice page and the PDF saved from it.
+- Invoices already sent keep their numbers.
+
 NO CHANGES TO config.php
