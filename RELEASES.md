@@ -19,7 +19,7 @@ From 1.48 on, versions are written with a point. Release 1.48 is build 148, and 
 
 ### What was pushed
 
-- Commit `0081cca` on `main` (6 changed).
+- Commit `0081cca` on `main` (1 added, 6 changed, 1 removed).
 - Zip: `crafticulum-v1.49.zip`, 3,667,922 bytes, no `config.php` inside.
 - Build number: 149 (shown to people as 1.49).
 
@@ -27,7 +27,8 @@ From 1.48 on, versions are written with a point. Release 1.48 is build 148, and 
 |---|---|
 | changed | `README.md` |
 | changed | `crafticulum-release.zip` |
-| R099 | `crafticulum-v1.49.zip` |
+| removed | `crafticulum-v1.48.zip` |
+| added | `crafticulum-v1.49.zip` |
 | changed | `crafticulum/README.txt` |
 | changed | `crafticulum/money.php` |
 | changed | `crafticulum/sw.js` |
