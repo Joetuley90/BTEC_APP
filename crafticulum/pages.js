@@ -68,20 +68,22 @@ try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); 
 })();
 
 /* the front-page film: a voice-over the site made with its own voice, kept in step with the picture. The big play button starts both in one tap,
-   which is what lets a phone play the sound. Without a voice-over the film plays silently with its captions, as before. */
-(function(){ var v = document.getElementById("demoFilm"), btn = document.getElementById("filmPlay"); if(!v || !btn) return; var a = null;
+   which is what lets a phone play the sound. The voice only runs while the picture is really moving, so it can't get ahead while the film is still
+   loading. Without a voice-over the film plays silently with its captions, as before. */
+(function(){ var v = document.getElementById("demoFilm"), btn = document.getElementById("filmPlay"); if(!v || !btn) return; var a = null, live = false;
   btn.hidden = false;
-  function sync(force){ if(!a) return; try{ if(force || Math.abs(a.currentTime - v.currentTime) > 0.35) a.currentTime = v.currentTime; }catch(e){} }
-  function go(){ if(!a) return; sync(true); a.playbackRate = v.playbackRate; a.volume = v.volume; a.muted = v.muted; var p = a.play(); if(p && p.catch) p.catch(function(){}); }
-  try{ fetch("speak.php?a=filminfo", {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if(j && j.on){ a = new Audio("speak.php?a=filmwav&v=" + j.v); a.preload = "auto"; v.setAttribute("aria-label", v.getAttribute("aria-label") + ", with a voice-over"); } }).catch(function(){}); }catch(e){}
-  btn.addEventListener("click", function(){ btn.hidden = true; if(a){ var p = a.play(); if(p && p.then) p.then(function(){ if(v.paused) a.pause(); }).catch(function(){}); } var q = v.play(); if(q && q.catch) q.catch(function(){}); v.focus(); });
-  v.addEventListener("play", function(){ btn.hidden = true; go(); });
-  v.addEventListener("pause", function(){ if(a) a.pause(); });
-  v.addEventListener("ended", function(){ if(a) a.pause(); });
-  v.addEventListener("seeked", function(){ sync(true); });
+  function sync(force){ if(!a || a.seeking) return; try{ if(force ? Math.abs(a.currentTime - v.currentTime) > 0.12 : Math.abs(a.currentTime - v.currentTime) > 0.6) a.currentTime = v.currentTime; }catch(e){} }
+  function go(){ if(!a) return; live = true; sync(true); a.playbackRate = v.playbackRate; a.volume = v.volume; a.muted = v.muted; var p = a.play(); if(p && p.catch) p.catch(function(){}); }
+  function stop(){ live = false; if(a) a.pause(); }
+  try{ fetch("speak.php?a=filminfo", {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if(j && j.on){ a = new Audio("speak.php?a=filmwav&v=" + j.v); a.preload = "auto"; try{ a.load(); }catch(e){} v.setAttribute("aria-label", v.getAttribute("aria-label") + ", with a voice-over"); } }).catch(function(){}); }catch(e){}
+  btn.addEventListener("click", function(){ btn.hidden = true;
+    if(a){ var p = a.play(); if(p && p.then) p.then(function(){ if(!live) a.pause(); else sync(true); }).catch(function(){}); }   /* this tap is what allows the sound later */
+    var q = v.play(); if(q && q.catch) q.catch(function(){}); v.focus(); });
+  v.addEventListener("play", function(){ btn.hidden = true; });
+  v.addEventListener("playing", go);
+  v.addEventListener("pause", stop); v.addEventListener("ended", stop); v.addEventListener("waiting", stop); v.addEventListener("seeking", function(){ if(a) a.pause(); });
+  v.addEventListener("seeked", function(){ if(!v.paused && live) go(); else sync(true); });
   v.addEventListener("ratechange", function(){ if(a) a.playbackRate = v.playbackRate; });
   v.addEventListener("volumechange", function(){ if(a){ a.volume = v.volume; a.muted = v.muted; } });
-  v.addEventListener("timeupdate", function(){ if(a && !v.paused) sync(false); });
-  v.addEventListener("waiting", function(){ if(a) a.pause(); });
-  v.addEventListener("playing", function(){ go(); });
+  v.addEventListener("timeupdate", function(){ if(a && live && !v.paused){ sync(false); if(a.paused && !a.ended){ var p = a.play(); if(p && p.catch) p.catch(function(){}); } } });
 })();

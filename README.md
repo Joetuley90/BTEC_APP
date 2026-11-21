@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (v146, 21 Nov 2026: a new six-step how-to film on the front page, with a voice-over the super admin makes from Site setup; v145 put the Google voice in the video player). Upload the contents of this folder over the live site, including `.htaccess`.
-- `crafticulum-v146.zip` and `crafticulum-release.zip`: the same files as one zip (4,248,130 bytes).
+- `crafticulum/`: every file of the current release (v147, 21 Nov 2026: the how-to film remade with the logo and a voice-over fitted to each caption; no college is named in the app; v146 added the film and its voice-over). Upload the contents of this folder over the live site, including `.htaccess`.
+- `crafticulum-v147.zip` and `crafticulum-release.zip`: the same files as one zip (4,291,226 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

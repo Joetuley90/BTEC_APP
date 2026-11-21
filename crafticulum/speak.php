@@ -29,6 +29,7 @@ if (($_GET['a'] ?? '') === 'filminfo') { session_write_close(); $m = $filmMeta()
 if (($_GET['a'] ?? '') === 'filmwav') { session_write_close(); $f = $filmDir . '/voice.wav'; if (!is_file($f)) { http_response_code(404); exit; }
     $size = filesize($f); $from = 0; $to = $size - 1;
     header_remove('Content-Type'); header('Content-Type: audio/wav'); header('Accept-Ranges: bytes'); header('Cache-Control: public, max-age=31536000, immutable');
+    if (!empty($_GET['dl'])) header('Content-Disposition: attachment; filename="crafticulum-film-voice.wav"');
     if (preg_match('/bytes=(\d*)-(\d*)/', (string) ($_SERVER['HTTP_RANGE'] ?? ''), $r)) { if ($r[1] !== '') $from = (int) $r[1]; if ($r[2] !== '') $to = min($size - 1, (int) $r[2]); if ($r[1] === '' && $r[2] !== '') { $from = max(0, $size - (int) $r[2]); $to = $size - 1; }
         if ($from > $to || $from >= $size) { http_response_code(416); header("Content-Range: bytes */$size"); exit; } http_response_code(206); header("Content-Range: bytes $from-$to/$size"); }
     header('Content-Length: ' . ($to - $from + 1)); $fh = fopen($f, 'rb'); fseek($fh, $from); $left = $to - $from + 1; while ($left > 0 && !feof($fh)) { $chunk = fread($fh, min(65536, $left)); echo $chunk; $left -= strlen($chunk); } fclose($fh); exit; }
@@ -46,18 +47,28 @@ if ($action === 'film') { if ($me['role'] !== 'superadmin' || $_SERVER['REQUEST_
     $fb = json_decode((string) file_get_contents('php://input', false, null, 0, 2000), true); if (is_array($fb) && isset(TTS_VOICES[(string) ($fb['voice'] ?? '')])) $voice = (string) $fb['voice'];
     $cj = json_decode((string) @file_get_contents($filmCues), true); if (!is_array($cj) || empty($cj['cues'])) out(404, ['error' => 'nofilm']);
     @set_time_limit(240); if (!is_dir($dir)) { @mkdir($dir, 0700, true); @file_put_contents($dir . '/.htaccess', "Require all denied\n"); }
-    $rate = 24000; $pcm = ''; $cursor = 0; $chars = 0;
-    foreach ((array) $cj['cues'] as $cue) { $text = trim((string) preg_replace('/[<>{}\x00-\x1F]/u', '', (string) ($cue['text'] ?? ''))); if ($text === '' || mb_strlen($text) > 900) continue;
-        $file = $dir . '/' . sha1($voice . "\n" . $text) . '.wav'; $wav = is_file($file) && filesize($file) > 44 ? (string) file_get_contents($file) : '';
-        if ($wav === '') { if ($used() + $chars + mb_strlen($text) > $cap) out(402, ['error' => 'cap']);
-            $base = rtrim(defined('TTS_API_BASE') ? (string) TTS_API_BASE : 'https://texttospeech.googleapis.com', '/'); $ch = curl_init($base . '/v1/text:synthesize');
-            curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 40, CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'X-Goog-Api-Key: ' . $key],
-                CURLOPT_POSTFIELDS => json_encode(['input' => ['text' => $text], 'voice' => ['languageCode' => substr($voice, 0, 5), 'name' => $voice], 'audioConfig' => ['audioEncoding' => 'LINEAR16', 'sampleRateHertz' => $rate]])]);
-            $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch); $j = is_string($res) ? json_decode($res, true) : null; $wav = is_array($j) ? (string) base64_decode((string) ($j['audioContent'] ?? ''), true) : '';
-            if ($code !== 200 || strlen($wav) < 100) { $why = is_array($j) ? (string) ($j['error']['message'] ?? '') : ''; ccErr('voice', 'Voicing the front-page film did not work. ' . ($why !== '' ? $why : 'Google answered ' . $code . '.')); out(502, ['error' => 'voice', 'why' => $why !== '' ? $why : 'Google answered ' . $code . '.']); }
-            @file_put_contents($file, $wav, LOCK_EX); $chars += mb_strlen($text); }
-        $p = strpos($wav, 'data'); $data = $p !== false ? substr($wav, $p + 8) : substr($wav, 44); if (strlen($data) % 2) $data = substr($data, 0, -1);
-        $at = max((int) round((float) ($cue['t'] ?? 0) * $rate) + (int) ($rate * 0.25), $cursor); if (strlen($pcm) < $at * 2) $pcm .= str_repeat("\0", $at * 2 - strlen($pcm));
+    $rate = 24000; $pcm = ''; $cursor = 0; $chars = 0; $late = 0.0; $fast = 0; $cues = array_values(array_filter((array) $cj['cues'], 'is_array')); $total = (float) ($cj['dur'] ?? 0);
+    $base = rtrim(defined('TTS_API_BASE') ? (string) TTS_API_BASE : 'https://texttospeech.googleapis.com', '/');
+    /* one sentence at one speed: from the cache when it's there, from Google when it isn't */
+    $say = function (string $text, float $speed) use ($dir, $voice, $key, $base, $rate, $used, $cap, &$chars): string {
+        $file = $dir . '/' . sha1($voice . "\n" . $text . ($speed !== 1.0 ? "\n@" . number_format($speed, 2) : '')) . '.wav';
+        if (is_file($file) && filesize($file) > 44) return (string) file_get_contents($file);
+        if ($used() + $chars + mb_strlen($text) > $cap) out(402, ['error' => 'cap']);
+        $cfg = ['audioEncoding' => 'LINEAR16', 'sampleRateHertz' => $rate]; if ($speed !== 1.0) $cfg['speakingRate'] = $speed;
+        $ch = curl_init($base . '/v1/text:synthesize');
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 40, CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'X-Goog-Api-Key: ' . $key],
+            CURLOPT_POSTFIELDS => json_encode(['input' => ['text' => $text], 'voice' => ['languageCode' => substr($voice, 0, 5), 'name' => $voice], 'audioConfig' => $cfg])]);
+        $res = curl_exec($ch); $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch); $j = is_string($res) ? json_decode($res, true) : null; $wav = is_array($j) ? (string) base64_decode((string) ($j['audioContent'] ?? ''), true) : '';
+        if ($code !== 200 || strlen($wav) < 100) { if ($speed !== 1.0) return ''; $why = is_array($j) ? (string) ($j['error']['message'] ?? '') : ''; ccErr('voice', 'Voicing the front-page film did not work. ' . ($why !== '' ? $why : 'Google answered ' . $code . '.')); out(502, ['error' => 'voice', 'why' => $why !== '' ? $why : 'Google answered ' . $code . '.']); }
+        @file_put_contents($file, $wav, LOCK_EX); $chars += mb_strlen($text); return $wav; };
+    $pcmOf = function (string $wav): string { $p = strpos($wav, 'data'); $d = $p !== false ? substr($wav, $p + 8) : substr($wav, 44); return strlen($d) % 2 ? substr($d, 0, -1) : $d; };
+    foreach ($cues as $i => $cue) { $text = trim((string) preg_replace('/[<>{}\x00-\x1F]/u', '', (string) ($cue['text'] ?? ''))); if ($text === '' || mb_strlen($text) > 900) continue;
+        $t = (float) ($cue['t'] ?? 0); $next = isset($cues[$i + 1]) ? (float) ($cues[$i + 1]['t'] ?? 0) : $total; $slot = max(1.0, $next - $t - 0.45);   /* how long this line has before the next caption appears */
+        $data = $pcmOf($say($text, 1.0)); $secs = strlen($data) / 2 / $rate;
+        /* too long for its caption: ask for the same line said a little faster, so the voice never falls behind the picture */
+        if ($secs > $slot) { $speed = min(1.35, ceil($secs / $slot * 102) / 100); $quick = $say($text, $speed); if ($quick !== '') { $data = $pcmOf($quick); $fast++; } }
+        $want = (int) round($t * $rate) + (int) ($rate * 0.2); $at = max($want, $cursor); $late = max($late, ($at - $want) / $rate);
+        if (strlen($pcm) < $at * 2) $pcm .= str_repeat("\0", $at * 2 - strlen($pcm));
         $pcm .= $data; $cursor = (int) (strlen($pcm) / 2); }
     $end = (int) round((float) ($cj['dur'] ?? 0) * $rate); if (strlen($pcm) < $end * 2) $pcm .= str_repeat("\0", $end * 2 - strlen($pcm));
     if ($chars) { $fh = @fopen($meter, 'c+'); if ($fh) { flock($fh, LOCK_EX); $m = json_decode((string) stream_get_contents($fh), true); $same = is_array($m) && ($m['m'] ?? '') === $month; $m = ['m' => $month, 'n' => ($same ? (int) ($m['n'] ?? 0) : 0) + $chars, 'c' => $same ? (array) ($m['c'] ?? []) : []]; ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($m)); fflush($fh); flock($fh, LOCK_UN); fclose($fh); } }
@@ -65,7 +76,7 @@ if ($action === 'film') { if ($me['role'] !== 'superadmin' || $_SERVER['REQUEST_
     $wavOut = 'RIFF' . pack('V', 36 + strlen($pcm)) . 'WAVEfmt ' . pack('VvvVVvv', 16, 1, 1, $rate, $rate * 2, 2, 16) . 'data' . pack('V', strlen($pcm)) . $pcm;
     if (@file_put_contents($filmDir . '/voice.wav', $wavOut, LOCK_EX) === false) out(500, ['error' => 'write']);
     @file_put_contents($filmDir . '/voice.json', json_encode(['hash' => $filmHash(), 'voice' => $voice, 'at' => time()]), LOCK_EX);
-    out(200, ['ok' => true, 'voice' => $voice, 'secs' => round(strlen($pcm) / 2 / $rate, 1), 'chars' => $chars]); }
+    out(200, ['ok' => true, 'voice' => $voice, 'secs' => round(strlen($pcm) / 2 / $rate, 1), 'chars' => $chars, 'fast' => $fast, 'late' => round($late, 2)]); }
 if ($action !== 'say' || $_SERVER['REQUEST_METHOD'] !== 'POST') out(404, ['error' => 'not_found']);
 if (!empty($me['demo'])) out(403, ['error' => 'noperm']);
 if ($key === '' || !function_exists('curl_init')) out(503, ['error' => 'off']);

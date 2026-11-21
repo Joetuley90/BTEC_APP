@@ -56,7 +56,7 @@ function welcomeMail(string $email, string $name, string $verify = ''): bool {
         . "Pick up where you left off:\n" . ccAppUrl() . "\n\nStuck on anything? Reply to this email or use Help and feedback in the app.\n");
 }
 /* someone signing up on their own gets their own space: an institution on the Free plan with one department, which they manage */
-/* an institution that is already here under the same name, so nobody sets the same place up twice. "MidKent", "Midkent College" and "The Mid Kent College" are all one name */
+/* an institution that is already here under the same name, so nobody sets the same place up twice. "Hilltop", "Hilltop college" and "The Hilltop College" are all one name */
 function nameKey(string $s): string { $s = (string) preg_replace('/[^a-z0-9 ]+/', ' ', mb_strtolower($s)); $s = (string) preg_replace('/\b(the|of|college|school|academy|university|sixth form|campus)\b/', ' ', $s); return (string) preg_replace('/\s+/', '', $s); }
 function collegeByName(array $a, array $names, ?array $inst): string { $keys = array_values(array_filter(array_map('nameKey', $names), fn($k) => strlen($k) >= 4)); if (!$keys) return ''; $best = '';
     foreach ($a['colleges'] as $cid => $c) { if (!empty($c['off']) || !ccCollegeDepts($a, (string) $cid)) continue; $linked = (array) ($c['inst'] ?? []);
@@ -856,7 +856,7 @@ if (in_array($action, ['colleges', 'collegeadd', 'collegeset', 'collegedel'], tr
     $extra = [];
     if ($action === 'collegeadd') {
         $name = cleanName((string) ($body['name'] ?? '')); if ($name === '') out(400, ['error' => 'name']);
-        $same = collegeByName($a, [$name], null); if ($same !== '' && empty($body['force'])) out(409, ['error' => 'exists', 'like' => (string) (ccCollege($a, $same)['name'] ?? '')]);   // "Midkent" when MidKent College is already here
+        $same = collegeByName($a, [$name], null); if ($same !== '' && empty($body['force'])) out(409, ['error' => 'exists', 'like' => (string) (ccCollege($a, $same)['name'] ?? '')]);   // "Hilltop" when Hilltop College is already here
         $mgr = strtolower(trim((string) ($body['manager'] ?? '')));
         if ($mgr !== '') { if (!emailOk($mgr)) out(400, ['error' => 'email']); if (in_array($mgr, ccSupers(), true)) out(400, ['error' => 'is_super']); if (isset($a['users'][$mgr]) && ccActive($a['users'][$mgr])) out(409, ['error' => 'user_exists']); }
         $id = trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($name)), '-') ?: 'college'; $id = substr($id, 0, 24); $base = $id; $n = 2; while (isset($a['colleges'][$id])) $id = $base . '-' . $n++;
