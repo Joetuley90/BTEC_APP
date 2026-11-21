@@ -3,6 +3,76 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.50 · 21 November 2026
+
+**Invoice PDFs and reminders, the funnel, tips, your data, alerts, accessibility, subject pages, Next Level Labs credit**
+
+- **Invoice PDFs.** When an invoice is sent, the email has the invoice attached as a PDF, made on the server with nothing to install. The invoice page has Download the PDF, and the invoice list in Admin has a PDF button.
+- **Overdue reminders.** A polite reminder with the PDF goes 7 days after the pay-by date, and a second at 14 days. Each goes once. You get a notification, and the invoice list shows when they were reminded.
+- **The funnel.** The Business dashboard has a "From looking to paying, last 30 days" card: visitors to the public pages, accounts started, those that built a lesson, and those paying, with the rate between each step. Visitors are counted once a day each, with no cookies. Only the daily total is kept, and robots aren't counted.
+- **Tips for new accounts.** For people who start on their own, Free plan only. Day 1 if they haven't built a lesson, day 7 about Planning, and once a month at 80% of their free builds. Each tip has a one-click link to stop them, and they stop when the institution pays.
+- **Your institution's data.** In Settings, Data and backups, a manager can download everything as one zip: people, every department's work, what each person keeps, and invoices. They can also ask for it all to be deleted. A request needs the institution's name typed, emails you, and shows in Admin, To do with the days left of the month you have to do it.
+- **Downtime alerts.** You're emailed and notified when the AI, the voice, email, payments or the server fail three times in fifteen minutes (at most every six hours for each). Admin, System has an Uptime monitor section with `auth.php?a=health` to give a free service like UptimeRobot. The scheduled job (`auth.php?a=pushcron`) now runs the hourly jobs too.
+- **Accessibility.** Checked against WCAG 2.2 AA on the public pages and the main parts of the app, in light and dark mode and at phone width. The following are fixed:
+  - green and orange buttons
+  - criteria codes
+  - filled buttons and badges in dark mode
+  - the sample and subject pages in dark mode
+  - small tap targets
+  - the heading order in Planning
+  A new Accessibility statement page is linked from every footer.
+- **Subject pages.** Four new ones: BTEC Business, BTEC Health and Social Care, BTEC Sport and A Level Computer Science. They're in the sitemap and the footers. A stray closing tag on the older subject pages is fixed too.
+- **Settings keeps open boxes open.** When part of Settings finished loading, the whole page redrew and closed any box you'd opened. It doesn't now, and Messages no longer loads several times over.
+- **Next Level Labs credit.** Every public footer says "Created by" with the one-line Next Level Labs logo (white in dark mode), linking to visualize.agency.
+
+**After updating:** in Admin, System, Uptime monitor, copy the address into a free uptime service if you'd like texts when the site is down. If you use a scheduled job, keep it running: it now sends the reminders and tips too.
+
+**Tested:** pwg 7 three runs in a row, pw150 9 (new: PDF attached and readable, PDF address, both reminders, funnel counting, tips and the stop link, data download, deletion request, health and alerts, uptime section). Also pwmoney, pwforms, pwtidy, pw107, pwpolish, pwfix, pwfilm, pwnext, pwsite, pwcontact, pwplain, pwreport, pwteach, and an accessibility check with no issues left on 15 screens in light and in dark at phone width. The live site hasn't been tried yet. The accessibility check is our own, not an independent audit.
+
+### What was pushed
+
+- Commit `22cd162` on `main` (8 added, 26 changed, 1 removed).
+- Zip: `crafticulum-v1.50.zip`, 3,697,628 bytes, no `config.php` inside.
+- Build number: 150 (shown to people as 1.50).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.49.zip` |
+| added | `crafticulum-v1.50.zip` |
+| changed | `crafticulum/.htaccess` |
+| changed | `crafticulum/README.txt` |
+| added | `crafticulum/a-level-computer-science-lesson-plans.html` |
+| added | `crafticulum/accessibility.html` |
+| changed | `crafticulum/app.html` |
+| added | `crafticulum/assets/nll-logo-white.svg` |
+| added | `crafticulum/assets/nll-logo.svg` |
+| changed | `crafticulum/auth-lib.php` |
+| changed | `crafticulum/auth.php` |
+| added | `crafticulum/btec-business-lesson-plans.html` |
+| changed | `crafticulum/btec-esports-lesson-plans.html` |
+| added | `crafticulum/btec-health-and-social-care-lesson-plans.html` |
+| changed | `crafticulum/btec-it-lesson-plans.html` |
+| added | `crafticulum/btec-sport-lesson-plans.html` |
+| changed | `crafticulum/contact.html` |
+| changed | `crafticulum/cookies.html` |
+| changed | `crafticulum/dpa.html` |
+| changed | `crafticulum/functional-skills-lesson-plans.html` |
+| changed | `crafticulum/gcse-computer-science-lesson-plans.html` |
+| changed | `crafticulum/index.html` |
+| changed | `crafticulum/money.php` |
+| changed | `crafticulum/page.php` |
+| changed | `crafticulum/pages.css` |
+| changed | `crafticulum/pages.js` |
+| changed | `crafticulum/privacy.html` |
+| changed | `crafticulum/sample.html` |
+| changed | `crafticulum/security.html` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/t-level-digital-lesson-plans.html` |
+| changed | `crafticulum/terms.html` |
+| changed | `crafticulum/version.json` |
+
 ## 1.49 · 21 November 2026
 
 **Invoice numbers end with a random code**
