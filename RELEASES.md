@@ -1,3 +1,60 @@
+# Crafticulum releases
+
+Every release: what changed, and exactly which files were pushed. Newest first.
+From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
+
+## 1.48 · 21 November 2026
+
+**No college's own forms, 12 month pricing on the front page, versions with a point**
+
+- **No college's own forms.** The four documents that belonged to the first college on the original site (a PowerPoint master, a lesson plan form and two scheme of learning forms) are no longer in Crafticulum, the zip or the code. On a site that already has them, they are moved once from `assets/` into `data/_owntpl`, kept with that site's backups, and given only to people in that college. Everyone else gets Crafticulum's own templates, or the ones they upload.
+- **If those forms are ever missing**, that college's downloads fall back to Crafticulum's own templates and don't fail.
+- **Pricing.** The front page has a switch: Pay monthly, or Pay for 12 months with 2 months free. The 12 month view shows the yearly price, the saving and what it works out at a month. The choice carries through sign-up to the payment page.
+- **Version names.** Releases are written with a point: this is 1.48, the last was 1.47. The update page, problem reports and the fix pack show it that way. How updates work is unchanged.
+- **This file.** `RELEASES.md` lists every release and the files pushed.
+- Other institutions no longer download the old PowerPoint master in the background.
+
+**After updating:** nothing to do. Don't delete the `assets` folder before updating, because the first college's forms are picked up from it.
+
+**Tested:** pwforms 4, pwtidy 11, pw107 45, pwpolish 10, pwfix 8, pwsite 19, pwteach, pwmore 32, pwphone 40, pwroles 28, pwvideo 13, pwg 7, pw50 20, pw52 25, pw53 15, pwnext 17, pwfilm 7, pwcontact 17, pwplain 31, pwreport 8. Not yet tried on the live site.
+
+### What was pushed
+
+- Commit `3bed343` on `main` (1 added, 22 changed, 4 removed).
+- Zip: `crafticulum-v1.48.zip`, 3,667,650 bytes, no `config.php` inside.
+- Build number: 148 (shown to people as 1.48).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| added | `RELEASES.md` |
+| changed | `crafticulum-release.zip` |
+| R080 | `crafticulum-v1.48.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| removed | `crafticulum/assets/tpl-deck.txt` |
+| removed | `crafticulum/assets/tpl-lp.txt` |
+| removed | `crafticulum/assets/tpl-sol.txt` |
+| removed | `crafticulum/assets/tpl-solfull.txt` |
+| changed | `crafticulum/btec-esports-lesson-plans.html` |
+| changed | `crafticulum/btec-it-lesson-plans.html` |
+| changed | `crafticulum/contact.html` |
+| changed | `crafticulum/cookies.html` |
+| changed | `crafticulum/dpa.html` |
+| changed | `crafticulum/functional-skills-lesson-plans.html` |
+| changed | `crafticulum/gcse-computer-science-lesson-plans.html` |
+| changed | `crafticulum/index.html` |
+| changed | `crafticulum/pages.css` |
+| changed | `crafticulum/pages.js` |
+| changed | `crafticulum/privacy.html` |
+| changed | `crafticulum/sample.html` |
+| changed | `crafticulum/security.html` |
+| changed | `crafticulum/store.php` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/t-level-digital-lesson-plans.html` |
+| changed | `crafticulum/terms.html` |
+| changed | `crafticulum/version.json` |
+
 ## Before 1.48
 
 Taken from the repository's history. One line for each push.
