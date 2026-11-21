@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.50, 21 Nov 2026: invoices go as PDFs with reminders, a funnel on the dashboard, tips for new accounts, data download and deletion requests, downtime alerts, accessibility fixes and statement, four new subject pages, and the Next Level Labs credit in the footer). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.50.zip` and `crafticulum-release.zip`: the same files as one zip (3,697,628 bytes).
+- `crafticulum/`: every file of the current release (1.51, 21 Nov 2026: puts back invoice-lib.php, which 1.50 left out; 1.50 added invoice PDFs and reminders, the funnel, tips, data requests, alerts, accessibility fixes and four subject pages). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.51.zip` and `crafticulum-release.zip`: the same files as one zip (3,702,446 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

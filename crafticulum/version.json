@@ -1,1 +1,1 @@
-{"v": 150, "date": "2026-11-21", "note": "Invoices go as PDFs with reminders, a funnel on the dashboard, tips for new accounts, data download and deletion requests, downtime alerts, accessibility fixes and statement, four new subject pages."}
+{"v": 151, "date": "2026-11-21", "note": "Fix: 1.50 left out the file that makes invoice PDFs."}

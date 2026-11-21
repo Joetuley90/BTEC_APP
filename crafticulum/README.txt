@@ -2490,4 +2490,10 @@ VERSION 1.50: PDFS, REMINDERS, THE FUNNEL, TIPS, YOUR DATA, ALERTS, ACCESSIBILIT
   the Next Level Labs pack: assets/nll-logo.svg on light pages and
   assets/nll-logo-white.svg in dark mode.
 
+VERSION 1.51: THE MISSING INVOICE FILE
+- 1.50 left invoice-lib.php (the file that makes invoice PDFs) out of the
+  download. Without it the Business dashboard and invoices didn't load.
+  It's back, and each release is now checked for any file that's needed
+  but missing before it goes out.
+
 NO CHANGES TO config.php
