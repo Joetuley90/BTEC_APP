@@ -2412,4 +2412,32 @@ VERSION 147: THE FILM'S VOICE KEPT IN STEP, THE LOGO, AND NO COLLEGE NAMED
   the placeholder team is Hilltop College. Institutions that use their
   own Word forms keep them; only the labels changed.
 
+VERSION 1.48: NO COLLEGE'S OWN FORMS IN CRAFTICULUM
+- The site this began on had four of its own documents built in: a
+  PowerPoint master, a lesson plan form and two scheme of learning forms.
+  They are no longer part of Crafticulum, the download or the code.
+- That first college keeps them. The first time someone there opens the
+  app after this update, the four files are moved out of assets/ into the
+  data folder (data/_owntpl), where they are kept with the backups and
+  can't be fetched from a public address. Only people in that college are
+  given them, and their PowerPoint, lesson plan form and scheme of
+  learning downloads work as before.
+- Every other institution gets Crafticulum's own templates, or the ones
+  it uploads in Settings, as before. They no longer download the old
+  PowerPoint master in the background, so their first download is quicker.
+- If those four files are ever missing, the first college's downloads
+  fall back to Crafticulum's own templates and don't fail.
+- UPDATE WITH "CHECK FOR UPDATES", or upload over the top as usual. Don't
+  delete the assets folder first: the four files are picked up from it.
+- Pricing on the front page has a switch: Pay monthly, or Pay for 12
+  months. The 12 month view shows the yearly price (ten months' worth),
+  what you save and what it works out at a month. Monthly prices show the
+  yearly price underneath. Choosing a plan from the 12 month view carries
+  that choice through sign-up to the payment page.
+- Versions are now written with a point: this is 1.48, the last was 1.47.
+  The update page, reports and the fix pack all show it that way. Nothing
+  changes in how updates work.
+- The GitHub repository has RELEASES.md: every release, what changed and
+  exactly which files were pushed.
+
 NO CHANGES TO config.php

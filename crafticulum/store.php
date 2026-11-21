@@ -394,7 +394,19 @@ function leadersOf(array $acc, string $dept, string $not = ''): array {
 function once(string $key, int $secs): bool { $f = sys_get_temp_dir() . '/cc_' . sha1($key); if (is_file($f) && filemtime($f) > time() - $secs) return false; @touch($f); return true; }
 /* ---------- the institution's own Word and PowerPoint templates ---------- */
 const TPL = ['docx' => 'lessonplan.docx', 'pptx' => 'slides.pptx'];
-function tplInfo(string $ddir): array { $j = json_decode((string) @file_get_contents($ddir . '/_tpl/info.json'), true); $j = is_array($j) ? $j : []; foreach (TPL as $k => $f) if (!is_file($ddir . '/_tpl/' . $f)) unset($j[$k]); return $j; }
+/* The first college on a site that began before Crafticulum had its own templates may still have its own built-in forms (a PowerPoint master, a lesson
+   plan form and two scheme of learning forms). They are not part of Crafticulum and are never sent out with it. Where the old files are still in
+   assets/, they are moved into the data folder once, kept with that site's backups, and given only to people in that college. */
+const OWN_TPL = ['tpl-deck', 'tpl-sol', 'tpl-solfull', 'tpl-lp'];
+function ownTplReady(): bool { $d = ccDataDir() . '/_owntpl'; $have = fn(string $dir) => !array_filter(OWN_TPL, fn($n) => !is_file("$dir/$n.txt") || filesize("$dir/$n.txt") < 1000);
+    if ($have($d)) return true; $old = __DIR__ . '/assets'; if (!$have($old)) return false;
+    if (!is_dir($d) && !@mkdir($d, 0700, true)) return false; @file_put_contents($d . '/.htaccess', "Require all denied\n");
+    foreach (OWN_TPL as $n) if (!@copy("$old/$n.txt", "$d/$n.txt")) return false;
+    if (!$have($d)) return false; foreach (OWN_TPL as $n) if (filesize("$d/$n.txt") === filesize("$old/$n.txt")) @unlink("$old/$n.txt");   // no longer at a public address
+    return true; }
+$ownTpl = empty(ccCollege($acc, (string) ($me['college'] ?? ''))['plain']) && ownTplReady();
+function tplInfo(string $ddir): array { $j = json_decode((string) @file_get_contents($ddir . '/_tpl/info.json'), true); $j = is_array($j) ? $j : []; foreach (TPL as $k => $f) if (!is_file($ddir . '/_tpl/' . $f)) unset($j[$k]); unset($j['own']); if (!empty($GLOBALS['ownTpl'])) $j['own'] = true; return $j; }
+if ($action === 'owntpl') { $f = (string) ($body['f'] ?? ''); if (!$ownTpl || !in_array($f, OWN_TPL, true)) out(404, ['error' => 'none']); out(200, ['data' => trim((string) file_get_contents(ccDataDir() . '/_owntpl/' . $f . '.txt'))]); }
 if (in_array($action, ['tplinfo', 'tplput', 'tpldel', 'tplget'], true)) {
     $kind = (string) ($body['kind'] ?? ($_GET['kind'] ?? '')); $td = $ddir . '/_tpl';
     if ($action === 'tplinfo') out(200, ['tpl' => (object) tplInfo($ddir)]);
