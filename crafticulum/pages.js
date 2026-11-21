@@ -94,3 +94,6 @@ try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); 
   v.addEventListener("volumechange", function(){ if(a){ a.volume = v.volume; a.muted = v.muted; } });
   v.addEventListener("timeupdate", function(){ if(a && live && !v.paused){ sync(false); if(a.paused && !a.ended){ var p = a.play(); if(p && p.catch) p.catch(function(){}); } } });
 })();
+
+/* counts a visit to the public pages for the owner's figures: no cookie, nothing stored on this device, and robots aren't counted */
+try{ if(!/^(localhost|127\.)/.test(location.hostname) || window.ccCountLocal) setTimeout(function(){ try{ fetch("money.php?a=hit", {method: "POST", keepalive: true, credentials: "omit"}).catch(function(){}); }catch(e){} }, 1200); }catch(e){}

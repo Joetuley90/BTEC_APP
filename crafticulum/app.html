@@ -1411,6 +1411,36 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* 1.50 accessibility, dark mode: filled buttons and badges dark enough for white text */
+[data-bs-theme=dark] body .btn-primary{--bs-btn-bg:#4f46e5;--bs-btn-border-color:#4f46e5;--bs-btn-hover-bg:#4338ca;--bs-btn-hover-border-color:#4338ca;--bs-btn-active-bg:#3730a3;--bs-btn-disabled-bg:#4f46e5;--bs-btn-disabled-border-color:#4f46e5}
+[data-bs-theme=dark] body .btn-success{--bs-btn-bg:#047857;--bs-btn-border-color:#047857;--bs-btn-hover-bg:#065f46;--bs-btn-hover-border-color:#065f46;--bs-btn-disabled-bg:#047857}
+[data-bs-theme=dark] body .btn-warning{--bs-btn-bg:#b45309;--bs-btn-border-color:#b45309;--bs-btn-hover-bg:#92400e;--bs-btn-color:#fff;--bs-btn-hover-color:#fff}
+[data-bs-theme=dark] body .text-bg-primary,[data-bs-theme=dark] body .badge.text-bg-primary{background-color:#4f46e5!important;color:#fff!important}
+[data-bs-theme=dark] body .skip-link,[data-bs-theme=dark] body .tk-chips button.on,[data-bs-theme=dark] body #out .pl-year button.on{background:#4f46e5;border-color:#4f46e5}
+
+/* 1.50 accessibility: colours that pass WCAG AA contrast, and targets at least 24 pixels */
+html:not([data-bs-theme=dark]) body{--bs-success:#047857;--bs-success-rgb:4,120,87;--bs-warning:#b45309;--bs-warning-rgb:180,83,9}
+html:not([data-bs-theme=dark]) body .btn-success{--bs-btn-bg:#047857;--bs-btn-border-color:#047857;--bs-btn-hover-bg:#065f46;--bs-btn-hover-border-color:#065f46;--bs-btn-active-bg:#064e3b;--bs-btn-disabled-bg:#047857;--bs-btn-disabled-border-color:#047857}
+html:not([data-bs-theme=dark]) body .btn-warning{--bs-btn-bg:#b45309;--bs-btn-border-color:#b45309;--bs-btn-hover-bg:#92400e;--bs-btn-hover-border-color:#92400e;--bs-btn-active-bg:#78350f;--bs-btn-disabled-bg:#b45309;--bs-btn-disabled-border-color:#b45309;--bs-btn-color:#fff;--bs-btn-hover-color:#fff}
+html:not([data-bs-theme=dark]) body .btn-outline-warning{--bs-btn-color:#b45309;--bs-btn-border-color:#b45309;--bs-btn-hover-bg:#b45309;--bs-btn-hover-border-color:#b45309}
+html:not([data-bs-theme=dark]) body .crit-code.p,html:not([data-bs-theme=dark]) body .text-success{color:#047857!important}
+html body .btn-link,html body #critAll,html body #critNone{min-height:24px}
+html body .btn-close{padding:.45em;box-sizing:content-box}
+html body .form-check-input[type=checkbox],html body .form-check-input[type=radio]{width:1.15em;height:1.15em}
+
+/* 1.50: the funnel, an institution's data, the uptime monitor */
+#out .fn-card{margin-bottom:16px}
+#out .fn-steps{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+#out .fn-steps li{position:relative;padding:12px;border:1px solid var(--cc-line);border-radius:8px;background:var(--bs-body-bg)}
+#out .fn-top b{display:block;font-size:1.6rem;line-height:1.1}#out .fn-top span{font-weight:700;font-size:.9rem}
+#out .fn-bar{height:8px;border-radius:6px;background:rgba(99,102,241,.12);margin:8px 0 6px;overflow:hidden}#out .fn-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#4f46e5,#7c3aed)}
+#out .fn-steps small{color:var(--bs-secondary-color);font-size:.76rem}
+#out .fn-rate{position:absolute;top:10px;right:10px;font-style:normal;font-size:.76rem;font-weight:800;color:#4338ca;background:rgba(99,102,241,.12);border-radius:6px;padding:2px 8px}
+#out .fn-spark{margin-top:6px}
+@media (max-width:767.98px){#out .fn-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#out .id-box{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;padding:14px;border:1px solid var(--cc-line);border-radius:8px;margin-bottom:12px}#out .id-box>div:first-child{flex:1;min-width:220px}
+#out .id-del{border-color:rgba(220,38,38,.35);background:rgba(220,38,38,.03)}#out .id-confirm{width:100%}
+
 /* v144: the board on a phone */
 #board .bn{display:none}
 @media (max-width:767.98px){#board .b-bar{display:block;padding:0 0 8px}
@@ -5459,7 +5489,7 @@ function renderSeq(){
     return `<div class="seq-row${r.lessonId ? " built" : ""}${isT ? " is-taught" : ""}" data-row="${i}">${ed ? `<span class="drag-h" draggable="true" title="Drag to move this lesson" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>` : ""}
       <span class="num">${i + 1}</span>
       <div class="flex-grow-1 min-w-0">
-        <div class="d-flex flex-wrap gap-2 align-items-center"><h4 class="h6 mb-0"${X("title")}>${esc(r.title)}</h4>${r.lessonId && !ed ? byChip(r.lessonId) : ""}${ed ? `<select class="form-select form-select-sm w-auto" data-sk="${i}" aria-label="Lesson type">${KINDS.map(k => `<option ${k === r.kind ? "selected" : ""}>${k}</option>`).join("")}</select>` : `<span class="badge text-bg-light border">${esc(r.kind)}</span>`}${late ? `<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">After the hand-in on ${fmtDay(due)}</span>` : early ? `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Before it's handed out on ${fmtDay(out)}</span>` : rb && (out || due) ? `<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">${esc(rb.a)} ${asgDates({out, due})}</span>` : ""}</div>
+        <div class="d-flex flex-wrap gap-2 align-items-center"><h3 class="h6 mb-0"${X("title")}>${esc(r.title)}</h3>${r.lessonId && !ed ? byChip(r.lessonId) : ""}${ed ? `<select class="form-select form-select-sm w-auto" data-sk="${i}" aria-label="Lesson type">${KINDS.map(k => `<option ${k === r.kind ? "selected" : ""}>${k}</option>`).join("")}</select>` : `<span class="badge text-bg-light border">${esc(r.kind)}</span>`}${late ? `<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">After the hand-in on ${fmtDay(due)}</span>` : early ? `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Before it's handed out on ${fmtDay(out)}</span>` : rb && (out || due) ? `<span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">${esc(rb.a)} ${asgDates({out, due})}</span>` : ""}</div>
         ${ed || (r.focus && r.focus !== r.title) ? `<div class="small text-body-secondary mt-1"${X("focus", "What learners will be able to do")}>${esc(r.focus)}</div>` : ""}
         ${ed ? `<div class="d-flex flex-wrap gap-1 mt-2" role="group" aria-label="Criteria for this lesson">${u.c.map(c => `<button type="button" class="cchip${r.criteria.includes(c[0]) ? " on" : ""}" data-sq="crit" data-i="${i}" data-c="${esc(c[0])}" aria-pressed="${r.criteria.includes(c[0])}" title="${esc(c[1])}">${esc(c[0])}</button>`).join("")}</div>` : r.criteria.length ? `<div class="d-flex flex-wrap gap-1 mt-2">${r.criteria.map(critBadge).join("")}</div>` : ""}
         ${r.activity || ed ? `<div class="small mt-2"><span class="fw-semibold">Main activity:</span> <span${X("activity", "Add the main activity")}>${esc(r.activity)}</span></div>` : ""}
@@ -5597,7 +5627,7 @@ function renderWeek(){
       <div class="vstack gap-2">${un.mine.map(k => { const it = weekItems[k], r = it.r, q = batch.jobs.findIndex(j => j.key === it.s.key && j.i === it.i); return `<div class="seq-row${r.lessonId ? " built" : ""}${it.isT ? " is-taught" : ""}">
         <span class="num">${it.i + 1}</span>
         <div class="flex-grow-1 min-w-0">
-          <div class="d-flex flex-wrap gap-2 align-items-center"><h4 class="h6 mb-0">${esc(r.title)}</h4><span class="badge text-bg-light border">${esc(r.kind)}</span>${r.lessonId ? byChip(r.lessonId) : ""}</div>
+          <div class="d-flex flex-wrap gap-2 align-items-center"><h3 class="h6 mb-0">${esc(r.title)}</h3><span class="badge text-bg-light border">${esc(r.kind)}</span>${r.lessonId ? byChip(r.lessonId) : ""}</div>
           ${r.focus && r.focus !== r.title ? `<div class="small text-body-secondary mt-1">${esc(r.focus)}</div>` : ""}
           ${r.criteria.length ? `<div class="d-flex flex-wrap gap-1 mt-2">${r.criteria.map(critBadge).join("")}</div>` : ""}
         </div>
@@ -13744,7 +13774,7 @@ function adTodoHtml(sec){ if(!adIs()) return "";
   const rows = [wait ? row(wait, `${wait === 1 ? "person is" : "people are"} waiting for you to approve ${wait === 1 ? "their account" : "their accounts"}`, "Review", "wait", "warn") : "",
     unc ? row(unc, `${unc === 1 ? "account hasn't" : "accounts haven't"} confirmed ${unc === 1 ? "its" : "their"} email address`, "See who", "email") : "",
     msgs ? row(msgs, `new ${msgs === 1 ? "message" : "messages"} from the contact page`, "Read", "inbox", "warn") : "",
-    upd ? row("v" + esc(upd.v), `is ready to install${upd.note ? `: ${esc(upd.note).slice(0, 120)}` : ""}`, "Update", "update") : "",
+    upd ? row(esc(typeof ccVer === "function" ? ccVer(upd.v) : upd.v), `is ready to install${upd.note ? `: ${esc(upd.note).slice(0, 120)}` : ""}`, "Update", "update") : "",
     errs ? row(errs, `${errs === 1 ? "error" : "errors"} in the log`, "Look", "errors", errs > 20 ? "warn" : "") : "",
     dup ? row(dup, `${dup === 1 ? "institution looks" : "institutions look"} set up twice`, "Sort it out", "dupes") : ""].filter(Boolean);
   return sec("stAdminTodo", "To do", "Anything that needs you shows here, with a button that takes you straight to it.", rows.length ? `<ul class="list-unstyled ad-list">${rows.join("")}</ul>` : `<div class="ad-clear"><span class="ad-tick" aria-hidden="true">&#10003;</span><div><div class="fw-semibold">${loading ? "Checking..." : "Nothing needs you right now."}</div><div class="small text-body-secondary">${loading ? "" : "New accounts, messages, errors and updates will show up here."}</div></div></div>`); }
@@ -14637,7 +14667,7 @@ function invFormHtml(){ const f = invEdit, opt = (l, v) => l.map(([k, t]) => `<o
 function invSection(sec){ if(!mzOn() || !mzTab("money")) return "";
   if(!inv){ invLoad(); return sec("stInvoices", "Invoices", "", `<p class="small text-body-secondary mb-0">${invErr ? esc(invErr) : "Loading..."}</p>`); }
   const s = inv.set, list = inv.invoices;
-  const acts = i => { const a = []; if(i.url) a.push(`<a class="btn btn-sm btn-outline-secondary" href="${esc(i.url)}" target="_blank" rel="noopener">Open</a>`); if(i.status === "draft" || i.status === "requested" || i.status === "sent") a.push(`<button type="button" class="btn btn-sm btn-outline-secondary" data-mz="ivedit" data-id="${i.id}">Change</button>`);
+  const acts = i => { const a = []; if(i.url) a.push(`<a class="btn btn-sm btn-outline-secondary" href="${esc(i.url)}" target="_blank" rel="noopener">Open</a>`); if(i.pdf) a.push(`<a class="btn btn-sm btn-outline-secondary" href="${esc(i.pdf)}&dl=1">PDF</a>`); if(i.status === "draft" || i.status === "requested" || i.status === "sent") a.push(`<button type="button" class="btn btn-sm btn-outline-secondary" data-mz="ivedit" data-id="${i.id}">Change</button>`);
     if(i.status === "draft") a.push(`<button type="button" class="btn btn-sm btn-primary" data-mz="ivsend" data-id="${i.id}">Send</button>`); if(i.status === "sent") a.push(`<button type="button" class="btn btn-sm btn-primary" data-mz="ivpaid" data-id="${i.id}">Mark as paid</button>`, `<button type="button" class="btn btn-sm btn-outline-secondary" data-mz="ivsend" data-id="${i.id}">Send again</button>`);
     if(i.status === "draft" || i.status === "requested") a.push(`<button type="button" class="btn btn-sm btn-outline-danger" data-mz="ivdelete" data-id="${i.id}">Delete</button>`); if(i.status === "sent") a.push(`<button type="button" class="btn btn-sm btn-outline-danger" data-mz="ivvoid" data-id="${i.id}">Cancel it</button>`); return a.join(" "); };
   return sec("stInvoices", "Invoices", "For institutions that pay by bank transfer against a purchase order. Marking an invoice as paid puts the institution on its plan for the months it covers, and counts in the monthly figure above.", `
@@ -14652,12 +14682,12 @@ function invSection(sec){ if(!mzOn() || !mzTab("money")) return "";
       <div class="col-md-3"><label class="form-label small fw-semibold mb-1" for="isEmail">Replies go to</label><input class="form-control form-control-sm" id="isEmail" type="email" value="${esc(s.email)}"></div></div>
       <button type="button" class="btn btn-sm btn-primary mt-3" data-mz="issave">Save</button> <span class="small text-body-secondary ms-2">Leave VAT at 0 unless the company is VAT registered.</span></div>` : ""}
     ${invEdit ? invFormHtml() : ""}
-    ${list.length ? `<div class="table-responsive"><table class="table table-sm align-middle mz-table mb-0"><thead><tr><th>Number</th><th>Institution</th><th>For</th><th class="r">Total</th><th>Status</th><th>Due</th><th></th></tr></thead><tbody>${list.map(i => `<tr data-iv="${i.id}"><td><b>${esc(i.number || "No number yet")}</b>${i.po ? `<br><small class="text-body-secondary">PO ${esc(i.po)}</small>` : ""}</td><td>${esc(i.collegeName || i.to.name || "")}<br><small class="text-body-secondary">${esc(i.to.email || "")}</small></td><td>${esc((inv.plans.find(p => p.id === i.plan) || {}).name || "")}, ${i.months} month${i.months === 1 ? "" : "s"}${i.until ? `<br><small class="text-body-secondary">to ${mzD(i.until)}</small>` : ""}</td><td class="r"><b>${mzP(i.total)}</b></td><td>${mzBadge(...(i.overdue ? ["bad", "Overdue"] : INV_ST[i.status]))}${i.paidAt ? `<br><small class="text-body-secondary">${mzD(i.paidAt)}</small>` : ""}</td><td>${i.status === "sent" ? mzD(i.due) : ""}</td><td class="text-end"><div class="d-flex flex-wrap gap-1 justify-content-end">${acts(i)}</div></td></tr>`).join("")}</tbody></table></div>` : `<p class="small text-body-secondary mb-0">No invoices yet. When an institution asks to pay by invoice it appears here, or start one yourself.</p>`}`); }
+    ${list.length ? `<div class="table-responsive"><table class="table table-sm align-middle mz-table mb-0"><thead><tr><th>Number</th><th>Institution</th><th>For</th><th class="r">Total</th><th>Status</th><th>Due</th><th></th></tr></thead><tbody>${list.map(i => `<tr data-iv="${i.id}"><td><b>${esc(i.number || "No number yet")}</b>${i.po ? `<br><small class="text-body-secondary">PO ${esc(i.po)}</small>` : ""}</td><td>${esc(i.collegeName || i.to.name || "")}<br><small class="text-body-secondary">${esc(i.to.email || "")}</small></td><td>${esc((inv.plans.find(p => p.id === i.plan) || {}).name || "")}, ${i.months} month${i.months === 1 ? "" : "s"}${i.until ? `<br><small class="text-body-secondary">to ${mzD(i.until)}</small>` : ""}</td><td class="r"><b>${mzP(i.total)}</b></td><td>${mzBadge(...(i.overdue ? ["bad", "Overdue"] : INV_ST[i.status]))}${i.paidAt ? `<br><small class="text-body-secondary">${mzD(i.paidAt)}</small>` : ""}${i.reminders && i.status === "sent" ? `<br><small class="text-body-secondary">${i.reminders === 1 ? "Reminded" : "Reminded twice"}, last ${mzD(i.reminded)}</small>` : ""}</td><td>${i.status === "sent" ? mzD(i.due) : ""}</td><td class="text-end"><div class="d-flex flex-wrap gap-1 justify-content-end">${acts(i)}</div></td></tr>`).join("")}</tbody></table></div>` : `<p class="small text-body-secondary mb-0">No invoices yet. When an institution asks to pay by invoice it appears here, or start one yourself.</p>`}`); }
 /* ---------- an institution's manager: pay by invoice ---------- */
 function invAskSection(sec){ if(window.claude || typeof billOn !== "function" || !billOn() || !me || !["owner", "superadmin"].includes(me.role) || !mzTab("college")) return "";
   if(!invMine){ invMineLoad(); return sec("stPayInv", "Pay by invoice", "For schools, colleges and providers that pay by bank transfer against a purchase order instead of by card.", `<p class="small text-body-secondary mb-0">Loading...</p>`); } const list = invMine.invoices || [], f = invAsk;
   return sec("stPayInv", "Pay by invoice", "For schools, colleges and providers that pay by bank transfer against a purchase order instead of by card.", `
-    ${list.length ? `<table class="table table-sm align-middle mz-table"><tbody>${list.map(i => `<tr><td><b>${esc(i.number || "Asked for")}</b>${i.po ? `<br><small class="text-body-secondary">PO ${esc(i.po)}</small>` : ""}</td><td>${i.status === "requested" ? "We'll email the invoice shortly" : mzP(i.total)}</td><td>${mzBadge(...(i.overdue ? ["bad", "Overdue"] : INV_ST[i.status]))}</td><td>${i.status === "sent" ? "Pay by " + mzD(i.due) : i.until ? "Covers to " + mzD(i.until) : ""}</td><td class="text-end">${i.url ? `<a class="btn btn-sm btn-outline-secondary" href="${esc(i.url)}" target="_blank" rel="noopener">Open the invoice</a>` : ""}</td></tr>`).join("")}</tbody></table>` : ""}
+    ${list.length ? `<table class="table table-sm align-middle mz-table"><tbody>${list.map(i => `<tr><td><b>${esc(i.number || "Asked for")}</b>${i.po ? `<br><small class="text-body-secondary">PO ${esc(i.po)}</small>` : ""}</td><td>${i.status === "requested" ? "We'll email the invoice shortly" : mzP(i.total)}</td><td>${mzBadge(...(i.overdue ? ["bad", "Overdue"] : INV_ST[i.status]))}</td><td>${i.status === "sent" ? "Pay by " + mzD(i.due) : i.until ? "Covers to " + mzD(i.until) : ""}</td><td class="text-end">${i.url ? `<a class="btn btn-sm btn-outline-secondary" href="${esc(i.url)}" target="_blank" rel="noopener">Open the invoice</a>` : ""}${i.pdf ? ` <a class="btn btn-sm btn-outline-secondary" href="${esc(i.pdf)}&dl=1">PDF</a>` : ""}</td></tr>`).join("")}</tbody></table>` : ""}
     ${f ? `<div class="mz-form" id="askForm"><div class="row g-2"><div class="col-md-4"><label class="form-label small fw-semibold mb-1" for="akPlan">Plan</label><select class="form-select form-select-sm" id="akPlan"><option value="inst" ${f.plan === "inst" ? "selected" : ""}>Institution (we'll send a quote)</option><option value="dept" ${f.plan === "dept" ? "selected" : ""}>Department</option></select></div>
       <div class="col-md-2 col-6"><label class="form-label small fw-semibold mb-1" for="akMonths">Months</label><input class="form-control form-control-sm" id="akMonths" type="number" min="1" max="36" value="${esc(f.months)}"></div>
       <div class="col-md-6 col-6"><label class="form-label small fw-semibold mb-1" for="akPo">Purchase order number, if you have it</label><input class="form-control form-control-sm" id="akPo" value="${esc(f.po)}"></div>
@@ -14708,6 +14738,8 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [150, "Download all of your institution's data", "Managers: Settings, Data and backups has one button to download everything, and a way to ask for it all to be deleted."],
+  [150, "Easier to read and to tap", "Some colours were too faint to read easily, especially in dark mode, and some buttons were small. They're fixed. Tell us through Report a problem if anything is hard to use."],
   [148, "Pay for 12 months and get 2 free", "Managers: the prices on the front page and in Settings, Plan and billing can be switched to 12 months. You pay for ten."],
   [146, "A new film on the front page", "A short film shows new staff how to use Crafticulum in six steps, with a voice-over. Point colleagues to the front page if they need a quick start."],
   [145, "Pick the voice for video lessons", "When your site has the Google voice switched on, video lessons speak with it as they play, not just in the MP4. Choose from British, American and Australian voices in five types, from Chirp 3 HD (the most natural) to Standard. Your choice is remembered, and your MP4s use it too."],
@@ -15180,6 +15212,75 @@ if(!window.claude){
 function ccVer(n){ const v = parseInt(n, 10); return v >= 100 ? Math.floor(v / 100) + "." + String(v % 100).padStart(2, "0") : (n == null ? "" : String(n)); }
 /* a yearly choice made on the front page's prices carries through sign-up to the plan page */
 try{ if(new URLSearchParams(location.search).get("yearly") === "1") sessionStorage.setItem("cc_want_yearly", "1"); if(sessionStorage.getItem("cc_want_yearly") === "1") billYearly = true; }catch{}
+/* ===== round 96 (1.50): from looking to paying on the Business dashboard, an institution's own data (download it all, or ask for it to be deleted),
+   deletion requests in Admin, To do, and an address for an outside uptime monitor. ===== */
+
+/* ---------- Business: the funnel, last 30 days ---------- */
+function funnelHtml(f){ if(!f) return "";
+  const steps = [["Visited the site", f.visitors, "Public pages, once a day per visitor, robots left out"], ["Started an account", f.signups, "On their own, in the last 30 days"], ["Built a lesson", f.built, "Of those accounts"], ["Paying", f.paid, "Of those accounts"]];
+  const top = Math.max(1, ...steps.map(s => s[1])), pct = (a, b) => b > 0 ? Math.round(a / b * 100) + "%" : "-";
+  const spark = (f.visitorDays || []).length ? mzBars(f.visitorDays.map((v, i) => ({v, label: "", now: i === f.visitorDays.length - 1, tip: `<b>${v}</b> visitor${v === 1 ? "" : "s"}`})), {h: 110, fmt: v => String(Math.round(v)), whole: true}) : "";
+  return `<div class="mz-card fn-card" id="mzFunnel"><div class="mz-h">From looking to paying, last 30 days</div>
+    <ol class="fn-steps">${steps.map(([t, v, sub], i) => `<li><div class="fn-top"><b>${v.toLocaleString("en-GB")}</b><span>${t}</span></div><div class="fn-bar"><i style="width:${Math.max(3, Math.round(v / top * 100))}%"></i></div><small>${sub}</small>${i ? `<em class="fn-rate" title="Of the step before">${pct(v, steps[i - 1][1])}</em>` : ""}</li>`).join("")}</ol>
+    <p class="small text-body-secondary mb-0 mt-2">${f.signups ? `${pct(f.paid, f.signups)} of new accounts are paying so far.` : "No new accounts in the last 30 days."} ${f.paidOlder ? `Another ${f.paidOlder} paying account${f.paidOlder === 1 ? "" : "s"} started earlier than that.` : ""} Visitors are counted without cookies, and nothing is kept that could say who they are.</p>
+    ${spark ? `<div class="fn-spark" aria-label="Visitors each day">${spark}</div>` : ""}</div>`; }
+if(typeof bizSection === "function"){ const _biz96 = bizSection; bizSection = function(sec){ let h = _biz96.apply(this, arguments); try{ if(biz && biz.funnel && !h.includes('id="mzFunnel"')){ const at = h.indexOf('<div class="mz-two"><div class="mz-card"><div class="mz-h">New accounts'); const add = funnelHtml(biz.funnel); h = at >= 0 ? h.slice(0, at) + add + h.slice(at) : h.replace("</section>", add + "</section>"); } }catch(e){ console.error(e); } return h; }; }
+
+/* ---------- Settings, Data and backups: the institution's own data ---------- */
+let idBusy = "", idOpen = false, idErr = "";
+const idCan = () => !window.claude && typeof me !== "undefined" && !!me && (me.role === "owner" || (me.role === "superadmin" && me.inside !== false && !!me.college));
+const idName = () => (me && me.collegeName) || (typeof siteNow !== "undefined" && siteNow.name) || "";
+function instDataSection(sec){ if(!idCan()) return ""; const r = meInfo && meInfo.delReq, nm = idName();
+  return sec("stInstData", "Your institution's data", "Everything your institution has in Crafticulum belongs to you. Download it whenever you like, or ask for all of it to be deleted.", `
+    <div class="id-box"><div><b>Download everything</b><p class="small text-body-secondary mb-2">One zip: everyone in the institution, every department's lessons and planning, what each person keeps for themselves, and your invoices.</p></div>
+      <a class="btn btn-sm btn-primary" href="auth.php?a=instexport" data-id="dl" download>Download all of our data</a></div>
+    <div class="id-box id-del">${r ? `<div><b>You've asked for your data to be deleted</b><p class="small mb-2">Asked on ${new Date(r.at * 1000).toLocaleDateString("en-GB", {day: "numeric", month: "long", year: "numeric"})}${r.name ? " by " + esc(r.name) : ""}. It will be done within a month, and you'll get an email when it has. Until then everything works as normal.</p></div>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-id="cancel" ${idBusy ? "disabled" : ""}>Cancel the request</button>`
+      : `<div><b>Delete all of our data</b><p class="small text-body-secondary mb-2">Everyone in ${esc(nm || "your institution")} loses their account, and every lesson, plan and student page goes. Download what you want to keep first. This is done for you within a month, and can't be undone after that.</p></div>
+        ${idOpen ? `<div class="id-confirm"><label class="form-label small fw-semibold mb-1" for="idName">To confirm, type the institution's name: <b>${esc(nm)}</b></label><input class="form-control form-control-sm mb-2" id="idName" autocomplete="off">${idErr ? `<div class="text-danger small mb-2" role="alert">${esc(idErr)}</div>` : ""}<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-danger" data-id="ask" ${idBusy ? "disabled" : ""}>${idBusy ? "Sending..." : "Ask for it to be deleted"}</button><button type="button" class="btn btn-sm btn-outline-secondary" data-id="close">Keep our data</button></div></div>`
+        : `<button type="button" class="btn btn-sm btn-outline-danger" data-id="open">Ask for our data to be deleted</button>`}`}</div>`); }
+const idRedraw = () => { const el = document.getElementById("stInstData"); if(!el) return renderSettings(); const t = document.createElement("div"); t.innerHTML = instDataSection(mzSec); if(t.firstElementChild) el.innerHTML = t.firstElementChild.innerHTML; };
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-id]"); if(!b || !b.closest("#stInstData")) return; const k = b.dataset.id;
+  if(k === "dl"){ toast("Putting your data together. The download starts in a moment."); return; }
+  e.preventDefault();
+  if(k === "open"){ idOpen = true; idErr = ""; idRedraw(); const i = document.getElementById("idName"); if(i) i.focus(); return; }
+  if(k === "close"){ idOpen = false; idErr = ""; return idRedraw(); }
+  if(k === "ask"){ const typed = (document.getElementById("idName") || {}).value || ""; idBusy = "ask"; idErr = ""; idRedraw(); const i2 = document.getElementById("idName"); if(i2) i2.value = typed; try{ const j = await authCall("delask", {confirm: typed}); if(meInfo) meInfo.delReq = j.delReq; idOpen = false; toast("Your request has been sent. You'll get an email when it's done."); }catch(err){ idErr = err && err.code === "confirm" ? "That isn't the institution's name. Type it exactly as shown." : "Couldn't send the request. Try again."; } idBusy = ""; return idRedraw(); }
+  if(k === "cancel"){ idBusy = "cancel"; idRedraw(); try{ await authCall("delcancel", {}); if(meInfo) meInfo.delReq = null; toast("Request cancelled. Nothing will be deleted."); }catch{ toast("Couldn't cancel it. Try again.", {bad: true}); } idBusy = ""; return idRedraw(); } });
+
+/* ---------- Admin, System: an uptime monitor ---------- */
+let monNow = null, monBusy = false;
+function monitorSection(sec){ if(!(typeof mzOn === "function" && mzOn()) || !mzTab("site")) return ""; const url = new URL("auth.php?a=health", location.href).href;
+  if(!monNow && !monBusy){ monBusy = true; fetch("auth.php?a=health", {cache: "no-store"}).then(r => r.json()).then(j => { monNow = j; }).catch(() => { monNow = {ok: false, checks: {}}; }).finally(() => { monBusy = false; const el = document.getElementById("stMonitor"); if(el){ const t = document.createElement("div"); t.innerHTML = monitorSection(mzSec); if(t.firstElementChild) el.innerHTML = t.firstElementChild.innerHTML; } }); }
+  const NAMES = {data: "Data folder", accounts: "Accounts", ai: "Crafticulum AI", email: "Email", voice: "Voice", server: "Server errors", disk: "Disk space"};
+  const chips = monNow ? Object.entries(monNow.checks || {}).map(([k, v]) => `<span class="mz-b ${v === null ? "" : v ? "mz-ok" : "mz-bad"}"><i aria-hidden="true"></i>${NAMES[k] || esc(k)}${v === null ? ": not set up" : v ? "" : ": failing"}</span>`).join(" ") : `<span class="small text-body-secondary">Checking...</span>`;
+  return sec("stMonitor", "Uptime monitor", "If the whole site goes down it can't tell you itself, so a free outside service checks it every few minutes and texts or emails you.", `
+    <p class="small mb-2">Right now: ${monNow ? (monNow.ok ? "<b>everything is working.</b>" : "<b class='text-danger'>something needs a look.</b>") : ""}</p><div class="d-flex flex-wrap gap-1 mb-3">${chips}</div>
+    <label class="form-label small fw-semibold mb-1" for="monUrl">The address to check</label><div class="input-group input-group-sm mb-2"><input class="form-control" id="monUrl" readonly value="${esc(url)}"><button type="button" class="btn btn-outline-secondary" data-mon="copy">Copy</button></div>
+    <ol class="small mb-2 ps-3"><li>Make a free account at UptimeRobot (or Better Stack, or any uptime checker).</li><li>Add an HTTP monitor with the address above, checked every 5 minutes.</li><li>Turn on alerts by email and text message to your phone.</li></ol>
+    <p class="small text-body-secondary mb-0">It answers 200 when everything's fine and 503 when something is failing, so the monitor alerts you for a broken AI key or a full disk too, not just a site that's down. Separately, Crafticulum emails you itself when the AI, the voice, email or payments fail three times in fifteen minutes.</p>`); }
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest('[data-mon="copy"]'); if(!b) return; try{ await navigator.clipboard.writeText(document.getElementById("monUrl").value); toast("Copied."); }catch{ document.getElementById("monUrl").select(); } });
+
+/* where they go */
+{ const g = ST_GROUPS.find(x => x[0] === "data"); if(g && !g[2].includes("stInstData")) g[2].unshift("stInstData");
+  const a = AD_GROUPS.find(x => x[0] === "site"); if(a && !a[2].includes("stMonitor")){ const i = a[2].indexOf("stStatus"); a[2].splice(i >= 0 ? i + 1 : a[2].length, 0, "stMonitor"); AD_IDS.add("stMonitor"); } }
+const _accountSections96 = accountSections;
+accountSections = function(sec){ let h = _accountSections96.apply(this, arguments); try{ h += instDataSection(sec) + monitorSection(sec); }catch(e){ console.error(e); } return h; };
+
+/* ---------- Admin, To do: deletion requests ---------- */
+if(typeof adTodoHtml === "function"){ const _todo96 = adTodoHtml; adTodoHtml = function(sec){ let h = _todo96.apply(this, arguments); try{ const reqs = (meInfo && meInfo.delReqs) || []; if(!h || !reqs.length) return h;
+    const rows = reqs.map(r => { const days = Math.floor((Date.now() / 1000 - r.at) / 86400), left = 30 - days; return `<li class="ad-row ad-warn"><span class="ad-n">!</span><span class="ad-what"><b>${esc(r.name)}</b> asked for all its data to be deleted, ${days ? days + " day" + (days === 1 ? "" : "s") + " ago" : "today"} (${esc(r.by)}). ${left > 0 ? `Do it within ${left} day${left === 1 ? "" : "s"}.` : "<b>The month is up.</b>"}</span><button type="button" class="btn btn-sm btn-primary" data-del-go="${esc(r.id)}">Open institutions</button></li>`; }).join("");
+    if(h.includes('<ul class="list-unstyled ad-list">')) h = h.replace('<ul class="list-unstyled ad-list">', '<ul class="list-unstyled ad-list">' + rows);
+    else h = h.replace(/<div class="ad-clear">[\s\S]*<\/div><\/div>/, `<ul class="list-unstyled ad-list">${rows}</ul>`); }catch(e){ console.error(e); } return h; }; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-del-go]"); if(!b) return; stTab = "overview"; renderSettings(); setTimeout(() => { const s = document.getElementById("stColleges") || document.getElementById("stOverview"); if(s) s.scrollIntoView({block: "start"}); }, 40); });
+/* Messages: while the list is loading, every redraw of Settings asked for it again, and each answer redrew the whole page. One load at a time now. */
+if(typeof inboxLoad === "function"){ const _inbox96 = inboxLoad; let inFlight = null; inboxLoad = function(body, act){ if(body || act) return _inbox96.apply(this, arguments); if(inFlight) return inFlight; inFlight = Promise.resolve(_inbox96.call(this)).finally(() => { inFlight = null; }); return inFlight; }; }
+/* when Settings redraws itself after something loads, any box that was open stays open */
+{ const _rs96 = renderSettings; renderSettings = function(){ let keep = [];
+    try{ keep = [...document.querySelectorAll("#out details[open]")].map(d => { const s = d.closest("section.st-sec"), sum = d.querySelector(":scope > summary"); return (s ? s.id : "") + "|" + (d.id || (sum ? sum.textContent.trim().slice(0, 60) : "")); }); }catch{}
+    const r = _rs96.apply(this, arguments);
+    try{ if(keep.length) document.querySelectorAll("#out details:not([open])").forEach(d => { const s = d.closest("section.st-sec"), sum = d.querySelector(":scope > summary"); if(keep.includes((s ? s.id : "") + "|" + (d.id || (sum ? sum.textContent.trim().slice(0, 60) : "")))) d.open = true; }); }catch{}
+    return r; }; }
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

@@ -10,10 +10,29 @@ declare(strict_types=1);
 if (!is_file(__DIR__ . '/config.php')) { http_response_code(500); exit; }
 require __DIR__ . '/config.php';
 require __DIR__ . '/auth-lib.php';
+require __DIR__ . '/invoice-lib.php';
 $action = (string) ($_GET['a'] ?? '');
 $h = fn($s) => htmlspecialchars((string) $s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-$invTotals = function (array $inv): array { $net = 0; foreach ((array) ($inv['lines'] ?? []) as $l) $net += (int) round(((float) ($l['q'] ?? 1)) * (int) ($l['u'] ?? 0)); $vat = (int) round($net * ((float) ($inv['vatRate'] ?? 0)) / 100); return ['net' => $net, 'vat' => $vat, 'total' => $net + $vat]; };
+$invTotals = fn(array $inv): array => ccInvTotals($inv);
 
+/* ---------- the same invoice as a PDF file, at the same private address ---------- */
+if ($action === 'pdf') {
+    $tok = (string) ($_GET['i'] ?? ''); $inv = null; if (preg_match('/^[a-f0-9]{32}$/', $tok)) foreach (ccInvRead() as $x) if (is_array($x) && hash_equals((string) ($x['token'] ?? ''), $tok)) { $inv = $x; break; }
+    if (!$inv || in_array($inv['status'] ?? '', ['requested'], true)) { http_response_code(404); header('Content-Type: text/plain; charset=utf-8'); echo 'Invoice not found.'; exit; }
+    $pdf = ccInvPdf($inv, ccInvSet(), (string) (ccSite()['contact'] ?? ''));
+    header('Content-Type: application/pdf'); header('Content-Disposition: ' . (!empty($_GET['dl']) ? 'attachment' : 'inline') . '; filename="' . ccInvPdfName($inv) . '"'); header('Content-Length: ' . strlen($pdf)); header('Cache-Control: no-store'); header('X-Robots-Tag: noindex, nofollow'); echo $pdf; exit;
+}
+/* ---------- how many people look at the front page: counted once a day per visitor, with no cookies and nothing kept that could say who they are ---------- */
+if ($action === 'hit') {
+    header('Content-Type: application/json; charset=utf-8'); header('Cache-Control: no-store');
+    $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''); if ($ua === '' || preg_match('/bot|crawl|spider|slurp|preview|monitor|curl|wget|python|headless/i', $ua)) { echo '{"ok":false}'; exit; }
+    $dir = ccDataDir() . '/_visits'; if (!is_dir($dir)) { @mkdir($dir, 0700, true); @file_put_contents($dir . '/.htaccess', "Require all denied\n"); }
+    $day = date('Y-m-d'); $f = "$dir/$day.json"; $key = substr(hash('sha256', $day . '|' . ccSiteId() . '|' . ($_SERVER['REMOTE_ADDR'] ?? '') . '|' . $ua), 0, 16);   // changes every day, so nobody can be followed from one day to the next
+    $fh = @fopen($f, 'c+'); if ($fh && flock($fh, LOCK_EX)) { $j = json_decode((string) stream_get_contents($fh), true); $j = is_array($j) ? $j : ['n' => 0, 'seen' => []];
+        if (!isset($j['seen'][$key])) { $j['seen'][$key] = 1; $j['n'] = (int) $j['n'] + 1; ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($j)); fflush($fh); } flock($fh, LOCK_UN); fclose($fh); }
+    foreach (glob("$dir/*.json") ?: [] as $old) if (basename($old, '.json') < $day) { $j = json_decode((string) @file_get_contents($old), true); if (is_array($j) && isset($j['seen'])) @file_put_contents($old, json_encode(['n' => (int) ($j['n'] ?? 0)])); }   // yesterday's list goes, only the count stays
+    echo '{"ok":true}'; exit;
+}
 /* ---------- an invoice as a page: anyone with its private address can open and print it ---------- */
 if ($action === 'view') {
     header('Content-Type: text/html; charset=utf-8'); header('Cache-Control: no-store'); header('X-Robots-Tag: noindex, nofollow'); header('X-Content-Type-Options: nosniff'); header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:");
@@ -33,10 +52,10 @@ h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em}.mut{color:#6b6b8a}.pre{w
 table{width:100%;border-collapse:collapse;margin-top:8px}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#6b6b8a;text-align:left;border-bottom:1px solid #e0e0f0;padding:8px 6px}td{padding:12px 6px;border-bottom:1px solid #eeeef7;vertical-align:top}
 .r{text-align:right;white-space:nowrap}.tot td{border:0;padding:6px}.tot .big td{font-size:19px;font-weight:800;border-top:2px solid #1e1b4b;padding-top:12px}
 .pay{margin-top:28px;padding:18px 20px;border-radius:12px;background:#f5f5ff;border:1px solid #e0e0ff}.foot{margin-top:26px;font-size:12.5px;color:#6b6b8a}
-.bar{max-width:820px;margin:18px auto 0;display:flex;justify-content:flex-end;padding:0 8px}.bar button{font:inherit;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed);border:0;border-radius:10px;padding:10px 18px;cursor:pointer}
+.bar{max-width:820px;margin:18px auto 0;display:flex;justify-content:flex-end;gap:10px;padding:0 8px}.bar .pdfb{font-weight:700;color:#4338ca;background:#fff;border:1px solid #c7d2fe;border-radius:10px;padding:10px 18px;text-decoration:none}.bar button{font:inherit;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed);border:0;border-radius:10px;padding:10px 18px;cursor:pointer}
 @media (max-width:640px){.sheet{margin:0;border-radius:0;padding:24px 18px}.grid{grid-template-columns:1fr}}
 @media print{body{background:#fff}.sheet{box-shadow:none;margin:0;max-width:none;padding:0}.bar{display:none}}
-</style></head><body><div class="bar"><button type="button" onclick="window.print()">Print or save as PDF</button></div><div class="sheet">
+</style></head><body><div class="bar"><a class="pdfb" href="money.php?a=pdf&amp;dl=1&amp;i=' . $h($inv['token']) . '">Download the PDF</a><button type="button" onclick="window.print()">Print</button></div><div class="sheet">
 <div class="top"><div><div class="brand">craft<span>iculum</span></div><div class="mut pre" style="margin-top:8px">' . $h($set['from']) . ($set['vatNo'] !== '' ? "\nVAT number " . $h($set['vatNo']) : '') . '</div></div>
 <div style="text-align:right"><h1>Invoice</h1><div style="font-weight:700">' . $h($inv['number'] ?: 'Draft') . '</div><div style="margin-top:8px"><span class="badge ' . ($st === 'paid' ? 'paid' : ($st === 'void' ? 'void' : ($over ? 'over' : ''))) . '">' . $h($label) . '</span></div></div></div>
 <div class="grid"><div><div class="k">Invoice to</div><div style="font-weight:700">' . $h($inv['to']['name'] ?? '') . '</div><div class="pre">' . $h($inv['to']['address'] ?? '') . '</div><div class="mut">' . $h($inv['to']['email'] ?? '') . '</div></div>
@@ -63,7 +82,7 @@ $line = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x1F\x7F<
 $multi = fn($s, int $n) => mb_substr(trim((string) preg_replace('/[\x00-\x09\x0B-\x1F\x7F<>]+/u', '', str_replace("\r", '', (string) $s))), 0, $n);
 $pub = function (array $inv) use ($invTotals, $a, $super) { $t = $invTotals($inv); $st = (string) ($inv['status'] ?? ''); $o = ['id' => $inv['id'], 'number' => (string) ($inv['number'] ?? ''), 'status' => $st, 'overdue' => $st === 'sent' && !empty($inv['due']) && $inv['due'] < time(), 'plan' => (string) ($inv['plan'] ?? ''), 'months' => (int) ($inv['months'] ?? 0),
         'po' => (string) ($inv['po'] ?? ''), 'to' => (array) ($inv['to'] ?? []), 'lines' => (array) ($inv['lines'] ?? []), 'vatRate' => (float) ($inv['vatRate'] ?? 0), 'note' => (string) ($inv['note'] ?? ''), 'issued' => (int) ($inv['issued'] ?? 0), 'due' => (int) ($inv['due'] ?? 0), 'paidAt' => (int) ($inv['paidAt'] ?? 0), 'from' => (int) ($inv['from'] ?? 0), 'until' => (int) ($inv['until'] ?? 0), 'at' => (int) ($inv['at'] ?? 0),
-        'college' => (string) ($inv['college'] ?? ''), 'collegeName' => (string) ($a['colleges'][(string) ($inv['college'] ?? '')]['name'] ?? ''), 'url' => $st === 'requested' ? '' : ccInvUrl($inv)] + $t;
+        'reminded' => max((int) ($inv['rem7'] ?? 0), (int) ($inv['rem14'] ?? 0)), 'reminders' => (int) !empty($inv['rem7']) + (int) !empty($inv['rem14']), 'pdf' => $st === 'requested' ? '' : str_replace('a=view', 'a=pdf', ccInvUrl($inv)), 'college' => (string) ($inv['college'] ?? ''), 'collegeName' => (string) ($a['colleges'][(string) ($inv['college'] ?? '')]['name'] ?? ''), 'url' => $st === 'requested' ? '' : ccInvUrl($inv)] + $t;
     if ($super) $o['ask'] = (string) ($inv['ask'] ?? ''); return $o; };
 $sorted = function (array $all) { $all = array_values(array_filter($all, 'is_array')); usort($all, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0)); return $all; };
 
@@ -130,7 +149,8 @@ if (in_array($action, ['payments', 'refund', 'credit'], true)) {
     out(200, ['card' => true, 'credits' => (int) (ccAccounts()['colleges'][$col]['credits'] ?? 0), 'charges' => array_values(array_map(fn($c) => ['id' => (string) $c['id'], 'amount' => (int) $c['amount'], 'refunded' => (int) ($c['amount_refunded'] ?? 0), 'at' => (int) ($c['created'] ?? 0), 'paid' => !empty($c['paid'])], array_filter((array) ($list['data']['data'] ?? []), fn($c) => !empty($c['paid']))))]);
 }
 /* ---------- the super admin: invoices ---------- */
-$mail = function (array $inv, string $subject, string $text) use ($a) { $to = (string) ($inv['to']['email'] ?? ''); return ccMailReady() && filter_var($to, FILTER_VALIDATE_EMAIL) ? ccMail($to, $subject, $text, ccInvSet($a)['email']) : false; };
+$mail = function (array $inv, string $subject, string $text, bool $pdf = false) use ($a) { $to = (string) ($inv['to']['email'] ?? ''); if (!ccMailReady() || !filter_var($to, FILTER_VALIDATE_EMAIL)) return false;
+    $files = $pdf ? [['name' => ccInvPdfName($inv), 'type' => 'application/pdf', 'data' => ccInvPdf($inv, ccInvSet($a), (string) (ccSite($a)['contact'] ?? ''))]] : []; return ccMail($to, $subject, $text, ccInvSet($a)['email'], $files); };
 if ($action === 'settingsset') {
     $s = (array) ($body['set'] ?? []); $site = (array) ($a['site'] ?? []); $em = strtolower($line($s['email'] ?? '', 160)); if ($em !== '' && !filter_var($em, FILTER_VALIDATE_EMAIL)) out(400, ['error' => 'email']);
     $site['invoice'] = ['from' => $multi($s['from'] ?? '', 500), 'bank' => $multi($s['bank'] ?? '', 500), 'terms' => max(0, min(120, (int) ($s['terms'] ?? 30))), 'vat' => max(0, min(30, round((float) ($s['vat'] ?? 0), 1))), 'vatNo' => $line($s['vatNo'] ?? '', 30), 'prefix' => (string) preg_replace('/[^A-Za-z0-9]/', '', $line($s['prefix'] ?? 'CR', 8)) ?: 'CR', 'email' => $em];
@@ -163,7 +183,7 @@ if (in_array($action, ['invoicesend', 'invoicepaid', 'invoicevoid', 'invoicedel'
             if (empty($x['issued'])) { $x['issued'] = time(); $x['due'] = strtotime('+' . $set['terms'] . ' days', $x['issued']); }
             $x['status'] = 'sent'; $x['sentAt'] = time(); $j[$id] = $x; $inv = $x; return $j; });
         $t = $invTotals($inv);
-        if ($mail($inv, "Invoice {$inv['number']} from Crafticulum", "Hello,\n\nHere is invoice {$inv['number']} for " . ccPounds($t['total']) . ', due by ' . date('j F Y', (int) $inv['due']) . '.' . ($inv['po'] !== '' ? "\nPurchase order: {$inv['po']}" : '') . "\n\nOpen it to print or save as a PDF:\n" . ccInvUrl($inv) . "\n\nHow to pay is on the invoice. Please quote {$inv['number']} with your payment.\n\nThank you,\nCrafticulum")) $sentTo = (string) $inv['to']['email'];
+        if ($mail($inv, "Invoice {$inv['number']} from Crafticulum", "Hello,\n\nHere is invoice {$inv['number']} for " . ccPounds($t['total']) . ', due by ' . date('j F Y', (int) $inv['due']) . '.' . ($inv['po'] !== '' ? "\nPurchase order: {$inv['po']}" : '') . "\n\nThe invoice is attached as a PDF. You can also open it online:\n" . ccInvUrl($inv) . "\n\nHow to pay is on the invoice. Please quote {$inv['number']} with your payment.\n\nThank you,\nCrafticulum", true)) $sentTo = (string) $inv['to']['email'];
         ccLog($me['dept'], $me, 'sent invoice ' . $inv['number']); $GLOBALS['sentTo'] = $sentTo;
     }
     if ($action === 'invoicepaid') {
@@ -238,11 +258,16 @@ if ($action === 'overview') {
     $backup = ['last' => $zs ? (int) @filemtime($zs[0]) : 0, 'count' => count($zs), 'check' => is_array($bk) ? $bk : null];
     $refunded = 0; foreach (@file(ccDataDir() . '/_refunds.jsonl', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $l) { $j = json_decode($l, true); if (is_array($j) && ($j['kind'] ?? '') === 'refund' && (int) ($j['t'] ?? 0) >= $m0) $refunded += (int) ($j['amount'] ?? 0); }
     $refs = 0; $refPaid = 0; foreach ($a['colleges'] as $c) { if (!empty($c['ref'])) $refs++; if (!empty($c['refDone'])) $refPaid++; }
+    /* from looking to paying, last 30 days: front page visitors, who started an account on their own, who built a lesson, who pays */
+    $vis = 0; $visDays = []; for ($i = 29; $i >= 0; $i--) { $dk = date('Y-m-d', $now - $i * 86400); $vj = json_decode((string) @file_get_contents(ccDataDir() . "/_visits/$dk.json"), true); $vn = is_array($vj) ? (int) ($vj['n'] ?? 0) : 0; $vis += $vn; $visDays[] = $vn; }
+    $fs = 0; $fb2 = 0; $fp = 0; $fpOld = 0; foreach ($ids as $id) { $c = (array) $a['colleges'][$id]; if (empty($c['self'])) continue; $paid = ccMoneyNow($a, $id) > 0;
+        if ((int) ($c['created'] ?? 0) < $now - 30 * 86400) { if ($paid) $fpOld++; continue; } $fs++; $built = false; foreach (ccCollegeDepts($a, $id) as $d) if (ccDeptLessons($a, (string) $d, 1)) { $built = true; break; } if ($built) $fb2++; if ($paid) $fp++; }
+    $funnel = ['visitors' => $vis, 'visitorDays' => $visDays, 'signups' => $fs, 'built' => $fb2, 'paid' => $fp, 'paidOlder' => $fpOld];
     $accounts = count($ids); $ltv = $churn !== null && $churn > 0 ? (int) round($arpa / ($churn / 100)) : null;
     out(200, ['on' => ccBillingOn(), 'cur' => '£', 'at' => $now, 'month' => date('F Y'), 'mrr' => $mrr, 'arr' => $mrr * 12, 'paying' => $paying, 'arpa' => $arpa, 'free' => $free, 'accounts' => $accounts, 'conversion' => $accounts > 0 ? round($paying / $accounts * 100, 1) : 0,
               'risk' => $risk, 'pastDue' => $pastDue, 'pastDueN' => $pastDueN, 'moves' => $mv, 'startMrr' => $startMrr, 'churn' => $churn, 'ltv' => $ltv, 'series' => $series, 'days' => array_values($days),
               'people' => ['total' => $pt, 'active7' => $a7, 'active30' => $a30, 'new30' => $new30, 'builders' => $builders], 'ai' => ['cost' => $aiTotal, 'calls' => (int) ($u['total']['calls'] ?? 0), 'rates' => $uset['in'] > 0 || $uset['out'] > 0, 'cur' => $uset['cur']], 'voice' => ['chars' => $ttsAll, 'cap' => (int) ccConf('TTS_CAP') ?: 900000, 'on' => trim((string) ccConf('TTS_KEY')) !== ''],
-              'margin' => $mrr > 0 ? round(($mrr / 100 - $aiTotal) / ($mrr / 100) * 100, 1) : null, 'invoices' => ['owed' => $owed, 'owedN' => $owedN, 'overdue' => $overN, 'asked' => $asked, 'paidMonth' => $paidMonth], 'forecast' => $fc, 'renewals' => array_slice($renew, 0, 12), 'feedback' => $fb, 'backup' => $backup, 'refunded' => $refunded, 'referrals' => ['signed' => $refs, 'paying' => $refPaid], 'mix' => array_map(fn($k, $v) => ['id' => $k, 'name' => $plans[$k]['name'] ?? $k] + $v, array_keys($mix), array_values($mix)), 'rows' => $rows,
+              'margin' => $mrr > 0 ? round(($mrr / 100 - $aiTotal) / ($mrr / 100) * 100, 1) : null, 'invoices' => ['owed' => $owed, 'owedN' => $owedN, 'overdue' => $overN, 'asked' => $asked, 'paidMonth' => $paidMonth], 'funnel' => $funnel, 'forecast' => $fc, 'renewals' => array_slice($renew, 0, 12), 'feedback' => $fb, 'backup' => $backup, 'refunded' => $refunded, 'referrals' => ['signed' => $refs, 'paying' => $refPaid], 'mix' => array_map(fn($k, $v) => ['id' => $k, 'name' => $plans[$k]['name'] ?? $k] + $v, array_keys($mix), array_values($mix)), 'rows' => $rows,
               'events' => array_map(fn($e) => $e + ['name' => (string) ($a['colleges'][(string) ($e['c'] ?? '')]['name'] ?? 'An institution that has gone')], array_slice(array_reverse($L), 0, 12))]);
 }
 out(400, ['error' => 'Unknown action.']);
