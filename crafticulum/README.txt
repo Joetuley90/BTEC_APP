@@ -2360,4 +2360,20 @@ VERSION 144: PHONES, AND TELLING PEOPLE IT'S FIXED
 - The Error log no longer redraws the whole of Settings when it loads, so
   a box you had opened elsewhere on the page stays open.
 
+VERSION 145: THE GOOGLE VOICE IN THE PLAYER, AND A CHOICE OF VOICES
+- Video lessons played in the app used the phone or computer's own voice
+  (Daniel on an iPhone), which an iPhone mutes when the silent switch is
+  on. With a Google key saved, the player now speaks with the Google
+  voice, sentence by sentence, through normal audio, so it plays on an
+  iPhone even on silent. Each sentence is still only paid for once.
+- The voice menu in the player lists Google's voices grouped by type and
+  accent: Chirp 3 HD (British, American, Australian), Studio, Neural2,
+  WaveNet and Standard, each marked male or female. The device's own
+  voices are still at the bottom. Each person's choice is remembered and
+  their MP4 downloads use it too.
+- Site setup, A voice for video lessons: the voice list has the same
+  choice, and a new box, typing 1 stops staff picking their own voice.
+- Only voices on the list can be asked for, and the monthly ceiling still
+  counts every character, whichever voice is used.
+
 NO CHANGES TO config.php
