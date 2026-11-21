@@ -2376,4 +2376,21 @@ VERSION 145: THE GOOGLE VOICE IN THE PLAYER, AND A CHOICE OF VOICES
 - Only voices on the list can be asked for, and the monthly ceiling still
   counts every character, whichever voice is used.
 
+VERSION 146: A HOW-TO FILM WITH A VOICE-OVER
+- The film on the front page is new: "how to use it, in six steps". Add
+  your subject, build a lesson, look through it, teach it on the board or
+  as a video lesson, download it or make a version for learners who need
+  support, share it, plan a unit, and find colleagues' lessons. Each step
+  is labelled on screen with a caption. About a minute and a half.
+- A big play button sits over the film. Tapping it starts the film and its
+  voice-over together, which is what lets a phone play the sound.
+- To give it a voice: Site setup, A voice for video lessons, pick a voice,
+  then press Voice the film. It speaks the film's captions in that voice
+  (about 1,000 characters, once) and keeps the result with your data, so
+  it survives updates. Press it again to change voice; sentences already
+  made cost nothing. Until it's voiced the film plays silently with its
+  captions.
+- If a later update brings a new film, the old voice-over stops being used
+  until you press Voice the film again.
+
 NO CHANGES TO config.php

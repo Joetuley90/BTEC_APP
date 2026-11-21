@@ -66,3 +66,22 @@ try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); 
   function warmUp(e){ var a = e.target.closest ? e.target.closest("a[href]") : null; if(!a || !isApp(a) || warm) return; warm = document.createElement("link"); warm.rel = "prefetch"; warm.href = a.getAttribute("href").split("?")[0]; document.head.appendChild(warm); }
   document.addEventListener("pointerover", warmUp, {passive: true}); document.addEventListener("touchstart", warmUp, {passive: true}); document.addEventListener("focusin", warmUp);
 })();
+
+/* the front-page film: a voice-over the site made with its own voice, kept in step with the picture. The big play button starts both in one tap,
+   which is what lets a phone play the sound. Without a voice-over the film plays silently with its captions, as before. */
+(function(){ var v = document.getElementById("demoFilm"), btn = document.getElementById("filmPlay"); if(!v || !btn) return; var a = null;
+  btn.hidden = false;
+  function sync(force){ if(!a) return; try{ if(force || Math.abs(a.currentTime - v.currentTime) > 0.35) a.currentTime = v.currentTime; }catch(e){} }
+  function go(){ if(!a) return; sync(true); a.playbackRate = v.playbackRate; a.volume = v.volume; a.muted = v.muted; var p = a.play(); if(p && p.catch) p.catch(function(){}); }
+  try{ fetch("speak.php?a=filminfo", {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if(j && j.on){ a = new Audio("speak.php?a=filmwav&v=" + j.v); a.preload = "auto"; v.setAttribute("aria-label", v.getAttribute("aria-label") + ", with a voice-over"); } }).catch(function(){}); }catch(e){}
+  btn.addEventListener("click", function(){ btn.hidden = true; if(a){ var p = a.play(); if(p && p.then) p.then(function(){ if(v.paused) a.pause(); }).catch(function(){}); } var q = v.play(); if(q && q.catch) q.catch(function(){}); v.focus(); });
+  v.addEventListener("play", function(){ btn.hidden = true; go(); });
+  v.addEventListener("pause", function(){ if(a) a.pause(); });
+  v.addEventListener("ended", function(){ if(a) a.pause(); });
+  v.addEventListener("seeked", function(){ sync(true); });
+  v.addEventListener("ratechange", function(){ if(a) a.playbackRate = v.playbackRate; });
+  v.addEventListener("volumechange", function(){ if(a){ a.volume = v.volume; a.muted = v.muted; } });
+  v.addEventListener("timeupdate", function(){ if(a && !v.paused) sync(false); });
+  v.addEventListener("waiting", function(){ if(a) a.pause(); });
+  v.addEventListener("playing", function(){ go(); });
+})();
