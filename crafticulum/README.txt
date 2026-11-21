@@ -2268,4 +2268,25 @@ VERSION 140: LIBRARY, FEEDBACK, VERSIONS, OFFLINE, AND MORE OF THE MONEY SIDE
 - The cookies page now lists a second cookie, cc_ref, set only when someone
   arrives from an invitation link.
 
+VERSION 141: INTEGRATIONS (EVERYTHING OFF UNTIL AN INSTITUTION SWITCHES IT ON)
+- Settings, Institution has a new section, Integrations, for the
+  institution's manager. Nothing in it is on by default.
+- Google Classroom and Microsoft Teams: after a phone quiz the teacher can
+  send each learner's score into the class gradebook. The manager puts in
+  the institution's own keys (a Google OAuth client, or a Microsoft Entra
+  app with its tenant) and switches it on. The section shows the redirect
+  address to give Google or Microsoft and the steps to follow. Each
+  teacher signs in to their own account once.
+- The quiz only knows initials, so the teacher picks the class and matches
+  each set of initials to a learner before sending. Initials that can
+  only be one learner are matched for them. Class lists are not kept.
+- Keys and sign-in tokens are stored encrypted in data/_integrations and
+  never sent back to a browser. Switching an integration off stops it for
+  everyone at once.
+- Your own links: up to four https links (Moodle, Canvas, SharePoint) that
+  show as buttons when a lesson is shared.
+- NEW FILES: integrate.php, quiz/marks.js.
+- NOTE: this has been tested against stand-ins for Google and Microsoft,
+  not the real services. Try it with one class before telling staff.
+
 NO CHANGES TO config.php
