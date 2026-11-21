@@ -2503,4 +2503,35 @@ VERSION 1.52: THE SAME FOOTER INSIDE THE APP
   and the Next Level Labs logo underneath (the white logo in dark mode),
   linking to visualize.agency.
 
+VERSION 1.53: FASTER, OFFLINE, SIGN-OFF, QUALITY REPORT, LEARNERS' PROGRESS
+- Faster: the app's code is now its own file (app.js). The page itself is
+  a fifth of the size it was, and browsers keep the code for a year, so
+  after the first visit the app opens much faster. A new address is used
+  whenever the code changes, so nobody gets an old copy.
+- Offline: with no internet you can open and teach your saved lessons,
+  and anything you change is kept on the device. It shows straight away,
+  even after a reload, and is saved to the server by itself when the
+  internet comes back. A note at the bottom says how many changes are
+  waiting. Building with Crafticulum AI still needs the internet.
+- Sign-off: under every lesson, Sign it off (a teacher can sign their own
+  lesson off, no approval needed) or Ask for a review. A head of
+  department sees lessons waiting for review on their start page and can
+  Approve them or Ask for changes with a note. The lesson stays the
+  teacher's. This sits alongside the department's own setting that holds
+  teachers' changes until a leader accepts them, which is unchanged.
+- Quality report: Planning has "Quality report for (course and level)".
+  Every unit against its criteria: lessons built, weeks planned, taught,
+  signed off, exit quiz results and learners achieved, with criteria not
+  covered flagged. Print or save it as a PDF, or download it as Word.
+  Learners aren't named in it.
+- Learners: "Progress across units" shows each learner's share of
+  criteria achieved in every unit marked for the group, how many they've
+  achieved in the last two weeks, and who is well behind the group. Marks
+  now record when they changed.
+- Every release on GitHub is checked before the live site is told to
+  fetch it: no settings file, the zip matches the folder, every PHP and
+  JavaScript file is valid, nothing a page needs is missing, no real
+  college named, and the site starts and answers. If any check fails the
+  deploy doesn't happen.
+
 NO CHANGES TO config.php

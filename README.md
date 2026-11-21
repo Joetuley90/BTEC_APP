@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.52, 21 Nov 2026: the links under Settings and Admin match the front page footer, with the Created by credit; 1.51 restored the invoice PDF file). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.52.zip` and `crafticulum-release.zip`: the same files as one zip (3,703,026 bytes).
+- `crafticulum/`: every file of the current release (1.53, 21 Nov 2026: faster first load, works offline, lesson sign-off, a quality report, learners' progress across units, and every release checked before it reaches the site). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.53.zip` and `crafticulum-release.zip`: the same files as one zip (3,713,234 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

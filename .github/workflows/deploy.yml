@@ -1,19 +1,26 @@
-# Tells the live site to fetch a release the moment it is pushed.
-# It needs one repository secret, CRAFTICULUM_DEPLOY_URL: the address shown in
-# Crafticulum under Settings, Site setup, Updates. Without it this does nothing.
+# Checks each release, then tells the live site to fetch it.
+# The check runs on every push. The deploy only runs if the check passes, so a broken release never reaches the site.
+# The deploy needs one repository secret, CRAFTICULUM_DEPLOY_URL: the address shown in Crafticulum under
+# Settings, Site setup, Updates. Without it the check still runs and nothing is deployed.
 # No passwords or keys for the server are kept here: the site fetches its own release.
-name: Deploy Crafticulum
+name: Check and deploy Crafticulum
 on:
   push:
     branches: [main]
-    paths:
-      - crafticulum-release.zip
-      - crafticulum/version.json
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the release
+        run: bash .github/check-release.sh
   deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Ask the site to update
