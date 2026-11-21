@@ -2393,4 +2393,23 @@ VERSION 146: A HOW-TO FILM WITH A VOICE-OVER
 - If a later update brings a new film, the old voice-over stops being used
   until you press Voice the film again.
 
+VERSION 147: THE FILM'S VOICE KEPT IN STEP, THE LOGO, AND NO COLLEGE NAMED
+- The film has been made again. The logo is on the opening and closing
+  cards, and every caption stays up longer so a real voice has room.
+- Voice the film now fits each line to its caption. A line that would run
+  into the next caption is asked for again a little faster (never more
+  than about a third), so the voice can't fall behind the picture.
+- On the front page the voice only runs while the picture is really
+  moving, so it can't start early while the film is still loading on a
+  phone, and it is no longer nudged every second.
+- AFTER UPDATING: Site setup, A voice for video lessons, press Remake the
+  voice-over. The old one is not used with the new film.
+- Download the voice-over (next to that button) saves the finished sound
+  as a file.
+- Nothing people can see names a real college any more. The example
+  assignment briefs use "Hilltop College", the lesson plan form is called
+  Lesson plan form, the calendar's open events are just Open Event, and
+  the placeholder team is Hilltop College. Institutions that use their
+  own Word forms keep them; only the labels changed.
+
 NO CHANGES TO config.php
