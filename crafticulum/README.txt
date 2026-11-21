@@ -1513,10 +1513,10 @@ GOOGLE, MICROSOFT AND COLLEGE SIGN-IN ASK WHERE YOU WORK (v111)
 A COLLEGE CAN'T BE SET UP TWICE (v111)
   Every way in is now checked, in this order:
     1. the institution they picked from the list
-    2. the name, however it's spelt ("Midkent", "Hilltop College" and "The
+    2. the name, however it's spelt ("Hilltop", "Hilltop College" and "The
        Hilltop College" are one name)
     3. their email address: if it ends the same way as a college manager's
-       (name@midkent.ac.uk), they belong to that college. Free addresses
+       (name@hilltop.ac.uk), they belong to that college. Free addresses
        such as gmail, outlook and icloud are ignored for this.
   A match is always a request to join, never a new space. This covers the
   sign-up form, Google, Microsoft and the college sign-in.
@@ -2099,7 +2099,7 @@ VERSION 130: THE TEAM LIVES WITH THE DEPARTMENT, AND PROFILE PAGES
   the people in the department you're in, as photo tiles. "Everyone in the
   institution" opens the full page with search and filters.
 - A profile is a page of its own, not a pop-up, at
-  /<institution>/team/<name>, for example /midkent/team/joetuley. The
+  /<institution>/team/<name>, for example /hilltop/team/samlee. The
   address is made from the institution's name and the person's name.
 - Signed-in colleagues from the same institution see the profile with how to
   reach the person. Anyone else sees "This profile is private" unless that
