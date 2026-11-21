@@ -2496,4 +2496,11 @@ VERSION 1.51: THE MISSING INVOICE FILE
   It's back, and each release is now checked for any file that's needed
   but missing before it goes out.
 
+VERSION 1.52: THE SAME FOOTER INSIDE THE APP
+- The links at the bottom of Settings and Admin now match the front
+  page's footer: About, Terms, Privacy, Cookies, Security, Data
+  processing, Accessibility and Contact and support, with "Created by"
+  and the Next Level Labs logo underneath (the white logo in dark mode),
+  linking to visualize.agency.
+
 NO CHANGES TO config.php

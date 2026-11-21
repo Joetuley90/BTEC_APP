@@ -1411,6 +1411,13 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* 1.52: the credit under Settings and Admin */
+#out .made-by-app{display:flex;justify-content:center;margin:10px 0 0}
+#out .made-by-app a{display:inline-flex;align-items:center;gap:10px;min-height:44px;color:var(--bs-secondary-color);text-decoration:none;font-size:.86rem}
+#out .made-by-app a:hover span,#out .made-by-app a:focus-visible span{text-decoration:underline}
+#out .made-by-app img{height:24px;width:auto;display:block}#out .made-by-app .mb-d{display:none}
+[data-bs-theme=dark] #out .made-by-app .mb-l{display:none}[data-bs-theme=dark] #out .made-by-app .mb-d{display:block}
+
 /* 1.50 accessibility, dark mode: filled buttons and badges dark enough for white text */
 [data-bs-theme=dark] body .btn-primary{--bs-btn-bg:#4f46e5;--bs-btn-border-color:#4f46e5;--bs-btn-hover-bg:#4338ca;--bs-btn-hover-border-color:#4338ca;--bs-btn-active-bg:#3730a3;--bs-btn-disabled-bg:#4f46e5;--bs-btn-disabled-border-color:#4f46e5}
 [data-bs-theme=dark] body .btn-success{--bs-btn-bg:#047857;--bs-btn-border-color:#047857;--bs-btn-hover-bg:#065f46;--bs-btn-hover-border-color:#065f46;--bs-btn-disabled-bg:#047857}
@@ -15280,6 +15287,12 @@ if(typeof inboxLoad === "function"){ const _inbox96 = inboxLoad; let inFlight = 
     try{ keep = [...document.querySelectorAll("#out details[open]")].map(d => { const s = d.closest("section.st-sec"), sum = d.querySelector(":scope > summary"); return (s ? s.id : "") + "|" + (d.id || (sum ? sum.textContent.trim().slice(0, 60) : "")); }); }catch{}
     const r = _rs96.apply(this, arguments);
     try{ if(keep.length) document.querySelectorAll("#out details:not([open])").forEach(d => { const s = d.closest("section.st-sec"), sum = d.querySelector(":scope > summary"); if(keep.includes((s ? s.id : "") + "|" + (d.id || (sum ? sum.textContent.trim().slice(0, 60) : "")))) d.open = true; }); }catch{}
+    return r; }; }
+/* the links at the foot of Settings and Admin match the front page's footer, with the same "Created by" credit */
+{ const _rs96b = renderSettings; renderSettings = function(){ const r = _rs96b.apply(this, arguments);
+    try{ const lg = document.getElementById("stLegal"); if(lg && !lg.dataset.full){ lg.dataset.full = "1"; const ck = lg.querySelector('a[href="cookies.html"]');
+        if(ck) ck.insertAdjacentHTML("afterend", ` · <a href="security.html" target="_blank" rel="noopener">Security</a> · <a href="dpa.html" target="_blank" rel="noopener">Data processing</a> · <a href="accessibility.html" target="_blank" rel="noopener">Accessibility</a>`);
+        lg.insertAdjacentHTML("afterend", `<p class="made-by-app" id="stMadeBy"><a href="https://visualize.agency" target="_blank" rel="noopener"><span>Created by</span><img class="mb-l" src="assets/nll-logo.svg?v=2" width="151" height="24" alt="Next Level Labs"><img class="mb-d" src="assets/nll-logo-white.svg?v=2" width="151" height="24" alt="Next Level Labs"></a></p>`); } }catch(e){ console.error(e); }
     return r; }; }
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
