@@ -3,6 +3,34 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.52 · 21 November 2026
+
+**The same footer inside the app**
+
+- The links at the bottom of Settings and Admin now match the front page's footer: About Crafticulum, Terms, Privacy, Cookies, Security, Data processing, Accessibility, and Contact and support.
+- Underneath is "Created by" with the Next Level Labs logo, linking to visualize.agency, as on the public pages. The white logo shows in dark mode.
+
+**After updating:** nothing to do.
+
+**Tested:** pwtidy, pw107, pwphone, pwsite, pwg, and checked on a phone in light and dark.
+
+### What was pushed
+
+- Commit `c27b403` on `main` (1 added, 6 changed, 1 removed).
+- Zip: `crafticulum-v1.52.zip`, 3,703,026 bytes, no `config.php` inside.
+- Build number: 152 (shown to people as 1.52).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.51.zip` |
+| added | `crafticulum-v1.52.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.51 · 21 November 2026
 
 **Fix: the invoice PDF file was missing from 1.50**
