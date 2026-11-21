@@ -1,6 +1,13 @@
 /* Crafticulum: fills the public pages with this site's name, logo, colour and contact email */
-/* a colleague's link (?ref=code): remembered for 90 days, so both sides get their free month if this visitor signs up */
-try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); if(m) document.cookie = "cc_ref=" + m[1] + ";path=/;max-age=" + 90 * 86400 + ";samesite=lax"; })(); }catch(e){}
+/* a colleague's link (?ref=code): we ask before saving the cookie that remembers it for 90 days, so both sides get their free month if this visitor signs up */
+try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); if(!m || /(?:^|; )cc_ref=/.test(document.cookie)) return; try{ if(sessionStorage.getItem("cc_ref_no") === m[1]) return; }catch(e){}
+  function show(){ if(document.getElementById("ccRefAsk")) return; var d = document.createElement("div"); d.id = "ccRefAsk"; d.setAttribute("role", "region"); d.setAttribute("aria-label", "A colleague's invitation");
+    d.style.cssText = "position:fixed;left:12px;right:12px;bottom:12px;z-index:2000;max-width:520px;margin:0 auto;background:#fff;color:#1e1b4b;border:1px solid #c7d2fe;border-radius:16px;box-shadow:0 12px 40px rgba(30,27,75,.28);padding:14px 16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left";
+    var bs = "border-radius:10px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;min-height:44px;";
+    d.innerHTML = '<b style="display:block;margin-bottom:4px">A colleague invited you</b><span>If you start a paid plan, you both get a free month. To remember the invitation we would save one small cookie for 90 days. It holds the code from the link and nothing about you. <a href="cookies.html" style="color:#4f46e5">About cookies</a></span><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button type="button" data-r="y" style="' + bs + 'border:0;color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed)">Yes, remember it</button><button type="button" data-r="n" style="' + bs + 'border:1px solid #c7d2fe;background:#fff;color:#4338ca">No thanks</button></div>';
+    d.addEventListener("click", function(e){ var b = e.target.closest ? e.target.closest("[data-r]") : null; if(!b) return; if(b.getAttribute("data-r") === "y") document.cookie = "cc_ref=" + m[1] + ";path=/;max-age=" + 90 * 86400 + ";samesite=lax"; else { try{ sessionStorage.setItem("cc_ref_no", m[1]); }catch(x){} } d.parentNode.removeChild(d); });
+    document.body.appendChild(d); }
+  if(document.body) show(); else document.addEventListener("DOMContentLoaded", show); })(); }catch(e){}
 (function(){
   var year = document.querySelectorAll("[data-year]"); for(var i = 0; i < year.length; i++) year[i].textContent = new Date().getFullYear();
   function each(sel, fn){ var l = document.querySelectorAll(sel); for(var i = 0; i < l.length; i++) fn(l[i]); }
