@@ -248,6 +248,26 @@ if ($action === 'mgrdash') {   // a manager's overview: each department's lesson
     usort($people, fn($x, $y) => strcasecmp($x['name'], $y['name']));
     out(200, ['depts' => $depts, 'people' => $people, 'cpdTarget' => $target, 'canSet' => $boss, 'since' => $ys]);
 }
+/* ---------- the lesson library: every finished lesson in the institution, to search, open and copy ---------- */
+if ($action === 'library' || $action === 'libget') {
+    $col = ccCollegeOf($acc, (string) $dept); $shut = !empty($acc['colleges'][$col]['libraryOff']); $ids = $shut ? [(string) $dept] : array_map('strval', ccCollegeDepts($acc, $col)); if (!in_array((string) $dept, $ids, true)) $ids[] = (string) $dept;
+    $uf = $base . '/_uses.json';
+    if ($action === 'libget') { $d = (string) ($body['dept'] ?? ''); $p = (string) ($body['path'] ?? ''); if (!in_array($d, $ids, true) || !preg_match('#^lessons/[A-Za-z0-9_-]{1,80}$#', $p)) out(404, ['error' => 'gone']);
+        $di = $acc['depts'][$d] ?? null; if (!$di) out(404, ['error' => 'gone']); $dd = !empty($di['legacy']) ? $base : $base . '/d/' . $d; $hit = null;
+        foreach (glob($dd . '/*.json') ?: [] as $f) { $j = json_decode((string) @file_get_contents($f), true); if (is_array($j) && ($j['path'] ?? '') === $p) { $hit = $j; break; } }
+        $l = $hit ? json_decode((string) ($hit['data']['lesson'] ?? ''), true) : null; if (!is_array($l) || ($d !== (string) $dept && (string) ($l['meta']['status'] ?? '') === 'draft')) out(404, ['error' => 'gone']);
+        if ($d !== (string) $dept || !empty($body['count'])) { $fh = @fopen($uf, 'c+'); if ($fh) { flock($fh, LOCK_EX); $u = json_decode((string) stream_get_contents($fh), true); if (!is_array($u)) $u = []; $k = $d . '|' . $p; $u[$k] = (int) ($u[$k] ?? 0) + 1; ftruncate($fh, 0); rewind($fh); fwrite($fh, json_encode($u)); flock($fh, LOCK_UN); fclose($fh); } }
+        out(200, ['lesson' => $l, 'dept' => $d, 'deptName' => (string) ($di['name'] ?? ''), 'mine' => $d === (string) $dept]); }
+    $uses = json_decode((string) @file_get_contents($uf), true); if (!is_array($uses)) $uses = []; $list = [];
+    foreach ($ids as $d) { $di = $acc['depts'][$d] ?? null; if (!$di) continue; $dd = !empty($di['legacy']) ? $base : $base . '/d/' . $d;
+        foreach (glob($dd . '/*.json') ?: [] as $f) { if (count($list) >= 1500) break 2; $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $l = json_decode((string) ($j['data']['lesson'] ?? ''), true); if (!is_array($l)) continue;
+            $draft = (string) ($l['meta']['status'] ?? '') === 'draft'; if ($draft && $d !== (string) $dept) continue; $m = (array) ($l['meta'] ?? []); $crit = [];
+            foreach ((array) ($l['plan'] ?? []) as $pl) foreach (preg_split('/[,;\s]+/', (string) ($pl['criteria'] ?? '')) ?: [] as $c) if ($c !== '' && strlen($c) < 12 && preg_match('/\d/', $c)) $crit[$c] = true;
+            $list[] = ['dept' => (string) $d, 'deptName' => (string) ($di['name'] ?? ''), 'path' => (string) $j['path'], 'title' => (string) ($l['title'] ?? 'Lesson'), 'course' => (string) ($m['course'] ?? ''), 'level' => (string) ($m['level'] ?? ''), 'unit' => (string) ($m['unit'] ?? ''), 'length' => (string) ($m['length'] ?? ''), 'by' => (string) ($m['by'] ?? ($m['author'] ?? '')), 'criteria' => array_slice(array_keys($crit), 0, 12),
+                       'at' => (int) floor(((int) ($j['data']['updatedAt'] ?? 0)) / 1000), 'uses' => (int) ($uses[$d . '|' . $j['path']] ?? 0), 'draft' => $draft, 'mine' => $d === (string) $dept]; } }
+    usort($list, fn($x, $y) => $y['uses'] <=> $x['uses'] ?: $y['at'] <=> $x['at']);
+    out(200, ['lessons' => $list, 'shut' => $shut, 'depts' => count($ids)]);
+}
 if ($action === 'directory') {   // everyone in the institution, as colleagues see them: no classes, lessons or verification here
     $col = ccCollegeOf($acc, (string) $dept); $boss = in_array($me['role'], ['superadmin', 'owner'], true); $ys = (date('n') >= 9 ? (int) date('Y') : (int) date('Y') - 1) . '-09-01';
     $slugs = ccPersonSlugs($acc, $col); $cslug = ccCollegeSlugs($acc)[$col] ?? '';

@@ -683,8 +683,41 @@ function ccTick(): void {
             $a['users'][$e]['nudged'] = $now; $dirty = true; if (count(glob(ccDataDir() . '/d/' . $d . '/lessons/*.json') ?: []) >= 2) continue;
             $hi = trim(explode(' ', (string) ($u['name'] ?? ''))[0]);
             if (ccMail((string) $e, 'Your next lesson takes about a minute', 'Hello' . ($hi !== '' ? " $hi" : '') . ",\n\nYou set up Crafticulum a few days ago. If you haven't had the chance to try it properly yet, here's the quickest way in:\n\n1. Open Crafticulum: " . ccAppUrl() . "\n2. Type the subject, the level and one sentence about tomorrow's lesson.\n3. Press Build. You get the timed plan, the teaching content, tasks, an exit quiz and the slides.\n\nEverything can be edited, and nothing is shared with anyone until you choose to.\n\nIf something got in the way, reply to this email and tell us. A real person reads it.\n\nCrafticulum")) $sent++; } }
+    /* Monday morning: a short summary for each institution's managers of the week just gone */
+    if ($mail && (defined('CC_DIGEST_ANYDAY') || ((int) date('N') === 1 && (int) date('G') >= 7))) { $wk = date('o-W'); $seen = ccSeenRead(); $u = ccUsageRead(); $supers = ccSupers(); $done = 0;
+        foreach (ccCollegeIds($a) as $id) { $id = (string) $id; if ($done >= 25) break; $c = (array) $a['colleges'][$id]; if (($c['digest'] ?? '') === $wk || !empty($c['digestOff']) || !empty($c['off'])) continue;
+            $depts = ccCollegeDepts($a, $id); $people = []; $mgrs = []; foreach ($a['users'] as $e => $x) { if (in_array((string) $e, $supers, true) || !empty($x['demo']) || !ccActive($x) || !in_array((string) ($x['dept'] ?? ''), $depts, true)) continue; $people[(string) $e] = $x; if (($x['role'] ?? '') === 'owner') $mgrs[] = (string) $e; }
+            if (count($people) < 2 || !$mgrs) continue;   // nothing to tell someone working on their own
+            $a['colleges'][$id]['digest'] = $wk; $dirty = true;
+            $built = 0; $by = []; foreach ($depts as $d) { $dd = !empty($a['depts'][$d]['legacy']) ? ccDataDir() : ccDataDir() . '/d/' . $d; foreach (glob($dd . '/*.json') ?: [] as $f) { if (@filemtime($f) < $now - 7 * 86400) continue; $j = json_decode((string) @file_get_contents($f), true); if (!is_array($j) || strpos((string) ($j['path'] ?? ''), 'lessons/') !== 0) continue; $built++; } }
+            $active = 0; $quiet = []; foreach ($people as $e => $x) { $s = max((int) ($seen[$e] ?? 0), (int) ($x['last'] ?? 0)); if ($now - $s < 7 * 86400) $active++; elseif ($now - $s > 14 * 86400) $quiet[] = (string) (($x['name'] ?? '') ?: $e); }
+            $used = ccPlanUsed($id, $u); $pl = ccPlans($a)[ccCollege($a, $id)['plan']]; $name = (string) ($c['name'] ?? 'your institution');
+            $text = "Here's the week at $name.\n\nLessons made or changed: $built\nPeople who opened Crafticulum: $active of " . count($people) . "\nBuilds with Crafticulum AI this month: {$used['builds']}" . ($pl['builds'] > 0 ? " of {$pl['builds']}" : '') . "\n"
+                . ($quiet ? "\nNot been in for two weeks or more: " . implode(', ', array_slice($quiet, 0, 12)) . (count($quiet) > 12 ? ' and ' . (count($quiet) - 12) . ' more' : '') . ". A quick word, or ten minutes at a team meeting, usually does it.\n" : "\nEveryone has been in during the last two weeks.\n")
+                . "\nOpen the manager's view: " . ccAppUrl() . "\n\nYou get this each Monday because you manage $name on Crafticulum. To stop it, switch off Weekly summary in Settings, Institution.";
+            foreach ($mgrs as $m) ccMail($m, "Your week on Crafticulum: $built lesson" . ($built === 1 ? '' : 's') . ", $active of " . count($people) . ' active', $text); $done++; } }
+    /* once a month: open the newest backup and read every file in it, so a backup that can't be restored is found now and not on the day it's needed */
+    try { ccBackupCheck(); } catch (\Throwable $e) {}
     if ($dirty) { ccSaveAccounts($a); ccMoneySync($a); }
 }
+function ccBackupCheck(bool $force = false): array {
+    $dir = ccDataDir() . '/backups'; $rf = $dir . '/check.json'; $last = json_decode((string) @file_get_contents($rf), true); if (!is_array($last)) $last = [];
+    if (!$force && !empty($last['t']) && time() - (int) $last['t'] < 28 * 86400) return $last;
+    $zips = array_values(array_filter(glob($dir . '/*.zip') ?: [], fn($f) => preg_match('/\/\d{4}-\d{2}-\d{2}\.zip$/', $f))); rsort($zips); if (!$zips || !class_exists('ZipArchive')) return $last;
+    $f = $zips[0]; $z = new ZipArchive(); $res = ['t' => time(), 'file' => basename($f), 'ok' => false, 'files' => 0, 'bad' => 0, 'bytes' => (int) @filesize($f), 'why' => ''];
+    if ($z->open($f) !== true) { $res['why'] = 'The backup file could not be opened.'; } else { $acc = false; $stop = microtime(true) + 20;
+        for ($i = 0; $i < $z->numFiles && microtime(true) < $stop; $i++) { $n = (string) $z->getNameIndex($i); if (substr($n, -1) === '/') continue; $c = $z->getFromIndex($i); $res['files']++; if ($c === false) { $res['bad']++; continue; }
+            if (substr($n, -5) === '.json' && strlen($c) < 4000000 && trim($c) !== '' && json_decode($c, true) === null && json_last_error() !== JSON_ERROR_NONE) $res['bad']++; if (basename($n) === '_accounts.json') { $j = json_decode($c, true); $acc = is_array($j) && !empty($j['users']); } }
+        $z->close(); $res['ok'] = $res['bad'] === 0 && $res['files'] > 0 && $acc; if (!$res['ok']) $res['why'] = !$acc ? 'The list of accounts is missing from the backup.' : $res['bad'] . ' file' . ($res['bad'] === 1 ? '' : 's') . ' could not be read.'; }
+    @file_put_contents($rf, json_encode($res), LOCK_EX);
+    if (!$res['ok']) { ccErr('backup', 'The monthly check of the backup failed. ' . $res['why']); foreach (ccSupers() as $s) ccNotify((string) $s, 'people', 'The backup check failed', $res['why'] . ' Open Admin, Money, Business.'); }
+    return $res;
+}
+/* ---------- give a month, get a month ---------- */
+function ccRefCode(array &$a, string $college): string { $c = (string) ($a['colleges'][$college]['refCode'] ?? ''); if ($c !== '') return $c; do { $c = substr(strtolower(strtr(base64_encode(random_bytes(9)), '+/=', 'xyz')), 0, 8); $c = (string) preg_replace('/[^a-z0-9]/', 'k', $c); $hit = false; foreach ($a['colleges'] as $x) if (($x['refCode'] ?? '') === $c) $hit = true; } while ($hit); $a['colleges'][$college]['refCode'] = $c; return $c; }
+function ccRefFrom(array $a): string { $code = strtolower((string) ($_COOKIE['cc_ref'] ?? '')); if (!preg_match('/^[a-z0-9]{8}$/', $code)) return ''; foreach ($a['colleges'] as $id => $c) if (($c['refCode'] ?? '') === $code && empty($c['off'])) return (string) $id; return ''; }
+function ccFeedbackFile(): string { return ccDataDir() . '/_feedback.jsonl'; }
+
 /* when each person last opened the app, kept apart from the accounts file so it can be written often */
 function ccSeenFile(): string { return ccDataDir() . '/_seen.json'; }
 function ccSeenRead(): array { $j = json_decode((string) @file_get_contents(ccSeenFile()), true); return is_array($j) ? $j : []; }

@@ -2229,4 +2229,43 @@ VERSION 139: THE MONEY SIDE, AND THINGS FOR TEST WEEK
 - App icons (home screen, install) are now the logo itself, not the white
   version on a tile.
 
+VERSION 140: LIBRARY, FEEDBACK, VERSIONS, OFFLINE, AND MORE OF THE MONEY SIDE
+- Lesson library across the institution. In the Resource library there is
+  Search every department: finished lessons from every department, found
+  by title, subject, unit, criteria or teacher, most used first. Opening
+  one from another department gives a copy to save. Drafts never leave
+  their own department. A manager can keep the library to each department
+  in Settings, Institution.
+- Was this a good lesson? Asked once under every newly built lesson. If
+  not, people say what was off. The answers are in Admin, Money, Business.
+- Make a version for...: under any lesson, builds a second version for
+  dyslexia, EAL, low literacy and the other needs. It uses one build.
+- Offline. Offline copy under any lesson saves a zip with a page that
+  works with no internet, the slides and the worksheet. The unit lesson
+  pack carries the same page for every lesson. And the app itself now
+  opens with no internet and shows the lessons and planning that were on
+  the device last time; nothing saves until it is back online, and what
+  is kept is wiped on sign-out.
+- Admin, Money, Business: Refund or credit on every institution (refund a
+  card payment in full or in part, take an amount off the next bill, or
+  give a free month), the next three months expected with what needs a
+  renewal, renewals coming up in 90 days, what people think of what gets
+  built, and a monthly check that the newest backup opens and every file
+  in it can be read.
+- Give a month, get a month. A manager's link is in Settings, Plan and
+  billing. When someone who came by it starts a paid plan, both get a
+  month off their next card bill, automatically.
+- Weekly summary. Each Monday managers of an institution with two or more
+  people get lessons made, who was active and who has not been in for two
+  weeks. Switch it off in Settings, Institution.
+- The activity log can be searched and downloaded as a spreadsheet.
+- NEW PAGES: /status (is it working, with notes you post from Admin,
+  System), and five subject pages: /btec-it-lesson-plans,
+  /btec-esports-lesson-plans, /t-level-digital-lesson-plans,
+  /gcse-computer-science-lesson-plans, /functional-skills-lesson-plans.
+  The front page has a 30 second film (assets/demo.mp4).
+  NEW FILE: status.php. .htaccess and page.php changed.
+- The cookies page now lists a second cookie, cc_ref, set only when someone
+  arrives from an invitation link.
+
 NO CHANGES TO config.php

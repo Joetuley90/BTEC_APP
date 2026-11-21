@@ -1,4 +1,6 @@
 /* Crafticulum: fills the public pages with this site's name, logo, colour and contact email */
+/* a colleague's link (?ref=code): remembered for 90 days, so both sides get their free month if this visitor signs up */
+try{ (function(){ var m = /[?&]ref=([a-z0-9]{8})(?:&|$)/.exec(location.search); if(m) document.cookie = "cc_ref=" + m[1] + ";path=/;max-age=" + 90 * 86400 + ";samesite=lax"; })(); }catch(e){}
 (function(){
   var year = document.querySelectorAll("[data-year]"); for(var i = 0; i < year.length; i++) year[i].textContent = new Date().getFullYear();
   function each(sel, fn){ var l = document.querySelectorAll(sel); for(var i = 0; i < l.length; i++) fn(l[i]); }

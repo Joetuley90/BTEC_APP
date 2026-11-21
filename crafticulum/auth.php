@@ -79,6 +79,7 @@ function newWorkspace(array &$a, string $email, string $name, string $space): st
     $space = cleanName($space); if ($space === '') $space = trim(explode(' ', $name)[0] . "'s workspace");
     $id = trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($space)), '-') ?: 'space'; $id = substr($id, 0, 20) . '-' . bin2hex(random_bytes(2)); while (isset($a['colleges'][$id])) $id .= 'x';
     $a['colleges'][$id] = ['name' => $space, 'plain' => true, 'created' => time(), 'plan' => 'free', 'self' => true];
+    $from = ccRefFrom($a); if ($from !== '') { $a['colleges'][$id]['ref'] = $from; if (!headers_sent()) setcookie('cc_ref', '', ['expires' => time() - 3600, 'path' => '/']); }   // came from a colleague's link
     $did = substr($id, 0, 24); $n = 2; while (isset($a['depts'][$did]) || $did === CC_DEMO_DEPT) $did = substr($id, 0, 20) . '-' . $n++;
     $a['depts'][$did] = ['name' => 'My department', 'created' => time(), 'college' => $id];
     return $did;
@@ -470,6 +471,12 @@ if ($action === 'errlog') {
     ccErr('browser', $msg, ['where' => (string) ($body['where'] ?? ''), 'page' => (string) ($body['page'] ?? ''), 'role' => $me['role'], 'dept' => !empty($me['demo']) ? 'demo' : (string) $me['deptName'], 'browser' => (string) ($body['browser'] ?? '')]);
     out(200, ['ok' => true, 'kept' => true]);
 }
+if ($action === 'feedback') {   // was that build any good? One line for each answer, read by the super admin
+    $good = !empty($body['good']); $why = substr((string) preg_replace('/[^a-z_]/', '', (string) ($body['why'] ?? '')), 0, 20); $note = mb_substr(trim((string) preg_replace('/[\x00-\x1F<>]+/u', ' ', (string) ($body['note'] ?? ''))), 0, 300);
+    $row = ['t' => time(), 'good' => $good, 'why' => $good ? '' : $why, 'note' => $note, 'kind' => substr((string) preg_replace('/[^a-z]/', '', (string) ($body['kind'] ?? 'lesson')), 0, 12), 'subject' => mb_substr(trim((string) preg_replace('/[\x00-\x1F<>]+/u', ' ', (string) ($body['subject'] ?? ''))), 0, 80), 'level' => mb_substr(trim((string) preg_replace('/[\x00-\x1F<>]+/u', ' ', (string) ($body['level'] ?? ''))), 0, 60), 'college' => (string) ($me['college'] ?? ''), 'by' => (string) $me['email']];
+    $f = ccFeedbackFile(); if (is_file($f) && filesize($f) > 1500000) { $l = file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []; @file_put_contents($f, implode("\n", array_slice($l, -4000)) . "\n", LOCK_EX); }
+    @file_put_contents($f, json_encode($row, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX); out(200, ['ok' => true]);
+}
 if ($action === 'shot') {   // the screenshot sent with a report
     if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']); $id = (string) ($_GET['id'] ?? ''); if (!preg_match('/^[a-f0-9]{12}$/', $id)) out(404, ['error' => 'gone']);
     foreach (['jpg' => 'image/jpeg', 'png' => 'image/png'] as $ext => $type) { $f = ccDataDir() . '/_shots/' . $id . '.' . $ext; if (is_file($f)) { header('Content-Type: ' . $type); header('Cache-Control: private, max-age=600'); header('X-Content-Type-Options: nosniff'); readfile($f); exit; } }
@@ -610,10 +617,11 @@ if ($action === 'houseget' || $action === 'houseset') {
         if (is_array($body['house'] ?? null)) { $h = []; foreach (CC_HOUSE as $k => $n) $h[$k] = mb_substr(trim(str_replace(["\r", "\0"], '', (string) ($body['house'][$k] ?? ''))), 0, $n); $h['on'] = !empty($body['house']['on']);
             $a['colleges'][$cid]['house'] = $h; ccLog($me['dept'], $me, 'changed the house rules for the AI'); }
         if (array_key_exists('anon', $body)) { $on = !empty($body['anon']); if ($on !== ccAnon($a, $cid)) { $a['colleges'][$cid]['anon'] = $on; ccLog($me['dept'], $me, $on ? 'switched on anonymous learners' : 'switched off anonymous learners'); } }
+        foreach (['digestOff' => ['switched off the weekly summary email', 'switched on the weekly summary email'], 'libraryOff' => ['closed the lesson library to other departments', 'opened the lesson library to every department']] as $k => $say) if (array_key_exists($k, $body)) { $on = !empty($body[$k]); if ($on !== !empty($a['colleges'][$cid][$k])) { $a['colleges'][$cid][$k] = $on; ccLog($me['dept'], $me, $say[$on ? 0 : 1]); } }
         if (array_key_exists('profilesPublic', $body)) { $on = !empty($body['profilesPublic']); if ($on !== !empty($a['colleges'][$cid]['profilesPublic'])) { $a['colleges'][$cid]['profilesPublic'] = $on; ccLog($me['dept'], $me, $on ? 'made staff profiles public' : 'made staff profiles private again'); } }
         if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
     }
-    out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'profilesPublic' => !empty($a['colleges'][$cid]['profilesPublic']), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
+    out(200, ['house' => ccHouse($a, $cid), 'anon' => ccAnon($a, $cid), 'profilesPublic' => !empty($a['colleges'][$cid]['profilesPublic']), 'digestOff' => !empty($a['colleges'][$cid]['digestOff']), 'libraryOff' => !empty($a['colleges'][$cid]['libraryOff']), 'collegeName' => ccCollege($a, $cid)['name'], 'limits' => CC_HOUSE, 'me' => ccPublic(ccMe() ?: $me)]);
 }
 /* the super admin steps back out of the institution they were working inside */
 if ($action === 'leave') {
@@ -726,7 +734,7 @@ if ($action === 'usage' || $action === 'usageset') {
     out(200, ['month' => $ym, 'months' => array_slice($months, 0, 12), 'total' => $row($mine), 'depts' => $depts, 'users' => array_slice($users, 0, 60), 'days' => (object) $days, 'set' => $set, 'super' => $super, 'scope' => $super ? 'site' : ($own ? 'college' : 'dept'), 'collegeCap' => $super ? 0 : ccCollege($a, (string) $me['college'])['cap'], 'model' => (string) ($u['model'] ?? ''), 'marker' => $super && !empty($u['kinds']['marker']) ? $row($u['kinds']['marker']) : null, 'blocked' => $ym === date('Y-m') ? ccUsageBlocked($me) : '']);
 }
 if ($action === 'mailtest') { if ($me['role'] !== 'superadmin') out(403, ['error' => 'noperm']); $ok = ccMail($me['email'], 'Crafticulum email test', "Hello,\n\nEmail from Crafticulum is working.\n"); out(200, ['sent' => $ok, 'why' => (string) ($GLOBALS['ccMailErr'] ?? '')]); }
-if ($action === 'log') { if (!$me['isLead']) out(403, ['error' => 'noperm']); out(200, ['log' => ccLogRead($me['dept'])]); }
+if ($action === 'log') { if (!$me['isLead']) out(403, ['error' => 'noperm']); out(200, ['log' => ccLogRead($me['dept'], max(50, min(1500, (int) ($body['n'] ?? 300))))]); }
 /* your own details: only the name is shown to anyone else */
 if ($action === 'profile') {
     if (!$selfOk) out(400, ['error' => 'admin']);
