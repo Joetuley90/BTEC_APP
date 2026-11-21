@@ -46,11 +46,11 @@ SET UP (cPanel, about 10 minutes)
 
 WHAT WORKS DIFFERENTLY FROM THE CLAUDE VERSION
 - Writing lessons, starters, quizzes, task sheets, brief support versions and the
-  MKC lesson plan all go through ai.php. Each request uses your Anthropic API
+  Lesson plan form all go through ai.php. Each request uses your Anthropic API
   credit. MAX_REQUESTS_PER_HOUR in config.php caps it per teacher.
 - Downloads (PowerPoint, Word, images) save straight to the computer.
-- The lesson library is saved on your server, so it's the same at Medway and
-  Maidstone once you sign in.
+- The lesson library is saved on your server, so it's the same on every site once
+  you sign in.
 - The phone quiz uses the quiz room in ./quiz/ automatically: students scan, type
   initials and answer, and you get a report when you end it. Ending deletes the
   answers from the server. Anything not ended is deleted after 6 hours.
@@ -1239,7 +1239,7 @@ WHAT'S NEW IN v100
 YOUR COLLEGE OR SCHOOL, AS YOU TYPE (v100)
   Once a list has been read into the institution directory, both sign-up
   forms search it as people type. Two letters is enough: "MID" brings up
-  MidKent College. Names that start with what was typed come first, closed
+  Hilltop College. Names that start with what was typed come first, closed
   institutions are left out, and the arrow keys and Enter work.
   - "Your college, school or team" (starting your own account): pick from the
     list or type anything. If the one you pick already has a workspace here,
@@ -1415,8 +1415,8 @@ SIGNING UP: PICK YOUR COLLEGE, AND NO SECOND COPIES (v107)
     request to join it and says so. Its manager approves it as usual.
   - The server checks as well, so it can't be got round: a new workspace
     with the same name as a college that's already here is not made. The
-    person becomes a request to join that college instead. "Midkent",
-    "MidKent College" and "The Mid Kent College" all count as the same name.
+    person becomes a request to join that college instead. "Hilltop",
+    "Hilltop college" and "The Hilltop College" all count as the same name.
     A college set up properly is chosen before a workspace someone started
     for themselves.
   - Signing up with Google or Microsoft has no college box, so it isn't
@@ -1513,8 +1513,8 @@ GOOGLE, MICROSOFT AND COLLEGE SIGN-IN ASK WHERE YOU WORK (v111)
 A COLLEGE CAN'T BE SET UP TWICE (v111)
   Every way in is now checked, in this order:
     1. the institution they picked from the list
-    2. the name, however it's spelt ("Midkent", "MidKent College" and "The
-       Mid Kent College" are one name)
+    2. the name, however it's spelt ("Midkent", "Hilltop College" and "The
+       Hilltop College" are one name)
     3. their email address: if it ends the same way as a college manager's
        (name@midkent.ac.uk), they belong to that college. Free addresses
        such as gmail, outlook and icloud are ignored for this.
@@ -1660,7 +1660,7 @@ FIVE AI TOOLS TO START WITH (v114)
   manager, Your institution, Institutions, Institutions set up twice, and
   so on. "The college year" reads "the academic year".
   - Left as they were: the public pages, the sign-in and register form
-    (which already says "college or school"), and names such as MidKent
+    (which already says "college or school"), and names such as Hilltop
     College.
   - Only words people read have changed. Nothing stored has been renamed,
     so no data needs moving.
