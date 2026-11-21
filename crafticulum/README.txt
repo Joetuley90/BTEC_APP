@@ -2314,4 +2314,27 @@ VERSION 142: TIDIER SETTINGS, FIRST STEPS, YEARLY PLANS
   as well as a lesson being built.
 - Example text in the campus and room boxes no longer names real places.
 
+VERSION 143: FROM A REPORT TO A FIX
+- Admin, To do, Messages. Every message now has Send to Claude. You read
+  the report and its screenshot, edit the message if it names a learner,
+  say what you want done, and choose whether the screenshot goes. That
+  lines it up.
+- Save the pack for Claude makes one zip of everything lined up:
+  reports.md (each report, where they were, their device, their role and
+  what you want done) and the screenshots you allowed. Names, email
+  addresses and institutions are left out. Attach the zip in your chat
+  with Claude. Copy as text does the same without pictures.
+- Each report then shows Sent to Claude, and Mark as fixed moves it to
+  Done. Send again puts it back.
+- The contact page takes an optional screenshot, like Report a problem in
+  Crafti. Deleting a message now deletes its screenshot.
+- Nothing is sent anywhere by the site itself: the pack is a file you
+  choose to hand over.
+- On a phone, the parts of a lesson (Overview, Starter, Teach and so on)
+  used to be a block of eight or nine buttons that scrolled away. They
+  are now one bar that stays under the header: the part you are on,
+  arrows to the one before and after, and a tap on the name to see the
+  whole list and jump. A new part opens at its top. Bigger screens keep
+  the tabs as they were.
+
 NO CHANGES TO config.php
