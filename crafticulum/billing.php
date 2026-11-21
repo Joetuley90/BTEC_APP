@@ -56,7 +56,7 @@ function billApply(string $college, array $sub): bool {
     $end = (int) ($sub['current_period_end'] ?? ($sub['items']['data'][0]['current_period_end'] ?? 0));
     $bill = ['customer' => (string) (is_array($sub['customer'] ?? null) ? ($sub['customer']['id'] ?? '') : ($sub['customer'] ?? ($bill['customer'] ?? ''))), 'sub' => $live ? $id : '', 'status' => $live ? $status : 'ended',
              'plan' => $live ? $plan : '', 'periodEnd' => $end, 'cancelAt' => !empty($sub['cancel_at_period_end']) ? $end : 0, 'at' => time()];
-    if ($live) { $amt = (int) ($sub['items']['data'][0]['price']['unit_amount'] ?? 0); $bill['mrr'] = $amt > 0 ? $amt : max(0, (int) (ccPlans($a)[$plan]['price'] ?? 0)); }
+    if ($live) { $amt = (int) ($sub['items']['data'][0]['price']['unit_amount'] ?? 0); $yr = (string) ($sub['items']['data'][0]['price']['recurring']['interval'] ?? '') === 'year'; if ($yr) { $bill['yearly'] = true; $amt = (int) round($amt / 12); } $bill['mrr'] = $amt > 0 ? $amt : max(0, (int) (ccPlans($a)[$plan]['price'] ?? 0)); }
     $a['colleges'][$college]['bill'] = $bill;
     $a['colleges'][$college]['plan'] = $live ? $plan : 'free';
     if (!ccSaveAccounts($a)) return false;
@@ -111,7 +111,7 @@ $cid = (string) $me['college']; $col = ccCollege($a, $cid);
 $status = function () use (&$a, $cid, $me, $pubPlans, $money) { $c = ccCollege($a, $cid); $p = ccPlanOf($a, $cid); $b = $c['bill'];
     return ['on' => ccBillingOn(), 'canPay' => ccStripeReady(), 'college' => $c['name'], 'plan' => ['id' => $p['id'], 'name' => $p['name'], 'priceText' => $p['price'] < 0 ? 'Custom' : $money($p['price']), 'people' => $p['people'], 'depts' => $p['depts'], 'builds' => $p['builds'], 'checks' => $p['checks']],
             'used' => ccPlanUsed($cid) + ['people' => ccCollegePeople($a, $cid), 'depts' => count(ccCollegeDepts($a, $cid))], 'plans' => $pubPlans(),
-            'bill' => ['status' => (string) ($b['status'] ?? ''), 'paid' => !empty($b['sub']), 'periodEnd' => (int) ($b['periodEnd'] ?? 0), 'cancelAt' => (int) ($b['cancelAt'] ?? 0), 'hasCustomer' => !empty($b['customer'])],
+            'bill' => ['status' => (string) ($b['status'] ?? ''), 'paid' => !empty($b['sub']), 'yearly' => !empty($b['yearly']), 'periodEnd' => (int) ($b['periodEnd'] ?? 0), 'cancelAt' => (int) ($b['cancelAt'] ?? 0), 'hasCustomer' => !empty($b['customer'])],
             'pk' => !empty($me['admin']) ? trim((string) ccConf('STRIPE_PUBLISHABLE_KEY')) : '',   // with this, paying and changing the card happen inside the app
             'canManage' => !empty($me['admin'])]; };
 if ($action === 'status') { if (empty($me['isLead'])) out(403, ['error' => 'noperm']); out(200, $status()); }
@@ -127,10 +127,11 @@ if (in_array($action, ['checkout', 'portal', 'confirm', 'manage', 'cancel', 'res
         $p = $plans[$plan]; if ($p['price'] < 30) out(400, ['error' => 'price']);
         if ($col['plan'] === $plan && !empty($col['bill']['sub'])) out(400, ['error' => 'same']);
         if ($p['people'] > 0 && ccCollegePeople($a, $cid) > $p['people']) out(400, ['error' => 'too_many', 'people' => $p['people']]);
+        $yearly = !empty($body['yearly']);   // pay for ten months, get twelve
         $inApp = !empty($body['embedded']) && trim((string) ccConf('STRIPE_PUBLISHABLE_KEY')) !== '';
         $params = ($inApp ? ['ui_mode' => 'embedded', 'redirect_on_completion' => 'if_required', 'return_url' => $app . '?billing=done&session={CHECKOUT_SESSION_ID}'] : ['success_url' => $app . '?billing=done&session={CHECKOUT_SESSION_ID}', 'cancel_url' => $app . '?billing=cancel'])
             + ['mode' => 'subscription', 'client_reference_id' => $cid, 'allow_promotion_codes' => 'true',
-            'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'gbp', 'unit_amount' => $p['price'], 'recurring' => ['interval' => 'month'], 'product_data' => ['name' => 'Crafticulum ' . $p['name']]]]],
+            'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'gbp', 'unit_amount' => $yearly ? $p['price'] * 10 : $p['price'], 'recurring' => ['interval' => $yearly ? 'year' : 'month'], 'product_data' => ['name' => 'Crafticulum ' . $p['name'] . ($yearly ? ', yearly' : '')]]]],
             'metadata' => ['college' => $cid, 'plan' => $plan], 'subscription_data' => ['metadata' => ['college' => $cid, 'plan' => $plan]]];
         if (!empty($col['bill']['customer'])) $params['customer'] = (string) $col['bill']['customer']; elseif (filter_var($me['email'], FILTER_VALIDATE_EMAIL)) $params['customer_email'] = $me['email'];
         $r = stripe('POST', '/v1/checkout/sessions', $params);

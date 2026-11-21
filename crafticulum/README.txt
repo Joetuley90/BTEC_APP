@@ -2289,4 +2289,29 @@ VERSION 141: INTEGRATIONS (EVERYTHING OFF UNTIL AN INSTITUTION SWITCHES IT ON)
 - NOTE: this has been tested against stand-ins for Google and Microsoft,
   not the real services. Try it with one class before telling staff.
 
+VERSION 142: TIDIER SETTINGS, FIRST STEPS, YEARLY PLANS
+- Settings. Institution was one long page of fifteen sections. It is now
+  three tabs: Institution (name and look, departments, team, add several
+  people, who can use what, the directory), Plan and billing (plan, pay
+  by invoice, give a month get a month, usage and cost) and Rules and
+  integrations (integrations, weekly summary and library, house rules,
+  anonymous learners, activity).
+- A manager's start page has a short list: add your team, add a subject,
+  build a lesson, share one with a class. Each ticks itself off, and Hide
+  puts the list away.
+- Yearly plans. Above the plans there is Pay monthly / Pay yearly. Yearly
+  charges ten months for twelve. The Business dashboard counts a yearly
+  plan as a twelfth of it each month. The front page and the terms say
+  so.
+- Learners: where an institution has switched on Google Classroom or
+  Teams, Send marks puts each learner's number of achieved criteria for
+  the chosen unit into the class. Names are matched for you and checked
+  by the teacher before anything is sent.
+- Phones: on a lesson the Crafti button no longer sits on top of the tabs
+  (Crafti is still in the menu), and the buttons under a lesson are
+  easier to tap.
+- The film on the front page is longer and shows planning and the library
+  as well as a lesson being built.
+- Example text in the campus and room boxes no longer names real places.
+
 NO CHANGES TO config.php
