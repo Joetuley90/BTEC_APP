@@ -513,6 +513,12 @@ if ($action === 'inbox' || $action === 'inboxset' || $action === 'inboxreply') {
             if (array_key_exists('fixShot', $body)) $j[$id]['fixShot'] = !empty($body['fixShot']);
             if (array_key_exists('fixMsg', $body)) { $fm = mb_substr(trim((string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', '', (string) $body['fixMsg'])), 0, 4000); if ($fm === '' || $fm === trim((string) ($j[$id]['msg'] ?? ''))) unset($j[$id]['fixMsg']); else $j[$id]['fixMsg'] = $fm; }
             return $j; }); }
+    /* marked as fixed, and asked to tell them: one short email to the person who reported it, once */
+    if ($action === 'inboxset' && ($body['fix'] ?? '') === 'fixed' && !empty($body['tell'])) { $id = preg_replace('/[^0-9a-f]/', '', (string) ($body['id'] ?? '')); $m = ccInbox()[$id] ?? null;
+        if ($m && empty($m['fixTold']) && filter_var((string) ($m['email'] ?? ''), FILTER_VALIDATE_EMAIL) && ccMailReady()) {
+            $contact = (string) (ccSite($a)['contact'] ?? ''); $first = explode(' ', trim((string) ($m['name'] ?? '')))[0]; $quote = '> ' . str_replace("\n", "\n> ", mb_substr((string) $m['msg'], 0, 1500));
+            $mail = ($first !== '' && !str_contains($first, '@') ? "Hello $first," : 'Hello,') . "\n\nThanks for telling us about this. It's fixed now, so it should work the next time you use Crafticulum.\n\nIf it still isn't right, reply to this email and say what you see.\n\n" . (string) $me['name'] . "\nCrafticulum\n\n\nOn " . date('j F Y', (int) $m['at']) . " you wrote:\n$quote\n";
+            if (ccMail((string) $m['email'], 'Fixed: the problem you told us about', $mail, $contact !== '' ? $contact : (filter_var($me['email'], FILTER_VALIDATE_EMAIL) ? $me['email'] : ''))) ccInboxChange(function ($j) use ($id) { if (isset($j[$id])) $j[$id]['fixTold'] = time(); return $j; }); } }
     if ($action === 'inboxset' && !empty($body['sentAll'])) ccInboxChange(function ($j) { foreach ($j as $k => $m) if (is_array($m) && ($m['fix'] ?? '') === 'queued') { $j[$k]['fix'] = 'sent'; $j[$k]['fixAt'] = time(); } return $j; });
     $l = array_values(ccInbox()); usort($l, fn($x, $y) => ($y['at'] ?? 0) <=> ($x['at'] ?? 0));
     out(200, ['inbox' => $l, 'mail' => ccMailReady(), 'to' => (string) (ccSite($a)['contact'] ?? '')]);

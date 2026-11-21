@@ -2337,4 +2337,27 @@ VERSION 143: FROM A REPORT TO A FIX
   whole list and jump. A new part opens at its top. Bigger screens keep
   the tabs as they were.
 
+VERSION 144: PHONES, AND TELLING PEOPLE IT'S FIXED
+- The board on a phone (from a report sent through Crafti): the nine slide
+  buttons and six action buttons were five rows at the top. Now it is one
+  row: back, the slide you are on (tap it for the list), forward, More
+  (go live, copy, save, display, full screen) and Close. More turns red
+  and says LIVE while a live lesson is on. Swiping left or right moves
+  between slides. Bigger screens are unchanged.
+- Planning: the buttons on a planned lesson have colour and icons. Open
+  lesson is the main button, PowerPoint is orange, Worksheet blue,
+  Regenerate violet and Mark taught green. On a phone they sit in a tidy
+  grid with full-size tap targets.
+- Lessons on a phone: swipe left or right to go to the next or last part.
+- Settings and Admin on a phone: the tabs that wrapped into a block are
+  now one Section button that opens the list.
+- Admin, To do, Messages: when a report has been sent to Claude, there is
+  now "Fixed, and email them". It sends the person one short email saying
+  it is fixed, quoting what they wrote, and records that they were told.
+  "Fixed, don't email" does what Mark as fixed did before.
+- A colleague's invitation link (?ref=) now asks before saving its cookie.
+  No thanks saves nothing. The cookies page says so.
+- The Error log no longer redraws the whole of Settings when it loads, so
+  a box you had opened elsewhere on the page stays open.
+
 NO CHANGES TO config.php
