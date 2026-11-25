@@ -3,6 +3,72 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.56 · 25 November 2026
+
+**Bring all your lessons in**
+
+Lecturers can bring their existing lessons in, either when they first join or at any time after. Each lesson keeps the original file, with a switch to flip between versions.
+
+- **Bring your lessons in.** Upload a batch of lessons, or a zip of them, up to 40 at a time: Word, PowerPoint, PDF or text. Each file can be set to its own unit. You can open it from:
+  - "Bring your lessons" in a manager's first steps on Home
+  - a "Already got lessons?" card on Home for anyone new (fewer than 5 lessons)
+  - New on a phone
+  - the top of My created lessons
+  - a link in the single upload window
+- **Checked as a set first.** Crafticulum AI reads the whole batch and shows a table for each unit: which of your lessons covers each criterion, and which criteria nothing covers yet. It suggests lessons to fill those holes.
+- **Then two choices:** "Bring all of them in", where each one is checked and gaps filled with the wording kept, like a single upload in 1.55. And "Build the missing lessons in your style", where new lessons are built for the holes, told how this teacher writes (kinds of activity, tone, pace). It works through them one by one with a progress list, and each has an Open link.
+- **Your original.** Every lesson brought in keeps its original file in the department's data folder (`_orig`), never at a web address. A switch on the lesson flips between **Crafticulum version** and **Your original**. Your original shows exactly what was uploaded, with slides and speaker notes laid out, plus:
+  - **Download the original**, which gives back the same file
+  - **Keep only what's yours**, which takes out every optional part Crafticulum added
+  - **Back to the Crafticulum version**
+
+  Single uploads from 1.55 keep their original from now on too.
+- **Google Drive and OneDrive.** Paste a share link instead of downloading the file first, in both the single and bulk windows. Google Docs and Slides come in as Word and PowerPoint. The file must be set to "Anyone with the link". Only Google and Microsoft addresses are ever fetched, and anything else is refused. If a file isn't shared, the lecturer is told how to share it.
+- **Quality report.** For each unit, it shows how many lessons are staff-written, how many criteria gaps were filled, and how many were built by Crafticulum AI. Both the on-screen report and the Word download show this.
+- **Neutral-name sweep.** Three assignment briefs had real staff names as the assessor; they now say "Your course team". The Second Marker example name, a "college in Kent" placeholder, "MSA Open Event" in the calendar and "What Joe wants done" in the fix pack are gone too. The build now stops if any of these come back.
+- **Old tests tidied.** Every test suite now passes. Where the app had moved on (Settings groups, the menu, the new-user welcome, extra public pages, the share link format, the chat button being off the lesson screen on phones), the checks were updated to match. Tests for things that were deliberately removed (the old password sign-in, "Institutions set up twice") were taken out. pwurl now runs its own second address, because 8098 is a brand new site.
+
+**After updating:** nothing to do. Drive and OneDrive links need your host to allow outgoing connections (Krystal does).
+
+**Note on GitHub:** the repository is public and its history still has those staff names from earlier releases. They're gone from this release onwards. Clearing them from history means rewriting it, which I won't do unless you say so.
+
+**Tested:**
+- pw156, 25 checks:
+  - first steps and the ways in
+  - zip unpacking, and unreadable files left out
+  - Drive links: shared, private and other hosts
+  - the set check and its holes
+  - bringing them all in and building the holes
+  - originals kept and downloaded byte for byte
+  - the switch and Keep only what's yours
+  - single uploads keeping their original
+  - server refusals for bad keys, file types and hosts
+  - the quality report count
+  - phone
+- pw155 still passes.
+- The accessibility check is clean on the bulk window (pick, review, progress) and the original view, in light and dark.
+- Full regression run of 87 suites: every one passes. pwtidy was updated for the new first step, and pwmnav failed once on the roadmap vote, then passed twice when rerun on its own. Not tried on the live site yet.
+
+### What was pushed
+
+- Commit `4cc7592` on `main` (1 added, 9 changed, 1 removed).
+- Zip: `crafticulum-v1.56.zip`, 3,748,163 bytes, no `config.php` inside.
+- Build number: 156 (shown to people as 1.56).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.55.zip` |
+| added | `crafticulum-v1.56.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/marker/sm.js` |
+| changed | `crafticulum/store.php` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.55 · 25 November 2026
 
 **Bring your own lesson**
