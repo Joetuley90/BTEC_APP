@@ -12190,6 +12190,9 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [154, "Works like an app on your phone", "A back arrow at the top, a New button in the middle of the bottom bar, swipe from the left edge to go back, and pull down to refresh. Settings open as a simple list."],
+  [154, "A tidier lesson screen on phones", "One row with Teach, Board and a ⋯ button for everything else. Sign-off is a small pill you tap to open."],
+  [154, "Add it to your home screen", "Crafticulum can now offer to sit on your phone's home screen, so it opens full screen like any other app."],
   [153, "Sign a lesson off", "Under each lesson: sign it off yourself, or ask your head of department for a review. Heads of department see reviews waiting on their start page."],
   [153, "Works offline, catches up later", "With no internet you can still open and teach your lessons, and changes are kept on your device until you're back online."],
   [153, "Progress across units", "Learners has a new view: each learner's share of criteria achieved in every unit, and who is falling behind."],
@@ -12879,6 +12882,214 @@ document.addEventListener("click", e => { const b = e.target.closest && e.target
 if(typeof render === "function"){ const _render97 = render; render = function(){ const r = _render97.apply(this, arguments); try{ soPaint(); soPanel(); qrButton(); }catch(e){ console.error(e); } return r; }; }
 { const _show97 = showLesson; showLesson = function(){ soOpen = ""; const r = _show97.apply(this, arguments); try{ soPaint(); }catch{} return r; }; }
 if(typeof nxRow === "function"){ const _nx97 = nxRow; nxRow = function(){ const r = _nx97.apply(this, arguments); try{ soPaint(); }catch{} return r; }; }
+/* ===== round 98 (1.54): make it behave like an app on phones and tablets. A title bar with a back arrow that gets out of the way as you scroll,
+   five tabs with a New button in the middle, screens that slide, swipe from the edge to go back, a tidy lesson screen, Settings as lists,
+   loading shapes, pull to refresh, solid taps, swipe on a lesson to copy or bin it, an install prompt, and one sheet style for every menu.
+   Computers keep the layout they had. ===== */
+const apPh = () => matchMedia("(max-width: 991.98px)").matches;        // phones and tablets
+const apSm = () => matchMedia("(max-width: 767.98px)").matches;        // phones
+const AP_ROOTS = ["home", "week", "lesson", "seq"];
+const AP_NAMES = {home: "Home", week: "This week", seq: "Planning", library: "Library", learners: "Learners", results: "Results", tools: "AI tools", assistant: "Crafti", marker: "Second Marker", roadmap: "What's coming", team: "Our team", settings: "Settings"};
+const apIco = (d, s) => `<svg viewBox="0 0 24 24" width="${s || 22}" height="${s || 22}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const AP_BACK = `<path d="M15 5l-7 7 7 7"/>`, AP_CHEV = `<path d="M9 5l7 7-7 7"/>`;
+let apStack = [], apLast = null, apPop = false, apTab = false, apSt = "list", apStDirect = false, apStFrom = "", apStName = "", apStPre = null, apStShown = null, apStList = false, apStWas = (typeof stTab !== "undefined" ? stTab : ""), apSheetRows = [], apNx = false;
+const apBuzz = () => { try{ if(navigator.vibrate && matchMedia("(pointer: coarse)").matches) navigator.vibrate(8); }catch{} };
+const apIsAdmin = () => { try{ return view === "settings" && typeof adKeys !== "undefined" && adKeys.includes(stTab); }catch{ return false; } };
+function apTitle(){ if(view === "lesson") return current && current.title ? "Lesson" : "Lessons"; if(view === "settings"){ if(apSm() && apSt === "page"){ const t = document.querySelector(".st-tabs .st-tab.on"); if(t){ const c = t.cloneNode(true); c.querySelectorAll(".badge").forEach(x => x.remove()); return c.textContent.trim(); } if(apStName) return apStName; } return apIsAdmin() ? "Admin" : "Settings"; }
+  return AP_NAMES[view] || (view ? view[0].toUpperCase() + view.slice(1) : ""); }
+const apStPage = () => view === "settings" && apSm() && apSt === "page";
+const apCanBack = () => apStPage() || apStack.length > 0 || !AP_ROOTS.includes(view);
+
+/* ---------- 1. the title bar ---------- */
+function apShell(){ const side = document.getElementById("sideMenu"); if(!side) return; const brand = side.querySelector(".brand");
+  if(!document.getElementById("apBack") && brand){ brand.insertAdjacentHTML("beforebegin", `<button type="button" class="ap-back" id="apBack" aria-label="Back">${apIco(AP_BACK, 24)}</button>`); brand.insertAdjacentHTML("afterend", `<span class="ap-title" id="apTitle"></span>`); }
+  const t = document.getElementById("apTitle"), b = document.getElementById("apBack"); if(!t || !b) return;
+  const name = apTitle(); if(t.textContent !== name) t.textContent = name;
+  document.body.classList.toggle("ap-sub", view !== "home"); document.body.classList.toggle("ap-canback", apCanBack());
+  b.setAttribute("aria-label", apStPage() ? "Back to " + (apIsAdmin() ? "Admin" : "Settings") : "Back");
+  apHdrVar(); }
+/* the super admin band (with Leave) stays put; only the title bar slides away under it */
+const apSaH = () => { const e = document.getElementById("saBar"); return e && e.offsetParent !== null && ["sticky", "fixed"].includes(getComputedStyle(e).position) ? Math.round(e.getBoundingClientRect().height) : 0; };
+function apHdrVar(){ const e = document.getElementById("sideMenu"); const h = e && e.offsetParent !== null ? e.getBoundingClientRect().height : 0; document.body.style.setProperty("--ap-hide", -Math.ceil(h) + "px"); }
+function apLtTop(){ const b = document.getElementById("ltBar"); if(!b) return; b.style.top = document.body.classList.contains("ap-hide") ? apSaH() + "px" : ltTop() + "px"; }
+{ let lastY = scrollY, tick = false, stopT = 0;
+  addEventListener("scroll", () => { document.body.classList.add("ap-scrolling"); clearTimeout(stopT); stopT = setTimeout(() => document.body.classList.remove("ap-scrolling"), 700);
+    if(tick) return; tick = true; requestAnimationFrame(() => { tick = false; const y = scrollY, B = document.body;
+      if(!apPh() || B.classList.contains("mnav-open") || document.querySelector(".lt-sheet") || B.classList.contains("auth-gate")){ lastY = y; return; }
+      let hide = B.classList.contains("ap-hide");
+      if(y < 60) hide = false; else if(y > lastY + 6) hide = true; else if(y < lastY - 10) hide = false;
+      if(hide !== B.classList.contains("ap-hide")){ if(hide) apHdrVar(); B.classList.toggle("ap-hide", hide); apLtTop(); }
+      if(Math.abs(y - lastY) > 6 || y < 60) lastY = y; }); }, {passive: true}); }
+
+/* ---------- 3. going back, and screens that slide ---------- */
+function apOverlayShut(){ const s = document.querySelector(".lt-sheet"); if(s){ s.dispatchEvent(new MouseEvent("click", {bubbles: true})); if(s.isConnected) s.remove(); return true; }
+  if(document.body.classList.contains("mnav-open")){ try{ mnavSet(false); }catch{} return true; }
+  const oc = document.querySelector(".offcanvas.show"); if(oc){ try{ closeCanvas(oc.id); }catch{} return true; } return false; }
+function apBack(){ apBuzz(); if(apOverlayShut()) return;
+  if(apStPage()){ apSt = "list"; try{ if(apStFrom && !document.querySelector("#out .st-tabs .st-tab")) stTab = apStFrom; renderSettings(); }catch{} apStName = "";
+    if(document.querySelector("#out .st-tabs .st-tab")){ apAnim("back"); window.scrollTo({top: 0}); return apDecorate(); } apSt = "page"; }
+  let to = apStack.pop(); while(to === view && apStack.length) to = apStack.pop(); if(!to || to === view) to = view === "home" ? null : "home"; if(!to) return;
+  try{ if(history.state && history.state.cc === 1) history.replaceState(Object.assign({}, history.state, {cc: 0}), "", location.href); }catch{}   // so the address is swapped, not stacked
+  apPop = true; try{ setView(to); }finally{ apPop = false; } }
+addEventListener("popstate", () => { apPop = true; setTimeout(() => { apPop = false; }, 60); }, true);
+function apAnim(kind){ if(!apPh() || matchMedia("(prefers-reduced-motion: reduce)").matches) return; const o = document.getElementById("out"); if(!o) return; o.classList.remove("ap-in-fwd", "ap-in-back", "ap-in-fade"); void o.offsetWidth; o.classList.add("ap-in-" + kind); }
+document.addEventListener("animationend", e => { if(e.target && e.target.id === "out") e.target.classList.remove("ap-in-fwd", "ap-in-back", "ap-in-fade"); });
+function apViewChanged(prev){ if(prev === view) return; const back = apPop;
+  if(apTab || (AP_ROOTS.includes(view) && view !== "lesson")) apStack = [];
+  else if(back){ const i = apStack.lastIndexOf(view); apStack = i >= 0 ? apStack.slice(0, i) : apStack.slice(0, -1); }
+  else if(prev){ apStack.push(prev); if(apStack.length > 30) apStack.shift(); }
+  if(view === "settings" && prev !== "settings"){ apSt = apStDirect || (apStPre !== null && apStPre !== apStWas) ? "page" : "list"; }
+  if(view !== "settings"){ try{ apStWas = stTab; }catch{} }
+  apStDirect = false; apTab = false; apNx = false; document.body.classList.remove("ap-nx");
+  if(prev) apAnim(back ? "back" : (AP_ROOTS.includes(prev) && AP_ROOTS.includes(view) && !apStack.length) ? "fade" : "fwd");
+  document.body.classList.remove("ap-hide"); }
+/* swipe in from the left edge to go back */
+{ let sw = null; const edge = () => document.getElementById("apEdge") || (document.body.insertAdjacentHTML("beforeend", `<div class="ap-edge" id="apEdge" aria-hidden="true">${apIco(AP_BACK, 22)}</div>`), document.getElementById("apEdge"));
+  addEventListener("touchstart", e => { sw = null; if(!apPh() || e.touches.length !== 1) return; const x = e.touches[0].clientX; if(x > 22) return;
+    if(document.querySelector(".lt-sheet") || document.body.classList.contains("mnav-open") || document.getElementById("board")?.offsetParent || !apCanBack() && !document.querySelector(".offcanvas.show")) return;
+    sw = {x, y: e.touches[0].clientY, dx: 0}; e.stopPropagation(); }, {passive: true, capture: true});
+  addEventListener("touchmove", e => { if(!sw) return; const t = e.touches[0]; sw.dx = t.clientX - sw.x; const dy = Math.abs(t.clientY - sw.y); if(dy > 40 && dy > sw.dx){ sw = null; edge().classList.remove("on"); return; }
+    const el = edge(), d = Math.max(0, Math.min(sw.dx, 110)); el.classList.add("on"); el.style.setProperty("--ex", d + "px"); el.classList.toggle("go", sw.dx > 80); }, {passive: true, capture: true});
+  addEventListener("touchend", () => { if(!sw) return; const go = sw.dx > 80; sw = null; const el = edge(); el.classList.remove("on", "go"); if(go) apBack(); }, {passive: true, capture: true}); }
+
+/* ---------- 2. five tabs, with New in the middle ---------- */
+function apTabs(){ const bn = document.querySelector(".bnav"); if(!bn) return; const home = bn.querySelector('[data-nav="home"] span'); if(home && home.textContent !== "Home") home.textContent = "Home";
+  if(!document.getElementById("bnNew")){ const wk = bn.querySelector('[data-nav="week"]'); if(wk) wk.insertAdjacentHTML("afterend", `<button type="button" id="bnNew" class="bn-new" aria-label="New: a lesson, an AI tool or a plan" aria-haspopup="true"><i>${apIco(`<path d="M12 5v14M5 12h14"/>`, 26)}</i><span>New</span></button>`); } }
+function apNewSheet(){ const can = id => !!document.getElementById(id) && !document.getElementById(id).hidden;
+  const rows = [{h: "Make something new"},
+    {t: "New lesson", sub: "Describe it and Crafticulum builds the lot", ic: `<path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5z"/><path d="M8 7h6M8 11h6"/>`, go: () => { setView("home"); setTimeout(() => { const t = document.getElementById("hText"); if(t) t.focus(); }, 80); }},
+    {t: "AI tool", sub: "Worksheets, quizzes, slides, reports and more", ic: `<path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/>`, go: () => setView("tools"), hide: !can("sideTools")},
+    {t: "Plan a unit", sub: "A scheme of work, week by week", ic: `<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>`, go: () => setView("seq")},
+    {t: "Ask Crafti", sub: "Help with anything in Crafticulum", ic: `<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>`, go: () => { const b = document.getElementById("cfBtn"); if(b) b.click(); else setView("assistant"); }},
+    {h: "Find one again"},
+    {t: "My created lessons", sub: "Every lesson you've made", ic: `<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`, go: () => { try{ openCanvas("libCanvas", document.getElementById("bnNew")); }catch{} }}];
+  apSheet("New", rows.filter(r => !r.hide)); }
+
+/* ---------- 10. one sheet for every menu ---------- */
+function apSheet(title, rows){ apSheetRows = rows; let s = document.getElementById("apSheet"); if(!s){ document.body.insertAdjacentHTML("beforeend", `<div class="lt-sheet ap-sheet" id="apSheet" data-ap="shut"></div>`); s = document.getElementById("apSheet"); }
+  s.innerHTML = `<div class="lt-sheet-in" role="menu" aria-label="${esc(title)}"><div class="lt-grab" aria-hidden="true"></div>${rows.map((r, i) => r.h ? `<div class="lt-sheet-h">${esc(r.h)}</div>` : `<button type="button" role="menuitem" class="ap-row${r.cls ? " " + r.cls : ""}" data-ap="row" data-i="${i}"${r.dis ? " disabled" : ""}>${r.ic ? `<span class="lt-num">${apIco(r.ic, 18)}</span>` : ""}<span class="lt-nm">${esc(r.t)}${r.sub ? `<small>${esc(r.sub)}</small>` : ""}</span></button>`).join("")}<button type="button" class="ap-cancel" data-ap="cancel">Cancel</button></div>`;
+  const f = s.querySelector(".ap-row:not([disabled])"); if(f) f.focus({preventScroll: true}); }
+function apSheetShut(){ const s = document.getElementById("apSheet"); if(s) s.remove(); apSheetRows = []; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-ap]"); if(!b) return; const k = b.dataset.ap;
+  if(k === "shut"){ if(e.target === b) apSheetShut(); return; } if(k === "cancel") return apSheetShut();
+  if(k === "row"){ const r = apSheetRows[+b.dataset.i]; apSheetShut(); apBuzz(); if(r && r.go) setTimeout(() => { try{ r.go(); }catch(err){ console.error(err); } }, 0); } });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && document.getElementById("apSheet")){ e.preventDefault(); apSheetShut(); } });
+/* a dropdown on a phone opens as a sheet, the same as the other menus */
+function apDdRows(menu){ const rows = []; menu.querySelectorAll(".dropdown-header, .dropdown-divider, .dropdown-item").forEach(x => {
+    if(x.classList.contains("dropdown-header")){ const t = x.textContent.trim(); if(t) rows.push({h: t}); return; }
+    if(x.classList.contains("dropdown-divider")) return; if(x.hidden || x.closest("[hidden]")) return;
+    const c = x.cloneNode(true); c.querySelectorAll("svg,.visually-hidden").forEach(y => y.remove()); const sm = c.querySelector("small,.small,.form-text"); const sub = sm ? sm.textContent.trim() : ""; if(sm) sm.remove();
+    rows.push({t: c.textContent.trim().replace(/\s+/g, " "), sub, dis: x.disabled || x.classList.contains("disabled"), go: () => x.click()}); });
+  return rows; }
+addEventListener("click", e => { if(!apSm()) return; const tg = e.target.closest && e.target.closest("#out [data-dd]"); if(!tg) return; const menu = tg.nextElementSibling;
+  if(!menu || !menu.classList.contains("dropdown-menu") || menu.querySelector("input,select,textarea,form")) return;
+  const rows = apDdRows(menu); if(!rows.some(r => !r.h)) return; e.stopPropagation(); e.preventDefault(); try{ closeMenus(); }catch{}
+  const nm = tg.textContent.trim() || "Options"; apSheet(nm, rows[0].h ? rows : [{h: nm}].concat(rows)); }, true);
+/* drag a sheet down to close it */
+{ let dr = null;
+  document.addEventListener("touchstart", e => { const inn = e.target.closest && e.target.closest(".lt-sheet-in"); dr = null; if(!inn) return; if(inn.scrollTop > 0 && !e.target.closest(".lt-grab")) return; dr = {inn, y: e.touches[0].clientY, d: 0}; }, {passive: true});
+  document.addEventListener("touchmove", e => { if(!dr) return; dr.d = e.touches[0].clientY - dr.y; if(dr.d < 0){ dr.inn.style.transform = ""; return; } dr.inn.style.transition = "none"; dr.inn.style.transform = `translateY(${dr.d}px)`; }, {passive: true});
+  document.addEventListener("touchend", () => { if(!dr) return; const {inn, d} = dr; dr = null; inn.style.transition = ""; if(d > 90){ const s = inn.closest(".lt-sheet"); inn.style.transform = "translateY(100%)"; setTimeout(() => { if(s && s.isConnected){ s.dispatchEvent(new MouseEvent("click", {bubbles: true})); if(s.isConnected && s.id === "apSheet") apSheetShut(); } }, 160); } else inn.style.transform = ""; }, {passive: true}); }
+
+/* ---------- 4. the lesson screen on a phone ---------- */
+function apLesson(){ if(view !== "lesson" || !current) return; const ed = document.getElementById("editToggle"), box = ed && ed.parentElement; if(!box) return;
+  document.body.classList.toggle("ap-editing", !!editMode);
+  if(!box.querySelector("#apMoreBtn")){ box.insertAdjacentHTML("beforeend", `<button type="button" class="btn btn-outline-primary ap-ph" id="apBoardBtn">${apIco(`<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>`, 18)}<span>Board</span></button><button type="button" class="btn btn-outline-secondary ap-ph" id="apMoreBtn" aria-label="More for this lesson" aria-haspopup="true">${apIco(`<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>`, 22)}</button>`); box.classList.add("ap-lsacts"); }
+  const so = document.getElementById("soRow"); if(so && !so.dataset.ap){ so.dataset.ap = "1"; const h = so.querySelector(".so-h"); if(h){ h.setAttribute("role", "button"); h.setAttribute("tabindex", "0"); h.setAttribute("aria-expanded", "false"); } }
+  document.body.classList.toggle("ap-nx", apNx); }
+function apLessonMore(){ const rows = [], ed = document.getElementById("editToggle");
+  if(ed) rows.push({h: "This lesson"}, {t: ed.textContent.trim() || "Edit", sub: editMode ? "" : "Change any part of this lesson", go: () => ed.click()});
+  document.querySelectorAll("#out .ap-lsacts .dropdown:not(#teachMenu)").forEach(dd => { const tg = dd.querySelector("[data-dd]"), m = dd.querySelector(".dropdown-menu"); if(!tg || !m) return; const r = apDdRows(m); if(!r.length) return; rows.push({h: tg.textContent.trim()}); rows.push(...r.filter(x => !x.h)); });
+  const nx = document.getElementById("nxRow"); if(nx){ const its = [...nx.querySelectorAll("button.btn")]; if(its.length){ rows.push({h: "Versions and offline"}); its.forEach(b => rows.push({t: b.textContent.trim(), go: () => { if(b.dataset.nx === "dvtoggle"){ apNx = true; document.body.classList.add("ap-nx"); nx.scrollIntoView({block: "center"}); } b.click(); }})); } }
+  apSheet("More for this lesson", rows); }
+document.addEventListener("click", e => { const t = e.target.closest && e.target.closest("#apMoreBtn, #apBoardBtn, #bnNew, #apBack, #soRow .so-h"); if(!t) return;
+  if(t.id === "apMoreBtn") return apLessonMore(); if(t.id === "apBoardBtn"){ const f = document.getElementById("fabBoard"); if(f) f.click(); else try{ openBoard("starter"); }catch{} return; }
+  if(t.id === "bnNew"){ apBuzz(); return apNewSheet(); } if(t.id === "apBack") return apBack();
+  if(apSm()){ const so = t.closest("#soRow"); const on = so.classList.toggle("ap-open"); t.setAttribute("aria-expanded", on); } });
+document.addEventListener("keydown", e => { if((e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("#soRow .so-h")){ e.preventDefault(); e.target.click(); } });
+addEventListener("click", e => { if(e.target.closest && e.target.closest(".bnav [data-nav], .bnav [data-canvas]")){ apTab = true; apBuzz(); setTimeout(() => { apTab = false; }, 400); } }, true);
+
+/* ---------- 6. Settings as lists on a phone ---------- */
+function apSettings(){ const ph = view === "settings" && apSm(), on = ph && apSt === "list" && !!document.querySelector("#out .st-tabs .st-tab"); document.body.classList.toggle("ap-stl-on", on); if(ph) apStShown = stTab; document.body.classList.toggle("ap-stpage", ph && apSt === "page");
+  let L = document.getElementById("apStList"); if(!on){ if(L) L.remove(); return; }
+  const tabs = [...document.querySelectorAll("#out .st-tabs .st-tab")].filter(t => !t.hidden), nm = t => { const c = t.cloneNode(true); c.querySelectorAll(".badge").forEach(x => x.remove()); return c.textContent.trim(); }, bd = t => { const x = t.querySelector(".badge"); return x ? x.textContent.trim() : ""; };
+  const IC = {you: `<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>`, college: `<path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/>`, rules: `<path d="M9 12l2 2 4-4"/><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>`, teaching: `<path d="M3 7l9-4 9 4-9 4z"/><path d="M7 9v5c3 2 7 2 10 0V9"/>`, subjects: `<path d="M4 5h6v14H4zM14 5h6v14h-6z"/>`, calendar: `<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>`, todo: `<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>`, overview: `<path d="M3 21h18M5 21V8l7-5 7 5v13"/>`, people: `<circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M16 4a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 4 6"/>`, money: `<path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/>`, features: `<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.3 6L12 16.4 6.6 19.4l1.3-6L3.4 9.3l6-.7z"/>`, site: `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.6 15H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9 4.6V4a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V11a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>`};
+  const who = (typeof me !== "undefined" && me) || {}, nmMe = who.name || (who.email || "").split("@")[0], ini = (nmMe || "?").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  const acc = !apIsAdmin() && tabs.find(t => t.dataset.sttab === "you") ? `<div class="ap-group"><button type="button" class="ap-row ap-me" data-apst="you"><span class="ap-av">${esc(ini)}</span><span class="lt-nm"><b>${esc(nmMe || "Your account")}</b><small>${esc(who.email || "Your account, profile and preferences")}</small></span>${apIco(AP_CHEV, 18)}</button></div>` : "";
+  const rows = tabs.filter(t => apIsAdmin() || t.dataset.sttab !== "you").map(t => `<button type="button" class="ap-row" data-apst="${esc(t.dataset.sttab)}"><span class="lt-num">${apIco(IC[t.dataset.sttab] || `<circle cx="12" cy="12" r="8"/>`, 18)}</span><span class="lt-nm">${esc(nm(t))}</span>${bd(t) ? `<em class="ap-bd">${esc(bd(t))}</em>` : ""}${apIco(AP_CHEV, 18)}</button>`).join("");
+  const other = apIsAdmin() ? `<div class="ap-group"><button type="button" class="ap-row" data-apgo="settings"><span class="lt-num">${apIco(IC.site, 18)}</span><span class="lt-nm">Settings</span>${apIco(AP_CHEV, 18)}</button></div>` : (typeof adIs === "function" && adIs() ? `<div class="ap-group"><button type="button" class="ap-row" data-apgo="admin"><span class="lt-num">${apIco(IC.rules, 18)}</span><span class="lt-nm">Admin</span>${apIco(AP_CHEV, 18)}</button></div>` : "");
+  const html = acc + `<div class="ap-group">${rows}</div>` + other;
+  if(!L){ const o = document.getElementById("out"); o.insertAdjacentHTML("afterbegin", `<nav class="ap-stlist" id="apStList" aria-label="${apIsAdmin() ? "Admin" : "Settings"}"></nav>`); L = document.getElementById("apStList"); }
+  if(L.dataset.h !== html){ L.innerHTML = html; L.dataset.h = html; } }
+document.addEventListener("click", e => { const r = e.target.closest && e.target.closest("[data-apst], [data-apgo]"); if(!r) return; apBuzz();
+  if(r.dataset.apgo){ apStDirect = false; apStList = true; try{ return setView(r.dataset.apgo); }finally{ apStList = false; } }
+  const t = document.querySelector(`#out .st-tabs .st-tab[data-sttab="${r.dataset.apst}"]`); apStFrom = stTab; apStName = r.querySelector("b, .lt-nm") ? (r.dataset.apst === "you" ? "Your account" : r.querySelector(".lt-nm").textContent.trim()) : ""; apSt = "page"; apAnim("fwd"); if(t) t.click(); else apDecorate(); window.scrollTo({top: 0}); setTimeout(apDecorate, 30); });
+if(typeof goSection === "function"){ const _gs98 = goSection; goSection = function(v){ if(v === "settings" || v === "admin") apStDirect = true; if(view === "settings") apSt = "page"; const r = _gs98.apply(this, arguments); setTimeout(apDecorate, 0); setTimeout(apDecorate, 60); return r; }; }
+
+/* ---------- 7. loading shapes, and pull to refresh ---------- */
+function apSkel(root){ (root || document).querySelectorAll("#out p, #out div, #libList div, .offcanvas p").forEach(el => { if(el.children.length || el.classList.contains("ap-skel")) return; const t = el.textContent.trim(); if(/^Loading[^.]{0,40}\.\.\.$/.test(t)) el.classList.add("ap-skel"); }); }
+{ let pl = null, busy = false; const ind = () => document.getElementById("apPull") || (document.body.insertAdjacentHTML("beforeend", `<div class="ap-pull" id="apPull" aria-hidden="true">${apIco(`<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>`, 22)}</div>`), document.getElementById("apPull"));
+  const ok = () => apPh() && ["home", "week", "lesson", "seq", "settings", "library", "learners", "results"].includes(view) && !document.querySelector(".lt-sheet, .offcanvas.show") && !document.body.classList.contains("mnav-open") && !document.getElementById("board")?.offsetParent && !document.querySelector(".cf-root.cf-on");
+  document.addEventListener("touchstart", e => { pl = null; if(busy || scrollY > 0 || e.touches.length !== 1 || !ok()) return; if(e.target.closest("input,textarea,select,[contenteditable],.lt-bar,.bnav,.table-responsive")) return; pl = {y: e.touches[0].clientY, x: e.touches[0].clientX, d: 0}; }, {passive: true});
+  document.addEventListener("touchmove", e => { if(!pl) return; const t = e.touches[0], d = t.clientY - pl.y; if(d < 0 || scrollY > 0 || Math.abs(t.clientX - pl.x) > Math.abs(d)){ pl = null; ind().classList.remove("on", "ready"); return; }
+    pl.d = d; const el = ind(), p = Math.min(d * .5, 84); el.classList.add("on"); el.style.setProperty("--py", p + "px"); el.style.setProperty("--pr", (d * 1.4) + "deg"); el.classList.toggle("ready", p >= 64); }, {passive: true});
+  document.addEventListener("touchend", async () => { if(!pl) return; const go = Math.min(pl.d * .5, 84) >= 64; pl = null; const el = ind(); if(!go){ el.classList.remove("on", "ready"); return; }
+    busy = true; apBuzz(); el.classList.add("spin"); el.style.setProperty("--py", "64px"); try{ await apRefresh(); }catch(err){ console.error(err); } el.classList.remove("on", "ready", "spin"); busy = false; }, {passive: true}); }
+async function apRefresh(){ const t0 = Date.now(), jobs = [];
+  if(typeof meRefresh === "function") jobs.push(meRefresh());
+  if(typeof inboxLoad === "function" && view === "settings") jobs.push(inboxLoad());
+  if(typeof STANDALONE !== "undefined" && STANDALONE && navigator.onLine && typeof initLibrary === "function") jobs.push(initLibrary());
+  await Promise.race([Promise.allSettled(jobs), new Promise(r => setTimeout(r, 8000))]);
+  if(Date.now() - t0 < 500) await new Promise(r => setTimeout(r, 500 - (Date.now() - t0)));
+  if(view !== "settings" || !document.querySelector("#out input:focus, #out textarea:focus")) render(current);
+  try{ toast(navigator.onLine ? "Up to date" : "You're offline. Showing what's saved on this device.", {kind: navigator.onLine ? "ok" : "warn"}); }catch{} }
+
+/* ---------- 8. swipe a lesson in the list to copy or bin it ---------- */
+function apLibRows(){ document.querySelectorAll("#libList .lib-item").forEach(it => { if(it.querySelector(".ap-acts")) return; const del = it.querySelector("[data-del]"); if(!del) return; const id = del.dataset.del;
+  it.classList.add("ap-swipe"); it.insertAdjacentHTML("beforeend", `<span class="ap-acts" aria-hidden="true"><button type="button" class="ap-dup" data-apdup="${esc(id)}" tabindex="-1">${apIco(`<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>`, 18)}Copy</button><button type="button" class="ap-bin" data-apbin="${esc(id)}" tabindex="-1">${apIco(`<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>`, 18)}Bin</button></span>`); }); }
+function apDup(id){ try{ const it = libItems().find(x => x.id === id); if(!it) return; const L = JSON.parse(JSON.stringify(it.load())); delete L.id; delete L.signoff; delete L.example; L.title = (L.title || "Lesson") + " (copy)"; saveRecent(L); drawLibrary(); toast("Copied. It's at the top of your lessons.", {kind: "ok"}); }catch(e){ console.error(e); try{ toast("That lesson couldn't be copied.", {kind: "warn"}); }catch{} } }
+{ let sw = null; const close = except => document.querySelectorAll("#libList .lib-item.ap-open").forEach(x => { if(x !== except){ x.classList.remove("ap-open"); x.style.removeProperty("--sx"); } });
+  document.addEventListener("touchstart", e => { sw = null; const it = e.target.closest && e.target.closest("#libList .lib-item.ap-swipe"); if(!it || e.target.closest(".ap-acts")) return; close(it); sw = {it, x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, on: false, base: it.classList.contains("ap-open") ? -150 : 0}; }, {passive: true});
+  document.addEventListener("touchmove", e => { if(!sw) return; const t = e.touches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y; if(!sw.on){ if(Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)){ sw = null; return; } if(Math.abs(dx) < 10) return; sw.on = true; sw.it.classList.add("ap-drag"); }
+    sw.dx = dx; sw.it.style.setProperty("--sx", Math.max(-170, Math.min(0, sw.base + dx)) + "px"); }, {passive: true});
+  document.addEventListener("touchend", () => { if(!sw) return; const {it, on, dx, base} = sw; sw = null; if(!on) return; it.classList.remove("ap-drag"); const open = base + dx < -60; it.classList.toggle("ap-open", open); it.style.setProperty("--sx", open ? "-150px" : "0px"); if(open) apBuzz();
+    it.dataset.apSwiped = Date.now(); }, {passive: true});
+  addEventListener("click", e => { const it = e.target.closest && e.target.closest("#libList .lib-item"); if(it && Date.now() - (+it.dataset.apSwiped || 0) < 350 && !e.target.closest(".ap-acts")){ e.stopPropagation(); e.preventDefault(); } }, true);
+  document.addEventListener("click", e => { const d = e.target.closest && e.target.closest("[data-apdup], [data-apbin]"); if(!d){ if(!(e.target.closest && e.target.closest("#libList .lib-item.ap-open"))) close(); return; }
+    apBuzz(); if(d.dataset.apdup) return apDup(d.dataset.apdup); const it = d.closest(".lib-item"), del = it && it.querySelector("[data-del]"); if(del) del.click(); }); }
+if(typeof drawLibrary === "function"){ const _dl98 = drawLibrary; drawLibrary = function(){ const r = _dl98.apply(this, arguments); try{ apLibRows(); apSkel(document.getElementById("libList")); }catch(e){ console.error(e); } return r; }; }
+
+/* ---------- 9. add it to the home screen ---------- */
+let apBip = null;
+const apStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const apIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); apBip = e; setTimeout(apInstallAsk, 1500); });
+addEventListener("appinstalled", () => { apBip = null; lsSet("cc_inst", "done"); const b = document.getElementById("apInst"); if(b) b.remove(); });
+(() => { try{ if(sessionStorage.getItem("cc_visit_seen")) return; sessionStorage.setItem("cc_visit_seen", "1"); }catch{ return; } const n = (+lsGet("cc_visits") || 0) + 1; lsSet("cc_visits", String(n)); })();
+function apInstallAsk(){ if(window.claude || apStandalone() || !apPh() || document.getElementById("apInst")) return; if((+lsGet("cc_visits") || 0) < 2) return;
+  const no = lsGet("cc_inst") || ""; if(no === "done" || (+no && Date.now() - +no < 30 * 86400000)) return;
+  if(typeof acct === "function" && !acct()) return; if(document.body.classList.contains("auth-gate") || document.querySelector(".lt-sheet")) return;
+  const ios = !apBip && apIOS(); if(!apBip && !ios) return;
+  const shareIc = apIco(`<path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>`, 16);
+  document.body.insertAdjacentHTML("beforeend", `<div class="ap-inst" id="apInst" role="dialog" aria-labelledby="apInstH"><img src="icon-192.png?v=5" alt="" width="48" height="48"><div class="ap-inst-t"><b id="apInstH">Add Crafticulum to your home screen</b><span>${ios ? `Tap ${shareIc} Share, then <b>Add to Home Screen</b>. It opens full screen, like an app.` : "It opens full screen like an app, and works offline too."}</span></div><div class="ap-inst-b">${ios ? "" : `<button type="button" class="btn btn-primary btn-sm" data-apinst="yes">Install</button>`}<button type="button" class="btn btn-sm btn-outline-secondary" data-apinst="no">${ios ? "Got it" : "Not now"}</button></div></div>`); }
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-apinst]"); if(!b) return; const box = document.getElementById("apInst");
+  if(b.dataset.apinst === "yes" && apBip){ const p = apBip; apBip = null; try{ p.prompt(); const r = await p.userChoice; lsSet("cc_inst", r && r.outcome === "accepted" ? "done" : String(Date.now())); }catch{} }
+  else lsSet("cc_inst", String(Date.now())); if(box) box.remove(); });
+setTimeout(() => { try{ apInstallAsk(); }catch{} }, 6000);
+
+/* ---------- tying it in ---------- */
+{ const _sv98 = setView; setView = function(){ const was = view === "settings"; try{ apStPre = stTab; }catch{} let r; try{ r = _sv98.apply(this, arguments); }finally{ apStPre = null; }
+  if(was && view === "settings" && !apStList && apStShown !== null && stTab !== apStShown){ apSt = "page"; apDecorate(); }   /* already in Settings and sent to a different part: open that part */
+  return r; }; }
+function apDecorate(){ try{ apTabs(); apShell(); apLesson(); apSettings(); apSkel(); apShell(); }catch(e){ console.error(e); } }
+{ const _render98 = render; render = function(){ const prev = apLast; const r = _render98.apply(this, arguments); apLast = view; try{ apViewChanged(prev); }catch(e){ console.error(e); } apDecorate(); return r; }; }
+if(typeof renderSettings === "function"){ const _rs98 = renderSettings; renderSettings = function(){ const r = _rs98.apply(this, arguments); apDecorate(); return r; }; }
+document.addEventListener("click", e => { if(e.target.closest && e.target.closest(".st-tabs .st-tab, #out [data-tab], #editToggle")) setTimeout(apDecorate, 40); });
+document.addEventListener("click", e => { if(!apPh()) return; if(e.target.closest && e.target.closest(".bnav button, .lt-sheet-in button, #out .btn-primary, #out .btn-success, .lt-arrow")) apBuzz(); }, true);
+new MutationObserver(() => { clearTimeout(apSkel._t); apSkel._t = setTimeout(() => { try{ apSkel(); }catch{} }, 30); }).observe(document.getElementById("out") || document.body, {childList: true, subtree: true});
+addEventListener("resize", () => { try{ apHdrVar(); apShell(); }catch{} });
+try{ matchMedia("(max-width: 767.98px)").addEventListener("change", e => { if(e.matches && view === "settings") apSt = "page"; apDecorate(); }); }catch{}
+apLast = typeof view !== "undefined" ? view : null; apDecorate();
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

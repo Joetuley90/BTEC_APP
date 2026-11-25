@@ -2534,4 +2534,24 @@ VERSION 1.53: FASTER, OFFLINE, SIGN-OFF, QUALITY REPORT, LEARNERS' PROGRESS
   college named, and the site starts and answers. If any check fails the
   deploy doesn't happen.
 
+VERSION 1.54: BEHAVES LIKE AN APP ON PHONES AND TABLETS
+Only phones and tablets change. Computers keep the layout they had.
+- Title bar: every screen shows its name with a back arrow. It slides out
+  of the way as you scroll down and comes back when you scroll up. The
+  super admin band is one slim line.
+- Five tabs: Home, This week, New, Lessons, Planning. New opens a sheet:
+  new lesson, AI tool, plan a unit, ask Crafti, or your lessons.
+- Screens slide in and out. Swipe in from the left edge to go back.
+- Lesson screen: Teach, Board and a "..." button for everything else.
+  Sign-off is a small pill you tap to open.
+- The Crafti mascot is smaller and tucks away while you scroll.
+- Settings and Admin open as lists. Tap a row to open it.
+- Grey placeholder shapes while things load, and pull down to refresh.
+- Buttons press in when tapped and are at least 44px tall. Swipe a
+  lesson left in My created lessons to Copy or Bin it.
+- A card offers to add Crafticulum to the home screen from the second
+  visit (one tap on Android, instructions on iPhone).
+- Every menu on a phone opens the same bottom sheet: grab handle,
+  Cancel, and drag down to close.
+
 NO CHANGES TO config.php
