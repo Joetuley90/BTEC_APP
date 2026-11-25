@@ -109,7 +109,8 @@ if (!$me) out(401, ['error' => 'sign_in']);
 if (!empty($me['demo'])) out(403, ['error' => 'demo']);
 $cid = (string) $me['college']; $col = ccCollege($a, $cid);
 $status = function () use (&$a, $cid, $me, $pubPlans, $money) { $c = ccCollege($a, $cid); $p = ccPlanOf($a, $cid); $b = $c['bill'];
-    return ['on' => ccBillingOn(), 'canPay' => ccStripeReady(), 'college' => $c['name'], 'plan' => ['id' => $p['id'], 'name' => $p['name'], 'priceText' => $p['price'] < 0 ? 'Custom' : $money($p['price']), 'people' => $p['people'], 'depts' => $p['depts'], 'builds' => $p['builds'], 'checks' => $p['checks']],
+    $tr = !empty($p['trial']) ? ['end' => (int) $p['trialEnd'], 'plan' => $p['name'], 'planId' => $p['id']] : null;   // on the trial: shown as Free, with the trial plan's limits
+    return ['on' => ccBillingOn(), 'canPay' => ccStripeReady(), 'college' => $c['name'], 'trial' => $tr, 'plan' => ['id' => $tr ? 'free' : $p['id'], 'name' => $tr ? 'Free trial' : $p['name'], 'priceText' => $p['price'] < 0 ? 'Custom' : $money($p['price']), 'people' => $p['people'], 'depts' => $p['depts'], 'builds' => $p['builds'], 'checks' => $p['checks']],
             'used' => ccPlanUsed($cid) + ['people' => ccCollegePeople($a, $cid), 'depts' => count(ccCollegeDepts($a, $cid))], 'plans' => $pubPlans(),
             'bill' => ['status' => (string) ($b['status'] ?? ''), 'paid' => !empty($b['sub']), 'yearly' => !empty($b['yearly']), 'periodEnd' => (int) ($b['periodEnd'] ?? 0), 'cancelAt' => (int) ($b['cancelAt'] ?? 0), 'hasCustomer' => !empty($b['customer'])],
             'pk' => !empty($me['admin']) ? trim((string) ccConf('STRIPE_PUBLISHABLE_KEY')) : '',   // with this, paying and changing the card happen inside the app
@@ -203,12 +204,12 @@ if ($action === 'plansget' || $action === 'plansset') {
             foreach (['price' => 10000000, 'people' => 100000, 'depts' => 10000, 'builds' => 10000000, 'checks' => 10000000] as $f => $max) { if (!array_key_exists($f, $r) || ($f === 'price' && in_array($k, ['free', 'inst'], true))) continue; $row[$f] = max(0, min($max, (int) round((float) $r[$f]))); }
             if (isset($row['price']) && $row['price'] > 0 && $row['price'] < 30) out(400, ['error' => 'price']);
             if ($row) $set[$k] = $row; }
-        $site['plans'] = $set; if (array_key_exists('freeCap', $body)) $site['freeCap'] = max(0, min(100000000, (int) $body['freeCap'])); $a['site'] = $site; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
+        if (array_key_exists('plans', $body)) $site['plans'] = $set; if (array_key_exists('freeCap', $body)) $site['freeCap'] = max(0, min(100000000, (int) $body['freeCap'])); if (array_key_exists('trialDays', $body)) $site['trialDays'] = max(0, min(60, (int) $body['trialDays'])); if (array_key_exists('trialPlan', $body) && in_array((string) $body['trialPlan'], ['pro', 'dept'], true)) $site['trialPlan'] = (string) $body['trialPlan']; $a['site'] = $site; if (!ccSaveAccounts($a)) out(500, ['error' => 'save']);
         ccLog($me['dept'], $me, 'changed the plans');
     }
     $paying = 0; $income = 0; $now = ccPlans($a); foreach (ccCollegeIds($a) as $id) { $c = ccCollege($a, (string) $id); if (!empty($c['bill']['sub'])) { $paying++; $income += $now[$c['plan']]['price'] > 0 ? $now[$c['plan']]['price'] : 0; } }
     out(200, ['on' => ccBillingOn(), 'canPay' => ccStripeReady(), 'hookSet' => trim((string) ccConf('STRIPE_WEBHOOK_SECRET')) !== '', 'hook' => ccSiteUrl() . 'billing.php?a=hook', 'testKey' => strpos((string) ccConf('STRIPE_SECRET_KEY'), 'sk_test_') === 0, 'pk' => trim((string) ccConf('STRIPE_PUBLISHABLE_KEY')),
               'plans' => array_map(fn($k, $p) => ['id' => $k] + $p, array_keys($now), array_values($now)), 'defaults' => CC_PLANS, 'paying' => $paying, 'income' => $income, 'freeCap' => ccFreeCap($a), 'freeUsed' => (int) (ccUsageRead()['free']['calls'] ?? 0),
-              'freeAccounts' => count(array_filter(ccCollegeIds($a), fn($id) => ccCollege($a, (string) $id)['plan'] === 'free')), 'mail' => ccMailReady()]);
+              'freeAccounts' => count(array_filter(ccCollegeIds($a), fn($id) => ccCollege($a, (string) $id)['plan'] === 'free')), 'mail' => ccMailReady(), 'trialDays' => ccTrialDays($a), 'trialPlan' => ccTrialPlan($a), 'onTrial' => count(array_filter(ccCollegeIds($a), fn($id) => ccOnTrial((array) ($a['colleges'][(string) $id] ?? []))))]);
 }
 out(400, ['error' => 'Unknown action.']);

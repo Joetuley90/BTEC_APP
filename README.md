@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.56, 25 Nov 2026: Bring all your lessons in: batch or zip, checked as a set, holes filled in your style, originals kept with a switch, Drive and OneDrive links, staff-written lessons in the quality report, and a neutral-name sweep.). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.56.zip` and `crafticulum-release.zip`: the same files as one zip (3,748,163 bytes).
+- `crafticulum/`: every file of the current release (1.57, 25 Nov 2026: Phone fixes (Menu taps in the home screen app, department switching keeps your page, Second Marker steps move freely) and a 7-day full-access trial with reminders and a link to pay.). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.57.zip` and `crafticulum-release.zip`: the same files as one zip (3,754,389 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 

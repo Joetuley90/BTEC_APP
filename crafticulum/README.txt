@@ -2590,4 +2590,20 @@ VERSION 1.56: BRING ALL YOUR LESSONS IN
   staff and how many criteria gaps were filled.
 - Tidy: no real staff names or college-specific dates left in the app.
 
+VERSION 1.57: PHONE FIXES AND A 7-DAY FREE TRIAL
+- Menu on phones: every tap works in the home screen app, the menu sits
+  above everything else, and long presses no longer select the text.
+- Switching department keeps you on the page you were on (Lessons opens a
+  new lesson in that department; Planning, Second Marker, Learners,
+  Results and Settings come back as they were).
+- Second Marker: a Department picker in its bar, every step can be tapped
+  at any time, swipe left or right on a phone to move between steps, and
+  Continue is never locked. What's still to do on an earlier step shows.
+- Free trial: someone who signs up on their own gets full access (the
+  Department plan) for 7 days. A countdown shows in the app. Managers get
+  an email 48 and 24 hours before it ends with a link straight to paying,
+  and another when it ends. Then it's the Free plan, nothing lost.
+  The super admin sets the length (0 = off) and the plan in Settings,
+  Plans and payments. Only applies to sign-ups from now on.
+
 NO CHANGES TO config.php

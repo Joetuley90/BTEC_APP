@@ -95,7 +95,7 @@ function ccCollegeOf(array $a, string $dept): string { $c = (string) ($a['depts'
 function ccCollege(array $a, string $id): array { $c = (array) ($a['colleges'][$id] ?? []);
     return ['id' => $id, 'name' => (string) ($c['name'] ?? ''), 'logo' => (string) ($c['logo'] ?? ''), 'color' => (string) ($c['color'] ?? ''), 'contact' => (string) ($c['contact'] ?? ''), 'plain' => !empty($c['plain']),
             'off' => !empty($c['off']), 'cap' => max(0, (int) ($c['cap'] ?? 0)), 'created' => (int) ($c['created'] ?? 0),
-            'plan' => isset(CC_PLANS[(string) ($c['plan'] ?? '')]) ? (string) $c['plan'] : 'inst', 'bill' => (array) ($c['bill'] ?? [])]; }
+            'plan' => isset(CC_PLANS[(string) ($c['plan'] ?? '')]) ? (string) $c['plan'] : 'inst', 'bill' => (array) ($c['bill'] ?? []), 'trialEnd' => (int) ($c['trialEnd'] ?? 0)]; }
 /* ---------- plans ----------
    Every institution is on a plan. An institution set up by the super admin is on Institution unless they choose otherwise. Someone who signs up on their own starts on Free.
    Limits are per month and 0 means no limit. The super admin can change the prices and limits in Settings, Plans and payments. */
@@ -103,12 +103,20 @@ const CC_PLANS = ['free' => ['name' => 'Free', 'price' => 0, 'people' => 1, 'dep
                   'pro' => ['name' => 'Teacher', 'price' => 499, 'people' => 1, 'depts' => 1, 'builds' => 100, 'checks' => 40, 'for' => 'Individual lecturers'],
                   'dept' => ['name' => 'Department', 'price' => 4900, 'people' => 10, 'depts' => 1, 'builds' => 600, 'checks' => 300, 'for' => 'Small teaching teams'],
                   'inst' => ['name' => 'Institution', 'price' => -1, 'people' => 0, 'depts' => 0, 'builds' => 0, 'checks' => 0, 'for' => 'Colleges and schools']];
+/* 1.57: someone who signs up on their own gets full access for a trial (7 days unless the super admin changes it, 0 switches it off), with everything in the
+   trial plan (Department unless changed). Reminders go 48 and 24 hours before it ends, with a link to pay, and it drops to Free when it ends. */
+const CC_TRIAL_DAYS = 7;
+function ccTrialDays(?array $a = null): int { $s = (array) (($a ?? ccAccounts())['site'] ?? []); return array_key_exists('trialDays', $s) ? max(0, min(60, (int) $s['trialDays'])) : CC_TRIAL_DAYS; }
+function ccTrialPlan(?array $a = null): string { $s = (array) (($a ?? ccAccounts())['site'] ?? []); $p = (string) ($s['trialPlan'] ?? 'dept'); return in_array($p, ['pro', 'dept'], true) ? $p : 'dept'; }
+function ccOnTrial(array $c): bool { return ($c['plan'] ?? '') === 'free' && (int) ($c['trialEnd'] ?? 0) > time() && empty(($c['bill'] ?? [])['sub']); }
 function ccBillingOn(): bool { return in_array(strtolower(trim((string) ccConf('BILLING'))), ['1', 'on', 'yes', 'true'], true); }
 function ccStripeReady(): bool { return strlen(trim((string) ccConf('STRIPE_SECRET_KEY'))) > 10; }
 function ccPlans(?array $a = null): array { $set = (array) ((($a ?? ccAccounts())['site'] ?? [])['plans'] ?? []); $o = [];
     foreach (CC_PLANS as $k => $p) { $s = (array) ($set[$k] ?? []); foreach (['price', 'people', 'depts', 'builds', 'checks'] as $f) if (isset($s[$f]) && !($k === 'inst' && $f === 'price') && !($k === 'free' && $f === 'price')) $p[$f] = max(0, (int) $s[$f]); $o[$k] = $p; }
     return $o; }
-function ccPlanOf(array $a, string $college): array { $c = ccCollege($a, $college); return ['id' => $c['plan']] + ccPlans($a)[$c['plan']]; }
+function ccPlanOf(array $a, string $college): array { $c = ccCollege($a, $college); $P = ccPlans($a);
+    if (ccOnTrial($c)) { $t = ccTrialPlan($a); return ['id' => $t, 'trial' => true, 'trialEnd' => $c['trialEnd'], 'base' => 'free'] + $P[$t]; }   // full access while the trial runs
+    return ['id' => $c['plan']] + $P[$c['plan']]; }
 /* how much of this month's allowance an institution has used */
 function ccPlanUsed(string $college, ?array $u = null): array { $r = (array) ((($u ?? ccUsageRead())['colleges'] ?? [])[$college] ?? []); return ['builds' => (int) ($r['builds'] ?? 0), 'checks' => (int) ($r['checks'] ?? 0)]; }
 function ccSaved(string $college = '', ?array $u = null): array { $s = (array) (($u ?? ccUsageRead())['saved'] ?? []); $r = (array) ($college === '' ? ($s['total'] ?? []) : (($s['colleges'] ?? [])[$college] ?? [])); return ['n' => (int) ($r['n'] ?? 0), 'mins' => (int) ($r['mins'] ?? 0)]; }
@@ -729,6 +737,18 @@ function ccTick(): void {
             ccInvChange(function ($j) use ($iid, $step, $now, $ok) { if (isset($j[$iid])) { $j[$iid]['rem' . $step] = $now; $j[$iid]['remOk' . $step] = $ok; } return $j; });
             foreach (ccSupers() as $su) try { ccNotify((string) $su, 'people', "Invoice $num is $late days overdue", $ok ? "A reminder has gone to $to." : "The reminder to $to didn't send. Check email in Site setup."); } catch (\Throwable $x) {} }
     } catch (\Throwable $e) { ccErr('server', 'Invoice reminders: ' . $e->getMessage()); } }
+    /* 1.57: the trial. 48 and 24 hours before it ends, and when it has ended, the institution's managers get an email with a link straight to paying */
+    if ($mail) { $sentT = 0; $plansT = ccPlans($a);
+        foreach ($a['colleges'] as $cid => $cc) { if ($sentT >= 20) break; $end = (int) ($cc['trialEnd'] ?? 0); if ($end <= 0 || ($cc['plan'] ?? '') !== 'free' || !empty(($cc['bill'] ?? [])['sub']) || !empty($cc['off'])) continue;
+            $left = $end - $now; $tm = (array) ($cc['trialMail'] ?? []); $k = $left <= 0 ? 'end' : ($left <= 86400 ? 'h24' : ($left <= 2 * 86400 ? 'h48' : '')); if ($k === '' || !empty($tm[$k]) || ($k === 'end' && $left < -7 * 86400)) continue;
+            $tp = ccTrialPlan($a); $tn = (string) ($plansT[$tp]['name'] ?? 'Department'); $link = ccAppUrl() . (str_contains(ccAppUrl(), '?') ? '&' : '?') . 'start=' . $tp; $plansLink = ccAppUrl() . (str_contains(ccAppUrl(), '?') ? '&' : '?') . 'billing=back';
+            $day = date('l j F', $end) . ' at ' . date('H:i', $end);
+            [$subj, $body] = $k === 'end'
+                ? ['Your Crafticulum trial has ended', "Your free trial of Crafticulum has ended, so you're on the Free plan now. Everything you made is still there.\n\nTo get full access back, choose a plan here:\n" . $link . "\n\nOr compare the plans first:\n" . $plansLink]
+                : [$k === 'h24' ? 'Your Crafticulum trial ends tomorrow' : 'Your Crafticulum trial ends in 2 days', "Your free trial of Crafticulum, with everything in the " . $tn . " plan, ends on " . $day . ".\n\nTo keep full access, choose a plan and pay here. It takes about a minute:\n" . $link . "\n\nIf you'd rather not, you don't need to do anything. You'll move to the Free plan and keep everything you've made.\n\nCompare the plans:\n" . $plansLink];
+            $to = []; foreach ($a['users'] as $e => $u) { if (!empty($u['demo']) || !ccActive($u) || ($u['role'] ?? '') !== 'owner' || ccCollegeOf($a, (string) ($u['dept'] ?? '')) !== (string) $cid) continue; $to[] = (string) $e; }
+            foreach ($to as $e) { $hi = trim(explode(' ', (string) ($a['users'][$e]['name'] ?? ''))[0]); try { ccMail($e, $subj, ($hi !== '' ? 'Hello ' . $hi . ",\n\n" : "Hello,\n\n") . $body . "\n\nCrafticulum"); } catch (\Throwable $x) {} $sentT++; }
+            $tm[$k] = $now; $a['colleges'][$cid]['trialMail'] = $tm; $dirty = true; } }
     /* tips for someone trying it on their own: day 1 if they haven't built a lesson, day 7 how to plan a unit, and once a month when the free builds are nearly used.
        Each email says how to stop them, and they stop as soon as the institution pays. */
     if ($mail) { $sent = 0; $usage = ccUsageRead(); $plansAll = ccPlans($a);

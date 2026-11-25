@@ -2974,13 +2974,14 @@ function stepProblem(n) {
   return '';
 }
 
+/* 1.57: move between the steps freely. Anything still to do on an earlier step is shown, it doesn't stop you. */
+let smSkip = '';
 function goStep(n) {
   if (n < 1 || n > STEPS.length) return;
-  if (n > currentStep) {
-    for (let s = currentStep; s < n; s++) {
-      const p = stepProblem(s);
-      if (p) { SMDOC.getElementById('navMsg').textContent = p; return; }
-    }
+  smSkip = '';
+  for (let s = 1; s < n; s++) {
+    const p = stepProblem(s);
+    if (p) { smSkip = STEPS[s - 1] + ': ' + p; break; }
   }
   if (currentStep === 1 && n > 1) syncRowsFromPick();
   currentStep = n;
@@ -3016,7 +3017,7 @@ function renderStepper() {
   ol.innerHTML = STEPS.map((t, i) => {
     const n = i + 1;
     const cls = n === currentStep ? 'active' : n <= maxStep ? 'done' : '';
-    const inner = n <= maxStep && n !== currentStep ? `<button type="button" data-sm-click="goStep(${n})">${t}</button>` : `<span class="sl">${t}</span>`;
+    const inner = n !== currentStep ? `<button type="button" data-sm-click="goStep(${n})">${t}</button>` : `<span class="sl">${t}</span>`;
     return `<li class="${cls}" ${n === currentStep ? 'aria-current="step"' : ''}>${inner}<span class="bar"></span></li>`;
   }).join('');
 }
@@ -3030,10 +3031,11 @@ function refreshNav() {
   const labels = { 1: 'Continue to learner details', 2: 'Continue to upload', 3: 'Continue to checks', 4: ivMode ? 'Continue to compare' : 'Continue to grading', 5: 'Review and export' };
   next.textContent = labels[currentStep] || 'Continue';
   const p = stepProblem(currentStep);
-  next.disabled = !!p;
+  next.disabled = false;
   msg.textContent = '';
   msg.style.color = '#888';
   if (p && currentStep !== 2) msg.textContent = p;
+  if (smSkip) msg.textContent = 'Still to do earlier, ' + smSkip + (p && currentStep !== 2 ? ' Here: ' + p : '');
 }
 
 // Re-check the nav whenever a grade changes

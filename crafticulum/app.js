@@ -6876,7 +6876,7 @@ function markerNav(){
 const themeNow = () => document.documentElement.getAttribute("data-bs-theme") === "dark" ? "dark" : "light";
 /* Second Marker's own code is loaded the first time its page is opened, and then stays, so work in progress isn't lost when you look at another page. */
 var markerSM = null, markerLoad = null, markerSub = "", markerSel = null;
-const MARKER_VER = "618a66e8ba";
+const MARKER_VER = "dbc5d30e96";
 window.ccMarkerCtx = function(){ const m = markerNow(); return {...m, iv: !!(m.iv && me && me.isLead), group: typeof markerGroup === "string" ? markerGroup : "", name: (me && me.name) || "", dept: (me && me.deptName) || "", theme: themeNow()}; };
 window.ccMarkerActive = () => view === "marker";
 window.ccMarkerSub = t => { if(t !== markerSub){ markerSub = t || ""; if(view === "marker") syncShell(); } };
@@ -12190,6 +12190,8 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [157, "Switch department and stay put", "Changing department keeps you on the page you were on, Lessons and Second Marker included. Second Marker has its own department picker too."],
+  [157, "Move freely through Second Marker", "Tap any step, or swipe on a phone. Anything still to do on an earlier step is shown instead of stopping you."],
   [156, "Bring all your lessons in", "Upload a batch or a zip. Crafticulum checks them as a set, shows which criteria the unit is missing, fills the gaps and can build the missing lessons in your style."],
   [156, "Your original, one tap away", "Lessons you bring in keep your original file. Switch between the Crafticulum version and yours, or download the original."],
   [156, "From Google Drive or OneDrive", "Paste a share link instead of downloading the file first."],
@@ -13466,6 +13468,90 @@ function obLibBtn(){ const c = document.getElementById("libCanvas"); if(!c || c.
 if(typeof owPaint === "function"){ const _op100 = owPaint; owPaint = function(){ const r = _op100.apply(this, arguments); try{ obPaintSwitch(); }catch(e){ console.error(e); } return r; }; }
 new MutationObserver(() => { clearTimeout(obHomeCard._t); obHomeCard._t = setTimeout(() => { try{ obHomeCard(); obLibBtn(); }catch{} }, 60); }).observe(document.getElementById("out") || document.body, {childList: true, subtree: true});
 try{ obLibBtn(); }catch{}
+/* ===== round 101 (1.57): phone fixes from Joe's iPhone. The Menu answers every tap in the home screen app, switching department keeps you on the page
+   you were on (Lessons and Second Marker included), Second Marker has the department picker too, and its steps can be moved through freely. ===== */
+
+/* ---- the Menu: a tap always goes somewhere, even where the phone holds back the click ---- */
+{ let tp = null;
+  document.addEventListener("touchstart", e => { tp = null; if(!document.body.classList.contains("mnav-open") || e.touches.length !== 1) return; const l = e.target.closest && e.target.closest("aside.side .side-link, aside.side .side-foot button, aside.side .side-leave, #mnavBtn"); if(!l) return; tp = {l, x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now()}; }, {passive: true});
+  document.addEventListener("touchmove", e => { if(tp && (Math.abs(e.touches[0].clientX - tp.x) > 10 || Math.abs(e.touches[0].clientY - tp.y) > 10)) tp = null; }, {passive: true});
+  document.addEventListener("touchend", e => { const t = tp; tp = null; if(!t || Date.now() - t.t > 650) return; const c = e.changedTouches[0], l = document.elementFromPoint(c.clientX, c.clientY); if(!l || !t.l.contains(l)) return;
+    e.preventDefault(); t.l.click(); }, {passive: false}); }
+/* opening the Menu always shows all of it, and picking the page you're already on just closes it */
+new MutationObserver(() => { const B = document.body; if(B.classList.contains("mnav-open") && (B.classList.contains("ap-hide") || B.classList.contains("ap-scrolling"))){ B.classList.remove("ap-hide", "ap-scrolling"); } })   /* only touch the class when it needs changing, or this would wake itself */.observe(document.body, {attributes: true, attributeFilter: ["class"]});
+
+/* ---- switching department keeps you where you were ---- */
+const SW_KEEP = ["lesson", "seq", "week", "marker", "learners", "results", "tools", "library", "settings", "assistant"];
+if(typeof colSwitch === "function"){ const _cs101 = colSwitch; colSwitch = function(d){ try{ if(SW_KEEP.includes(view) && (typeof ccDepts !== "undefined" && ccDepts || []).some(x => x.id === d)) sessionStorage.setItem("cc_sw_back", JSON.stringify({v: view, st: typeof stTab !== "undefined" ? stTab : "", mk: typeof markerTab !== "undefined" ? markerTab : "", t: Date.now()})); }catch{} return _cs101.apply(this, arguments); }; }
+(() => { let back = null; try{ back = JSON.parse(sessionStorage.getItem("cc_sw_back") || "null"); }catch{} if(!back || Date.now() - back.t > 60000) return;
+  let n = 0; const go = () => { n++; if(n > 60) return; try{ if(typeof me === "undefined" || !me || !me.email || typeof ccDepts === "undefined" || !ccDepts || (typeof ccStart !== "undefined" && ccStart !== null)) return setTimeout(go, 250); }catch{ return setTimeout(go, 250); }
+    try{ sessionStorage.removeItem("cc_sw_back"); }catch{}
+    try{ if(back.v === "settings" && back.st) stTab = back.st; if(back.v === "marker" && back.mk) markerTab = back.mk; }catch{}
+    try{ if(back.v === "lesson"){ current = EXAMPLE; editMode = false; }   /* a lesson belongs to the department it was made in, so start a new one in this department */
+      if(view !== back.v) setView(back.v); else render(current); }catch(e){ console.error(e); } };
+  setTimeout(go, 400); })();
+
+/* ---- Second Marker: the department picker in its own bar ---- */
+function mkDeptHtml(){ const D = typeof dsDepts === "function" ? dsDepts() : []; if(!D.length || window.claude || (typeof saOut === "function" && saOut())) return ""; const cur = D.find(d => d.mine) || D[0];
+  return `<div class="d-flex align-items-center gap-2 mk-dept"><label class="small fw-semibold mb-0" for="mkDept">Department</label><select class="form-select form-select-sm w-auto" id="mkDept">${D.map(d => `<option value="${esc(d.id)}" ${d.id === cur.id ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select></div>`; }
+if(typeof markerBarDraw === "function"){ const _mbd101 = markerBarDraw; markerBarDraw = function(){ const r = _mbd101.apply(this, arguments); try{ const bar = $("#markerBar"), h = mkDeptHtml(); if(bar && h && !bar.querySelector("#mkDept")){ const g = bar.querySelector(".ms-auto"); if(g) g.insertAdjacentHTML("afterbegin", h); else bar.insertAdjacentHTML("beforeend", h); } }catch(e){ console.error(e); } return r; }; }
+document.addEventListener("change", e => { if(!e.target || e.target.id !== "mkDept") return; const v = e.target.value, cur = (ccDepts || []).find(d => d.mine); if(cur && cur.id === v) return; const d = (ccDepts || []).find(x => x.id === v); try{ toast(`Switching to ${d ? d.name : "that department"}...`); }catch{} colSwitch(v); });
+
+/* ---- Second Marker: swipe left or right on a phone to move between steps ---- */
+{ let sw = null; const root = () => { const h = document.getElementById("smHost"); return h && h.shadowRoot; };
+  document.addEventListener("touchstart", e => { sw = null; if(view !== "marker" || e.touches.length !== 1 || !matchMedia("(max-width: 991.98px)").matches) return; const path = e.composedPath ? e.composedPath() : [], t = path[0];
+    if(!path.includes(document.getElementById("smHost")) || !t || !t.closest || t.closest("input, textarea, select, [contenteditable], .table-responsive, table, .desk, canvas, .stepper, #stepper, pre")) return;
+    sw = {x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now()}; }, {passive: true});
+  document.addEventListener("touchend", e => { if(!sw) return; const c = e.changedTouches[0], dx = c.clientX - sw.x, dy = c.clientY - sw.y, quick = Date.now() - sw.t < 700; sw = null; if(!quick || Math.abs(dx) < 80 || Math.abs(dy) > Math.abs(dx) * .6) return;
+    const r = root(); if(!r) return; const lis = [...r.querySelectorAll("#stepper li")], i = lis.findIndex(li => li.classList.contains("active")), to = lis[i + (dx < 0 ? 1 : -1)]; const b = to && to.querySelector("button"); if(b){ b.click(); try{ apBuzz(); }catch{} } }, {passive: true}); }
+/* ===== round 102 (1.57): a full-access trial. Someone who signs up on their own gets everything in the Department plan for 7 days (the super admin sets the
+   length and the plan). A countdown shows in the app, the managers get emails 48 and 24 hours before the end with a link straight to paying, and when it
+   ends they're on Free with everything they made still there. ===== */
+const trWhen = t => { const d = new Date(t * 1000); return d.toLocaleDateString("en-GB", {weekday: "long", day: "numeric", month: "long"}) + " at " + d.toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"}); };
+function trLeft(end){ const s = end - Date.now() / 1000; if(s <= 0) return ""; const h = Math.ceil(s / 3600); if(h <= 24) return h <= 1 ? "less than an hour" : h + " hours"; const d = Math.ceil(s / 86400); return d + (d === 1 ? " day" : " days"); }
+function trInfo(){ if(typeof meInfo === "undefined" || !meInfo || !meInfo.billing) return null; const b = typeof bill !== "undefined" && bill && !bill.failed ? bill : null;
+  if(b && b.trial) return b.trial.end > Date.now() / 1000 ? {end: b.trial.end, plan: b.trial.plan, id: b.trial.planId} : null; if(b && b.plan && !b.trial) return null;   /* Plan and billing has the newest word */
+  const p = meInfo.plan; if(!p || !p.trial || p.trial <= Date.now() / 1000) return null; return {end: p.trial, plan: p.trialPlan || "Department", id: p.trialPlanId || "dept"}; }
+/* remember the trial, so the day after it ends we can say so once */
+function trRemember(){ const t = trInfo(), p = typeof meInfo !== "undefined" && meInfo && meInfo.plan; try{ if(t) lsSet("cc_trial_end", String(t.end)); else if(p && p.id && p.id !== "free") localStorage.removeItem("cc_trial_end"); }catch{} }
+
+/* ---- the countdown bar, for the people who can pay ---- */
+function trBar(){ let el = document.getElementById("trBar"); const t = trInfo(), admin = typeof me !== "undefined" && me && me.admin && !me.demo && !window.claude;
+  let ended = 0; try{ ended = +lsGet("cc_trial_end") || 0; }catch{}
+  const p = typeof meInfo !== "undefined" && meInfo && meInfo.plan, endedNow = !t && ended && p && p.id === "free" && meInfo.billing && lsGet("cc_trial_gone") !== String(ended);
+  if(!admin || (!t && !endedNow) || (view === "settings" && document.getElementById("stPlan"))){ if(el) el.remove(); return; }
+  let cls = "", msg;
+  if(t){ const s = t.end - Date.now() / 1000; cls = s <= 86400 ? "tr-hot" : s <= 2 * 86400 ? "tr-warm" : "";
+    msg = s <= 86400 ? `<b>Your free trial ends in ${trLeft(t.end)}.</b> Choose a plan to keep everything in ${esc(t.plan)}.` : s <= 2 * 86400 ? `<b>2 days left on your free trial.</b> It ends ${esc(trWhen(t.end))}.` : `<b>Free trial: ${trLeft(t.end)} left</b> with everything in ${esc(t.plan)}.`; }
+  else { cls = "tr-done"; msg = `<b>Your free trial has ended.</b> You're on Free now, and everything you made is still here.`; }
+  const html = `<span class="tr-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="tr-t">${msg}</span><span class="tr-b"><button type="button" class="btn btn-sm ${cls ? "btn-light" : "btn-primary"}" data-tr="plans">Choose a plan</button>${endedNow ? `<button type="button" class="btn btn-sm btn-link" data-tr="gone">Not now</button>` : ""}</span>`;
+  if(!el){ const out = document.getElementById("out"); if(!out) return; out.insertAdjacentHTML("beforebegin", `<div id="trBar" class="tr-bar" role="status"></div>`); el = document.getElementById("trBar"); }
+  el.className = "tr-bar " + cls; if(el.dataset.h !== html){ el.innerHTML = html; el.dataset.h = html; } }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-tr]"); if(!b) return;
+  if(b.dataset.tr === "gone"){ try{ lsSet("cc_trial_gone", lsGet("cc_trial_end") || "1"); }catch{} const el = document.getElementById("trBar"); if(el) el.remove(); return; }
+  if(b.dataset.tr === "plans") return goSection("settings", "stPlan"); });
+
+/* ---- Plan and billing: what the trial gives and when it ends ---- */
+function trPlanNote(){ const sec = document.getElementById("stPlan"); if(!sec || typeof bill === "undefined" || !bill || !bill.trial || sec.querySelector(".tr-note")) return; const t = bill.trial;
+  const left = trLeft(t.end), first = sec.querySelector(".pl-use") || sec.querySelector("p, div");
+  const html = `<div class="alert alert-info small py-2 tr-note"><b>You're on a free trial</b> with everything in ${esc(t.plan)}, until ${esc(trWhen(t.end))}${left ? ` (${esc(left)} left)` : ""}. Choose a plan below to keep it going. If you don't, you'll move to Free when it ends and keep everything you've made.</div>`;
+  if(first) first.insertAdjacentHTML("beforebegin", html); }
+
+/* ---- the super admin: how long the trial is, and which plan it gives ---- */
+function trAdmin(){ const fc = document.getElementById("plFreeCap"); if(!fc || document.getElementById("plTrialDays") || typeof plansAdm === "undefined" || !plansAdm) return; const a = plansAdm, row = fc.closest(".d-flex"); if(!row) return;
+  const tip = row.nextElementSibling && row.nextElementSibling.classList.contains("form-text") ? row.nextElementSibling : row;
+  tip.insertAdjacentHTML("afterend", `<div class="fw-semibold small mt-3 mb-1">Free trial</div><div class="d-flex flex-wrap gap-2 align-items-center small"><label for="plTrialDays">Someone who signs up on their own gets</label><input class="form-control form-control-sm" style="width:80px" type="number" min="0" max="60" inputmode="numeric" id="plTrialDays" value="${+a.trialDays || 0}"><label for="plTrialPlan">days with everything in</label><select class="form-select form-select-sm w-auto" id="plTrialPlan">${(a.plans || []).filter(p => p.id === "pro" || p.id === "dept").map(p => `<option value="${esc(p.id)}" ${p.id === a.trialPlan ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select></div>
+    <div class="form-text mb-2">${+a.onTrial || 0} on a trial now. Their managers get an email 48 and 24 hours before it ends with a link to pay, and another when it has ended. 0 switches the trial off. A change applies to new sign-ups.</div>`); }
+if(typeof billCall === "function"){ const _bc102 = billCall; billCall = function(a, body){ if(a === "plansset" && body && body.plans){ const d = document.getElementById("plTrialDays"), p = document.getElementById("plTrialPlan"); if(d && d.value !== "" && !isNaN(parseInt(d.value, 10))) body.trialDays = Math.max(0, Math.min(60, parseInt(d.value, 10))); if(p) body.trialPlan = p.value; } return _bc102.apply(this, arguments); }; }
+
+/* ---- the business page: who is on a trial ---- */
+try{ if(typeof MZ_ST !== "undefined") MZ_ST.trial = ["warn", "On trial"]; }catch{}
+
+/* ---- tying it in ---- */
+{ const _render102 = render; render = function(){ const r = _render102.apply(this, arguments); try{ trRemember(); trBar(); }catch(e){ console.error(e); } return r; }; }
+if(typeof renderSettings === "function"){ const _rs102 = renderSettings; renderSettings = function(){ const r = _rs102.apply(this, arguments); try{ trPlanNote(); trAdmin(); trBar(); }catch(e){ console.error(e); } return r; }; }
+setInterval(() => { try{ trRemember(); trBar(); }catch{} }, 60000);
+setTimeout(() => { try{ trRemember(); trBar(); }catch{} }, 3000);
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
