@@ -1411,6 +1411,41 @@ body.cc-anon .tk-form .tk-f:has(> #tkf-name),body.cc-anon [data-tk="putname"]{di
 @media print{.edu-strip{display:none!important}}
 
 /* ===== v98: register lookup, education profile ===== */
+/* 1.56: bring all your lessons in, the original switch */
+#obModal{position:fixed;inset:0;z-index:1100;overflow-y:auto}#obModal .cmd-back{position:fixed}
+.ob-box{max-width:720px}
+.ob-files{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px;max-height:280px;overflow:auto}
+.ob-files li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,220px) auto;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--cc-line);border-radius:6px}
+.ob-fn{font-size:.9rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:575.98px){.ob-files li{grid-template-columns:1fr auto}.ob-files li select{grid-column:1/-1;grid-row:2}}
+.ob-link summary svg{vertical-align:-3px}
+.ob-unit{margin-bottom:10px}
+.ob-grid{font-size:.88rem;margin-bottom:8px}.ob-grid th{width:110px}
+.ob-grid tr.ob-hole td{color:#6d28d9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ob-grid tr.ob-hole td{color:#c4b5fd}}[data-theme="dark"] .ob-grid tr.ob-hole td{color:#c4b5fd}
+.ob-ln{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:6px;background:var(--bs-tertiary-bg);border:1px solid var(--cc-line);font-size:.78rem;font-weight:700}
+.ob-key{font-size:.9rem;padding-left:1.4rem;margin-bottom:10px}
+.ob-opts{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:8px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25)}
+.ob-prog{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto}
+.ob-prog li{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--cc-line);border-radius:8px;color:var(--bs-secondary-color)}
+.ob-prog li > svg,.ob-prog li > .spinner-border,.ob-prog .ow-dot{flex:none;width:18px;height:18px}
+.ob-prog li span{flex:1;min-width:0}.ob-prog li b{display:block;color:var(--bs-body-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ob-prog li small{display:block}
+.ob-prog li.now{border-color:#6366f1;color:var(--bs-body-color)}.ob-prog li.done > svg{color:#15803d}.ob-prog li.bad > svg{color:#b91c1c}
+.ob-sw{display:inline-flex;margin:12px 0 0;padding:4px;border-radius:6px;background:var(--bs-tertiary-bg);border:1px solid var(--cc-line);gap:4px;max-width:100%}
+.ob-sw button{border:0;background:transparent;padding:7px 14px;min-height:36px;border-radius:6px;font-weight:700;font-size:.88rem;color:var(--bs-secondary-color);white-space:nowrap}
+.ob-sw button.on{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 4px 12px -6px rgba(79,70,229,.7)}
+.ob-sw button:focus-visible{outline:2px solid var(--cc-primary);outline-offset:2px}
+body.ob-orig-on #out .lesson-tabs,body.ob-orig-on #out .lesson-pane,body.ob-orig-on #ltBar,body.ob-orig-on #out .ow-card{display:none!important}
+.ob-orig{margin:12px 0;border:1px solid var(--cc-line);border-radius:8px;background:var(--bs-body-bg)}
+.ob-orig-h{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--cc-line)}
+.ob-orig-h b{display:block}.ob-orig-h small{display:block;color:var(--bs-secondary-color)}
+.ob-orig-h .btn svg{vertical-align:-3px}
+.ob-orig-b{padding:14px;max-width:72ch;line-height:1.6}
+.ob-slide{padding:10px 12px;margin-bottom:10px;border:1px solid var(--cc-line);border-radius:8px}.ob-slide h3{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--bs-secondary-color);margin:0 0 4px}
+.ob-notes{margin:6px 0 0;font-size:.88rem;color:var(--bs-secondary-color)}
+.ob-home{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px auto;max-width:760px;padding:14px 16px;border-radius:8px;border:1px solid rgba(99,102,241,.35);background:linear-gradient(135deg,rgba(79,70,229,.06),rgba(124,58,237,.06))}
+.ob-home > div:not(.d-flex){flex:1 1 260px;min-width:0}.ob-home b{display:block}.ob-home span:not(.ow-badge){display:block;font-size:.9rem;color:var(--bs-secondary-color)}
+@media print{.ob-sw,.ob-home{display:none!important}}
 /* 1.55: bring your own lesson */
 #owModal,#owSrcModal{position:fixed;inset:0;z-index:1100;overflow-y:auto}#owModal .cmd-back,#owSrcModal .cmd-back{position:fixed}
 .ow-box{max-width:640px}
@@ -2711,6 +2746,6 @@ body:not(.mnav-open) .side .side-link[data-search]{border-radius:6px!important}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="app.js?v=3d182611996c"></script>
+<script src="app.js?v=d6f9ab23587b"></script>
 
 </html>

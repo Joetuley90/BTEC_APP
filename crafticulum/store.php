@@ -432,6 +432,71 @@ if (in_array($action, ['tplinfo', 'tplput', 'tpldel', 'tplget'], true)) {
     ccLog($dept, $me, 'uploaded the institution ' . ($kind === 'docx' ? 'lesson plan form' : 'PowerPoint template'), $name);
     out(200, ['tpl' => (object) $info]);
 }
+/* ---------- 1.56: the original file behind a lesson someone brought in. Kept with the department's files, never at a web address. ---------- */
+const ORIG_EXT = ['docx', 'pptx', 'pdf', 'txt', 'md'];
+if (in_array($action, ['origput', 'origget', 'origdel'], true)) {
+    $key = (string) ($body['key'] ?? ''); if (!preg_match('/^[a-f0-9]{24}$/', $key)) out(400, ['error' => 'Bad key.']);
+    $od = $ddir . '/_orig'; $f = $od . '/' . $key . '.bin'; $mf = $od . '/' . $key . '.json';
+    $meta = json_decode((string) @file_get_contents($mf), true); $meta = is_array($meta) ? $meta : null;
+    if ($action === 'origget') { if (!$meta || !is_file($f)) out(404, ['error' => 'none']); header('Content-Type: application/octet-stream'); header('Content-Length: ' . filesize($f)); readfile($f); exit; }
+    if ($meta && ($meta['by'] ?? '') !== $me['email'] && !$lead) out(403, ['error' => 'noperm']);
+    if ($action === 'origdel') { @unlink($f); @unlink($mf); out(200, ['ok' => true]); }
+    $i = (int) ($body['i'] ?? 0); $n = (int) ($body['n'] ?? 1); $bin = base64_decode((string) ($body['data'] ?? ''), true);
+    $ext = strtolower((string) ($body['ext'] ?? '')); if (!in_array($ext, ORIG_EXT, true)) out(400, ['error' => 'type']);
+    if ($bin === false || $n < 1 || $n > 60 || $i < 0 || $i >= $n) out(400, ['error' => 'Bad piece.']);
+    if (!is_dir($od) && !@mkdir($od, 0700, true)) out(500, ['error' => 'Could not save. Check the data folder is writable.']);
+    $part = $f . '.part'; if ($i === 0) @unlink($part);
+    if (@file_put_contents($part, $bin, FILE_APPEND | LOCK_EX) === false) out(500, ['error' => 'Could not save.']);
+    if (filesize($part) > 45 * 1024 * 1024) { @unlink($part); out(413, ['error' => 'big']); }
+    if ($i < $n - 1) out(200, ['ok' => true]);
+    $h = (string) @file_get_contents($part, false, null, 0, 4);
+    if ((in_array($ext, ['docx', 'pptx'], true) && $h !== "PK\x03\x04") || ($ext === 'pdf' && $h !== '%PDF')) { @unlink($part); out(400, ['error' => 'type']); }
+    @rename($part, $f); $name = mb_substr(trim((string) preg_replace('/[\x00-\x1F<>\/\\\\]+/u', ' ', (string) ($body['name'] ?? 'lesson'))), 0, 120);
+    $meta = ['by' => $me['email'], 'name' => $name, 'ext' => $ext, 'size' => filesize($f), 'at' => time()];
+    @file_put_contents($mf, json_encode($meta, JSON_UNESCAPED_UNICODE), LOCK_EX);
+    out(200, ['orig' => ['key' => $key, 'name' => $name, 'ext' => $ext, 'size' => $meta['size']]]);
+}
+/* ---------- 1.56: a lesson from a Google Drive or OneDrive share link. Only those services are ever fetched, and only https. ---------- */
+function linkHostOk(string $host): bool { $host = strtolower($host);
+    if (defined('LINK_TEST_HOST') && $host === strtolower(explode(':', (string) LINK_TEST_HOST)[0])) return true;
+    foreach (['docs.google.com', 'drive.google.com', 'drive.usercontent.google.com', 'googleusercontent.com', 'onedrive.live.com', '1drv.ms', 'api.onedrive.com', 'sharepoint.com', '1drv.com', 'livefilestore.com', 'onedrive.com'] as $ok)
+        if ($host === $ok || str_ends_with($host, '.' . $ok)) return true;
+    return false; }
+function linkUrl(string $u): string {
+    if (preg_match('~docs\.google\.com/document/d/([\w-]+)~', $u, $m)) return 'https://docs.google.com/document/d/' . $m[1] . '/export?format=docx';
+    if (preg_match('~docs\.google\.com/presentation/d/([\w-]+)~', $u, $m)) return 'https://docs.google.com/presentation/d/' . $m[1] . '/export/pptx';
+    if (preg_match('~drive\.google\.com/(?:file/d/|open\?id=|uc\?(?:export=download&)?id=)([\w-]+)~', $u, $m)) return 'https://drive.google.com/uc?export=download&id=' . $m[1];
+    $p = parse_url($u); $h = strtolower((string) ($p['host'] ?? ''));
+    if ($h === '1drv.ms' || str_ends_with($h, 'onedrive.live.com') || str_ends_with($h, 'sharepoint.com')) return $u . (str_contains($u, '?') ? '&' : '?') . 'download=1';
+    return $u; }
+if ($action === 'fetchlink') {
+    $u = trim((string) ($body['url'] ?? '')); $p = parse_url($u);
+    $test = defined('LINK_TEST_HOST') && strtolower((string) ($p['host'] ?? '') . (isset($p['port']) ? ':' . $p['port'] : '')) === strtolower((string) LINK_TEST_HOST);
+    if (!$p || (($p['scheme'] ?? '') !== 'https' && !$test) || !linkHostOk((string) ($p['host'] ?? ''))) out(400, ['error' => 'host']);
+    if (!function_exists('curl_init')) out(500, ['error' => 'nocurl']);
+    $url = linkUrl($u); $max = 25 * 1024 * 1024; $data = ''; $name = '';
+    for ($hop = 0; $hop < 6; $hop++) {
+        $q = parse_url($url); $okScheme = ($q['scheme'] ?? '') === 'https' || ($test && strtolower((string) ($q['host'] ?? '') . (isset($q['port']) ? ':' . $q['port'] : '')) === strtolower((string) LINK_TEST_HOST));
+        if (!$q || !$okScheme || !linkHostOk((string) ($q['host'] ?? ''))) out(400, ['error' => 'host']);
+        $hdr = []; $data = '';
+        $c = curl_init($url); curl_setopt_array($c, [CURLOPT_RETURNTRANSFER => false, CURLOPT_FOLLOWLOCATION => false, CURLOPT_TIMEOUT => 40, CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP, CURLOPT_USERAGENT => 'Crafticulum',
+            CURLOPT_HEADERFUNCTION => function ($c, $line) use (&$hdr) { $t = explode(':', $line, 2); if (count($t) === 2) $hdr[strtolower(trim($t[0]))] = trim($t[1]); return strlen($line); },
+            CURLOPT_WRITEFUNCTION => function ($c, $chunk) use (&$data, $max) { $data .= $chunk; return strlen($data) > $max ? 0 : strlen($chunk); }]);
+        curl_exec($c); $code = (int) curl_getinfo($c, CURLINFO_RESPONSE_CODE); curl_close($c);
+        if (strlen($data) > $max) out(413, ['error' => 'big']);
+        if ($code >= 300 && $code < 400 && !empty($hdr['location'])) { $loc = $hdr['location']; if (!preg_match('~^https?://~i', $loc)) { $loc = ($q['scheme'] ?? 'https') . '://' . $q['host'] . (isset($q['port']) ? ':' . $q['port'] : '') . '/' . ltrim($loc, '/'); } $url = $loc; continue; }
+        if ($code === 401 || $code === 403 || $code === 404) out(400, ['error' => 'private']);
+        if ($code !== 200) out(502, ['error' => 'fetch']);
+        if (preg_match('/filename\*?=(?:UTF-8\'\')?"?([^";]+)"?/i', (string) ($hdr['content-disposition'] ?? ''), $m)) $name = rawurldecode($m[1]);
+        break;
+    }
+    if ($name === '') { $bn = rawurldecode(basename((string) (parse_url($url, PHP_URL_PATH) ?? ''))); if (preg_match('/\.(docx|pptx|pdf|txt|md)$/i', $bn)) $name = $bn; }
+    $h4 = substr($data, 0, 4); $ct = strtolower((string) ($hdr['content-type'] ?? ''));
+    if (str_contains($ct, 'text/html') && $h4 !== "PK\x03\x04" && $h4 !== '%PDF') out(400, ['error' => 'private']);   // a sign-in page, not the file
+    $ext = $h4 === '%PDF' ? 'pdf' : ($h4 === "PK\x03\x04" ? (str_contains($data, 'ppt/slides/') ? 'pptx' : 'docx') : 'txt');
+    if ($name === '' || !preg_match('/\.(docx|pptx|pdf|txt|md)$/i', $name)) $name = ($name !== '' ? preg_replace('/\.[a-z0-9]+$/i', '', $name) : 'Lesson from a link') . '.' . $ext;
+    out(200, ['name' => mb_substr($name, 0, 120), 'ext' => $ext, 'data' => base64_encode($data)]);
+}
 /* ---------- deleted lessons wait in the bin for 30 days ---------- */
 if ($action === 'bin' || $action === 'restore') {
     if (!$lead) out(403, ['error' => 'noperm']);

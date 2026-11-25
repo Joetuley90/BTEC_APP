@@ -2571,4 +2571,23 @@ VERSION 1.55: BRING YOUR OWN LESSON
   stays in History. Sign-off is cleared because the content changed.
 - Learner names saved in Crafticulum are taken out before anything is sent.
 
+VERSION 1.56: BRING ALL YOUR LESSONS IN
+- Bring your lessons in: a batch of lessons or a zip (up to 40 at a time),
+  from first steps on Home, a card for new people, the New button, My
+  created lessons, or the single upload window. Each file can be set to
+  its own unit.
+- Crafticulum AI checks the whole set against the criteria first and shows
+  which lessons cover each criterion and where the unit has holes. Then it
+  brings every lesson in (checked, gaps filled, wording kept) and can build
+  the missing lessons in the teacher's own style.
+- Every lesson brought in keeps its original file (saved in the data
+  folder, in data/.../_orig, never at a web address). A switch on the
+  lesson shows "Crafticulum version" or "Your original", with Download the
+  original and Keep only what's yours.
+- Google Drive and OneDrive: paste a share link (set to "anyone with the
+  link") instead of downloading the file. Only those services are fetched.
+- The quality report shows how many lessons in each unit were written by
+  staff and how many criteria gaps were filled.
+- Tidy: no real staff names or college-specific dates left in the app.
+
 NO CHANGES TO config.php

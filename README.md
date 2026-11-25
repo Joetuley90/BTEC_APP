@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.55, 25 Nov 2026: Bring your own lesson: upload a Word, PowerPoint or PDF lesson (or your edited version) and Crafticulum checks it against the criteria, fills the gaps and builds the rest.). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.55.zip` and `crafticulum-release.zip`: the same files as one zip (3,736,704 bytes).
+- `crafticulum/`: every file of the current release (1.56, 25 Nov 2026: Bring all your lessons in: batch or zip, checked as a set, holes filled in your style, originals kept with a switch, Drive and OneDrive links, staff-written lessons in the quality report, and a neutral-name sweep.). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.56.zip` and `crafticulum-release.zip`: the same files as one zip (3,748,163 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
