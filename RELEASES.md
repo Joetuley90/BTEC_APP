@@ -3,6 +3,46 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.55 · 25 November 2026
+
+**Bring your own lesson**
+
+Lecturers can now start from a lesson they've already made, rather than starting from scratch.
+
+- **Upload your own lesson.** It's on Home, under Build lesson on the criteria form, and in the New sheet on a phone. It takes Word (.docx), PowerPoint (.pptx, including speaker notes), PDF, or pasted text. Pick the subject, level and unit, and optionally the lesson length, a note ("keep my case study") and the criteria it should cover. If no criteria are picked, Crafticulum works out which ones the lesson is aiming at.
+- **What Crafticulum AI does with it.** It keeps their title, activities, order, timings, examples and wording. It checks the lesson against the criteria. Where something a criterion needs is missing or thin, it adds an activity, task or question. Any part the lesson doesn't have (starter, tasks, exit quiz, independent study, plenary and so on) is written to match their style. Timings that don't add up to the lesson length get adjusted.
+- **"Your lesson, checked" box.** This sits at the top of the lesson and shows:
+  - the criteria their lesson already covered
+  - each gap, with what was missing and what was added
+  - what was kept from theirs
+  - what changed, and why
+
+  Parts Crafticulum wrote are tagged **Added** on the lesson tabs, with a note at the top of that part. The optional ones (exit quiz, independent study, stretch, support, how to work, done-by list) can be **taken out** and **put back**. "See what you uploaded" shows the text that was read from their file.
+- **Upload your version.** On any lesson, More has "Upload your version". A lecturer can edit a Crafticulum lesson in Word or PowerPoint, then upload it. Their changes win, it's checked against the lesson's criteria again, and gaps are filled. It stays the same lesson with the version number going up, and the previous version is in History. Sign-off is cleared, because the content changed.
+- **Learner names.** Before anything is sent, any learner names saved in Crafticulum (groups and learner lists) are swapped for "[learner]". The box says how many were taken out, and the window tells lecturers to remove any others first.
+
+**After updating:** nothing to do.
+
+**Tested:** pw155 27 (new: the ways in on Home, the form, the phone New sheet and More; empty and wrong-file messages; Word and PowerPoint reading, with slides in order and speaker notes; learner names taken out; all criteria sent when none are picked; the teacher's note; title kept; criteria narrowed; the box's covered, gaps, kept and added; tab tags and the note on an added part; saved to your lessons; take out and put back; see what you uploaded; upload your version keeping the same lesson as version 2 with the old one in History; phone layout). The accessibility check is clean on the window and the box, in light and dark. In the full regression run of 83 suites, every failure is one of the old out-of-date checks already listed in 1.54, which fail the same way without this release. pw107 was updated for the new date. Not tried on the live site yet.
+
+### What was pushed
+
+- Commit `999c830` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.55.zip`, 3,736,704 bytes, no `config.php` inside.
+- Build number: 155 (shown to people as 1.55).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.54.zip` |
+| added | `crafticulum-v1.55.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.54 · 25 November 2026
 
 **Behaves like an app on phones and tablets**
