@@ -3,6 +3,45 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.54 · 25 November 2026
+
+**Behaves like an app on phones and tablets**
+
+Everything here is for phones and tablets (narrower than 992px). Computers keep the layout they had.
+
+- **Title bar.** Every screen shows its name at the top with a back arrow. Home keeps the logo. Scroll down and the bar slides out of the way, scroll up and it comes back. The super admin band is now one slim line and stays on screen, so Leave is always there.
+- **Five tabs.** The bottom bar is Home, This week, **New**, Lessons and Planning. New is the round button in the middle and opens a sheet: New lesson, AI tool, Plan a unit, Ask Crafti, or My created lessons. Your account is in Menu.
+- **Screens slide.** A new screen slides in from the right, and going back slides it out. Switching tabs fades. Swipe in from the left edge to go back. The phone's own back button still works.
+- **Lesson screen.** One row: a big Teach button, Board, and "⋯" for everything else (Edit, the Share and More options, Make a version, Offline copy). Sign-off is a small pill you tap to open. Show on board no longer floats over the lesson.
+- **Crafti.** The mascot is a bit smaller, and it tucks away while you scroll or when a sheet or menu is open.
+- **Settings and Admin as lists.** They open as a tidy list like phone settings, with your account at the top. Tap a row to open that page, and use the back arrow to return. Links that go straight to a setting still open it directly.
+- **Loading and refresh.** Lists that are loading show grey placeholder shapes instead of "Loading...". Pull down at the top of Home, This week, Lessons, Planning, Settings, Library, Learners or Results to refresh.
+- **Taps.** Buttons press in slightly when tapped, Android phones give a tiny buzz on key actions, and buttons are at least 44px tall. In My created lessons, swipe a lesson left to **Copy** or **Bin** it.
+- **Home screen.** From a teacher's second visit, a card offers "Add Crafticulum to your home screen". On Android and Chrome it installs in one tap. On iPhone it shows how to use Share, then Add to Home Screen. Not now hides it for 30 days. Opened from the icon, it shows the Crafticulum name under the logo while it loads.
+- **One sheet style.** Every menu on a phone now opens the same bottom sheet, with a grab handle, a Cancel button, and drag down to close. That includes Teach, Share, More, Download and the rest, the lesson parts, Settings sections and the board. My created lessons opens from the bottom too.
+
+**After updating:** nothing to do.
+
+**Tested:** pw154 38 (new: five tabs and New, title bar and back, the title bar hiding on scroll with the admin band staying, edge swipe back, the lesson row and its "⋯" sheet, Make a version from the sheet, Teach as a sheet, drag to close, the sign-off pill, Settings and Admin lists, direct links, loading shapes, swipe to copy, pull to refresh, install prompt, 44px buttons, tablet sheet, computers unchanged). Full regression run of 82 suites: the only failures are 10 old checks that fail the same way on 1.53 without these changes (pw118, pwchat, pwsuite, pwsuper, pwurl, pwurls, pw111, pwsa, pwmgr, pwpay), so they're out-of-date tests, not this release. Updated for the new layout: pw118, pw107, pwmnav, pwpolish, pwsa1, pwtidy. The accessibility check is clean on phone screens, light and dark, including the new sheets, Settings list and install card. Not tried on the live site yet.
+
+### What was pushed
+
+- Commit `09b806b` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.54.zip`, 3,726,106 bytes, no `config.php` inside.
+- Build number: 154 (shown to people as 1.54).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.53.zip` |
+| added | `crafticulum-v1.54.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.53 · 21 November 2026
 
 **Faster, works offline, lesson sign-off, quality report, learners' progress, checked releases**
