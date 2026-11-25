@@ -3,6 +3,57 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.57 · 25 November 2026
+
+**Phone fixes and a 7-day free trial**
+
+Fixes from Joe's iPhone screenshots, plus the full-access trial he asked for.
+
+- **The Menu on phones.** Every tap on a menu item now goes where it should, including in the home screen app. If iPhone holds back the tap, Crafticulum makes it go through anyway, and it's still one tap, one action. The menu now sits above the Crafti button and everything else, and a long press no longer selects the text. Opening it always shows the whole bar, even if you'd scrolled.
+- **Switching department keeps you where you were.** Before, picking another department took you back to Home. Now:
+  - Planning, This week, Second Marker, Learners, Results, AI tools, Library and Settings come back as they were.
+  - On Lessons, you get a new lesson in that department, because a lesson belongs to the department it was made in.
+- **Second Marker:**
+  - A **Department** picker sits in its own bar, next to Group.
+  - **Move through the steps freely.** Every step can be tapped at any time, and Continue is never locked. Before, it stopped you until each step was finished. Now it lets you through and shows what's still to do on an earlier step, for example "Still to do earlier, Submission: Upload the learner's work".
+  - Swipe left or right on a phone to go to the next or previous step.
+- **7-day free trial.** Anyone who signs up on their own gets full access, everything in the **Department** plan, for 7 days:
+  - A countdown bar shows in the app for the people who can pay. It turns amber 2 days before the end and purple on the last day, with a "Choose a plan" button.
+  - Plan and billing says it's a trial and when it ends, and lets them choose a plan.
+  - The institution's managers get an email **48 hours** and **24 hours** before it ends. Each has a link that opens the payment straight away, plus a link to compare plans. A third email is sent when it has ended.
+  - When it ends, they're on Free with everything they made still there, and the app says so once.
+  - Super admin: Settings, Plans and payments has the trial length (0 switches it off), which plan it gives (Teacher or Department), and how many are on a trial now. The business page shows "On trial".
+  - It only applies to new sign-ups. Existing institutions, MidKent included, aren't touched.
+
+**After updating:** nothing to change. Reminder emails go out when the hourly check runs: the same one that sends the other reminders, through your cron or UptimeRobot hitting the cron link. If nothing pings it, they go out the next time someone uses the site.
+
+**Tested:** pw157 (14: the menu taps, one click per tap, z-index and text selection, the whole bar on opening; staying on Planning, Lessons and Second Marker after switching; Second Marker's department picker; free steps, the "still to do" note, Continue unlocked, swiping). pwtrial (11: default settings, changing them without touching prices, a sign-up getting 7 days of Department, the countdown, Plan and billing, the 48 and 24 hour bars and emails sent once each, the email link opening payment, ending with Free limits plus email plus a one-off note, the trial count, and 0 switching it off). pwpay now turns the trial off, because its checks are about Free.
+
+**Full regression run of 89 suites: all pass.** I updated four tests for this release: pwbilling and pwpay turn the trial off for their Free checks, pwpolish looks for the new What's new item, and pwsa's step inside an institution still lands on its start screen. Keeping your place only applies when switching departments within the same institution. Not tried on a real iPhone yet.
+
+### What was pushed
+
+- Commit `399f7f6` on `main` (1 added, 12 changed, 1 removed).
+- Zip: `crafticulum-v1.57.zip`, 3,754,389 bytes, no `config.php` inside.
+- Build number: 157 (shown to people as 1.57).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.56.zip` |
+| added | `crafticulum-v1.57.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/auth-lib.php` |
+| changed | `crafticulum/auth.php` |
+| changed | `crafticulum/billing.php` |
+| changed | `crafticulum/marker/sm.js` |
+| changed | `crafticulum/money.php` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.56 · 25 November 2026
 
 **Bring all your lessons in**
