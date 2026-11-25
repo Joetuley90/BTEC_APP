@@ -2554,4 +2554,21 @@ Only phones and tablets change. Computers keep the layout they had.
 - Every menu on a phone opens the same bottom sheet: grab handle,
   Cancel, and drag down to close.
 
+VERSION 1.55: BRING YOUR OWN LESSON
+- Upload your own lesson: Home, the criteria form, the New button on a
+  phone. Word (.docx), PowerPoint (.pptx, slides and speaker notes), PDF
+  or pasted text. Pick the unit; optionally pick the criteria, or let
+  Crafticulum work out which ones it covers.
+- Crafticulum AI keeps the teacher's title, activities, order, timings and
+  wording, checks it against the criteria, fills any gaps and writes the
+  parts that are missing (starter, tasks, quiz, study and so on).
+- The lesson shows a "Your lesson, checked" box: what it already covered,
+  the gaps and what was added, what was kept, and what changed. Parts that
+  Crafticulum wrote are marked "Added" and the optional ones can be taken
+  out and put back.
+- Upload your version (More on any lesson): upload an edited copy of a
+  Crafticulum lesson. Same lesson, version number goes up, the old one
+  stays in History. Sign-off is cleared because the content changed.
+- Learner names saved in Crafticulum are taken out before anything is sent.
+
 NO CHANGES TO config.php
