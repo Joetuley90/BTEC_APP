@@ -2606,4 +2606,16 @@ VERSION 1.57: PHONE FIXES AND A 7-DAY FREE TRIAL
   The super admin sets the length (0 = off) and the plan in Settings,
   Plans and payments. Only applies to sign-ups from now on.
 
+VERSION 1.58: EXTRA RESOURCES FOR EACH UNIT
+- The build form has a "Use as an extra resource" tick, with a choice of
+  kind (practical task, assessment practice, revision, homework, worksheet,
+  case study, stretch and challenge, catch-up, other). Extras sit under an
+  Extra resources heading in the unit's Planning and never take or replace
+  a lesson. The same tick is on Home and in Crafti.
+- Without the tick, a lesson built from the form goes into the unit's
+  Planning: the first empty lesson, or in place of one the teacher picks
+  (the old one stays in My created lessons), or not at all if they choose.
+- Extras stay when a sequence is rewritten and travel with Unit for a
+  colleague.
+
 NO CHANGES TO config.php

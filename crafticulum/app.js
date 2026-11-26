@@ -5214,7 +5214,7 @@ async function exportUnit(say){
   if(!downloadsApi) return say("Saving files isn't available in this view.", true);
   const course = getCourse(), L = curLevel(), u = curUnit(), s = getSeq(course, L, u), lessons = [];
   say("Gathering the unit...");
-  for(const r of s.rows){ if(!r.lessonId) continue; const x = await fetchLesson(r.lessonId); if(!x) continue;
+  for(const r of [...s.rows, ...(s.extras || [])]){ if(!r.lessonId) continue; const x = await fetchLesson(r.lessonId); if(!x) continue;
     const c = JSON.parse(JSON.stringify(x)); LESSON_PRIVATE.forEach(k => delete c[k]);
     c.resources = (x.resources || []).map(rr => rr.kind === "file" ? (x.resKey && shareOk() ? {id: rr.id, kind: "link", title: rr.title, url: new URL(resUrl(x, rr), window.ccBase || location.href).href} : null) : rr).filter(Boolean);
     lessons.push(c); }
@@ -5229,7 +5229,7 @@ async function exportUnit(say){
 function importUnitData(d){
   const map = {}, n = (d.lessons || []).length;
   (d.lessons || []).forEach(x => { if(!x || !x.title || !x.meta) return; const nid = newId(); map[x.id] = nid; const c = {...x, id: nid}; LESSON_PRIVATE.forEach(k => delete c[k]); lessonCache[nid] = c; saveRecent(c); });
-  const seq = {...d.seq, rows: (d.seq.rows || []).map(r => ({...r, lessonId: map[r.lessonId] || ""}))}; ["taught", "notes", "g", "shareUnit", "retro"].forEach(k => delete seq[k]);
+  const seq = {...d.seq, rows: (d.seq.rows || []).map(r => ({...r, lessonId: map[r.lessonId] || ""})), extras: (d.seq.extras || []).map(x => ({...x, lessonId: map[x.lessonId] || ""})).filter(x => x.lessonId)}; ["taught", "notes", "g", "shareUnit", "retro"].forEach(k => delete seq[k]);
   saveSeq(seq);
   Object.entries(d.asg || {}).forEach(([k, v]) => { if(!asgOv[k]) asgOv[k] = v; }); if(Object.keys(d.asg || {}).length) saveAsg();
   paintCoverage(); drawLibrary(); if(view === "settings") renderSettings();
@@ -12190,6 +12190,8 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [158, "Extra resources for each unit", "Tick Use as an extra resource when you build, for practical tasks, assessment practice, revision and more. They sit under Extra resources in Planning and never replace a lesson."],
+  [158, "Lessons land in Planning", "Without the tick, a lesson you build goes into the unit's first empty lesson, or in place of one you pick."],
   [157, "Switch department and stay put", "Changing department keeps you on the page you were on, Lessons and Second Marker included. Second Marker has its own department picker too."],
   [157, "Move freely through Second Marker", "Tap any step, or swipe on a phone. Anything still to do on an earlier step is shown instead of stopping you."],
   [156, "Bring all your lessons in", "Upload a batch or a zip. Crafticulum checks them as a set, shows which criteria the unit is missing, fills the gaps and can build the missing lessons in your style."],
@@ -13552,6 +13554,123 @@ try{ if(typeof MZ_ST !== "undefined") MZ_ST.trial = ["warn", "On trial"]; }catch
 if(typeof renderSettings === "function"){ const _rs102 = renderSettings; renderSettings = function(){ const r = _rs102.apply(this, arguments); try{ trPlanNote(); trAdmin(); trBar(); }catch(e){ console.error(e); } return r; }; }
 setInterval(() => { try{ trRemember(); trBar(); }catch{} }, 60000);
 setTimeout(() => { try{ trRemember(); trBar(); }catch{} }, 3000);
+/* ===== round 103 (1.58): extra resources. A lesson can be built as an extra resource for a unit (a practical task, assessment practice, revision and so on).
+   It sits under its own Extra resources heading in the unit's Planning, below the lessons, and never takes or replaces a lesson's place. Without the tick,
+   a lesson built from the form goes into the unit's Planning: into the first empty lesson, or in place of one the teacher picks. ===== */
+const EX_KINDS = [
+  ["Practical task", "a hands-on task with clear steps, the kit or software needed, and a finished product the teacher can check."],
+  ["Assessment practice", "practice in the style of the unit's assessment, with a mark guide against the criteria. It is formative practice only: never the real assignment, and never something learners could copy into their evidence."],
+  ["Revision", "recap activities and a quiz covering the whole unit, so learners can check what they know and what to go over."],
+  ["Homework", "work learners do on their own outside the lesson, with clear instructions and a guide to how long it takes."],
+  ["Worksheet", "a printable worksheet with questions and tasks that build in difficulty."],
+  ["Case study", "a realistic case study from the industry, with questions that apply the unit's content to it."],
+  ["Stretch and challenge", "harder extension work aimed at merit and distinction criteria."],
+  ["Catch-up", "work for learners who missed lessons or fell behind, covering the key content simply."],
+  ["Other", "a resource that fits what the teacher asks for in the notes."]];
+let exOn = false, exKind = "Practical task", exSlotSel = {}, exNext = null, exHomeOn = false, exHomeKind = "Practical task", exAsOn = false, exAsKind = "Practical task", exArm = "", exMsgT = {t: "", bad: false, key: ""};
+const exGuide = k => (EX_KINDS.find(x => x[0] === k) || EX_KINDS[EX_KINDS.length - 1])[1];
+const exSteer = k => `This is an extra resource for the unit, not one of the taught lessons in its sequence. Make it ${k === "Other" ? "" : "a " + k.toLowerCase() + ": "}${exGuide(k)} Teachers use it alongside the lessons, so it must make sense on its own`;
+const exKindOpts = sel => EX_KINDS.map(([k]) => `<option ${k === sel ? "selected" : ""}>${esc(k)}</option>`).join("");
+const exUnitNow = () => { try{ const c = getCourse(), L = curLevel(), u = curUnit(); return L && u ? {course: c, L, u, key: seqKeyOf(c, L, u)} : null; }catch{ return null; } };
+const exLessonName = (r, i) => `Lesson ${i + 1}: ${String(r.title || "").slice(0, 60)}`;
+
+/* ---- the build form: the tick, and where the lesson goes ---- */
+function exSlotDefault(s){ const i = s.rows.findIndex(r => !r.lessonId); return i >= 0 ? String(i) : "none"; }
+function exDraw(){ const box = document.getElementById("exBox"); if(!box) return; const tick = box.querySelector("#exTick"); if(tick) tick.checked = exOn;
+  const more = box.querySelector("#exMore"), help = box.querySelector("#exHelp"), X = exUnitNow(); if(!more) return;
+  if(exOn){ help.textContent = "It goes under Extra resources in this unit's Planning. It doesn't take or replace a lesson.";
+    const h = `<label class="form-label mt-2 mb-1" for="exKind">What kind of resource?</label><select class="form-select form-select-sm" id="exKind">${exKindOpts(exKind)}</select>`; if(more.dataset.h !== h){ more.innerHTML = h; more.dataset.h = h; } return; }
+  const s = X ? getSeq(X.course, X.L, X.u) : null;
+  if(!s || !s.rows.length){ help.textContent = "Leave it unticked for a normal lesson."; if(more.dataset.h !== ""){ more.innerHTML = ""; more.dataset.h = ""; } return; }
+  let v = exSlotSel[s.key]; if(v == null || (v !== "none" && !s.rows[+v])) v = exSlotDefault(s);
+  const left = s.rows.filter(r => !r.lessonId).length;
+  help.textContent = left ? "Leave it unticked to put it in this unit's Planning as a lesson." : "Every lesson in this unit's Planning is built. Pick one to replace, or tick this to keep it as an extra.";
+  const h = `<label class="form-label mt-2 mb-1" for="exSlot">Put it in Planning as</label><select class="form-select form-select-sm" id="exSlot">${s.rows.map((r, i) => `<option value="${i}" ${String(i) === v ? "selected" : ""}>${esc(exLessonName(r, i))} ${r.lessonId ? "(replaces the one there)" : "(empty)"}</option>`).join("")}<option value="none" ${v === "none" ? "selected" : ""}>Don't add it to Planning</option></select>${v !== "none" && s.rows[+v] && s.rows[+v].lessonId ? `<div class="form-text text-warning-emphasis">The lesson there now stays in My created lessons, it just leaves Planning.</div>` : ""}`;
+  if(more.dataset.h !== h){ more.innerHTML = h; more.dataset.h = h; } }
+(() => { const k = document.getElementById("kind"), col = k && k.closest(".col-6, [class*='col-']"); if(!col || document.getElementById("exBox")) return;
+  col.insertAdjacentHTML("afterend", `<div class="col-12" id="exBox"><div class="form-check small mb-0"><input class="form-check-input" type="checkbox" id="exTick"><label class="form-check-label fw-semibold" for="exTick">Use as an extra resource</label></div><div class="form-text mt-0" id="exHelp"></div><div id="exMore"></div></div>`);
+  exDraw(); })();
+document.addEventListener("change", e => { const t = e.target; if(!t || !t.id) return;
+  if(t.id === "exTick"){ exOn = t.checked; exArm = ""; return exDraw(); }
+  if(t.id === "exKind"){ exKind = t.value; return; }
+  if(t.id === "exSlot"){ const X = exUnitNow(); if(X) exSlotSel[X.key] = t.value; return exDraw(); }
+  if(t.id === "exHomeTick"){ exHomeOn = t.checked; return exMini(); }
+  if(t.id === "exHomeKind"){ exHomeKind = t.value; return; }
+  if(t.id === "exAsTick"){ exAsOn = t.checked; return exMini(); }
+  if(t.id === "exAsKind"){ exAsKind = t.value; return; }
+  if(t.closest && t.closest("#form")) requestAnimationFrame(exDraw); });
+document.addEventListener("click", e => { if(e.target.closest && e.target.closest("#course button, #level, #unit")) setTimeout(exDraw, 0); });
+/* the main form: what to do with the lesson it's about to build */
+document.addEventListener("submit", e => { if(!e.target || e.target.id !== "form") return; const X = exUnitNow();
+  if(exOn) exNext = {src: "form", extra: true, kind: exKind, key: X && X.key};
+  else { const sl = document.getElementById("exSlot"); exNext = sl && sl.value !== "none" && X ? {src: "form", slot: +sl.value, key: X.key} : null; }
+  setTimeout(() => { exNext = null; }, 0); }, true);
+
+/* ---- Home and Crafti: the same tick ---- */
+const exMiniHtml = (p, on, kind) => `<div class="ex-mini" id="ex${p}Box"><div class="form-check form-check-inline small mb-0 me-2"><input class="form-check-input" type="checkbox" id="ex${p}Tick" ${on ? "checked" : ""}><label class="form-check-label" for="ex${p}Tick">Use as an extra resource</label></div>${on ? `<select class="form-select form-select-sm w-auto d-inline-block" id="ex${p}Kind" aria-label="What kind of resource?">${exKindOpts(kind)}</select>` : ""}</div>`;
+function exMini(){ try{
+  const hf = document.getElementById("hForm"); if(hf){ const b = document.getElementById("exHomeBox"), h = exMiniHtml("Home", exHomeOn, exHomeKind); if(!b) hf.insertAdjacentHTML("afterend", h); else if(b.outerHTML !== h) b.outerHTML = h; }
+  const al = document.querySelector("[data-as-lesson]"); if(al){ const b = document.getElementById("exAsBox"), h = exMiniHtml("As", exAsOn, exAsKind); const host = al.parentElement; if(!b) host.insertAdjacentHTML("afterend", h); else if(b.outerHTML !== h) b.outerHTML = h; }
+}catch(e){ console.error(e); } }
+new MutationObserver(() => { if((document.getElementById("hForm") && !document.getElementById("exHomeBox")) || (document.querySelector("[data-as-lesson]") && !document.getElementById("exAsBox"))) exMini(); }).observe(document.getElementById("out") || document.body, {childList: true, subtree: true});
+
+/* ---- building: steer it as a resource, then put it in its place ---- */
+{ const _bl103 = buildLesson; buildLesson = async function(f, signal){ let pl = null;
+  try{ if(f && !f.seq && !f.noBase){
+    if(exNext && exNext.src === "form"){ pl = exNext; exNext = null; }
+    else if(view === "home" && typeof homeBusy !== "undefined" && homeBusy && exHomeOn) pl = {extra: true, kind: exHomeKind};
+    else if(typeof asLesBusy !== "undefined" && asLesBusy && exAsOn) pl = {extra: true, kind: exAsKind}; } }catch{}
+  if(pl && pl.extra) f = {...f, kind: "Extra resource: " + pl.kind.toLowerCase(), notes: [exSteer(pl.kind), f.notes].filter(Boolean).join(". ")};
+  const L = await _bl103.call(this, f, signal);
+  try{ if(pl && L && L.meta) exPlace(L, f, pl); }catch(e){ console.error(e); }
+  return L; }; }
+function exPlace(L, f, pl){ const fu = findUnit({course: f.course, level: f.level, unit: f.unit}); if(!fu) return; const key = seqKeyOf(f.course, fu.L, fu.u); if(pl.key && pl.key !== key) return;
+  const s = ensureSaved(f.course, fu.L, fu.u), short = String(f.unit).replace(/:.*/, "");
+  if(pl.extra){ s.extras = (s.extras || []).filter(x => x.lessonId !== L.id); s.extras.push({lessonId: L.id, kind: pl.kind, title: L.title || "Extra resource", at: Date.now()});
+    L.meta.extra = {key, kind: pl.kind}; L.meta.seq = null; saveSeq(s);
+    setTimeout(() => { try{ toast(`Added to Extra resources in ${short}.`, {action: "See them", fn: () => { try{ presetForm(f.course, f.level, f.unit); }catch{} setView("seq"); setTimeout(() => { const c = document.getElementById("exCard"); if(c) c.scrollIntoView({block: "start"}); }, 80); }, ms: 9000}); }catch{} }, 300); return; }
+  const r = s.rows[pl.slot]; if(!r) return; r.lessonId = L.id; L.meta.seq = {key, i: pl.slot, week: Math.floor(pl.slot / (s.perWeek || 1)) + 1}; saveSeq(s);
+  setTimeout(() => { try{ toast(`Put in ${short}'s Planning as lesson ${pl.slot + 1}.`); }catch{} }, 300); }
+/* a sequence rewritten or imported keeps its extras */
+{ const _ss103 = saveSeq; saveSeq = function(s){ try{ const old = s && seqs[s.key]; if(old && old !== s && Array.isArray(old.extras) && old.extras.length && !s.extras) s.extras = old.extras; }catch{} const r = _ss103.apply(this, arguments); try{ if(view === "lesson") exDraw(); }catch{} return r; }; }
+/* regenerating an extra keeps it an extra */
+if(typeof keepIdentity === "function"){ const _ki103 = keepIdentity; keepIdentity = function(nw, old){ const r = _ki103.apply(this, arguments); try{ if(old && old.meta && old.meta.extra && nw && nw.meta){ nw.meta.extra = old.meta.extra; nw.meta.seq = null; } }catch{} return r; }; }
+
+/* ---- Planning: the Extra resources heading under the lessons ---- */
+function exCardHtml(s){ const xs = s.extras || [];
+  const rows = xs.map((x, i) => { const live = typeof lessonCache !== "undefined" && lessonCache[x.lessonId], t = (live && live.title) || x.title;
+    return `<div class="seq-row built ex-row" data-ex-i="${i}"><div class="flex-grow-1 min-w-0"><div class="d-flex flex-wrap gap-2 align-items-center"><h3 class="h6 mb-0">${esc(t)}</h3><span class="badge ex-badge">${esc(x.kind)}</span>${typeof byChip === "function" ? byChip(x.lessonId) : ""}</div></div>
+      <div class="ex-acts"><button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" data-ex="open" data-i="${i}">Open</button><div class="seq-links"><button type="button" class="btn btn-sm btn-link" data-ex="pptx" data-i="${i}">PowerPoint</button><button type="button" class="btn btn-sm btn-link" data-ex="sheet" data-i="${i}">Worksheet</button><button type="button" class="btn btn-sm btn-link text-danger" data-ex="drop" data-i="${i}">${exArm === "drop" + i ? "Remove it?" : "Remove"}</button></div></div></div>`; }).join("");
+  return `<section class="card shadow-sm mt-4 ex-card" id="exCard"><div class="card-body p-4">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3"><div><h2 class="h6 mb-1">Extra resources${xs.length ? ` <span class="badge text-bg-light border">${xs.length}</span>` : ""}</h2><div class="small text-body-secondary">Practical tasks, assessment practice, revision and more for this unit. They sit alongside the lessons and don't take a lesson's place.</div></div>
+    <button type="button" class="btn btn-sm btn-outline-primary" data-nav="create" data-ex="add">Add an extra resource</button></div>
+    ${xs.length ? `<div class="vstack gap-2">${rows}</div>` : `<div class="small text-body-secondary ex-empty">None yet. Press Add an extra resource, or tick "Use as an extra resource" when you build.</div>`}
+    <div class="idea-msg mt-2${exMsgT.bad ? " err" : ""}" id="exMsg" role="status">${exMsgT.key === s.key ? esc(exMsgT.t) : ""}</div></div></section>`; }
+function exCard(){ if(view !== "seq") return; const X = exUnitNow(); if(!X) return; const s = getSeq(X.course, X.L, X.u), out = document.getElementById("out"); if(!out) return;
+  const old = document.getElementById("exCard"), h = exCardHtml(s);
+  if(old){ if(old.dataset.h !== h){ old.outerHTML = h; const n = document.getElementById("exCard"); if(n) n.dataset.h = h; } return; }
+  const yp = out.querySelector(".yp-list"), ypc = yp && yp.closest(".card"), wk = out.querySelectorAll(".seq-week"), bc = document.getElementById("batchCard");
+  if(ypc) ypc.insertAdjacentHTML("beforebegin", h); else if(wk.length) wk[wk.length - 1].insertAdjacentHTML("afterend", h); else if(bc) bc.insertAdjacentHTML("afterend", h); else out.insertAdjacentHTML("beforeend", h);
+  const n = document.getElementById("exCard"); if(n) n.dataset.h = h; }
+{ const _rs103 = renderSeq; renderSeq = function(){ const r = _rs103.apply(this, arguments); try{ exCard(); }catch(e){ console.error(e); } return r; }; }
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-ex]"); if(!b) return; const a = b.dataset.ex;
+  if(a === "add"){ exOn = true; exArm = ""; setTimeout(() => { exDraw(); const x = document.getElementById("exBox"); if(x){ x.classList.add("ex-flash"); setTimeout(() => x.classList.remove("ex-flash"), 1600); } }, 60); return; }
+  const X = exUnitNow(); if(!X) return; const s = getSeq(X.course, X.L, X.u), xs = s.extras || [], i = +b.dataset.i, x = xs[i]; if(!x) return;
+  const say = (t, bad) => { exMsgT = {t, bad: !!bad, key: s.key}; const m = document.getElementById("exMsg"); if(m){ m.className = "idea-msg mt-2" + (bad ? " err" : ""); m.textContent = t; } }; exMsgT = {t: "", bad: false, key: ""};
+  if(a === "drop"){ if(exArm !== "drop" + i){ exArm = "drop" + i; return exCard(); } exArm = ""; s.extras = xs.filter((_, k) => k !== i); saveSeq(s);
+    try{ const L = await fetchLesson(x.lessonId); if(L && L.meta && L.meta.extra){ delete L.meta.extra; saveRecent(L); } }catch{}
+    exCard(); return say("Removed from this unit. The lesson is still in My created lessons."); }
+  if(a === "pptx" || a === "sheet") return dlLesson(x.lessonId, a, say);
+  if(a === "open"){ const L = await fetchLesson(x.lessonId); if(L) return showLesson(L); s.extras = xs.filter((_, k) => k !== i); saveSeq(s); exCard(); return say("That one isn't in your lessons any more, so it's been taken off the list."); } });
+document.addEventListener("click", e => { if(exArm && !(e.target.closest && e.target.closest('[data-ex="drop"]'))){ exArm = ""; if(view === "seq") exCard(); } }, true);
+
+/* ---- the lesson itself says it's an extra ---- */
+function exPill(){ if(view !== "lesson" || typeof current === "undefined" || !current || !current.meta) return; const out = document.getElementById("out"); if(!out) return; const old = out.querySelector(".ex-pill");
+  const m = current.meta.extra; if(!m){ if(old) old.remove(); return; }
+  if(old) return; const h1 = out.querySelector("h1"); if(!h1) return;
+  h1.insertAdjacentHTML("beforebegin", `<div class="ex-pill"><span>Extra resource · ${esc(m.kind || "Resource")} · ${esc(String(current.meta.unit || "").replace(/:.*/, ""))}</span><button type="button" class="btn btn-link btn-sm p-0" data-ex-unit>See the unit's extras</button></div>`); }
+document.addEventListener("click", e => { if(!(e.target.closest && e.target.closest("[data-ex-unit]")) || !current || !current.meta) return; const m = current.meta; try{ presetForm(m.course, m.level, m.unit); }catch{} setView("seq"); setTimeout(() => { const c = document.getElementById("exCard"); if(c) c.scrollIntoView({block: "start"}); }, 80); });
+{ const _r103 = render; render = function(){ const r = _r103.apply(this, arguments); try{ exPill(); if(view === "lesson") exDraw(); }catch(e){ console.error(e); } return r; }; }
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
