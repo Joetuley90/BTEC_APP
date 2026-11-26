@@ -2630,4 +2630,11 @@ VERSION 1.60: FIX FOR BUILDS STUCK ON PHONES
   skip that question, and the extra resource tick is kept even if the build
   takes a while to start.
 
+VERSION 1.61: BUILDS NO LONGER TIME OUT
+- ai.php now runs each Crafticulum AI request as a background job. The page
+  starts it, the server answers at once and carries on, and the page checks
+  back every few seconds. Answers wait in data/_aijobs until collected
+  (once, by the person who asked) and anything left is cleared after an
+  hour. Long lessons no longer hit the web host's or the phone's time limit.
+
 NO CHANGES TO config.php

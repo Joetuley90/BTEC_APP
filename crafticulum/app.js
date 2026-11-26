@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [161, "Long lessons no longer time out", "Building now carries on in the background and the app checks back, so a long lesson or a patchy phone connection doesn't stop it."],
   [160, "Building on a phone no longer gets stuck", "The question about your team's lessons now pops up on screen, and extra resources skip it."],
   [159, "Upload your own extra resource", "Got a practical task or case study already? Upload it from Extra resources in Planning. It's checked, gaps are filled and it's filed with that unit."],
   [158, "Extra resources for each unit", "Tick Use as an extra resource when you build, for practical tasks, assessment practice, revision and more. They sit under Extra resources in Planning and never replace a lesson."],
@@ -13698,6 +13699,35 @@ if(typeof owGo === "function"){ const _og103 = owGo; owGo = async function(){ co
   return r; }; }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest('[data-ex="upload"]'); if(!b || typeof owOpen !== "function") return;
   owOpen("new"); if(owSt){ owSt.extra = {kind: exKind || "Practical task"}; owDraw(); } });
+
+/* ===== 1.61: Crafticulum AI runs as a job. The page starts it, the server answers straight away and carries on, and the page checks back every few
+   seconds. Before, one request was held open until the whole lesson was written, and a long one (a 2 hour practical, say) could outlast the web
+   host's time limit or the phone's patience, which showed as "Couldn't reach your server". A blip while checking back is just tried again. ===== */
+askServer = async function(prompt, tries, meta){
+  const sig = meta && meta.signal || undefined, body = meta && meta.tool ? {prompt, tool: meta.tool, mins: meta.mins || 0} : {prompt};
+  const post = (a, b) => fetch("ai.php?a=" + a, {method: "POST", headers: {"Content-Type": "application/json"}, credentials: "same-origin", body: JSON.stringify(b), signal: sig}).catch(e => { if(e && e.name === "AbortError") throw e; return null; });
+  const nap = ms => new Promise((ok, no) => { const t = setTimeout(ok, ms); if(sig) sig.addEventListener("abort", () => { clearTimeout(t); no(Object.assign(new Error("aborted"), {name: "AbortError"})); }, {once: true}); });
+  const answer = (r, j) => {
+    if(r.status === 429) throw {code: "rate_limited"};
+    if(r.status === 403) throw {code: "noperm"};
+    if(!r.ok){ const why = j.error || (r.status === 504 || r.status === 524 || r.status === 408 ? "The server stopped waiting before Crafticulum AI finished. Try again, or try a shorter lesson." : `The server answered with error ${r.status} and no details. Ask your web host to check the PHP error log.`); try{ ERR.server = why; }catch{} throw {code: "server", message: why}; }
+    return j.text || ""; };
+  const r = await post("ask", Object.assign({job: 1}, body));
+  if(!r) throw {code: "network", message: "No connection to the server."};
+  if(r.status === 401 && (tries || 0) < 2){ const ok = await askLogin(); if(!ok) throw {code: "cancelled"}; return askServer(prompt, (tries || 0) + 1, meta); }
+  let j = {}; try{ j = await r.json(); }catch{}
+  if(!(r.ok && j.job)) return answer(r, j);   /* a server from before 1.61 answers in one go */
+  const t0 = Date.now(); let miss = 0, wait = 600;
+  for(;;){
+    await nap(wait); wait = Math.min(2500, wait + 400);
+    if(Date.now() - t0 > 7 * 60000) throw {code: "server", message: (ERR.server = "Crafticulum AI took too long to answer. Try again, or try a shorter lesson.")};
+    const p = await post("poll", {job: j.job});
+    if(!p){ if(++miss > 30) throw {code: "network", message: "No connection to the server."}; continue; }   /* a phone blip: keep checking for about a minute and a half */
+    miss = 0; let pj = {}; try{ pj = await p.json(); }catch{}
+    if(p.status === 401){ const ok = await askLogin(); if(!ok) throw {code: "cancelled"}; continue; }
+    if(p.ok && pj.working) continue;
+    if(p.status >= 500 && p.status !== 502 && p.status !== 504 && !pj.error){ if(++miss > 30) return answer(p, pj); continue; }   /* the host hiccuped while checking: try again */
+    return answer(p, pj); } };
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

@@ -30,6 +30,24 @@ if ($action === 'logout') { $_SESSION = []; session_destroy(); out(200, ['ok' =>
 
 $me = ccMe();
 if (!$me) out(401, ['error' => 'login']);
+
+/* a long build runs as a job: the page starts it, the server answers at once and carries on, and the page checks back every few seconds.
+   Nothing is held open for minutes, so a web host's time limit or a phone dropping a quiet connection can't stop it */
+function aiJobDir(): string { $d = ccDataDir() . '/_aijobs'; if (!is_dir($d)) @mkdir($d, 0700, true); return $d; }
+function aiJobFile(string $id): string { return aiJobDir() . '/' . $id . '.json'; }
+if ($action === 'poll') {
+    $id = (string) ($body['job'] ?? '');
+    if (!preg_match('/^[a-f0-9]{24}$/', $id)) out(400, ['error' => 'Bad request.']);
+    $f = aiJobFile($id); $j = is_file($f) ? json_decode((string) @file_get_contents($f), true) : null;
+    if (!is_array($j) || ($j['who'] ?? '') !== (string) ($me['email'] ?? '')) out(404, ['error' => 'That build has gone. Press Build lesson again.']);
+    if (($j['status'] ?? '') === 'working') {
+        if (time() - (int) ($j['t'] ?? 0) > 360) { @unlink($f); out(504, ['error' => 'Crafticulum AI took too long to answer. Try again, or try a shorter lesson.']); }
+        out(200, ['working' => true]);
+    }
+    @unlink($f);
+    foreach (glob(aiJobDir() . '/*.json') ?: [] as $old) if (@filemtime($old) < time() - 3600) @unlink($old);   // tidy up any left behind
+    out((int) ($j['code'] ?? 200), (array) ($j['data'] ?? []));
+}
 /* AI Tools and the assistant can be open to every member of staff (a department setting, on to begin with). Building lessons stays with the people given that permission */
 $tool = is_string($body['tool'] ?? null) && preg_match('/^[a-z]{1,20}$/', $body['tool']) ? $body['tool'] : ''; $toolMins = $tool !== '' ? max(0, min(240, (int) ($body['mins'] ?? 0))) : 0;
 if ($tool !== '') { if (!ccRoom(ccAccounts(), $me, $tool === 'chat' ? 'assistant' : 'tools')) out(403, ['error' => 'noperm']); }   // the room has to be open to this person
@@ -51,6 +69,23 @@ $prompt = ccHouseText(ccAccounts(), $me) . $prompt;   // the institution's house
 if (in_array(ccConf('ANTHROPIC_API_KEY'), ['sk-ant-REPLACE-ME', ''], true)) out(500, ['error' => 'Crafticulum AI isn\'t set up yet. The site admin adds the API key in Settings, Site setup.']);
 
 @set_time_limit(320); @ignore_user_abort(true);   // a full lesson can take a couple of minutes
+$job = '';
+if (!empty($body['job'])) {
+    $job = bin2hex(random_bytes(12));
+    @file_put_contents(aiJobFile($job), json_encode(['status' => 'working', 'who' => (string) ($me['email'] ?? ''), 't' => time()]), LOCK_EX);
+    $reply = json_encode(['job' => $job]);
+    http_response_code(202); header('Content-Length: ' . strlen($reply)); header('Connection: close'); header('X-Accel-Buffering: no');
+    while (ob_get_level() > 0) @ob_end_clean();
+    echo $reply; @flush();
+    if (function_exists('fastcgi_finish_request')) @fastcgi_finish_request(); elseif (function_exists('litespeed_finish_request')) @litespeed_finish_request();
+}
+/* from here on, a job writes its answer to its file instead of sending it */
+function done(int $code, array $data): void {
+    global $job;
+    if ($job === '') out($code, $data);
+    @file_put_contents(aiJobFile($job), json_encode(['status' => 'done', 'who' => (string) ($GLOBALS['me']['email'] ?? ''), 't' => time(), 'code' => $code, 'data' => $data], JSON_UNESCAPED_UNICODE), LOCK_EX);
+    exit;
+}
 $model = ccConf('CLAUDE_MODEL') ?: 'claude-sonnet-5-5';
 $ch = curl_init(defined('ANTHROPIC_URL') ? ANTHROPIC_URL : 'https://api.anthropic.com/v1/messages');
 curl_setopt_array($ch, [
@@ -75,10 +110,10 @@ $err  = curl_error($ch);
 curl_close($ch);
 
 if ($res === false) ccErr('claude', 'Could not reach Crafticulum AI: ' . $err, ['role' => $me['role'], 'dept' => (string) $me['deptName']]);
-if ($res === false) out(502, ['error' => stripos($err, 'timed out') !== false ? 'Crafticulum AI took too long to answer. Try again in a minute.' : 'The server could not reach Crafticulum AI.' . ($me['role'] === 'superadmin' ? ' (' . $err . ') Ask your web host whether outgoing connections to api.anthropic.com are allowed.' : ' Try again in a minute, and tell whoever looks after the site if it keeps happening.')]);
+if ($res === false) done(502, ['error' => stripos($err, 'timed out') !== false ? 'Crafticulum AI took too long to answer. Try again in a minute.' : 'The server could not reach Crafticulum AI.' . ($me['role'] === 'superadmin' ? ' (' . $err . ') Ask your web host whether outgoing connections to api.anthropic.com are allowed.' : ' Try again in a minute, and tell whoever looks after the site if it keeps happening.')]);
 $j = json_decode($res, true);
 $said = is_array($j) ? trim((string) ($j['error']['message'] ?? '')) : '';
-if ($code === 429) out(429, ['error' => 'Crafticulum AI is busy. Try again in a minute.']);
+if ($code === 429) done(429, ['error' => 'Crafticulum AI is busy. Try again in a minute.']);
 if ($code !== 200 || !is_array($j)) {
     // Crafticulum AI's own reason, in plain words where it is a common one
     $low = strtolower($said);
@@ -89,10 +124,10 @@ if ($code !== 200 || !is_array($j)) {
     elseif ($code === 413 || strpos($low, 'too long') !== false) $why = 'That was too much text for Crafticulum AI in one go.';
     else $why = 'Crafticulum AI returned an error (' . $code . ').';
     ccErr('claude', $why . ($said !== '' ? ' The AI service said: ' . mb_substr($said, 0, 240) : ''), ['role' => $me['role'], 'dept' => (string) $me['deptName']]);
-    out(502, ['error' => $why . ($said !== '' && $me['role'] === 'superadmin' ? ' The AI service said: ' . mb_substr($said, 0, 240) : '')]);   // the service's own words are for the super admin only
+    done(502, ['error' => $why . ($said !== '' && $me['role'] === 'superadmin' ? ' The AI service said: ' . mb_substr($said, 0, 240) : '')]);   // the service's own words are for the super admin only
 }
 
 $text = '';
 foreach (($j['content'] ?? []) as $block) { if (($block['type'] ?? '') === 'text') $text .= $block['text']; }
 ccUsageAdd($me, (int) ($j['usage']['input_tokens'] ?? 0) + (int) ($j['usage']['cache_creation_input_tokens'] ?? 0) + (int) ($j['usage']['cache_read_input_tokens'] ?? 0), (int) ($j['usage']['output_tokens'] ?? 0), $model, $tool !== '' ? 'tool' : '', $toolMins);
-out(200, ['text' => $text]);
+done(200, ['text' => $text]);
