@@ -3,6 +3,47 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.59 · 26 November 2026
+
+**Upload your own extra resource**
+
+Lecturers can now upload a resource they've already made, like a practical task, case study or revision pack, and have it filed under a unit's Extra resources.
+
+- **Upload your own on Extra resources.** In Planning, the Extra resources heading has two buttons: **Build an extra resource** (with Crafticulum AI) and **Upload your own**. Upload your own opens the usual upload window as "Upload your own extra resource". The tick is already on, and you pick the kind.
+- **The same tick in the upload window.** The normal Upload your own lesson window now has **Use as an extra resource** under the unit, so an upload from Home or the New button can go in as an extra too.
+- **Checked like any upload.** Your wording is kept, it's checked against the criteria, and anything missing is filled in. Crafticulum AI is told the file is an extra resource of that kind, not a taught lesson. The original file is kept, and you get the usual box showing what was kept, added and changed, plus the switch to Your original.
+- **Filed under Extra resources.** It shows in the unit's list with its kind and a **Your own** badge. It never takes or replaces a lesson. The lesson shows the Extra resource label.
+
+**After updating:** nothing to change.
+
+**Tested:** pw158 now has 35 checks. The new ones cover:
+- Upload your own opening the window as an extra, with the tick on and the kind picker showing
+- Crafticulum AI being told it's an extra and what kind
+- the upload being filed under Extra resources and marked Your own
+- the check box and label on the lesson
+- the Your own badge in Planning
+- the normal upload window's tick, off to start, with the kind appearing when ticked
+
+pw154, pw155, pw156, pw157, pwbase, pwplain, pwphone, pwchat and pwpolish all still pass.
+
+### What was pushed
+
+- Commit `116cdd4` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.59.zip`, 3,760,634 bytes, no `config.php` inside.
+- Build number: 159 (shown to people as 1.59).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.58.zip` |
+| added | `crafticulum-v1.59.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.58 · 26 November 2026
 
 **Extra resources for each unit**
