@@ -3,6 +3,48 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.61 · 26 November 2026
+
+**Fix: "Couldn't reach your server" when building**
+
+This fixes the build timing out on Joe's iPhone with "Couldn't reach your server. Check the connection and try again", seen when building a 2-hour practical task as an extra resource.
+
+- **What was wrong.** The page sent one request and the server held it open, saying nothing, until Crafticulum AI had written the whole lesson. A long one, like a 2-hour practical task, can take a couple of minutes. Web hosts and phones drop a request that has been silent that long, so the page gave up even though the server was still working.
+- **How it works now.** The page asks for the build, and the server says "started" straight away and carries on in the background. The page then checks back every few seconds until the answer is ready, so no request is held open for more than a moment. Lessons, extra resources, Crafti chat, AI tools and spec reading all work this way.
+- **Phone blips don't lose the build.** If the connection drops while it's checking back (going into a lift, Wi-Fi swapping to 4G), it keeps trying for about a minute and a half before giving up.
+- **Safe and tidy.** Each build can only be collected by the person who started it, and only once. Anything left behind is cleared after an hour. A page that hasn't updated yet still works the old way.
+
+**After updating:** nothing to change. Then close the home screen app on your phone and open it again, so it picks up the new version.
+
+**Tested:**
+- pw161, 10 checks:
+  - the start answering straight away while an 8-second AI works
+  - checking back while it's working, then getting the answer, once only
+  - a made-up job being refused
+  - a full lesson built on an iPhone-sized screen with a slow AI and the extra resource tick, finishing and landing in Extra resources, with no request held open
+  - three dropped connections in a row while checking back, still getting the answer
+  - an old page still getting its answer in one go
+- pw158 now has 39 checks, covering extra resources and the team-lesson question on a phone.
+
+### What was pushed
+
+- Commit `8268463` on `main` (1 added, 8 changed, 1 removed).
+- Zip: `crafticulum-v1.61.zip`, 3,763,075 bytes, no `config.php` inside.
+- Build number: 161 (shown to people as 1.61).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.60.zip` |
+| added | `crafticulum-v1.61.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/ai.php` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.60 · 26 November 2026
 
 **Fix: building on a phone got stuck**
