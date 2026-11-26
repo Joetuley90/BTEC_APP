@@ -3,6 +3,43 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.60 · 26 November 2026
+
+**Fix: building on a phone got stuck**
+
+Fixes from Joe's iPhone screenshots. Building a lesson could hang on "Building..." with the page greyed out, and extra resources never arrived.
+
+- **The "Your team already has lessons for this unit" question now pops up properly.** On phones it was drawn at the bottom of the page instead of over it. The grey backdrop covered the screen, but the question itself sat out of sight, so the build waited for an answer you couldn't give. Now it opens in the middle of the screen like the other windows, and the backdrop goes when you answer or close it.
+- **Extra resources skip that question.** An extra isn't another copy of a lesson, so when "Use as an extra resource" is ticked Crafticulum just builds it and files it under Extra resources.
+- **The tick holds on.** If Home or Crafti take a while to get going (for example, while working out the unit), the tick is still remembered. Before, a slow start could lose it, and the lesson ended up as a normal lesson.
+
+**After updating:** nothing to change. If a build is stuck on your phone now, close the home screen app and open it again after updating.
+
+**Tested:** pw158 now has 39 checks. The new ones cover:
+- the team question on a phone, with the page scrolled down: it's on screen, over the whole page, and Build a new one closes it
+- an extra with the team question switched on: it's skipped, and the extra still lands after a slow start
+- a normal lesson still asking the question
+
+pw155, pwbase and the rest of the nearby suites still pass.
+
+### What was pushed
+
+- Commit `2abded7` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.60.zip`, 3,760,990 bytes, no `config.php` inside.
+- Build number: 160 (shown to people as 1.60).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.59.zip` |
+| added | `crafticulum-v1.60.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.59 · 26 November 2026
 
 **Upload your own extra resource**
