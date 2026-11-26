@@ -3,6 +3,72 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.58 · 26 November 2026
+
+**Extra resources for each unit**
+
+Lecturers can now build extra resources for a unit, like practical tasks, assessment practice and revision. These go under their own heading in Planning and never take or replace a lesson.
+
+- **The tick.** Under Type, the build form now has a **Use as an extra resource** box. When it's ticked, you pick what kind of resource you want:
+  - Practical task
+  - Assessment practice
+  - Revision
+  - Homework
+  - Worksheet
+  - Case study
+  - Stretch and challenge
+  - Catch-up
+  - Other
+
+  Crafticulum AI is told it's an extra resource of that kind, rather than a taught lesson. Assessment practice is always formative practice. It's never the real assignment, and never something learners could copy into their evidence.
+- **Without the tick, it's a lesson in Planning.** A box called **Put it in Planning as** lists the unit's lessons:
+  - It picks the first empty lesson for you.
+  - You can pick a lesson that's already built instead. It says "replaces the one there", and the old lesson stays in My created lessons. It just leaves Planning.
+  - You can also pick "Don't add it to Planning", which is how it worked before.
+  - If every lesson is built, it says so and suggests ticking the box instead.
+- **Extra resources in Planning.** Each unit has an **Extra resources** heading below the weeks. Every resource shows its name and kind, with Open, PowerPoint, Worksheet and Remove. Remove asks first. It only takes the resource off the unit, so the lesson stays in My created lessons. **Add an extra resource** opens the build form with the tick already on.
+- **Home and Crafti too.** The tick and kind picker also sit under the message box on Home, and next to Build the full lesson in a Crafti chat.
+- **On the lesson.** An extra resource shows an "Extra resource · kind · unit" label, with a link back to the unit's extras. If you regenerate it, it stays an extra.
+- **Kept safe:**
+  - When Crafticulum AI rewrites a unit's sequence, the extras stay.
+  - Unit for a colleague now includes the extras, and they come in on the other side.
+  - If an extra has been binned, opening it takes it off the list.
+
+**After updating:** nothing to change.
+
+**Tested:** pw158 has 28 checks:
+- the tick, and the Planning picker with the first empty lesson picked
+- a normal build filling that lesson, and the picker moving on
+- replacing a built lesson while the old one is kept
+- the tick swapping in the kind picker
+- the AI being told it's an extra and what kind
+- nothing in the sequence being taken or replaced
+- the label on the lesson and its link to Planning
+- the Extra resources list and where it sits
+- Open, Remove with its check, and the lesson being kept after removing
+- the empty message, and Add an extra resource turning the tick on
+- regenerating, a rewritten sequence, and Unit for a colleague all keeping extras
+- the Home tick building an extra, and the Crafti tick
+- a phone fitting the list, and a binned extra being taken off
+
+### What was pushed
+
+- Commit `93cb654` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.58.zip`, 3,759,497 bytes, no `config.php` inside.
+- Build number: 158 (shown to people as 1.58).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.57.zip` |
+| added | `crafticulum-v1.58.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.57 · 25 November 2026
 
 **Phone fixes and a 7-day free trial**
