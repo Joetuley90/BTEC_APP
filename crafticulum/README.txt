@@ -2618,4 +2618,10 @@ VERSION 1.58: EXTRA RESOURCES FOR EACH UNIT
 - Extras stay when a sequence is rewritten and travel with Unit for a
   colleague.
 
+VERSION 1.59: UPLOAD YOUR OWN EXTRA RESOURCE
+- Extra resources in Planning has Build an extra resource and Upload your
+  own. Uploading checks the file against the criteria, fills gaps, keeps
+  the original, and files it under the unit's Extra resources with a
+  "Your own" badge. The normal upload window has the same tick.
+
 NO CHANGES TO config.php

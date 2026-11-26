@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [159, "Upload your own extra resource", "Got a practical task or case study already? Upload it from Extra resources in Planning. It's checked, gaps are filled and it's filed with that unit."],
   [158, "Extra resources for each unit", "Tick Use as an extra resource when you build, for practical tasks, assessment practice, revision and more. They sit under Extra resources in Planning and never replace a lesson."],
   [158, "Lessons land in Planning", "Without the tick, a lesson you build goes into the unit's first empty lesson, or in place of one you pick."],
   [157, "Switch department and stay put", "Changing department keeps you on the page you were on, Lessons and Second Marker included. Second Marker has its own department picker too."],
@@ -13639,12 +13640,12 @@ if(typeof keepIdentity === "function"){ const _ki103 = keepIdentity; keepIdentit
 /* ---- Planning: the Extra resources heading under the lessons ---- */
 function exCardHtml(s){ const xs = s.extras || [];
   const rows = xs.map((x, i) => { const live = typeof lessonCache !== "undefined" && lessonCache[x.lessonId], t = (live && live.title) || x.title;
-    return `<div class="seq-row built ex-row" data-ex-i="${i}"><div class="flex-grow-1 min-w-0"><div class="d-flex flex-wrap gap-2 align-items-center"><h3 class="h6 mb-0">${esc(t)}</h3><span class="badge ex-badge">${esc(x.kind)}</span>${typeof byChip === "function" ? byChip(x.lessonId) : ""}</div></div>
+    return `<div class="seq-row built ex-row" data-ex-i="${i}"><div class="flex-grow-1 min-w-0"><div class="d-flex flex-wrap gap-2 align-items-center"><h3 class="h6 mb-0">${esc(t)}</h3><span class="badge ex-badge">${esc(x.kind)}</span>${x.own || (live && live.meta && live.meta.own) ? `<span class="badge text-bg-light border">Your own</span>` : ""}${typeof byChip === "function" ? byChip(x.lessonId) : ""}</div></div>
       <div class="ex-acts"><button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" data-ex="open" data-i="${i}">Open</button><div class="seq-links"><button type="button" class="btn btn-sm btn-link" data-ex="pptx" data-i="${i}">PowerPoint</button><button type="button" class="btn btn-sm btn-link" data-ex="sheet" data-i="${i}">Worksheet</button><button type="button" class="btn btn-sm btn-link text-danger" data-ex="drop" data-i="${i}">${exArm === "drop" + i ? "Remove it?" : "Remove"}</button></div></div></div>`; }).join("");
   return `<section class="card shadow-sm mt-4 ex-card" id="exCard"><div class="card-body p-4">
     <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3"><div><h2 class="h6 mb-1">Extra resources${xs.length ? ` <span class="badge text-bg-light border">${xs.length}</span>` : ""}</h2><div class="small text-body-secondary">Practical tasks, assessment practice, revision and more for this unit. They sit alongside the lessons and don't take a lesson's place.</div></div>
-    <button type="button" class="btn btn-sm btn-outline-primary" data-nav="create" data-ex="add">Add an extra resource</button></div>
-    ${xs.length ? `<div class="vstack gap-2">${rows}</div>` : `<div class="small text-body-secondary ex-empty">None yet. Press Add an extra resource, or tick "Use as an extra resource" when you build.</div>`}
+    <div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-outline-primary" data-nav="create" data-ex="add">Build an extra resource</button><button type="button" class="btn btn-sm btn-outline-primary" data-ex="upload">Upload your own</button></div></div>
+    ${xs.length ? `<div class="vstack gap-2">${rows}</div>` : `<div class="small text-body-secondary ex-empty">None yet. Build one with Crafticulum AI, upload one you already have, or tick "Use as an extra resource" when you build or upload.</div>`}
     <div class="idea-msg mt-2${exMsgT.bad ? " err" : ""}" id="exMsg" role="status">${exMsgT.key === s.key ? esc(exMsgT.t) : ""}</div></div></section>`; }
 function exCard(){ if(view !== "seq") return; const X = exUnitNow(); if(!X) return; const s = getSeq(X.course, X.L, X.u), out = document.getElementById("out"); if(!out) return;
   const old = document.getElementById("exCard"), h = exCardHtml(s);
@@ -13653,7 +13654,7 @@ function exCard(){ if(view !== "seq") return; const X = exUnitNow(); if(!X) retu
   if(ypc) ypc.insertAdjacentHTML("beforebegin", h); else if(wk.length) wk[wk.length - 1].insertAdjacentHTML("afterend", h); else if(bc) bc.insertAdjacentHTML("afterend", h); else out.insertAdjacentHTML("beforeend", h);
   const n = document.getElementById("exCard"); if(n) n.dataset.h = h; }
 { const _rs103 = renderSeq; renderSeq = function(){ const r = _rs103.apply(this, arguments); try{ exCard(); }catch(e){ console.error(e); } return r; }; }
-document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-ex]"); if(!b) return; const a = b.dataset.ex;
+document.addEventListener("click", async e => { const b = e.target.closest && e.target.closest("[data-ex]"); if(!b) return; const a = b.dataset.ex; if(a === "upload") return;
   if(a === "add"){ exOn = true; exArm = ""; setTimeout(() => { exDraw(); const x = document.getElementById("exBox"); if(x){ x.classList.add("ex-flash"); setTimeout(() => x.classList.remove("ex-flash"), 1600); } }, 60); return; }
   const X = exUnitNow(); if(!X) return; const s = getSeq(X.course, X.L, X.u), xs = s.extras || [], i = +b.dataset.i, x = xs[i]; if(!x) return;
   const say = (t, bad) => { exMsgT = {t, bad: !!bad, key: s.key}; const m = document.getElementById("exMsg"); if(m){ m.className = "idea-msg mt-2" + (bad ? " err" : ""); m.textContent = t; } }; exMsgT = {t: "", bad: false, key: ""};
@@ -13671,6 +13672,32 @@ function exPill(){ if(view !== "lesson" || typeof current === "undefined" || !cu
   h1.insertAdjacentHTML("beforebegin", `<div class="ex-pill"><span>Extra resource · ${esc(m.kind || "Resource")} · ${esc(String(current.meta.unit || "").replace(/:.*/, ""))}</span><button type="button" class="btn btn-link btn-sm p-0" data-ex-unit>See the unit's extras</button></div>`); }
 document.addEventListener("click", e => { if(!(e.target.closest && e.target.closest("[data-ex-unit]")) || !current || !current.meta) return; const m = current.meta; try{ presetForm(m.course, m.level, m.unit); }catch{} setView("seq"); setTimeout(() => { const c = document.getElementById("exCard"); if(c) c.scrollIntoView({block: "start"}); }, 80); });
 { const _r103 = render; render = function(){ const r = _r103.apply(this, arguments); try{ exPill(); if(view === "lesson") exDraw(); }catch(e){ console.error(e); } return r; }; }
+
+/* ===== 1.59: upload your own extra resource. The upload window has the same tick, and Extra resources has an Upload your own button that opens it
+   with the tick on. The file is checked and filled in like any upload, then filed under the unit's Extra resources. ===== */
+if(typeof owDraw === "function"){ const _od103 = owDraw; owDraw = function(){ const r = _od103.apply(this, arguments); try{ const s = owSt, box = document.querySelector("#owModal .ow-box"); if(!s || !box || s.mode === "version" || s.busy) return r;
+    const ex = s.extra, h = box.querySelector("#owH"); if(ex && h) h.textContent = "Upload your own extra resource";
+    if(ex){ const bl = box.querySelector('[data-ob="open"]'); if(bl && bl.closest("p")) bl.closest("p").remove(); }
+    const unit = box.querySelector("#owUnit"), row = unit && unit.closest(".row"); if(!row || box.querySelector("#owExBox")) return r;
+    row.insertAdjacentHTML("afterend", `<div class="ow-ex mb-3" id="owExBox"><div class="form-check small mb-0"><input class="form-check-input" type="checkbox" id="owExTick" ${ex ? "checked" : ""}><label class="form-check-label fw-semibold" for="owExTick">Use as an extra resource</label></div>
+      ${ex ? `<div class="d-flex flex-wrap align-items-center gap-2 mt-1"><label class="small mb-0" for="owExKind">What kind?</label><select class="form-select form-select-sm w-auto" id="owExKind">${exKindOpts(ex.kind)}</select></div><div class="form-text mt-1">It goes under Extra resources in this unit's Planning. It doesn't take or replace a lesson.</div>` : `<div class="form-text mt-0">Tick it for a practical task, assessment practice, revision and so on, rather than a lesson.</div>`}</div>`);
+  }catch(e){ console.error(e); } return r; }; }
+document.addEventListener("change", e => { const t = e.target; if(!t || !owSt) return;
+  if(t.id === "owExTick"){ owSt.extra = t.checked ? {kind: exKind || "Practical task"} : null; return owDraw(); }
+  if(t.id === "owExKind" && owSt.extra){ owSt.extra.kind = t.value; } });
+/* tell Crafticulum AI what the file is for */
+if(typeof owForm === "function"){ const _of103 = owForm; owForm = function(s){ const f = _of103.apply(this, arguments); try{ if(f && s && s.extra){ const k = s.extra.kind;
+  f.kind = "Extra resource: " + k.toLowerCase(); f.notes = [`The teacher's file is an extra resource for the unit (${k.toLowerCase()}), not one of the taught lessons in its sequence. Keep it working as ${k === "Other" ? "the resource they made" : "a " + k.toLowerCase()}: ${exGuide(k)}`, f.notes].filter(Boolean).join(". "); } }catch{} return f; }; }
+/* once it's in, file it under Extra resources */
+if(typeof owGo === "function"){ const _og103 = owGo; owGo = async function(){ const s = owSt, ex = s && s.mode !== "version" && s.extra ? {...s.extra} : null, where = s ? {course: s.course, level: s.level, unit: s.unit} : null, t0 = Date.now();
+  const r = await _og103.apply(this, arguments);
+  try{ if(ex && where && owSt !== s && current && current.meta && current.meta.own && (current.meta.own.at || 0) >= t0){ const m = current.meta;
+    exPlace(current, {course: m.course || where.course, level: m.level || where.level, unit: m.unit || where.unit}, {extra: true, kind: ex.kind});
+    if(current.meta.extra){ const fu = findUnit({course: m.course, level: m.level, unit: m.unit}); const q = fu && seqs[seqKeyOf(m.course, fu.L, fu.u)]; const x = q && (q.extras || []).find(y => y.lessonId === current.id); if(x){ x.own = true; saveSeq(q); }
+      saveRecent(current); render(current); } } }catch(e){ console.error(e); }
+  return r; }; }
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest('[data-ex="upload"]'); if(!b || typeof owOpen !== "function") return;
+  owOpen("new"); if(owSt){ owSt.extra = {kind: exKind || "Practical task"}; owDraw(); } });
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;
