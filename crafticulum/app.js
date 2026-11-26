@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [160, "Building on a phone no longer gets stuck", "The question about your team's lessons now pops up on screen, and extra resources skip it."],
   [159, "Upload your own extra resource", "Got a practical task or case study already? Upload it from Extra resources in Planning. It's checked, gaps are filled and it's filed with that unit."],
   [158, "Extra resources for each unit", "Tick Use as an extra resource when you build, for practical tasks, assessment practice, revision and more. They sit under Extra resources in Planning and never replace a lesson."],
   [158, "Lessons land in Planning", "Without the tick, a lesson you build goes into the unit's first empty lesson, or in place of one you pick."],
@@ -13603,9 +13604,8 @@ document.addEventListener("change", e => { const t = e.target; if(!t || !t.id) r
 document.addEventListener("click", e => { if(e.target.closest && e.target.closest("#course button, #level, #unit")) setTimeout(exDraw, 0); });
 /* the main form: what to do with the lesson it's about to build */
 document.addEventListener("submit", e => { if(!e.target || e.target.id !== "form") return; const X = exUnitNow();
-  if(exOn) exNext = {src: "form", extra: true, kind: exKind, key: X && X.key};
-  else { const sl = document.getElementById("exSlot"); exNext = sl && sl.value !== "none" && X ? {src: "form", slot: +sl.value, key: X.key} : null; }
-  setTimeout(() => { exNext = null; }, 0); }, true);
+  if(exOn) exNext = {src: "form", extra: true, kind: exKind, key: X && X.key, t: Date.now()};
+  else { const sl = document.getElementById("exSlot"); exNext = sl && sl.value !== "none" && X ? {src: "form", slot: +sl.value, key: X.key, t: Date.now()} : null; } }, true);
 
 /* ---- Home and Crafti: the same tick ---- */
 const exMiniHtml = (p, on, kind) => `<div class="ex-mini" id="ex${p}Box"><div class="form-check form-check-inline small mb-0 me-2"><input class="form-check-input" type="checkbox" id="ex${p}Tick" ${on ? "checked" : ""}><label class="form-check-label" for="ex${p}Tick">Use as an extra resource</label></div>${on ? `<select class="form-select form-select-sm w-auto d-inline-block" id="ex${p}Kind" aria-label="What kind of resource?">${exKindOpts(kind)}</select>` : ""}</div>`;
@@ -13617,14 +13617,14 @@ new MutationObserver(() => { if((document.getElementById("hForm") && !document.g
 
 /* ---- building: steer it as a resource, then put it in its place ---- */
 { const _bl103 = buildLesson; buildLesson = async function(f, signal){ let pl = null;
-  try{ if(f && !f.seq && !f.noBase){
-    if(exNext && exNext.src === "form"){ pl = exNext; exNext = null; }
-    else if(view === "home" && typeof homeBusy !== "undefined" && homeBusy && exHomeOn) pl = {extra: true, kind: exHomeKind};
-    else if(typeof asLesBusy !== "undefined" && asLesBusy && exAsOn) pl = {extra: true, kind: exAsKind}; } }catch{}
-  if(pl && pl.extra) f = {...f, kind: "Extra resource: " + pl.kind.toLowerCase(), notes: [exSteer(pl.kind), f.notes].filter(Boolean).join(". ")};
+  try{ if(f && !f.seq && !f.noBase && exNext && Date.now() - exNext.t < (exNext.src === "form" ? 8000 : 180000)){ pl = exNext; exNext = null; } }catch{}
+  if(pl && pl.extra) f = {...f, noBase: true, kind: "Extra resource: " + pl.kind.toLowerCase(), notes: [exSteer(pl.kind), f.notes].filter(Boolean).join(". ")};   /* an extra isn't another copy of a lesson, so don't ask about the team's lessons */
   const L = await _bl103.call(this, f, signal);
   try{ if(pl && L && L.meta) exPlace(L, f, pl); }catch(e){ console.error(e); }
   return L; }; }
+/* Home and Crafti: remember the tick when the build starts, however long it takes to get going */
+if(typeof homeBuild === "function"){ const _hb103 = homeBuild; homeBuild = function(){ exNext = exHomeOn ? {src: "home", extra: true, kind: exHomeKind, t: Date.now()} : (exNext && exNext.src === "home" ? null : exNext); const r = _hb103.apply(this, arguments); Promise.resolve(r).finally(() => { if(exNext && exNext.src === "home") exNext = null; }); return r; }; }
+if(typeof asToLesson === "function"){ const _al103 = asToLesson; asToLesson = function(){ exNext = exAsOn ? {src: "as", extra: true, kind: exAsKind, t: Date.now()} : (exNext && exNext.src === "as" ? null : exNext); const r = _al103.apply(this, arguments); Promise.resolve(r).finally(() => { if(exNext && exNext.src === "as") exNext = null; }); return r; }; }
 function exPlace(L, f, pl){ const fu = findUnit({course: f.course, level: f.level, unit: f.unit}); if(!fu) return; const key = seqKeyOf(f.course, fu.L, fu.u); if(pl.key && pl.key !== key) return;
   const s = ensureSaved(f.course, fu.L, fu.u), short = String(f.unit).replace(/:.*/, "");
   if(pl.extra){ s.extras = (s.extras || []).filter(x => x.lessonId !== L.id); s.extras.push({lessonId: L.id, kind: pl.kind, title: L.title || "Extra resource", at: Date.now()});

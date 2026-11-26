@@ -2624,4 +2624,10 @@ VERSION 1.59: UPLOAD YOUR OWN EXTRA RESOURCE
   the original, and files it under the unit's Extra resources with a
   "Your own" badge. The normal upload window has the same tick.
 
+VERSION 1.60: FIX FOR BUILDS STUCK ON PHONES
+- The "Your team already has lessons for this unit" question now opens over
+  the page on phones, instead of out of sight below it. Extra resources
+  skip that question, and the extra resource tick is kept even if the build
+  takes a while to start.
+
 NO CHANGES TO config.php
