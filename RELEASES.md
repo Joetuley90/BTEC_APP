@@ -3,6 +3,55 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.62 · 27 November 2026
+
+**Phone polish from a full test sweep**
+
+Joe asked for a bug hunt on phones and the home screen app. Every screen was tested as a home screen app on an iPhone 13, an iPhone SE and a Pixel 7:
+- every page
+- every Menu item
+- the New sheet
+- both upload windows
+- a full build of an extra resource from Home
+- the Board and More buttons on a lesson
+- the back arrow
+- Planning's Extra resources
+- the public pages
+
+Nothing was broken. Two small things were fixed:
+
+- **The New sheet fits on shorter screens.** On an iPhone in Safari (the browser, not the home screen app) the last option and Cancel sat below the bottom of the screen, so you had to scroll the sheet to reach them. On short screens the rows are now tighter and the one-line descriptions are hidden, so every option and Cancel are in view.
+- **Bigger "Use as an extra resource" ticks on phones.** The tick boxes in the build form, on Home, in Crafti and in the upload window are now 22px, up from 14px, so they're easier to hit with a thumb.
+
+**Checked and fine:**
+- Every Menu item goes to the right page in one tap.
+- The upload and bulk windows scroll down to their buttons on the iPhone SE.
+- An extra resource built on a phone lands in Extra resources.
+- Nothing on any page or public page spills off the side.
+- No errors in the console.
+
+**Noted, not changed:** the super admin's Leave button works with one tap and doesn't ask first. Say if you'd like it to ask "Leave this institution?".
+
+**After updating:** nothing to change.
+
+### What was pushed
+
+- Commit `b37e310` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.62.zip`, 3,763,308 bytes, no `config.php` inside.
+- Build number: 162 (shown to people as 1.62).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.61.zip` |
+| added | `crafticulum-v1.62.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.61 · 26 November 2026
 
 **Fix: "Couldn't reach your server" when building**
