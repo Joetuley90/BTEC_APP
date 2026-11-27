@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [164, "Sign out, easy to find", "It's at the bottom of the Menu and the sidebar, and on a computer in the account button at the top right."],
   [163, "Leave asks first", "For super admins: the Leave button in the top bar now needs a second tap, so you can't leave an institution by accident."],
   [162, "Tidier on phones", "The New sheet fits on shorter screens and the extra resource ticks are easier to tap."],
   [161, "Long lessons no longer time out", "Building now carries on in the background and the app checks back, so a long lesson or a patchy phone connection doesn't stop it."],
@@ -13743,6 +13744,52 @@ askServer = async function(prompt, tries, meta){
     b.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></svg>Tap again to leave`;
     b.setAttribute("aria-live", "polite"); b.title = `Leave ${name}?`; b.classList.add("sa-leave-armed");
     arm = {b, html, t: setTimeout(reset, 4000)}; try{ apBuzz(); }catch{} }, true); }
+/* ===== round 104 (1.64): signing out is easy to find. Before, it was only in Settings, Your account. Now there's a Sign out button at the bottom of the
+   sidebar (and of the Menu on a phone), and on a computer an account button at the top right opens a small menu with who you're signed in as, Your
+   account, Admin for super admins, and Sign out. It's the same for teachers, managers and super admins. ===== */
+const OUT_IC = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 16l4-4-4-4M20 12H10"/></svg>`;
+let acOutBusy = false;
+async function acSignOut(btn){ if(acOutBusy) return; acOutBusy = true; try{ document.querySelectorAll("[data-ac-out]").forEach(b => { b.disabled = true; const l = b.querySelector(".lbl"); if(l) l.textContent = "Signing out..."; }); }catch{} try{ await signOut(); }finally{ setTimeout(() => { acOutBusy = false; }, 4000); } }
+const acSignedIn = () => typeof me !== "undefined" && me && me.email && !me.demo && !window.claude;
+const acInitials = () => (me.name || me.email).split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join("");
+const acAvatar = () => me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : esc(acInitials());
+const acWhere = () => me.role === "superadmin" ? (typeof saIn === "function" && saIn() ? "Inside " + (me.collegeName || "an institution") : "Whole site") : (me.collegeName || "");
+
+/* ---- the bottom of the sidebar, and the Menu on a phone ---- */
+function acSide(){ const f = document.querySelector(".side .side-foot"); if(!f) return; let b = document.getElementById("sideOut");
+  if(!acSignedIn()){ if(b) b.remove(); return; }
+  if(!b){ f.insertAdjacentHTML("beforeend", `<button type="button" class="side-out" id="sideOut" data-ac-out title="Sign out of Crafticulum">${OUT_IC}<span class="lbl">Sign out</span></button>`); } }
+
+/* ---- the top right on a computer: who you are, and Sign out ---- */
+function acTop(){ const acts = document.querySelector(".topbar .top-acts"); if(!acts) return; let w = document.getElementById("acTop");
+  if(!acSignedIn()){ if(w) w.remove(); return; }
+  const key = [me.email, me.name, me.picture, me.role, acWhere()].join("|");
+  if(w && w.dataset.k === key) return; if(w) w.remove();
+  acts.insertAdjacentHTML("beforeend", `<div class="ac-top" id="acTop" data-k="${esc(key)}"><button type="button" class="ac-btn" id="acBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="acMenu" title="Your account">${`<span class="av">${acAvatar()}</span>`}<span class="visually-hidden">Your account: ${esc(me.name || me.email)}</span></button>
+    <div class="ac-menu" id="acMenu" role="menu" hidden>
+      <div class="ac-who"><span class="av">${acAvatar()}</span><span class="min-w-0"><b class="text-truncate d-block">${esc(me.name || me.email)}</b><small class="text-truncate d-block">${esc(me.email)}</small><small class="text-truncate d-block">${esc((typeof ROLE_NAME !== "undefined" && ROLE_NAME[me.role]) || me.role)}${acWhere() ? " · " + esc(acWhere()) : ""}</small></span></div>
+      <button type="button" role="menuitem" class="ac-item" data-ac="account"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Your account</button>
+      <button type="button" role="menuitem" class="ac-item ac-out" data-ac-out>${OUT_IC}<span class="lbl">Sign out</span></button>
+    </div></div>`); }
+function acClose(){ const m = document.getElementById("acMenu"), b = document.getElementById("acBtn"); if(m && !m.hidden){ m.hidden = true; if(b) b.setAttribute("aria-expanded", "false"); } }
+document.addEventListener("click", e => {
+  const out = e.target.closest && e.target.closest("[data-ac-out]"); if(out){ e.preventDefault(); acClose(); return acSignOut(out); }
+  const btn = e.target.closest && e.target.closest("#acBtn");
+  if(btn){ const m = document.getElementById("acMenu"); const open = m.hidden; m.hidden = !open; btn.setAttribute("aria-expanded", String(open)); if(open){ const f = m.querySelector(".ac-item"); if(f) f.focus(); } return; }
+  const it = e.target.closest && e.target.closest("#acMenu [data-ac]");
+  if(it){ acClose(); if(it.dataset.ac === "account") return goSection("settings", "stAccount");
+ }
+  if(!(e.target.closest && e.target.closest("#acTop"))) acClose(); });
+document.addEventListener("keydown", e => { const m = document.getElementById("acMenu"); if(!m || m.hidden) return;
+  if(e.key === "Escape"){ acClose(); const b = document.getElementById("acBtn"); if(b) b.focus(); return; }
+  if(e.key === "ArrowDown" || e.key === "ArrowUp"){ const its = [...m.querySelectorAll(".ac-item")], i = its.indexOf(document.activeElement); e.preventDefault(); const n = its[(i + (e.key === "ArrowDown" ? 1 : -1) + its.length) % its.length]; if(n) n.focus(); } });
+
+/* ---- keep both in step with who's signed in ---- */
+function acSync(){ try{ acSide(); acTop(); }catch(e){ console.error(e); } }
+if(typeof syncShell === "function"){ const _ss104 = syncShell; syncShell = function(){ const r = _ss104.apply(this, arguments); acSync(); return r; }; }
+if(typeof applyRole === "function"){ const _ar104 = applyRole; applyRole = function(){ const r = _ar104.apply(this, arguments); acSync(); return r; }; }
+{ const _r104 = render; render = function(){ const r = _r104.apply(this, arguments); acSync(); return r; }; }
+setTimeout(acSync, 1500); setTimeout(acSync, 4000);
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

@@ -2645,4 +2645,9 @@ VERSION 1.63: LEAVE ASKS FIRST
 - The super admin's Leave in the top bar needs a second tap ("Tap again to
   leave"), so a stray tap near the Menu button doesn't leave an institution.
 
+VERSION 1.64: SIGNING OUT IS EASY TO FIND
+- An account button at the top right on computers (name, email, role,
+  Your account, Sign out), and a Sign out button at the bottom of the
+  sidebar and the phone Menu, for every role.
+
 NO CHANGES TO config.php
