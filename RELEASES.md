@@ -3,6 +3,54 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.64 · 27 November 2026
+
+**Signing out is easy to find**
+
+Before, Sign out was tucked away in Settings, under Your account. Now it's in plain sight for everyone: teachers, managers and super admins.
+
+- **On a computer:** there's an account button at the top right showing your picture or initials. Click it for a small menu with your name, email and role (and which institution you're in), **Your account**, and **Sign out**. Escape or clicking anywhere else closes it, and you can move through it with the arrow keys.
+- **At the bottom of the sidebar:** a **Sign out** button sits under your name. When the sidebar is collapsed it shows just the icon. It turns red when you hover over it, so it's clear what it does.
+- **On a phone and in the home screen app:** **Sign out** is at the bottom of the Menu, a full-width button that's easy to tap. The top bar stays as it was, so it isn't cluttered.
+- **Super admins:** it works the same inside an institution and on the whole-site Admin view.
+- Signing out takes you back to the front page, and the button says "Signing out..." while it does. Settings, Your account still has its Sign out button too.
+
+**After updating:** nothing to change.
+
+**Tested:** pw164 has 14 checks:
+- the account button and its menu (name, email, role, Your account, Sign out)
+- Escape and clicking away closing it
+- Your account going to Settings
+- Sign out in the sidebar
+- signing out from the account menu
+- a super admin outside any institution signing out
+- the phone top bar staying clear
+- the phone Menu's Sign out being on screen, tappable and at least 36px tall
+- one tap signing out on a phone
+- no errors
+
+Each sign-out is confirmed with the server, not just on screen.
+
+The suites around the sidebar, Menu and admin views also pass: pw163, pwsa, pwsa1, pw121, pwmnav, pwphone, pw157, pwsuper, pwsaout, pwtidy, pwpolish, pw107, pwnew and pwsuite.
+
+### What was pushed
+
+- Commit `dc41715` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.64.zip`, 3,766,060 bytes, no `config.php` inside.
+- Build number: 164 (shown to people as 1.64).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.63.zip` |
+| added | `crafticulum-v1.64.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.63 · 27 November 2026
 
 **Leave asks first, and a whole-app check**
