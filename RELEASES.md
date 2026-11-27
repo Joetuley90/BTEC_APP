@@ -3,6 +3,48 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.63 · 27 November 2026
+
+**Leave asks first, and a whole-app check**
+
+- **The super admin's Leave button asks first.** In the purple bar at the top, the first tap turns Leave amber and changes it to "Tap again to leave". A second tap within 4 seconds leaves. Leave it alone, or tap anywhere else, and it goes back to normal. It sits right above the Menu button, so a stray tap no longer takes you out of an institution. Leave in the Menu still goes straight away, because choosing it there is already deliberate.
+
+**Whole-app check.** I tested that the features pass work between each other properly.
+
+A new suite, pw163, has 16 checks:
+- A lesson built from the form shows as built in Planning, appears in the Library, is found by search, and opens from search.
+- This week opens.
+- An extra resource appears in the Library and search, and sits under Extra resources while the unit's lessons stay as they were.
+- The quality report builds with both lessons and extras in the unit.
+- A binned extra drops off Extra resources.
+- Crafticulum AI answers through the new background job.
+- Leave asks first, resets by itself, is called off by a tap elsewhere, and leaves on the second tap.
+- There were no errors anywhere along the way.
+
+I also went through every screen on desktop, an iPhone 13 and a Galaxy S9+. That covered every page, the Menu, the New sheet, both upload windows, a phone build of an extra resource, the Board and More buttons, the back arrow and Planning. Nothing spilled off the side, nothing was hidden, and there were no errors.
+
+**After updating:** nothing to change.
+
+**Full regression run of 91 suites: all pass.** pwmnav (the roadmap vote) and pwbilling (coming back from Stripe) each failed once, then passed when run again on their own. pwsa and pwsa1 now tap Leave twice.
+
+### What was pushed
+
+- Commit `0da8bab` on `main` (1 added, 7 changed, 1 removed).
+- Zip: `crafticulum-v1.63.zip`, 3,764,028 bytes, no `config.php` inside.
+- Build number: 163 (shown to people as 1.63).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.62.zip` |
+| added | `crafticulum-v1.63.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/version.json` |
+
 ## 1.62 · 27 November 2026
 
 **Phone polish from a full test sweep**
