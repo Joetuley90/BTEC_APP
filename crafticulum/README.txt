@@ -2641,4 +2641,8 @@ VERSION 1.62: PHONE POLISH
 - The New sheet fits on shorter phone screens, and the "Use as an extra
   resource" ticks are bigger on phones.
 
+VERSION 1.63: LEAVE ASKS FIRST
+- The super admin's Leave in the top bar needs a second tap ("Tap again to
+  leave"), so a stray tap near the Menu button doesn't leave an institution.
+
 NO CHANGES TO config.php

@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [163, "Leave asks first", "For super admins: the Leave button in the top bar now needs a second tap, so you can't leave an institution by accident."],
   [162, "Tidier on phones", "The New sheet fits on shorter screens and the extra resource ticks are easier to tap."],
   [161, "Long lessons no longer time out", "Building now carries on in the background and the app checks back, so a long lesson or a patchy phone connection doesn't stop it."],
   [160, "Building on a phone no longer gets stuck", "The question about your team's lessons now pops up on screen, and extra resources skip it."],
@@ -13729,6 +13730,19 @@ askServer = async function(prompt, tries, meta){
     if(p.ok && pj.working) continue;
     if(p.status >= 500 && p.status !== 502 && p.status !== 504 && !pj.error){ if(++miss > 30) return answer(p, pj); continue; }   /* the host hiccuped while checking: try again */
     return answer(p, pj); } };
+
+/* ===== 1.63: the super admin's Leave button in the top bar asks first. It sits right above the Menu button, so a stray tap shouldn't take you out
+   of an institution. The first tap turns it into "Tap again to leave" for a few seconds; the second leaves. The Leave in the Menu is already a
+   deliberate choice, so it goes straight away. ===== */
+{ let arm = null; const reset = () => { if(!arm) return; const {b, html, t} = arm; clearTimeout(t); arm = null; if(b.isConnected){ b.innerHTML = html; b.classList.remove("sa-leave-armed"); b.removeAttribute("aria-live"); } };
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("#saBar [data-sa-leave]");
+    if(!b){ if(arm) reset(); return; }
+    if(arm && arm.b === b){ clearTimeout(arm.t); arm = null; return; }   /* the second tap goes through to Leave */
+    e.preventDefault(); e.stopImmediatePropagation(); reset();
+    const html = b.innerHTML, name = (typeof me !== "undefined" && me && me.collegeName) || "this institution";
+    b.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/></svg>Tap again to leave`;
+    b.setAttribute("aria-live", "polite"); b.title = `Leave ${name}?`; b.classList.add("sa-leave-armed");
+    arm = {b, html, t: setTimeout(reset, 4000)}; try{ apBuzz(); }catch{} }, true); }
 /* ---------- student phone view (opened from the QR code) ---------- */
 function studentMode(id){
   document.querySelector(".wrap").hidden = true; $("#board").hidden = true; $("#fabBoard").hidden = true;

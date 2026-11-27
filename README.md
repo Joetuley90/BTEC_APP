@@ -5,8 +5,8 @@ Feedback AI
 
 The self-hosted site, ready to upload. No config.php and no data folder inside, so your settings and keys are never touched.
 
-- `crafticulum/`: every file of the current release (1.62, 27 Nov 2026: Phone polish from a full test sweep). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
-- `crafticulum-v1.62.zip` and `crafticulum-release.zip`: the same files as one zip (3,763,308 bytes).
+- `crafticulum/`: every file of the current release (1.63, 27 Nov 2026: Leave asks first, and a whole-app check). Upload the contents of this folder over the live site, including `.htaccess`. What changed in each release, and which files, is in `RELEASES.md`.
+- `crafticulum-v1.63.zip` and `crafticulum-release.zip`: the same files as one zip (3,764,028 bytes).
 
 Read `crafticulum/README.txt` for what changed and how to set things up.
 
