@@ -2637,4 +2637,8 @@ VERSION 1.61: BUILDS NO LONGER TIME OUT
   (once, by the person who asked) and anything left is cleared after an
   hour. Long lessons no longer hit the web host's or the phone's time limit.
 
+VERSION 1.62: PHONE POLISH
+- The New sheet fits on shorter phone screens, and the "Use as an extra
+  resource" ticks are bigger on phones.
+
 NO CHANGES TO config.php

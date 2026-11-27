@@ -12190,6 +12190,7 @@ document.addEventListener("click", async e => { const b = e.target.closest && e.
    a nudge on screen when most of the month's builds are used; add several people at once from a list or a spreadsheet. ===== */
 /* ---------- what's new, shown once after the site has been updated ---------- */
 const WHATS_NEW = [
+  [162, "Tidier on phones", "The New sheet fits on shorter screens and the extra resource ticks are easier to tap."],
   [161, "Long lessons no longer time out", "Building now carries on in the background and the app checks back, so a long lesson or a patchy phone connection doesn't stop it."],
   [160, "Building on a phone no longer gets stuck", "The question about your team's lessons now pops up on screen, and extra resources skip it."],
   [159, "Upload your own extra resource", "Got a practical task or case study already? Upload it from Extra resources in Planning. It's checked, gaps are filled and it's filed with that unit."],
