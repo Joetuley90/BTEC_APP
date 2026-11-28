@@ -2486,7 +2486,7 @@ VERSION 1.50: PDFS, REMINDERS, THE FUNNEL, TIPS, YOUR DATA, ALERTS, ACCESSIBILIT
 - Settings: when part of the page finished loading, the whole page
   redrew and closed any box you had opened. Open boxes now stay open.
 - Every public page's footer says "Created by" with the Next Level Labs
-  logo, linking to visualize.agency. The logo is the one-line version from
+  logo, linking to nlb.visualize.agency. The logo is the one-line version from
   the Next Level Labs pack: assets/nll-logo.svg on light pages and
   assets/nll-logo-white.svg in dark mode.
 
@@ -2501,7 +2501,7 @@ VERSION 1.52: THE SAME FOOTER INSIDE THE APP
   page's footer: About, Terms, Privacy, Cookies, Security, Data
   processing, Accessibility and Contact and support, with "Created by"
   and the Next Level Labs logo underneath (the white logo in dark mode),
-  linking to visualize.agency.
+  linking to nlb.visualize.agency.
 
 VERSION 1.53: FASTER, OFFLINE, SIGN-OFF, QUALITY REPORT, LEARNERS' PROGRESS
 - Faster: the app's code is now its own file (app.js). The page itself is
@@ -2649,5 +2649,9 @@ VERSION 1.64: SIGNING OUT IS EASY TO FIND
 - An account button at the top right on computers (name, email, role,
   Your account, Sign out), and a Sign out button at the bottom of the
   sidebar and the phone Menu, for every role.
+
+VERSION 1.65: NEXT LEVEL LABS ADDRESS
+- The "Created by Next Level Labs" credit now links to
+  https://nlb.visualize.agency/ on every page and in the app.
 
 NO CHANGES TO config.php

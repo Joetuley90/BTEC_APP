@@ -12758,7 +12758,7 @@ if(typeof inboxLoad === "function"){ const _inbox96 = inboxLoad; let inFlight = 
 { const _rs96b = renderSettings; renderSettings = function(){ const r = _rs96b.apply(this, arguments);
     try{ const lg = document.getElementById("stLegal"); if(lg && !lg.dataset.full){ lg.dataset.full = "1"; const ck = lg.querySelector('a[href="cookies.html"]');
         if(ck) ck.insertAdjacentHTML("afterend", ` · <a href="security.html" target="_blank" rel="noopener">Security</a> · <a href="dpa.html" target="_blank" rel="noopener">Data processing</a> · <a href="accessibility.html" target="_blank" rel="noopener">Accessibility</a>`);
-        lg.insertAdjacentHTML("afterend", `<p class="made-by-app" id="stMadeBy"><a href="https://visualize.agency" target="_blank" rel="noopener"><span>Created by</span><img class="mb-l" src="assets/nll-logo.svg?v=2" width="151" height="24" alt="Next Level Labs"><img class="mb-d" src="assets/nll-logo-white.svg?v=2" width="151" height="24" alt="Next Level Labs"></a></p>`); } }catch(e){ console.error(e); }
+        lg.insertAdjacentHTML("afterend", `<p class="made-by-app" id="stMadeBy"><a href="https://nlb.visualize.agency/" target="_blank" rel="noopener"><span>Created by</span><img class="mb-l" src="assets/nll-logo.svg?v=2" width="151" height="24" alt="Next Level Labs"><img class="mb-d" src="assets/nll-logo-white.svg?v=2" width="151" height="24" alt="Next Level Labs"></a></p>`); } }catch(e){ console.error(e); }
     return r; }; }
 /* ===== round 97 (1.53): work offline and catch up later, signing lessons off, a quality report for a course, and learners' progress across units ===== */
 
