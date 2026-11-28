@@ -3,6 +3,53 @@
 Every release: what changed, and exactly which files were pushed. Newest first.
 From 1.48 on, versions are written with a point. Release 1.48 is build 148, and so on.
 
+## 1.65 · 28 November 2026
+
+**Next Level Labs credit points to its new address**
+
+- **"Created by Next Level Labs" now links to https://nlb.visualize.agency/** everywhere it appears: the footer of the front page, the sample, contact and legal pages, every subject page (19 pages in all), and the credit under the logo in the app's Settings. Before, it went to visualize.agency.
+- The quiz room example address (visualize.agency/quiz/) is a separate thing and hasn't changed.
+
+**After updating:** nothing to change.
+
+**Tested:** no page still links the credit to the old address. pwsite, pwcontact, pwland, pwpolish and pw107 all pass.
+
+### What was pushed
+
+- Commit `e5441a9` on `main` (1 added, 25 changed, 1 removed).
+- Zip: `crafticulum-v1.65.zip`, 3,766,181 bytes, no `config.php` inside.
+- Build number: 165 (shown to people as 1.65).
+
+| | File |
+|---|---|
+| changed | `README.md` |
+| changed | `crafticulum-release.zip` |
+| removed | `crafticulum-v1.64.zip` |
+| added | `crafticulum-v1.65.zip` |
+| changed | `crafticulum/README.txt` |
+| changed | `crafticulum/a-level-computer-science-lesson-plans.html` |
+| changed | `crafticulum/accessibility.html` |
+| changed | `crafticulum/app.html` |
+| changed | `crafticulum/app.js` |
+| changed | `crafticulum/btec-business-lesson-plans.html` |
+| changed | `crafticulum/btec-esports-lesson-plans.html` |
+| changed | `crafticulum/btec-health-and-social-care-lesson-plans.html` |
+| changed | `crafticulum/btec-it-lesson-plans.html` |
+| changed | `crafticulum/btec-sport-lesson-plans.html` |
+| changed | `crafticulum/contact.html` |
+| changed | `crafticulum/cookies.html` |
+| changed | `crafticulum/dpa.html` |
+| changed | `crafticulum/functional-skills-lesson-plans.html` |
+| changed | `crafticulum/gcse-computer-science-lesson-plans.html` |
+| changed | `crafticulum/index.html` |
+| changed | `crafticulum/privacy.html` |
+| changed | `crafticulum/sample.html` |
+| changed | `crafticulum/security.html` |
+| changed | `crafticulum/sw.js` |
+| changed | `crafticulum/t-level-digital-lesson-plans.html` |
+| changed | `crafticulum/terms.html` |
+| changed | `crafticulum/version.json` |
+
 ## 1.64 · 27 November 2026
 
 **Signing out is easy to find**
